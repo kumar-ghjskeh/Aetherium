@@ -14,6 +14,7 @@ The current approved implementation boundary is:
 - Shared validation and API types.
 - Health endpoints.
 - CI validation.
+- Standalone architecture isolation checks and documentation.
 
 Explicitly out of scope for this slice:
 
@@ -21,6 +22,24 @@ Explicitly out of scope for this slice:
 - 3D world scenes, React Three Fiber, player controls, map travel, or world progression.
 - File upload, document ingestion, AI chat, retrieval, habits, learning, projects, achievements, or
   analytics.
+
+## Product Independence
+
+Aetherium is a standalone product. Do not import source code from another private project, reference
+another private repository, connect to another product database, reuse another schema, share cookies
+or session secrets, share Redis keys, reuse object-storage buckets, depend on another private API,
+copy private product data, assume another product is running, add cross-product single sign-on, add
+shared private packages, or share private deployment infrastructure.
+
+Use Aetherium-owned resources and names:
+
+- `AETHERIUM_` environment variables for backend/runtime configuration.
+- `NEXT_PUBLIC_AETHERIUM_` environment variables for browser-exposed configuration.
+- `aetherium:` Redis key prefix.
+- `aetherium_session` or another product-specific future session cookie name.
+- Aetherium-prefixed Docker services, containers, networks, volumes, databases, roles, and buckets.
+
+Run `pnpm independence:check` before completing infrastructure changes.
 
 ## Engineering Rules
 

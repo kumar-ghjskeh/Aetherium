@@ -1,68 +1,109 @@
 name: aetherium
 
 services:
-  postgres:
+  aetherium-postgres:
+    container_name: aetherium-postgres
     image: pgvector/pgvector:pg16
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${AETHERIUM_POSTGRES_DB:-aetherium_app_dev}
+      POSTGRES_USER: ${AETHERIUM_POSTGRES_USER:-aetherium_app}
+      POSTGRES_PASSWORD: ${AETHERIUM_POSTGRES_PASSWORD:-aetherium_local_password}
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "${AETHERIUM_POSTGRES_PORT:-5432}:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - aetherium_postgres_data:/var/lib/postgresql/data
+    networks:
+      - aetherium_internal
     healthcheck:
       test: ["CMD-SHELL", 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
       interval: 10s
       timeout: 5s
       retries: 5
 
-  redis:
+  aetherium-redis:
+    container_name: aetherium-redis
     image: redis:7-alpine
     ports:
-      - "${REDIS_PORT:-6379}:6379"
+      - "${AETHERIUM_REDIS_PORT:-6379}:6379"
     volumes:
-      - redis_data:/data
+      - aetherium_redis_data:/data
+    networks:
+      - aetherium_internal
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  minio:
+  aetherium-minio:
+    container_name: aetherium-minio
     image: minio/minio:RELEASE.2025-04-22T22-12-26Z
     command: server /data --console-address ":9001"
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_ROOT_USER: ${AETHERIUM_MINIO_ROOT_USER:-aetherium_minio_root}
+      MINIO_ROOT_PASSWORD: ${AETHERIUM_MINIO_ROOT_PASSWORD:-aetherium_minio_dev_password}
     ports:
-      - "${MINIO_API_PORT:-9000}:9000"
-      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+      - "${AETHERIUM_MINIO_API_PORT:-9000}:9000"
+      - "${AETHERIUM_MINIO_CONSOLE_PORT:-9001}:9001"
     volumes:
-      - minio_data:/data
+      - aetherium_minio_data:/data
+    networks:
+      - aetherium_internal
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  api:
+  aetherium-minio-init:
+    container_name: aetherium-minio-init
+    image: minio/mc:RELEASE.2025-04-16T18-13-26Z
+    environment:
+      MINIO_ROOT_USER: ${AETHERIUM_MINIO_ROOT_USER:-aetherium_minio_root}
+      MINIO_ROOT_PASSWORD: ${AETHERIUM_MINIO_ROOT_PASSWORD:-aetherium_minio_dev_password}
+      AETHERIUM_OBJECT_STORAGE_BUCKET: ${AETHERIUM_OBJECT_STORAGE_BUCKET:-aetherium-files-dev}
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      until mc alias set aetherium-local http://aetherium-minio:9000 "$$MINIO_ROOT_USER"
+      "$$MINIO_ROOT_PASSWORD"; do sleep 2; done; mc mb --ignore-existing
+      "aetherium-local/$$AETHERIUM_OBJECT_STORAGE_BUCKET";
+    depends_on:
+      aetherium-minio:
+        condition: service_healthy
+    networks:
+      - aetherium_internal
+
+  aetherium-api:
+    container_name: aetherium-api
     build:
       context: .
       dockerfile: apps/api/Dockerfile
     env_file:
       - .env
+    environment:
+      AETHERIUM_APP_ENV: ${AETHERIUM_APP_ENV:-development}
+      AETHERIUM_DATABASE_URL: postgresql+asyncpg://${AETHERIUM_POSTGRES_USER:-aetherium_app}:${AETHERIUM_POSTGRES_PASSWORD:-aetherium_local_password}@aetherium-postgres:5432/${AETHERIUM_POSTGRES_DB:-aetherium_app_dev}
+      AETHERIUM_REDIS_URL: redis://aetherium-redis:6379/0
+      AETHERIUM_REDIS_KEY_PREFIX: "${AETHERIUM_REDIS_KEY_PREFIX:-aetherium:}"
+      AETHERIUM_OBJECT_STORAGE_ENDPOINT: http://aetherium-minio:9000
+      AETHERIUM_OBJECT_STORAGE_BUCKET: ${AETHERIUM_OBJECT_STORAGE_BUCKET:-aetherium-files-dev}
+      AETHERIUM_SESSION_COOKIE_NAME: ${AETHERIUM_SESSION_COOKIE_NAME:-aetherium_session}
+      AETHERIUM_CORS_ORIGINS: ${AETHERIUM_CORS_ORIGINS:-http://localhost:3000}
     ports:
-      - "${API_PORT:-8000}:8000"
+      - "${AETHERIUM_API_PORT:-8000}:8000"
     volumes:
       - ./apps/api:/app
     depends_on:
-      postgres:
+      aetherium-postgres:
         condition: service_healthy
-      redis:
+      aetherium-redis:
         condition: service_healthy
-      minio:
+      aetherium-minio:
         condition: service_healthy
+      aetherium-minio-init:
+        condition: service_completed_successfully
+    networks:
+      - aetherium_internal
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     healthcheck:
       test:
@@ -76,26 +117,35 @@ services:
       timeout: 5s
       retries: 5
 
-  web:
+  aetherium-web:
+    container_name: aetherium-web
     build:
       context: .
       dockerfile: apps/web/Dockerfile
     env_file:
       - .env
+    environment:
+      NEXT_PUBLIC_AETHERIUM_API_BASE_URL: ${NEXT_PUBLIC_AETHERIUM_API_BASE_URL:-http://localhost:8000}
     ports:
-      - "${WEB_PORT:-3000}:3000"
+      - "${AETHERIUM_WEB_PORT:-3000}:3000"
     volumes:
       - .:/workspace
-      - web_node_modules:/workspace/node_modules
-      - web_next:/workspace/apps/web/.next
+      - aetherium_web_node_modules:/workspace/node_modules
+      - aetherium_web_next:/workspace/apps/web/.next
     depends_on:
-      api:
+      aetherium-api:
         condition: service_healthy
+    networks:
+      - aetherium_internal
     command: pnpm --filter @aetherium/web dev --hostname 0.0.0.0
 
+networks:
+  aetherium_internal:
+    name: aetherium_internal
+
 volumes:
-  minio_data:
-  postgres_data:
-  redis_data:
-  web_next:
-  web_node_modules:
+  aetherium_minio_data:
+  aetherium_postgres_data:
+  aetherium_redis_data:
+  aetherium_web_next:
+  aetherium_web_node_modules:

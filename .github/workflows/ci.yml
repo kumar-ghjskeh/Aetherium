@@ -11,27 +11,30 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      postgres:
+      aetherium-postgres:
         image: pgvector/pgvector:pg16
         env:
-          POSTGRES_DB: aetherium
-          POSTGRES_USER: aetherium
-          POSTGRES_PASSWORD: aetherium
+          POSTGRES_DB: aetherium_ci
+          POSTGRES_USER: aetherium_ci
+          POSTGRES_PASSWORD: aetherium_ci_password
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U aetherium -d aetherium" --health-interval 10s --health-timeout
-          5s --health-retries 5
-      redis:
+          --health-cmd "pg_isready -U aetherium_ci -d aetherium_ci" --health-interval 10s
+          --health-timeout 5s --health-retries 5
+      aetherium-redis:
         image: redis:7-alpine
         ports:
           - 6379:6379
 
     env:
-      APP_ENV: test
-      DATABASE_URL: postgresql+asyncpg://aetherium:aetherium@localhost:5432/aetherium
-      REDIS_URL: redis://localhost:6379/0
-      NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+      AETHERIUM_APP_ENV: test
+      AETHERIUM_DATABASE_URL: postgresql+asyncpg://aetherium_ci:aetherium_ci_password@localhost:5432/aetherium_ci
+      AETHERIUM_REDIS_URL: redis://localhost:6379/0
+      AETHERIUM_REDIS_KEY_PREFIX: "aetherium:"
+      AETHERIUM_OBJECT_STORAGE_BUCKET: aetherium-ci-files
+      AETHERIUM_SESSION_COOKIE_NAME: aetherium_session
+      NEXT_PUBLIC_AETHERIUM_API_BASE_URL: http://localhost:8000
 
     steps:
       - name: Checkout
