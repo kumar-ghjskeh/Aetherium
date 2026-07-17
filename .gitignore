@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+.next/
+dist/
+build/
+coverage/
+.turbo/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Local data
+.minio/
+.postgres/
+.redis/
+
+# IDE and OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.tsbuildinfo

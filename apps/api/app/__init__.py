@@ -1,0 +1,1 @@
+"""Aetherium API application package."""

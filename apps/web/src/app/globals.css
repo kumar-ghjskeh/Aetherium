@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --accent: #8fd1c7;
+  --muted: #b5c0b8;
+  --surface: #101417;
+  --text: #f1f4ee;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  font-family: Aptos, "Segoe UI", sans-serif;
+  background: var(--surface);
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--surface);
+}

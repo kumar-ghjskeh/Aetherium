@@ -1,0 +1,65 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_DB: aetherium
+          POSTGRES_USER: aetherium
+          POSTGRES_PASSWORD: aetherium
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U aetherium -d aetherium" --health-interval 10s --health-timeout
+          5s --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+
+    env:
+      APP_ENV: test
+      DATABASE_URL: postgresql+asyncpg://aetherium:aetherium@localhost:5432/aetherium
+      REDIS_URL: redis://localhost:6379/0
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Enable pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.13.1 --activate
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install JavaScript dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Python dependencies
+        run: python -m pip install -r apps/api/requirements-dev.txt
+
+      - name: Run migrations
+        run: python -m alembic -c apps/api/alembic.ini upgrade head
+
+      - name: Validate
+        run: pnpm run ci

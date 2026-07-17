@@ -1,0 +1,24 @@
+{
+  "name": "@aetherium/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev",
+    "lint": "eslint src --max-warnings=0",
+    "start": "next start",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@aetherium/api-client": "workspace:*",
+    "@aetherium/shared-types": "workspace:*",
+    "autoprefixer": "^10.4.0",
+    "next": "^15.3.0",
+    "postcss": "^8.5.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwindcss": "^3.4.17"
+  }
+}
