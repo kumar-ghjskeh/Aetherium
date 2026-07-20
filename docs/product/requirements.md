@@ -49,6 +49,8 @@ Implemented Phase 1 foundation slices:
 - Standalone password authentication.
 - Server-side sessions using an Aetherium-specific cookie.
 - Protected Command Mode shell.
+- User-owned data foundation for preferences, non-visual world profile state, domain events,
+  notifications, audit logs, ownership checks, and pagination.
 
 3D functionality, AI, file handling, and habits are intentionally deferred.
 
@@ -60,6 +62,7 @@ Implemented Phase 1 foundation slices:
 - No AI provider calls.
 - No habit, task, project, or learning domain behavior.
 - No claims that user-facing product workflows are complete.
+- No visual World Mode implementation.
 
 ## Success Criteria For Current Slice
 

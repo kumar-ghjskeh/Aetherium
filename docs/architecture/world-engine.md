@@ -8,7 +8,19 @@ achievements.
 
 ## Current Status
 
-No 3D functionality is implemented in the current slice.
+No 3D functionality is implemented.
+
+The current non-visual foundation stores world profile data only:
+
+- Current and last visited location identifiers.
+- Spawn location identifier.
+- Preferred navigation method.
+- Tutorial completion state.
+- World-state version.
+- Visited and unlocked location identifier lists.
+
+This data is available through `/api/v1/world/profile` and `/api/v1/world/visit`. It is a future
+World Mode contract, not a rendered scene.
 
 ## Future Runtime Layers
 

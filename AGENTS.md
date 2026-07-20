@@ -16,6 +16,8 @@ Implemented foundation slices:
 - CI validation.
 - Standalone architecture isolation checks and documentation.
 - Standalone password authentication and server-side sessions.
+- User-owned data foundation for preferences, non-visual world profile state, domain events,
+  notifications, audit logs, ownership checks, and pagination.
 
 Still out of scope unless explicitly requested:
 

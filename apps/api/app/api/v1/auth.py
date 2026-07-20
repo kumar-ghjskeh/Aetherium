@@ -20,6 +20,7 @@ from app.schemas.common import ApiErrorResponse
 from app.security.passwords import normalize_email
 from app.security.rate_limit import InMemoryRateLimiter
 from app.services.auth import AuthService
+from app.services.foundation import UserDataService
 
 router = APIRouter()
 
@@ -82,6 +83,7 @@ async def register(
             payload.password,
             payload.display_name,
         )
+        await UserDataService(auth_service.db).initialize_user_defaults(user)
         created_session = await auth_service.create_session(user, request.headers.get("user-agent"))
         await auth_service.db.commit()
     except IntegrityError as exc:

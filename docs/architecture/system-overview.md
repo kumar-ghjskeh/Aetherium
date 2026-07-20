@@ -34,13 +34,14 @@ foundation:
 - `packages/api-client`: Typed API client for health and auth.
 - Identity domain: Aetherium-owned `users` and `sessions` tables, Argon2id password hashing,
   server-side session revocation, and product-specific cookies.
+- User-owned foundation: preferences, non-visual world profile state, domain events, notifications,
+  audit logs, ownership checks, and pagination.
 
 ## Backend Boundaries
 
 Backend domains will be added incrementally:
 
-- Preferences.
-- World configuration and user world state.
+- Additional world configuration and user world state beyond the current non-visual profile.
 - Files and knowledge.
 - AI conversations and mentors.
 - Learning.
@@ -51,9 +52,9 @@ Backend domains will be added incrementally:
 Route handlers must remain thin as domains are added. Business rules should live in services or
 domain modules where separation improves testing and clarity.
 
-The implemented auth routes follow this boundary: route handlers own HTTP concerns, shared
-validation schemas define request and response shapes, and authentication rules live in the auth
-service plus reusable dependencies.
+The implemented auth and user-owned routes follow this boundary: route handlers own HTTP concerns,
+shared validation schemas define request and response shapes, and business rules live in services
+plus reusable dependencies.
 
 ## API Style
 
@@ -63,6 +64,8 @@ service plus reusable dependencies.
   data-owning domains.
 - Authentication is under `/api/v1/auth`; protected endpoints use the reusable current-user
   dependency rather than route-local cookie parsing.
+- User-owned foundation routes are under `/api/v1/settings`, `/api/v1/world`,
+  `/api/v1/domain-events`, `/api/v1/notifications`, and `/api/v1/audit-logs`.
 - Streaming AI responses will use server-sent events or another explicit streaming response later.
 
 ## Configuration

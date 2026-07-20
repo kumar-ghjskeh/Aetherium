@@ -8,6 +8,8 @@ Back up these Aetherium-owned resources independently:
 
 - PostgreSQL database and Alembic revision state.
 - Authentication records in PostgreSQL, including users and hashed session-token records.
+- User-owned foundation records in PostgreSQL, including preferences, world profiles, domain events,
+  notifications, and sanitized audit logs.
 - Object-storage buckets with uploaded originals, generated derivatives, and future exports.
 - Redis only for durable queues or future state that cannot be safely reconstructed.
 - Deployment configuration metadata, excluding raw secrets.
@@ -48,3 +50,8 @@ from another project or apply Aetherium migrations to another product database.
 The `0002_auth_foundation` migration introduces the current user and session tables. Restores must
 keep those tables consistent with the same Aetherium deployment secrets used to sign and hash
 session tokens; rotating secrets after a restore should revoke existing sessions deliberately.
+
+The `0003_user_owned_foundation` migration introduces user-owned preferences, non-visual world
+profiles, domain events, notifications, and audit logs. Restores must preserve owner UUIDs and
+domain-event idempotency keys so future achievement and progression processors do not replay
+duplicates.

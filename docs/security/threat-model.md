@@ -39,6 +39,7 @@
 | Insecure code execution                   | Use mock code runner first; require isolated sandbox before real execution.                   |
 | Secret leakage                            | Keep secrets out of source and logs.                                                          |
 | Cross-tenant data access                  | Include tenant/owner scoping in schema and data-access tests.                                 |
+| Sensitive audit-log data                  | Sanitize audit metadata before persistence and avoid raw secrets or tokens.                   |
 
 ## Current Controls
 
@@ -50,6 +51,11 @@
 - Login and registration are rate limited.
 - Security-relevant auth events are logged without passwords, raw session tokens, cookies, or full
   request bodies.
+- User-owned foundation tables are scoped by `owner_user_id`.
+- Preferences, world profile, domain events, notifications, and audit logs require authentication.
+- Notification mutation and list routes filter by owner.
+- Domain events are idempotent per user and idempotency key.
+- Persistent audit logs sanitize metadata before storage.
 - CI runs independence checks, formatting, linting, type checks, tests, build, and migration smoke
   validation.
 
@@ -59,7 +65,7 @@
 - Password reset.
 - Optional MFA.
 - Persistent distributed rate limiting for horizontally scaled production.
-- Audit-log persistence with retention policy.
+- Audit-log retention policy.
 - Security headers and CSP.
 - Dependency vulnerability scanning.
 - Presigned object access.

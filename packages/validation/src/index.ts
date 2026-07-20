@@ -60,6 +60,164 @@ export const apiErrorBodySchema = z.object({
   })
 });
 
+export const themeSchema = z.enum(["system", "light", "dark"]);
+
+export const defaultInterfaceModeSchema = z.enum(["command", "world"]);
+
+export const performancePresetSchema = z.enum(["automatic", "low", "balanced", "high"]);
+
+export const navigationMethodSchema = z.enum([
+  "command_palette",
+  "fast_travel",
+  "guided",
+  "direct"
+]);
+
+export const domainEventTypeSchema = z.enum([
+  "user.registered",
+  "user.preference_updated",
+  "file.uploaded",
+  "file.ingested",
+  "habit.logged",
+  "lesson.completed",
+  "quiz.completed",
+  "project.completed",
+  "achievement.unlocked",
+  "world.location_visited"
+]);
+
+export const notificationTypeSchema = z.enum([
+  "system",
+  "security",
+  "processing",
+  "review",
+  "ai",
+  "project"
+]);
+
+export const notificationSeveritySchema = z.enum(["info", "success", "warning", "error"]);
+
+export const userPreferencesSchema = z.object({
+  aiMemoryEnabled: z.boolean(),
+  ambientAudioEnabled: z.boolean(),
+  backgroundMusicEnabled: z.boolean(),
+  cameraEffectsEnabled: z.boolean(),
+  createdAt: z.string().min(1),
+  defaultInterfaceMode: defaultInterfaceModeSchema,
+  id: z.string().uuid(),
+  locale: z.string().min(2),
+  performancePreset: performancePresetSchema,
+  productAnalyticsEnabled: z.boolean(),
+  reducedMotion: z.boolean(),
+  theme: themeSchema,
+  timeZone: z.string().min(1),
+  updatedAt: z.string().min(1)
+});
+
+export const userPreferencesUpdateSchema = z
+  .object({
+    aiMemoryEnabled: z.boolean().optional(),
+    ambientAudioEnabled: z.boolean().optional(),
+    backgroundMusicEnabled: z.boolean().optional(),
+    cameraEffectsEnabled: z.boolean().optional(),
+    defaultInterfaceMode: defaultInterfaceModeSchema.optional(),
+    locale: z.string().min(2).max(35).optional(),
+    performancePreset: performancePresetSchema.optional(),
+    productAnalyticsEnabled: z.boolean().optional(),
+    reducedMotion: z.boolean().optional(),
+    theme: themeSchema.optional(),
+    timeZone: z.string().min(1).max(64).optional()
+  })
+  .refine((value) => Object.keys(value).length > 0, {
+    message: "At least one preference field is required."
+  });
+
+export const worldProfileSchema = z.object({
+  createdAt: z.string().min(1),
+  currentLocationId: z.string().min(1),
+  id: z.string().uuid(),
+  lastVisitedLocationId: z.string().min(1).nullable(),
+  preferredNavigationMethod: navigationMethodSchema,
+  spawnLocationId: z.string().min(1),
+  tutorialCompleted: z.boolean(),
+  unlockedLocationIds: z.array(z.string().min(1)),
+  updatedAt: z.string().min(1),
+  visitedLocationIds: z.array(z.string().min(1)),
+  worldStateVersion: z.number().int().positive()
+});
+
+export const worldProfileUpdateSchema = z
+  .object({
+    preferredNavigationMethod: navigationMethodSchema.optional(),
+    spawnLocationId: z.string().min(1).max(64).optional(),
+    tutorialCompleted: z.boolean().optional()
+  })
+  .refine((value) => Object.keys(value).length > 0, {
+    message: "At least one world profile field is required."
+  });
+
+export const worldVisitRequestSchema = z.object({
+  idempotencyKey: z.string().min(8).max(160),
+  locationId: z.string().min(1).max(64)
+});
+
+export const domainEventCreateRequestSchema = z.object({
+  eventType: domainEventTypeSchema,
+  idempotencyKey: z.string().min(8).max(160),
+  payload: z.record(z.unknown()).optional()
+});
+
+export const domainEventSchema = z.object({
+  createdAt: z.string().min(1),
+  eventType: domainEventTypeSchema,
+  id: z.string().uuid(),
+  idempotencyKey: z.string().min(1),
+  occurredAt: z.string().min(1),
+  payload: z.record(z.unknown())
+});
+
+export const domainEventPageSchema = z.object({
+  items: z.array(domainEventSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const notificationSchema = z.object({
+  actionUrl: z.string().nullable(),
+  body: z.string(),
+  createdAt: z.string().min(1),
+  id: z.string().uuid(),
+  notificationType: notificationTypeSchema,
+  readAt: z.string().min(1).nullable(),
+  severity: notificationSeveritySchema,
+  title: z.string()
+});
+
+export const notificationPageSchema = z.object({
+  items: z.array(notificationSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0),
+  unreadCount: z.number().int().min(0)
+});
+
+export const auditLogSchema = z.object({
+  action: z.string().min(1),
+  createdAt: z.string().min(1),
+  entityId: z.string().uuid().nullable(),
+  entityType: z.string().nullable(),
+  id: z.string().uuid(),
+  metadata: z.record(z.unknown())
+});
+
+export const auditLogPageSchema = z.object({
+  items: z.array(auditLogSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
 export type HealthCheckResponseInput = z.input<typeof healthCheckResponseSchema>;
 export type HealthCheckResponseOutput = z.output<typeof healthCheckResponseSchema>;
 export type RegisterRequestInput = z.input<typeof registerRequestSchema>;

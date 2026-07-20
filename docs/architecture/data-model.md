@@ -15,6 +15,8 @@ Current migrations:
 
 - `0001_initial_extensions`: enables the PostgreSQL `vector` extension when available.
 - `0002_auth_foundation`: creates Aetherium-owned `users` and `sessions` tables.
+- `0003_user_owned_foundation`: creates preferences, non-visual world profile state, domain events,
+  notifications, and audit logs.
 
 ### `users`
 
@@ -42,19 +44,71 @@ Current migrations:
 
 ## Ownership Foundation
 
-Future user-owned tables must reference the authenticated user's UUID through `owner_user_id`, or
-reference a parent record that is already owned by a user. Queries must include ownership predicates
-in backend data-access paths.
+User-owned tables reference the authenticated user's UUID through `owner_user_id`, or reference a
+parent record that is already owned by a user. Queries must include ownership predicates in backend
+data-access paths.
 
-Do not add files, habits, AI conversations, world state, tasks, or learning records until their
-vertical slices define the ownership and authorization tests.
+Cross-user access attempts return not-found style responses where revealing the existence of a
+record would leak ownership information.
+
+### `user_preferences`
+
+- UUID primary key.
+- `owner_user_id` unique foreign key to `users.id`.
+- Theme and default interface mode.
+- Reduced-motion, background music, ambient audio, camera effects, AI memory, and product analytics
+  preferences.
+- Performance preset, time zone, and locale.
+- Timestamps.
+
+### `world_profiles`
+
+- UUID primary key.
+- `owner_user_id` unique foreign key to `users.id`.
+- Current and last visited non-visual location identifiers.
+- Preferred navigation method.
+- Tutorial completion state.
+- World-state version.
+- Spawn location.
+- JSON arrays of visited and unlocked location identifiers.
+- Timestamps.
+
+No 3D scenes, assets, movement, or rendering state are stored in this table.
+
+### `domain_events`
+
+- UUID primary key.
+- `owner_user_id` foreign key to `users.id`.
+- Event type constrained to approved product event identifiers.
+- Idempotency key unique per owner.
+- JSON payload.
+- Occurrence timestamp and record timestamps.
+
+### `notifications`
+
+- UUID primary key.
+- `owner_user_id` foreign key to `users.id`.
+- Optional source domain-event foreign key.
+- Type, severity, title, body, optional action URL.
+- `read_at` for read and unread state.
+- Timestamps.
+
+### `audit_logs`
+
+- UUID primary key.
+- `owner_user_id` foreign key to `users.id`.
+- Action, optional entity type and entity UUID.
+- Sanitized JSON metadata.
+- Timestamps.
+
+Audit metadata must not contain passwords, raw session tokens, cookies, secrets, API keys, or full
+sensitive request bodies.
 
 ## Planned Later Tables
 
-The Phase 1 and later schema will cover:
+Later schema slices will cover:
 
-- `user_preferences`.
-- `world_profiles`, `world_locations`, `user_world_state`.
+- `world_locations`, `user_world_state`.
 - `files`, `file_versions`, `file_chunks`.
 - `collections`, `collection_items`, `tags`, `file_tags`.
 - `mentors`, `conversations`, `messages`, `message_sources`.
@@ -64,7 +118,7 @@ The Phase 1 and later schema will cover:
 - `habits`, `habit_schedules`, `habit_logs`.
 - `goals`, `milestones`, `tasks`, `projects`, `project_files`.
 - `achievements`, `achievement_rules`, `user_achievements`.
-- `domain_events`, `notifications`, `audit_logs`, `ai_usage_records`.
+- `ai_usage_records`.
 
 ## Retrieval Model
 

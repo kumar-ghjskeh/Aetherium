@@ -12,11 +12,20 @@ Current routes:
 - `POST /api/v1/auth/login`
 - `POST /api/v1/auth/logout`
 - `GET /api/v1/auth/me`
+- `GET /api/v1/settings/preferences`
+- `PATCH /api/v1/settings/preferences`
+- `GET /api/v1/world/profile`
+- `PATCH /api/v1/world/profile`
+- `POST /api/v1/world/visit`
+- `GET /api/v1/domain-events`
+- `POST /api/v1/domain-events`
+- `GET /api/v1/notifications`
+- `POST /api/v1/notifications/{notification_id}/read`
+- `GET /api/v1/audit-logs`
 
 Planned route groups:
 
 - `/api/v1/users`
-- `/api/v1/world`
 - `/api/v1/files`
 - `/api/v1/search`
 - `/api/v1/ai`
@@ -28,7 +37,6 @@ Planned route groups:
 - `/api/v1/projects`
 - `/api/v1/achievements`
 - `/api/v1/analytics`
-- `/api/v1/settings`
 
 ## Authentication Routes
 
@@ -68,6 +76,34 @@ Important mutation endpoints will accept an idempotency key, especially:
 - Destructive operations.
 
 Auth registration and login are not idempotent because they create new server-side sessions.
+
+`POST /api/v1/domain-events` requires a per-user `idempotencyKey`. A retry with the same key returns
+the existing event instead of inserting a duplicate.
+
+`POST /api/v1/world/visit` also requires an `idempotencyKey`; duplicate requests do not create
+duplicate visit events.
+
+## User-Owned Foundation Routes
+
+`GET /api/v1/settings/preferences` returns the authenticated user's preferences, creating defaults
+for users that predate the foundation migration.
+
+`PATCH /api/v1/settings/preferences` updates only submitted preference fields and records a
+`user.preference_updated` domain event plus a sanitized audit log.
+
+`GET /api/v1/world/profile` returns non-visual world state for the authenticated user.
+
+`PATCH /api/v1/world/profile` updates non-visual profile preferences such as navigation method,
+tutorial completion, and spawn location. Spawn locations must already be unlocked.
+
+`POST /api/v1/world/visit` records a visit to an unlocked non-visual location identifier and creates
+an idempotent `world.location_visited` domain event.
+
+`GET /api/v1/domain-events`, `GET /api/v1/notifications`, and `GET /api/v1/audit-logs` are paginated
+with bounded `limit` and `offset` parameters.
+
+`POST /api/v1/notifications/{notification_id}/read` marks only the authenticated user's notification
+as read. Cross-user IDs return `not_found`.
 
 ## Generated Client
 

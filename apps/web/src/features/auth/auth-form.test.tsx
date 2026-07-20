@@ -1,6 +1,16 @@
 import type { AetheriumApiClient } from "@aetherium/api-client";
 import { AetheriumApiError } from "@aetherium/api-client";
-import type { HealthCheckResponse, PublicUser } from "@aetherium/shared-types";
+import type {
+  AuditLogPage,
+  DomainEvent,
+  DomainEventPage,
+  HealthCheckResponse,
+  Notification,
+  NotificationPage,
+  PublicUser,
+  UserPreferences,
+  WorldProfile
+} from "@aetherium/shared-types";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
@@ -34,6 +44,79 @@ const health: HealthCheckResponse = {
   version: "0.1.0"
 };
 
+const emptyAuditLogPage: AuditLogPage = {
+  items: [],
+  limit: 20,
+  offset: 0,
+  total: 0
+};
+
+const domainEvent: DomainEvent = {
+  createdAt: "2026-07-20T00:00:00Z",
+  eventType: "user.registered",
+  id: "22222222-2222-4222-8222-222222222222",
+  idempotencyKey: "test-event",
+  occurredAt: "2026-07-20T00:00:00Z",
+  payload: {}
+};
+
+const emptyDomainEventPage: DomainEventPage = {
+  items: [],
+  limit: 20,
+  offset: 0,
+  total: 0
+};
+
+const notification: Notification = {
+  actionUrl: null,
+  body: "Ready",
+  createdAt: "2026-07-20T00:00:00Z",
+  id: "33333333-3333-4333-8333-333333333333",
+  notificationType: "system",
+  readAt: "2026-07-20T00:00:00Z",
+  severity: "info",
+  title: "Ready"
+};
+
+const emptyNotificationPage: NotificationPage = {
+  items: [],
+  limit: 20,
+  offset: 0,
+  total: 0,
+  unreadCount: 0
+};
+
+const preferences: UserPreferences = {
+  aiMemoryEnabled: false,
+  ambientAudioEnabled: false,
+  backgroundMusicEnabled: false,
+  cameraEffectsEnabled: false,
+  createdAt: "2026-07-20T00:00:00Z",
+  defaultInterfaceMode: "command",
+  id: "44444444-4444-4444-8444-444444444444",
+  locale: "en-US",
+  performancePreset: "automatic",
+  productAnalyticsEnabled: false,
+  reducedMotion: false,
+  theme: "system",
+  timeZone: "UTC",
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const worldProfile: WorldProfile = {
+  createdAt: "2026-07-20T00:00:00Z",
+  currentLocationId: "central_plaza",
+  id: "55555555-5555-4555-8555-555555555555",
+  lastVisitedLocationId: null,
+  preferredNavigationMethod: "command_palette",
+  spawnLocationId: "central_plaza",
+  tutorialCompleted: false,
+  unlockedLocationIds: ["central_plaza"],
+  updatedAt: "2026-07-20T00:00:00Z",
+  visitedLocationIds: ["central_plaza"],
+  worldStateVersion: 1
+};
+
 function unauthenticatedError(): AetheriumApiError {
   return new AetheriumApiError(401, {
     error: {
@@ -54,6 +137,9 @@ function invalidCredentialsError(): AetheriumApiError {
 
 function createClient(overrides: Partial<AetheriumApiClient["auth"]>): AetheriumApiClient {
   return {
+    auditLogs: {
+      list: vi.fn(() => Promise.resolve(emptyAuditLogPage))
+    },
     auth: {
       login: vi.fn(() => Promise.resolve({ user })),
       logout: vi.fn(() => Promise.resolve()),
@@ -61,9 +147,26 @@ function createClient(overrides: Partial<AetheriumApiClient["auth"]>): Aetherium
       register: vi.fn(() => Promise.resolve({ user })),
       ...overrides
     },
+    domainEvents: {
+      create: vi.fn(() => Promise.resolve(domainEvent)),
+      list: vi.fn(() => Promise.resolve(emptyDomainEventPage))
+    },
     health: {
       live: vi.fn(() => Promise.resolve(health)),
       ready: vi.fn(() => Promise.resolve(health))
+    },
+    notifications: {
+      list: vi.fn(() => Promise.resolve(emptyNotificationPage)),
+      markRead: vi.fn(() => Promise.resolve(notification))
+    },
+    settings: {
+      getPreferences: vi.fn(() => Promise.resolve(preferences)),
+      updatePreferences: vi.fn(() => Promise.resolve(preferences))
+    },
+    world: {
+      getProfile: vi.fn(() => Promise.resolve(worldProfile)),
+      updateProfile: vi.fn(() => Promise.resolve(worldProfile)),
+      visit: vi.fn(() => Promise.resolve(worldProfile))
     }
   };
 }

@@ -23,6 +23,8 @@ authentication/session system. See `docs/architecture/product-independence.md` a
 - Standalone user and session tables with Argon2id password hashing.
 - Registration, email/password login, logout, and current-user endpoints under `/api/v1/auth`.
 - Authenticated Command Mode shell guarded by the Aetherium session cookie.
+- User-owned preferences, non-visual world profile state, domain events, notifications, audit logs,
+  ownership helpers, and paginated list endpoints.
 - Docker Compose development infrastructure for Aetherium-isolated PostgreSQL, Redis, MinIO, API,
   and web services.
 - CI workflow for independence checks, formatting, linting, type checks, tests, build, and Alembic
@@ -120,6 +122,16 @@ On Unix-like systems, replace `py -3 -m` with `python -m`.
 The browser stores authentication only in the HttpOnly `aetherium_session` cookie. Tokens are never
 stored in localStorage or sessionStorage.
 
+## User-Owned Foundation Endpoints
+
+- Preferences: `GET/PATCH http://localhost:8000/api/v1/settings/preferences`
+- Non-visual world profile: `GET/PATCH http://localhost:8000/api/v1/world/profile`
+- Non-visual world location visit: `POST http://localhost:8000/api/v1/world/visit`
+- Domain events: `GET/POST http://localhost:8000/api/v1/domain-events`
+- Notifications: `GET http://localhost:8000/api/v1/notifications`
+- Mark notification read: `POST http://localhost:8000/api/v1/notifications/{id}/read`
+- Audit logs: `GET http://localhost:8000/api/v1/audit-logs`
+
 ## Local Resource Names
 
 - Compose project: `aetherium`
@@ -139,4 +151,5 @@ stored in localStorage or sessionStorage.
 - Docker is scaffolded but not required for unit tests.
 - API readiness requires PostgreSQL.
 - Email verification, password reset, OAuth, MFA, and magic links are not implemented yet.
-- No file upload, AI provider, habit workflow, learning domain, or 3D scene exists yet.
+- No file upload, AI provider, habit workflow, learning domain, project workspace, analytics, or
+  visual 3D scene exists yet.

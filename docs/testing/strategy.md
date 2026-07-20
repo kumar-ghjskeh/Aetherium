@@ -14,6 +14,9 @@ Backend:
 - FastAPI health endpoint tests with dependency overrides.
 - Authentication API tests for registration, login, logout, current user, session expiration,
   revocation, cookie settings, rate limiting, cross-user isolation, and database uniqueness.
+- User-owned foundation API tests for preference persistence, world profile updates, idempotent
+  domain events, notification read state, audit sanitization, pagination, unauthenticated access,
+  cross-user isolation, and database uniqueness.
 - Alembic migration smoke validation against PostgreSQL in CI.
 - Ruff formatting and linting.
 - mypy type checking.
@@ -26,6 +29,7 @@ Frontend and shared packages:
 - Vitest for shared client contracts.
 - React Testing Library coverage for auth form validation, invalid credentials, auth state,
   protected Command Mode redirect, and logout state clearing.
+- API-client contract tests for the user-owned foundation endpoints.
 - Next.js build validation.
 
 ## Future Backend Tests

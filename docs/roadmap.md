@@ -27,6 +27,8 @@ Current approved slice:
 - CI validation.
 - Standalone password authentication and server-side sessions.
 - Protected Command Mode shell.
+- User-owned data foundation for preferences, non-visual world state, domain events, notifications,
+  audit logs, ownership checks, and pagination.
 
 Later Phase 1 slices:
 
