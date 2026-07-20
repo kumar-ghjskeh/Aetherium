@@ -24,18 +24,28 @@ User
 
 ## Current Scaffold
 
-The current implemented slices provide the infrastructure shell and the standalone authentication
-foundation:
+The current implemented slices provide the infrastructure shell, standalone authentication
+foundation, user-owned foundation, and protected Command Mode shell:
 
 - `apps/api`: FastAPI app, database settings, Alembic, health endpoints.
-- `apps/web`: Next.js App Router scaffold and web health route.
+- `apps/web`: Next.js App Router scaffold, web health route, auth UI, and protected `/app` Command
+  Mode route family.
 - `packages/shared-types`: TypeScript contracts shared by frontend packages.
 - `packages/validation`: Zod schemas that validate API contract payloads.
-- `packages/api-client`: Typed API client for health and auth.
+- `packages/api-client`: Typed API client for health, auth, and user-owned foundation APIs.
 - Identity domain: Aetherium-owned `users` and `sessions` tables, Argon2id password hashing,
   server-side session revocation, and product-specific cookies.
 - User-owned foundation: preferences, non-visual world profile state, domain events, notifications,
   audit logs, ownership checks, and pagination.
+- Command Mode shell: responsive navigation, command palette, notifications panel, profile menu,
+  settings controls, and real API-backed loading, empty, and error states.
+
+## Frontend Boundaries
+
+Command Mode is implemented under `/app` and uses the same auth and foundation APIs that future
+World Mode will use. Domain sections that do not have backend data yet render explicit empty states
+instead of fake content. The `/app/world` route is a non-visual placeholder and must not include
+Three.js, React Three Fiber, scene assets, or player/camera controls until the visual world phase.
 
 ## Backend Boundaries
 

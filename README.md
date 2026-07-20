@@ -3,10 +3,10 @@
 Aetherium is planned as an immersive personal learning operating system: a practical command
 interface backed by an optional cinematic world presentation layer.
 
-This repository currently contains the Phase 0 documentation baseline and early Phase 1 vertical
-slices: the infrastructure scaffold plus standalone password authentication with server-side
-sessions. It does not yet implement 3D world navigation, file ingestion, AI chat, habits, or
-learning features.
+This repository currently contains the Phase 0 documentation baseline and early non-3D vertical
+slices: the infrastructure scaffold, standalone password authentication with server-side sessions,
+the user-owned foundation, and the protected Command Mode application shell. It does not yet
+implement visual 3D world navigation, file ingestion, AI chat, habits, or learning features.
 
 Aetherium is a standalone product. It uses its own repository, database, Redis namespace,
 object-storage buckets, environment variables, Docker resources, CI workflow, and future
@@ -25,6 +25,10 @@ authentication/session system. See `docs/architecture/product-independence.md` a
 - Authenticated Command Mode shell guarded by the Aetherium session cookie.
 - User-owned preferences, non-visual world profile state, domain events, notifications, audit logs,
   ownership helpers, and paginated list endpoints.
+- Responsive Command Mode application shell under `/app` with sidebar navigation, mobile navigation,
+  `Ctrl/Cmd + K` command palette, notification panel, profile menu, settings page, and real
+  API-backed loading, empty, and error states.
+- Non-visual `/app/world` route that clearly marks visual World Mode as future work.
 - Docker Compose development infrastructure for Aetherium-isolated PostgreSQL, Redis, MinIO, API,
   and web services.
 - CI workflow for independence checks, formatting, linting, type checks, tests, build, and Alembic
@@ -122,6 +126,23 @@ On Unix-like systems, replace `py -3 -m` with `python -m`.
 The browser stores authentication only in the HttpOnly `aetherium_session` cookie. Tokens are never
 stored in localStorage or sessionStorage.
 
+## Command Mode Routes
+
+- Overview: `http://localhost:3000/app`
+- Library: `http://localhost:3000/app/library`
+- AI Hall: `http://localhost:3000/app/ai`
+- Learning: `http://localhost:3000/app/learning`
+- Coding: `http://localhost:3000/app/coding`
+- Habits: `http://localhost:3000/app/habits`
+- Projects: `http://localhost:3000/app/projects`
+- Analytics: `http://localhost:3000/app/analytics`
+- Achievements: `http://localhost:3000/app/achievements`
+- Settings: `http://localhost:3000/app/settings`
+- Future World Mode placeholder: `http://localhost:3000/app/world`
+
+All `/app` routes are protected by the Aetherium auth state. Unauthenticated users are redirected to
+`/login?next=/app`.
+
 ## User-Owned Foundation Endpoints
 
 - Preferences: `GET/PATCH http://localhost:8000/api/v1/settings/preferences`
@@ -151,5 +172,5 @@ stored in localStorage or sessionStorage.
 - Docker is scaffolded but not required for unit tests.
 - API readiness requires PostgreSQL.
 - Email verification, password reset, OAuth, MFA, and magic links are not implemented yet.
-- No file upload, AI provider, habit workflow, learning domain, project workspace, analytics, or
-  visual 3D scene exists yet.
+- No file upload, AI provider, habit workflow, learning domain, project workspace, real analytics,
+  or visual 3D scene exists yet.

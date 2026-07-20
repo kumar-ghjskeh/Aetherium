@@ -26,22 +26,20 @@ Current approved slice:
 - Health endpoints.
 - CI validation.
 - Standalone password authentication and server-side sessions.
-- Protected Command Mode shell.
 - User-owned data foundation for preferences, non-visual world state, domain events, notifications,
   audit logs, ownership checks, and pagination.
+- Command Mode app shell with protected `/app` routes, responsive sidebar and mobile navigation,
+  command palette, notifications panel, profile menu, settings integration, and a non-visual future
+  World Mode route.
 
 Later Phase 1 slices:
 
-- Command Mode shell.
-- Basic World Mode.
-- Central Plaza, Library, Habit Garden.
 - File upload and async processing.
 - Search.
 - One general AI mentor with citations.
 - One daily habit and habit logging.
-- Command palette.
-- Responsive states and accessibility checks.
 - User profile beyond the current `/auth/me` public profile.
+- Non-visual world data expansion only until the visual 3D phase is explicitly started.
 
 ## Phase 2 - Learning System
 

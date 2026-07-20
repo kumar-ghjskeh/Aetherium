@@ -1,5 +1,5 @@
-import { ProtectedCommandMode } from "../../features/command/protected-command-mode";
+import { redirect } from "next/navigation";
 
-export default function CommandPage(): React.ReactElement {
-  return <ProtectedCommandMode />;
+export default function CommandPage(): never {
+  redirect("/app");
 }

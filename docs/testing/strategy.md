@@ -29,6 +29,9 @@ Frontend and shared packages:
 - Vitest for shared client contracts.
 - React Testing Library coverage for auth form validation, invalid credentials, auth state,
   protected Command Mode redirect, and logout state clearing.
+- React Testing Library coverage for the Command Mode shell, including authenticated API-backed
+  rendering, anonymous redirect, `Ctrl/Cmd + K` command palette navigation, notification read state,
+  shell data error state, and settings persistence through the shared API client.
 - API-client contract tests for the user-owned foundation endpoints.
 - Next.js build validation.
 

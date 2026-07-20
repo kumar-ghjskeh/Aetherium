@@ -48,9 +48,11 @@ Implemented Phase 1 foundation slices:
 - CI validation.
 - Standalone password authentication.
 - Server-side sessions using an Aetherium-specific cookie.
-- Protected Command Mode shell.
 - User-owned data foundation for preferences, non-visual world profile state, domain events,
   notifications, audit logs, ownership checks, and pagination.
+- Protected Command Mode shell with `/app` routes, responsive navigation, command palette,
+  notification panel, profile menu, settings controls backed by the preferences API, and a
+  non-visual `/app/world` placeholder.
 
 3D functionality, AI, file handling, and habits are intentionally deferred.
 
@@ -75,3 +77,5 @@ Implemented Phase 1 foundation slices:
 - CI validates formatting, linting, type checks, tests, and migrations.
 - A user can register, log in, call `/auth/me`, log out, and access the protected Command Mode shell
   only while authenticated.
+- A signed-in user can navigate the protected `/app` route family, open the command palette with
+  `Ctrl/Cmd + K`, inspect notifications, and update implemented preference fields.

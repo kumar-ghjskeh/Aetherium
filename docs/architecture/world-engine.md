@@ -8,7 +8,9 @@ achievements.
 
 ## Current Status
 
-No 3D functionality is implemented.
+No 3D functionality is implemented. The protected `/app/world` route exists only as a non-visual
+Command Mode page that displays the current world profile identifiers and states that visual World
+Mode will be implemented later.
 
 The current non-visual foundation stores world profile data only:
 

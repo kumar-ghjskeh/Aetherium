@@ -2,8 +2,8 @@
 
 ## Current Phase
 
-Aetherium is moving through Phase 1 as vertical slices. Product features should be implemented only
-when their slice is explicitly requested.
+Aetherium is moving through the approved non-3D roadmap as vertical slices. Product features should
+be implemented only when their slice is explicitly requested.
 
 Implemented foundation slices:
 
@@ -18,6 +18,9 @@ Implemented foundation slices:
 - Standalone password authentication and server-side sessions.
 - User-owned data foundation for preferences, non-visual world profile state, domain events,
   notifications, audit logs, ownership checks, and pagination.
+- Command Mode application shell with protected `/app` routes, responsive navigation, command
+  palette, notification panel, profile menu, settings integration, and a non-visual `/app/world`
+  placeholder.
 
 Still out of scope unless explicitly requested:
 
