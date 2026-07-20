@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { AuthProvider } from "../features/auth/auth-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -14,7 +15,9 @@ export default function RootLayout({
 }>): React.ReactElement {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

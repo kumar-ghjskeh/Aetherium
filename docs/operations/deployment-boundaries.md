@@ -14,14 +14,14 @@ Production must provide Aetherium-owned or Aetherium-dedicated resources for:
 - Web runtime.
 - Background workers.
 - AI-provider credentials and model configuration.
-- Signing and encryption secrets.
+- Session signing, encryption, and future token secrets.
 - Logging, monitoring, alerting, backup, and restore configuration.
 - Domain names and TLS certificates.
 
 ## Environment Policy
 
 Production must use `AETHERIUM_` and `NEXT_PUBLIC_AETHERIUM_` environment variables. It must not
-supply generic shared variables for database, Redis, storage, session, or AI configuration.
+supply generic shared variables for database, Redis, storage, session, auth, or AI configuration.
 
 ## API Boundary
 
@@ -30,9 +30,20 @@ product API for core product data.
 
 ## Authentication Boundary
 
-Authentication is not implemented yet. When it is added, it must create Aetherium-owned users,
-sessions, cookies, secrets, revocation state, and audit records. Cross-product single sign-on is out
-of scope unless a future ADR explicitly changes this decision.
+Authentication is implemented as an Aetherium-owned email/password and server-side session system.
+It uses Aetherium users, sessions, cookies, signing secrets, revocation state, and audit events.
+Cross-product single sign-on remains out of scope unless a future ADR explicitly changes this
+decision.
+
+## Cookie Policy
+
+Production must use:
+
+- A non-default `AETHERIUM_SESSION_SIGNING_SECRET`.
+- Secure session cookies.
+- Explicit `AETHERIUM_CORS_ORIGINS` matching deployed frontend origins.
+- An environment-appropriate `AETHERIUM_SESSION_COOKIE_DOMAIN` when API and web run on sibling
+  subdomains.
 
 ## Deployment Review Checklist
 
@@ -42,6 +53,7 @@ Before deploying a new environment, verify:
 - Redis endpoint and key prefix are Aetherium-specific.
 - Object bucket name starts with `aetherium`.
 - Session cookie name includes `aetherium` and is not generic.
+- Session signing secret is not the development default.
 - AI-provider credentials are configured specifically for Aetherium.
 - Logs and metrics have an Aetherium namespace.
 - Backups and restore targets are separate from other products.

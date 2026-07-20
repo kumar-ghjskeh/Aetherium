@@ -13,6 +13,7 @@ from alembic import context
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
+import app.models  # noqa: F401,E402
 from app.core.config import get_settings  # noqa: E402
 from app.db.base import Base  # noqa: E402
 

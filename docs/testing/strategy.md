@@ -12,6 +12,8 @@
 Backend:
 
 - FastAPI health endpoint tests with dependency overrides.
+- Authentication API tests for registration, login, logout, current user, session expiration,
+  revocation, cookie settings, rate limiting, cross-user isolation, and database uniqueness.
 - Alembic migration smoke validation against PostgreSQL in CI.
 - Ruff formatting and linting.
 - mypy type checking.
@@ -22,12 +24,14 @@ Frontend and shared packages:
 - ESLint.
 - Prettier.
 - Vitest for shared client contracts.
+- React Testing Library coverage for auth form validation, invalid credentials, auth state,
+  protected Command Mode redirect, and logout state clearing.
 - Next.js build validation.
 
 ## Future Backend Tests
 
-- pytest unit tests for services.
-- pytest integration tests against PostgreSQL.
+- pytest unit tests for additional services.
+- pytest integration tests against PostgreSQL for user-owned domains.
 - Factory fixtures for user-owned records.
 - Authorization tests for every critical endpoint.
 - File ingestion job tests with parser failure cases.
@@ -35,7 +39,7 @@ Frontend and shared packages:
 
 ## Future Frontend Tests
 
-- React Testing Library for Command Mode workflows.
+- Broader React Testing Library coverage for Command Mode workflows.
 - Playwright for end-to-end vertical slices.
 - axe-core accessibility checks.
 - Reduced-motion and keyboard-only coverage.
@@ -49,8 +53,9 @@ Frontend and shared packages:
 
 ## CI Gates
 
-The minimal CI gate for the scaffold is:
+The minimal CI gate is:
 
+- Independence check.
 - Dependency installation.
 - Alembic migration smoke validation.
 - Prettier check.
@@ -60,3 +65,4 @@ The minimal CI gate for the scaffold is:
 - mypy.
 - pytest.
 - Vitest.
+- Next.js production build.

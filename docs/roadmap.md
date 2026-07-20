@@ -25,11 +25,11 @@ Current approved slice:
 - Shared validation and API types.
 - Health endpoints.
 - CI validation.
+- Standalone password authentication and server-side sessions.
+- Protected Command Mode shell.
 
 Later Phase 1 slices:
 
-- Authentication.
-- User profile.
 - Command Mode shell.
 - Basic World Mode.
 - Central Plaza, Library, Habit Garden.
@@ -39,6 +39,7 @@ Later Phase 1 slices:
 - One daily habit and habit logging.
 - Command palette.
 - Responsive states and accessibility checks.
+- User profile beyond the current `/auth/me` public profile.
 
 ## Phase 2 - Learning System
 

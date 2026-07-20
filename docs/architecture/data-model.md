@@ -11,18 +11,49 @@
 
 ## Current Physical Schema
 
-The current implementation contains only an Alembic baseline migration that prepares PostgreSQL for
-future vector search support. No user-owned product tables are created in this slice.
+Current migrations:
 
-Current migration:
+- `0001_initial_extensions`: enables the PostgreSQL `vector` extension when available.
+- `0002_auth_foundation`: creates Aetherium-owned `users` and `sessions` tables.
 
-- Enables the `vector` extension when available.
+### `users`
 
-## Planned Initial Tables
+- `id` UUID primary key.
+- `email` original submitted email.
+- `normalized_email` unique normalized email used for identity comparison.
+- `password_hash` Argon2id password hash.
+- `display_name`.
+- `is_active`.
+- `is_email_verified`.
+- `last_login_at`.
+- `deleted_at` for future soft deletion.
+- `created_at` and `updated_at`.
+
+### `sessions`
+
+- `id` UUID primary key.
+- `user_id` foreign key to `users.id`.
+- `token_hash` unique HMAC-SHA256 hash of the opaque session token.
+- `last_used_at`.
+- `expires_at`.
+- `revoked_at`.
+- `user_agent` conservative optional client metadata.
+- `created_at` and `updated_at`.
+
+## Ownership Foundation
+
+Future user-owned tables must reference the authenticated user's UUID through `owner_user_id`, or
+reference a parent record that is already owned by a user. Queries must include ownership predicates
+in backend data-access paths.
+
+Do not add files, habits, AI conversations, world state, tasks, or learning records until their
+vertical slices define the ownership and authorization tests.
+
+## Planned Later Tables
 
 The Phase 1 and later schema will cover:
 
-- `users`, `user_preferences`, `sessions`.
+- `user_preferences`.
 - `world_profiles`, `world_locations`, `user_world_state`.
 - `files`, `file_versions`, `file_chunks`.
 - `collections`, `collection_items`, `tags`, `file_tags`.
@@ -35,25 +66,10 @@ The Phase 1 and later schema will cover:
 - `achievements`, `achievement_rules`, `user_achievements`.
 - `domain_events`, `notifications`, `audit_logs`, `ai_usage_records`.
 
-## Phase 1 Ownership Model
-
-When authentication is implemented, each user-owned record must include either:
-
-- `tenant_id` plus `owner_user_id`, or
-- a foreign key to a parent record that is already scoped to a tenant and owner.
-
-Repository and service methods must accept the authenticated principal and enforce ownership in
-queries. Authorization tests are required before any user-owned endpoint is considered complete.
-
 ## Retrieval Model
 
-File chunks will store:
-
-- Extracted text.
-- Source metadata such as page, section, or byte range.
-- Full-text search vectors.
-- Optional embeddings using pgvector.
-- Permission scope inherited from the source file and collection membership.
+File chunks will store extracted text, source metadata, full-text search vectors, optional
+embeddings, and permission scope inherited from the source file and collection membership.
 
 AI citations must reference retrieved chunks. Answers must not claim file support when retrieval did
 not produce evidence.

@@ -37,7 +37,7 @@ The full Phase 1 MVP will eventually include authentication, Central Plaza, Comm
 World Mode, Library, Habit Garden, file ingestion, search, one AI mentor, citations, habit logging,
 tests, and Docker development infrastructure.
 
-The current implementation boundary is narrower:
+Implemented Phase 1 foundation slices:
 
 - Docker development infrastructure.
 - FastAPI scaffold.
@@ -46,12 +46,15 @@ The current implementation boundary is narrower:
 - Shared validation and API types.
 - Health endpoints.
 - CI validation.
+- Standalone password authentication.
+- Server-side sessions using an Aetherium-specific cookie.
+- Protected Command Mode shell.
 
-Authentication, 3D functionality, AI, file handling, and habits are intentionally deferred.
+3D functionality, AI, file handling, and habits are intentionally deferred.
 
 ## Non-Goals For Current Slice
 
-- No production authentication.
+- No OAuth, social login, email delivery, password reset, MFA, or magic links.
 - No 3D scene or world interaction.
 - No file upload or ingestion.
 - No AI provider calls.
@@ -65,5 +68,7 @@ Authentication, 3D functionality, AI, file handling, and habits are intentionall
 - Readiness verifies PostgreSQL connectivity.
 - Alembic can run against PostgreSQL.
 - Next.js exposes a minimal scaffold and web health endpoint.
-- Shared TypeScript contracts and Zod schemas exist for health responses.
+- Shared TypeScript contracts and Zod schemas exist for health and authentication responses.
 - CI validates formatting, linting, type checks, tests, and migrations.
+- A user can register, log in, call `/auth/me`, log out, and access the protected Command Mode shell
+  only while authenticated.

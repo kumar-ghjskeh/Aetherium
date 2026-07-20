@@ -2,10 +2,10 @@
 
 ## Current Phase
 
-Aetherium is moving from Phase 0 planning into a narrow Phase 1 foundation slice. Do not implement
-product features until their slice is explicitly requested.
+Aetherium is moving through Phase 1 as vertical slices. Product features should be implemented only
+when their slice is explicitly requested.
 
-The current approved implementation boundary is:
+Implemented foundation slices:
 
 - Docker development infrastructure.
 - FastAPI application scaffold.
@@ -15,10 +15,11 @@ The current approved implementation boundary is:
 - Health endpoints.
 - CI validation.
 - Standalone architecture isolation checks and documentation.
+- Standalone password authentication and server-side sessions.
 
-Explicitly out of scope for this slice:
+Still out of scope unless explicitly requested:
 
-- Authentication, authorization flows, user accounts, sessions, MFA, password reset.
+- OAuth, social login, email delivery, password reset, MFA, and magic links.
 - 3D world scenes, React Three Fiber, player controls, map travel, or world progression.
 - File upload, document ingestion, AI chat, retrieval, habits, learning, projects, achievements, or
   analytics.
@@ -71,9 +72,8 @@ Run `pnpm independence:check` before completing infrastructure changes.
 
 ## Security Notes
 
-- Treat file ingestion, AI retrieval, and code execution as high-risk features when they are
-  implemented later.
+- Treat authentication, file ingestion, AI retrieval, and code execution as high-risk features.
 - Never silently send user content to external AI providers.
 - Require explicit confirmation before destructive or externally visible actions.
-- Do not log passwords, session secrets, bearer tokens, full private documents, or raw sensitive
-  prompts by default.
+- Do not log passwords, session secrets, bearer tokens, full private documents, raw session tokens,
+  authentication cookies, or raw sensitive prompts by default.

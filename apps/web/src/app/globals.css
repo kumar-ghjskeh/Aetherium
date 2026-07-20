@@ -4,7 +4,11 @@
 
 :root {
   --accent: #8fd1c7;
+  --accent-strong: #d0a15f;
+  --danger: #ffb4a2;
   --muted: #b5c0b8;
+  --panel: #182023;
+  --panel-border: #334145;
   --surface: #101417;
   --text: #f1f4ee;
 }
@@ -23,6 +27,11 @@ body {
   background: var(--surface);
 }
 
+button,
+input {
+  font: inherit;
+}
+
 h1,
 h2,
 h3 {
@@ -32,4 +41,229 @@ h3 {
 ::selection {
   background: var(--accent);
   color: var(--surface);
+}
+
+.auth-shell,
+.app-shell {
+  min-height: 100vh;
+  background:
+    linear-gradient(135deg, rgba(143, 209, 199, 0.08), transparent 32%),
+    radial-gradient(circle at 80% 10%, rgba(208, 161, 95, 0.1), transparent 28%), var(--surface);
+  color: var(--text);
+  padding: 32px 20px;
+}
+
+.auth-shell {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.auth-panel,
+.command-frame,
+.status-panel {
+  border: 1px solid var(--panel-border);
+  background: rgba(24, 32, 35, 0.92);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+}
+
+.auth-panel {
+  display: grid;
+  gap: 20px;
+  max-width: 460px;
+  padding: 32px;
+  width: min(100%, 460px);
+}
+
+.eyebrow {
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+}
+
+.auth-panel h1,
+.command-header h1 {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1;
+  margin: 0;
+}
+
+.form-copy,
+.form-switch,
+.status-panel,
+.command-grid p,
+dl {
+  color: var(--muted);
+}
+
+.form-copy {
+  line-height: 1.6;
+  margin: 12px 0 0;
+}
+
+.field-label {
+  color: var(--text);
+  display: grid;
+  font-size: 0.95rem;
+  font-weight: 700;
+  gap: 8px;
+}
+
+.field-label input {
+  background: #0d1113;
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  min-height: 46px;
+  outline: none;
+  padding: 0 12px;
+  width: 100%;
+}
+
+.field-label input:focus,
+.primary-action:focus,
+.secondary-action:focus,
+.inline-control:focus,
+a:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.password-control {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.inline-control {
+  background: #243034;
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  min-height: 46px;
+  padding: 0 14px;
+}
+
+.primary-action,
+.secondary-action {
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-weight: 800;
+  min-height: 46px;
+  padding: 0 18px;
+}
+
+.primary-action {
+  background: var(--accent);
+  color: #07100f;
+}
+
+.secondary-action {
+  background: transparent;
+  border-color: var(--panel-border);
+  color: var(--text);
+}
+
+.primary-action:disabled,
+.secondary-action:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.form-alert,
+.field-error {
+  color: var(--danger);
+}
+
+.form-alert {
+  border: 1px solid rgba(255, 180, 162, 0.32);
+  background: rgba(255, 180, 162, 0.08);
+  padding: 12px;
+}
+
+.field-error {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.form-switch {
+  margin: 0;
+}
+
+.form-switch a {
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.app-shell {
+  display: grid;
+  place-items: center;
+}
+
+.command-frame {
+  max-width: 980px;
+  padding: 32px;
+  width: min(100%, 980px);
+}
+
+.command-header {
+  align-items: center;
+  border-bottom: 1px solid var(--panel-border);
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+  padding-bottom: 24px;
+}
+
+.command-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding-top: 24px;
+}
+
+.command-grid section {
+  border: 1px solid var(--panel-border);
+  padding: 20px;
+}
+
+.command-grid h2 {
+  margin-top: 0;
+}
+
+dl {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+dt {
+  color: var(--accent-strong);
+  font-weight: 800;
+}
+
+dd {
+  margin: 0 0 8px;
+  overflow-wrap: anywhere;
+}
+
+.status-panel {
+  padding: 24px;
+}
+
+@media (max-width: 720px) {
+  .auth-panel,
+  .command-frame {
+    padding: 24px;
+  }
+
+  .command-header,
+  .command-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .command-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
 }

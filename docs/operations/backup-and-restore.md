@@ -7,6 +7,7 @@ Aetherium backup and restore procedures must be isolated from other private prod
 Back up these Aetherium-owned resources independently:
 
 - PostgreSQL database and Alembic revision state.
+- Authentication records in PostgreSQL, including users and hashed session-token records.
 - Object-storage buckets with uploaded originals, generated derivatives, and future exports.
 - Redis only for durable queues or future state that cannot be safely reconstructed.
 - Deployment configuration metadata, excluding raw secrets.
@@ -43,3 +44,7 @@ product environment.
 
 Alembic history under `apps/api/alembic` belongs only to Aetherium. Do not reuse migration history
 from another project or apply Aetherium migrations to another product database.
+
+The `0002_auth_foundation` migration introduces the current user and session tables. Restores must
+keep those tables consistent with the same Aetherium deployment secrets used to sign and hash
+session tokens; rotating secrets after a restore should revoke existing sessions deliberately.

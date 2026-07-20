@@ -20,11 +20,26 @@ Core runtime:
 - `AETHERIUM_REDIS_KEY_PREFIX`
 - `AETHERIUM_OBJECT_STORAGE_ENDPOINT`
 - `AETHERIUM_OBJECT_STORAGE_BUCKET`
-- `AETHERIUM_SESSION_COOKIE_NAME`
-- `AETHERIUM_SIGNING_SECRET`
-- `AETHERIUM_ENCRYPTION_SECRET`
 - `AETHERIUM_CORS_ORIGINS`
 - `NEXT_PUBLIC_AETHERIUM_API_BASE_URL`
+
+Authentication runtime:
+
+- `AETHERIUM_SESSION_COOKIE_NAME`
+- `AETHERIUM_SESSION_SIGNING_SECRET`
+- `AETHERIUM_SESSION_DURATION_SECONDS`
+- `AETHERIUM_SESSION_COOKIE_DOMAIN`
+- `AETHERIUM_SESSION_COOKIE_PATH`
+- `AETHERIUM_SESSION_COOKIE_SAMESITE`
+- `AETHERIUM_SESSION_COOKIE_SECURE`
+- `AETHERIUM_PASSWORD_MIN_LENGTH`
+- `AETHERIUM_ARGON2_TIME_COST`
+- `AETHERIUM_ARGON2_MEMORY_COST`
+- `AETHERIUM_ARGON2_PARALLELISM`
+- `AETHERIUM_AUTH_LOGIN_RATE_LIMIT_ATTEMPTS`
+- `AETHERIUM_AUTH_LOGIN_RATE_LIMIT_WINDOW_SECONDS`
+- `AETHERIUM_AUTH_REGISTER_RATE_LIMIT_ATTEMPTS`
+- `AETHERIUM_AUTH_REGISTER_RATE_LIMIT_WINDOW_SECONDS`
 
 Development infrastructure:
 
@@ -52,8 +67,9 @@ key prefix that does not start with that namespace.
 
 ## Session Cookies
 
-The future session cookie must use a product-specific name. The current configuration reserves
-`aetherium_session` and rejects the generic name `session`.
+The session cookie uses `aetherium_session` by default. Generic names such as `session` are
+rejected. Local development uses non-Secure cookies over HTTP; production must use Secure cookies
+and a non-default session signing secret.
 
 ## Object Storage
 

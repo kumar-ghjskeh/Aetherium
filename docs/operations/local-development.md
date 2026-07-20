@@ -40,6 +40,18 @@ The API reads `AETHERIUM_DATABASE_URL` and `AETHERIUM_REDIS_URL`. Docker Compose
 for local containers so they point at `aetherium-postgres` and `aetherium-redis` on the private
 Compose network.
 
+## Authentication Defaults
+
+Local development uses:
+
+- Cookie name: `aetherium_session`.
+- Cookie Secure flag: `false`, because local development uses HTTP.
+- Cookie SameSite: `lax`.
+- Allowed frontend origin: `http://localhost:3000`.
+- API origin: `http://localhost:8000`.
+
+Do not use the development session signing secret in production.
+
 ## Validation
 
 Run:

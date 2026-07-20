@@ -8,10 +8,13 @@ Current routes:
 
 - `GET /api/v1/health/live`
 - `GET /api/v1/health/ready`
+- `POST /api/v1/auth/register`
+- `POST /api/v1/auth/login`
+- `POST /api/v1/auth/logout`
+- `GET /api/v1/auth/me`
 
 Planned route groups:
 
-- `/api/v1/auth`
 - `/api/v1/users`
 - `/api/v1/world`
 - `/api/v1/files`
@@ -27,16 +30,32 @@ Planned route groups:
 - `/api/v1/analytics`
 - `/api/v1/settings`
 
+## Authentication Routes
+
+`POST /api/v1/auth/register` creates a user and authenticated session. It sets the HttpOnly
+`aetherium_session` cookie.
+
+`POST /api/v1/auth/login` verifies credentials and creates a new authenticated session. Login
+failures use the same non-revealing error for nonexistent accounts and incorrect passwords.
+
+`POST /api/v1/auth/logout` revokes the current session when present and clears the cookie.
+
+`GET /api/v1/auth/me` returns the authenticated user's public profile or an unauthenticated error.
+
 ## Error Shape
 
-Future endpoints should use a consistent error envelope containing:
+API errors use:
 
-- `code`
-- `message`
-- `request_id`
-- optional field errors
+```json
+{
+  "error": {
+    "code": "invalid_credentials",
+    "message": "Email or password is incorrect."
+  }
+}
+```
 
-The health endpoints are intentionally small and do not establish the full error envelope yet.
+Validation errors may include field-level messages under `error.fields`.
 
 ## Idempotency
 
@@ -47,6 +66,8 @@ Important mutation endpoints will accept an idempotency key, especially:
 - Task creation from AI suggestions.
 - Goal or milestone changes.
 - Destructive operations.
+
+Auth registration and login are not idempotent because they create new server-side sessions.
 
 ## Generated Client
 

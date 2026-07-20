@@ -1,9 +1,9 @@
 const foundations = [
+  "Authentication",
   "FastAPI",
   "PostgreSQL",
   "Alembic",
   "Next.js",
-  "Shared contracts",
   "CI"
 ] as const;
 
@@ -18,19 +18,27 @@ export default function Home(): React.ReactElement {
             </p>
             <h1 className="mt-2 text-4xl font-semibold tracking-normal sm:text-5xl">Aetherium</h1>
           </div>
-          <a
-            className="rounded-full border border-white/15 px-4 py-2 text-sm text-[var(--muted)] transition hover:border-[var(--accent)] hover:text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-2 focus:ring-offset-[var(--surface)]"
-            href="/api/health"
-          >
-            Web health
-          </a>
+          <div className="flex gap-3">
+            <a
+              className="rounded-full border border-white/15 px-4 py-2 text-sm text-[var(--muted)] transition hover:border-[var(--accent)] hover:text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-2 focus:ring-offset-[var(--surface)]"
+              href="/login"
+            >
+              Sign in
+            </a>
+            <a
+              className="rounded-full border border-white/15 px-4 py-2 text-sm text-[var(--muted)] transition hover:border-[var(--accent)] hover:text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-2 focus:ring-offset-[var(--surface)]"
+              href="/api/health"
+            >
+              Web health
+            </a>
+          </div>
         </header>
 
         <div className="grid gap-10 py-12 md:grid-cols-[1.2fr_0.8fr] md:items-end">
           <div>
             <p className="max-w-2xl text-xl leading-8 text-[var(--muted)]">
-              The first working layer is intentionally small: service wiring, typed contracts,
-              database migrations, and validation paths before product workflows are added.
+              The first working layer now includes standalone identity, secure server-side sessions,
+              typed contracts, database migrations, and validation paths.
             </p>
           </div>
 
@@ -47,7 +55,8 @@ export default function Home(): React.ReactElement {
         </div>
 
         <footer className="border-t border-white/10 pt-5 text-sm text-[var(--muted)]">
-          No authentication, 3D world, AI, files, or habit workflows are implemented in this slice.
+          Authentication is implemented. 3D world, AI, files, and habit workflows remain outside
+          this slice.
         </footer>
       </section>
     </main>

@@ -3,9 +3,10 @@
 Aetherium is planned as an immersive personal learning operating system: a practical command
 interface backed by an optional cinematic world presentation layer.
 
-This repository currently contains the Phase 0 documentation baseline and the first Phase 1
-foundation slice. It does not yet implement authentication, 3D world navigation, file ingestion, AI
-chat, habits, or learning features.
+This repository currently contains the Phase 0 documentation baseline and early Phase 1 vertical
+slices: the infrastructure scaffold plus standalone password authentication with server-side
+sessions. It does not yet implement 3D world navigation, file ingestion, AI chat, habits, or
+learning features.
 
 Aetherium is a standalone product. It uses its own repository, database, Redis namespace,
 object-storage buckets, environment variables, Docker resources, CI workflow, and future
@@ -19,6 +20,9 @@ authentication/session system. See `docs/architecture/product-independence.md` a
 - PostgreSQL async connection configuration and Alembic migration setup.
 - Next.js App Router scaffold.
 - Shared TypeScript API types, Zod validation, and a minimal typed API client.
+- Standalone user and session tables with Argon2id password hashing.
+- Registration, email/password login, logout, and current-user endpoints under `/api/v1/auth`.
+- Authenticated Command Mode shell guarded by the Aetherium session cookie.
 - Docker Compose development infrastructure for Aetherium-isolated PostgreSQL, Redis, MinIO, API,
   and web services.
 - CI workflow for independence checks, formatting, linting, type checks, tests, build, and Alembic
@@ -106,6 +110,16 @@ On Unix-like systems, replace `py -3 -m` with `python -m`.
 - API readiness: `GET http://localhost:8000/api/v1/health/ready`
 - Web liveness: `GET http://localhost:3000/api/health`
 
+## Authentication Endpoints
+
+- Register: `POST http://localhost:8000/api/v1/auth/register`
+- Login: `POST http://localhost:8000/api/v1/auth/login`
+- Logout: `POST http://localhost:8000/api/v1/auth/logout`
+- Current user: `GET http://localhost:8000/api/v1/auth/me`
+
+The browser stores authentication only in the HttpOnly `aetherium_session` cookie. Tokens are never
+stored in localStorage or sessionStorage.
+
 ## Local Resource Names
 
 - Compose project: `aetherium`
@@ -118,10 +132,11 @@ On Unix-like systems, replace `py -3 -m` with `python -m`.
 - Development database role: `aetherium_app`
 - Development object bucket: `aetherium-files-dev`
 - Redis key prefix: `aetherium:`
+- Session cookie: `aetherium_session`
 
 ## Current Limitations
 
 - Docker is scaffolded but not required for unit tests.
 - API readiness requires PostgreSQL.
-- No user-facing product feature is complete yet.
-- No authentication, file upload, AI provider, or 3D scene exists yet.
+- Email verification, password reset, OAuth, MFA, and magic links are not implemented yet.
+- No file upload, AI provider, habit workflow, learning domain, or 3D scene exists yet.
