@@ -10,7 +10,10 @@ Back up these Aetherium-owned resources independently:
 - Authentication records in PostgreSQL, including users and hashed session-token records.
 - User-owned foundation records in PostgreSQL, including preferences, world profiles, domain events,
   notifications, and sanitized audit logs.
-- Object-storage buckets with uploaded originals, generated derivatives, and future exports.
+- Personal Vault records in PostgreSQL, including files, file versions, upload records, collections,
+  tags, favorites, and deletion state.
+- Object-storage buckets with uploaded originals, generated derivatives, future avatars, and future
+  exports.
 - Redis only for durable queues or future state that cannot be safely reconstructed.
 - Deployment configuration metadata, excluding raw secrets.
 - Future audit logs required for security investigations.
@@ -55,3 +58,8 @@ The `0003_user_owned_foundation` migration introduces user-owned preferences, no
 profiles, domain events, notifications, and audit logs. Restores must preserve owner UUIDs and
 domain-event idempotency keys so future achievement and progression processors do not replay
 duplicates.
+
+The `0004_file_vault` migration introduces Personal Vault metadata. Restores must keep PostgreSQL
+file records and object-storage buckets consistent. If object storage is restored to a different
+bucket name during disaster recovery, update Aetherium environment variables before serving
+downloads and run a targeted integrity check against restored file versions.

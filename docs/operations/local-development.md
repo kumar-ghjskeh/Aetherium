@@ -6,25 +6,27 @@ Aetherium-prefixed volumes.
 
 ## Resources
 
-| Resource                     | Local name                   |
-| ---------------------------- | ---------------------------- |
-| Compose project              | `aetherium`                  |
-| Network                      | `aetherium_internal`         |
-| API service/container        | `aetherium-api`              |
-| Web service/container        | `aetherium-web`              |
-| PostgreSQL service/container | `aetherium-postgres`         |
-| Redis service/container      | `aetherium-redis`            |
-| MinIO service/container      | `aetherium-minio`            |
-| MinIO bucket init container  | `aetherium-minio-init`       |
-| PostgreSQL volume            | `aetherium_postgres_data`    |
-| Redis volume                 | `aetherium_redis_data`       |
-| MinIO volume                 | `aetherium_minio_data`       |
-| Web dependency volume        | `aetherium_web_node_modules` |
-| Web build volume             | `aetherium_web_next`         |
-| Development database         | `aetherium_app_dev`          |
-| Development database role    | `aetherium_app`              |
-| Development object bucket    | `aetherium-files-dev`        |
-| Redis key prefix             | `aetherium:`                 |
+| Resource                     | Local name                     |
+| ---------------------------- | ------------------------------ |
+| Compose project              | `aetherium`                    |
+| Network                      | `aetherium_internal`           |
+| API service/container        | `aetherium-api`                |
+| Web service/container        | `aetherium-web`                |
+| PostgreSQL service/container | `aetherium-postgres`           |
+| Redis service/container      | `aetherium-redis`              |
+| MinIO service/container      | `aetherium-minio`              |
+| MinIO bucket init container  | `aetherium-minio-init`         |
+| PostgreSQL volume            | `aetherium_postgres_data`      |
+| Redis volume                 | `aetherium_redis_data`         |
+| MinIO volume                 | `aetherium_minio_data`         |
+| Web dependency volume        | `aetherium_web_node_modules`   |
+| Web build volume             | `aetherium_web_next`           |
+| Development database         | `aetherium_app_dev`            |
+| Development database role    | `aetherium_app`                |
+| Private files bucket         | `aetherium-private-files-dev`  |
+| Derived assets bucket        | `aetherium-derived-assets-dev` |
+| User avatars bucket          | `aetherium-user-avatars-dev`   |
+| Redis key prefix             | `aetherium:`                   |
 
 ## Startup
 
@@ -40,6 +42,10 @@ The API reads `AETHERIUM_DATABASE_URL` and `AETHERIUM_REDIS_URL`. Docker Compose
 for local containers so they point at `aetherium-postgres` and `aetherium-redis` on the private
 Compose network.
 
+Docker Compose also creates Aetherium-specific MinIO buckets for private originals, derived assets,
+and future user avatars. Browser presigned uploads use `AETHERIUM_MINIO_CORS_ORIGINS`, which
+defaults to local web origins.
+
 ## Authentication Defaults
 
 Local development uses:
@@ -49,6 +55,9 @@ Local development uses:
 - Cookie SameSite: `lax`.
 - Allowed frontend origin: `http://localhost:3000`.
 - API origin: `http://localhost:8000`.
+- Private files bucket: `aetherium-private-files-dev`.
+- Derived assets bucket: `aetherium-derived-assets-dev`.
+- User avatars bucket: `aetherium-user-avatars-dev`.
 
 Do not use the development session signing secret in production.
 

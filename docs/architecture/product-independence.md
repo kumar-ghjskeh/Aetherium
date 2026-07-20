@@ -11,7 +11,8 @@ Aetherium owns its own:
 - GitHub repository: `kumar-ghjskeh/Aetherium`.
 - PostgreSQL database, roles, credentials, and Alembic migration history.
 - Redis instance or logical database plus the `aetherium:` key namespace.
-- Object-storage buckets with an `aetherium` prefix.
+- Object-storage buckets with an `aetherium` prefix for private originals, derived assets, and user
+  avatars.
 - MinIO development instance.
 - FastAPI backend under this repository.
 - API namespace under `/api/v1` for the current scaffold.
@@ -41,9 +42,10 @@ validated by CI.
 
 ## Current Audit Result
 
-The current scaffold contains no references to another private product, another private repository,
-another product database, or another product API. The audit found generic environment and Docker
-resource names in the initial scaffold; those were replaced with Aetherium-specific names.
+The current scaffold and Personal Vault slice contain no references to another private product,
+another private repository, another product database, another product API, or another product object
+bucket. The audit found generic environment and Docker resource names in the initial scaffold; those
+were replaced with Aetherium-specific names.
 
 ## Enforcement
 

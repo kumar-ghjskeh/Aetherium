@@ -218,6 +218,153 @@ export const auditLogPageSchema = z.object({
   total: z.number().int().min(0)
 });
 
+export const fileKindSchema = z.enum([
+  "pdf",
+  "text",
+  "markdown",
+  "docx",
+  "csv",
+  "json",
+  "source_code",
+  "image"
+]);
+
+export const fileProcessingStatusSchema = z.enum([
+  "not_started",
+  "queued",
+  "processing",
+  "ready",
+  "failed"
+]);
+
+export const fileDeletionStatusSchema = z.enum(["active", "soft_deleted"]);
+
+export const uploadStatusSchema = z.enum(["pending", "completed", "aborted", "expired"]);
+
+export const malwareScanStatusSchema = z.enum([
+  "not_configured",
+  "pending",
+  "clean",
+  "suspicious",
+  "failed"
+]);
+
+export const uploadInitiateRequestSchema = z.object({
+  checksumSha256: z
+    .string()
+    .regex(/^[a-fA-F0-9]{64}$/)
+    .optional(),
+  contentType: z.string().min(1).max(160),
+  fileName: z.string().min(1).max(255),
+  idempotencyKey: z.string().min(8).max(160),
+  sizeBytes: z
+    .number()
+    .int()
+    .positive()
+    .max(50 * 1024 * 1024)
+});
+
+export const uploadCompleteRequestSchema = z.object({
+  displayName: z.string().min(1).max(160).optional(),
+  idempotencyKey: z.string().min(8).max(160)
+});
+
+export const uploadResponseSchema = z.object({
+  contentType: z.string().min(1),
+  createdAt: z.string().min(1),
+  expiresAt: z.string().min(1),
+  fileName: z.string().min(1),
+  id: z.string().uuid(),
+  sanitizedFileName: z.string().min(1),
+  sizeBytes: z.number().int().positive(),
+  status: uploadStatusSchema,
+  uploadHeaders: z.record(z.string()),
+  uploadMethod: z.literal("PUT"),
+  uploadUrl: z.string().url()
+});
+
+export const fileTagSchema = z.object({
+  color: z.string().nullable(),
+  createdAt: z.string().min(1),
+  id: z.string().uuid(),
+  name: z.string().min(1)
+});
+
+export const vaultFileSchema = z.object({
+  collectionIds: z.array(z.string().uuid()),
+  contentType: z.string().min(1),
+  createdAt: z.string().min(1),
+  deletedAt: z.string().min(1).nullable(),
+  deletionStatus: fileDeletionStatusSchema,
+  displayName: z.string().min(1),
+  fileExtension: z.string().min(1),
+  fileKind: fileKindSchema,
+  id: z.string().uuid(),
+  isFavorite: z.boolean(),
+  malwareScanStatus: malwareScanStatusSchema,
+  originalFileName: z.string().min(1),
+  processingStatus: fileProcessingStatusSchema,
+  sanitizedFileName: z.string().min(1),
+  sizeBytes: z.number().int().positive(),
+  tags: z.array(fileTagSchema),
+  updatedAt: z.string().min(1)
+});
+
+export const filePageSchema = z.object({
+  items: z.array(vaultFileSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const fileUpdateRequestSchema = z.object({
+  displayName: z.string().min(1).max(160)
+});
+
+export const downloadUrlResponseSchema = z.object({
+  downloadHeaders: z.record(z.string()),
+  downloadMethod: z.literal("GET"),
+  downloadUrl: z.string().url(),
+  expiresAt: z.string().min(1),
+  fileId: z.string().uuid()
+});
+
+export const collectionSchema = z.object({
+  createdAt: z.string().min(1),
+  description: z.string().nullable(),
+  id: z.string().uuid(),
+  name: z.string().min(1),
+  updatedAt: z.string().min(1)
+});
+
+export const collectionPageSchema = z.object({
+  items: z.array(collectionSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const collectionCreateRequestSchema = z.object({
+  description: z.string().max(2000).nullable().optional(),
+  name: z.string().trim().min(1).max(120)
+});
+
+export const collectionItemRequestSchema = z.object({
+  fileId: z.string().uuid()
+});
+
+export const tagPageSchema = z.object({
+  items: z.array(fileTagSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const fileTagCreateRequestSchema = z.object({
+  color: z.string().max(32).nullable().optional(),
+  name: z.string().trim().min(1).max(80)
+});
+
 export type HealthCheckResponseInput = z.input<typeof healthCheckResponseSchema>;
 export type HealthCheckResponseOutput = z.output<typeof healthCheckResponseSchema>;
 export type RegisterRequestInput = z.input<typeof registerRequestSchema>;

@@ -9,7 +9,8 @@ Production must provide Aetherium-owned or Aetherium-dedicated resources for:
 
 - PostgreSQL database and role.
 - Redis instance or isolated logical database with the `aetherium:` key namespace.
-- Object-storage bucket with an `aetherium` prefix.
+- Object-storage buckets with an `aetherium` prefix for private originals, derived assets, and user
+  avatars.
 - API runtime.
 - Web runtime.
 - Background workers.
@@ -51,7 +52,9 @@ Before deploying a new environment, verify:
 
 - Database host, database name, role, and password are Aetherium-specific.
 - Redis endpoint and key prefix are Aetherium-specific.
-- Object bucket name starts with `aetherium`.
+- Object bucket names start with `aetherium` and are not shared with another product.
+- Presigned upload and download URL lifetimes are explicitly configured.
+- Production enables `AETHERIUM_FILE_VAULT_VERIFY_UPLOADS`.
 - Session cookie name includes `aetherium` and is not generic.
 - Session signing secret is not the development default.
 - AI-provider credentials are configured specifically for Aetherium.

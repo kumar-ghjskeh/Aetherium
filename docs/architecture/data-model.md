@@ -17,6 +17,8 @@ Current migrations:
 - `0002_auth_foundation`: creates Aetherium-owned `users` and `sessions` tables.
 - `0003_user_owned_foundation`: creates preferences, non-visual world profile state, domain events,
   notifications, and audit logs.
+- `0004_file_vault`: creates user-owned Personal Vault metadata, upload records, file versions,
+  collections, tags, favorites, and deletion state.
 
 ### `users`
 
@@ -104,13 +106,63 @@ No 3D scenes, assets, movement, or rendering state are stored in this table.
 Audit metadata must not contain passwords, raw session tokens, cookies, secrets, API keys, or full
 sensitive request bodies.
 
+## Personal Vault Schema
+
+All Personal Vault tables include `owner_user_id` and backend queries must filter on that owner.
+Cross-user IDs are treated as not found.
+
+### `files`
+
+- UUID primary key.
+- `owner_user_id` foreign key to `users.id`.
+- Display name, original file name, sanitized file name, file extension, file kind, MIME type, and
+  byte size.
+- Current object bucket, key, ETag, storage version ID, and checksum metadata.
+- Processing status, deletion status, malware scan status, and deleted timestamp.
+- Timestamps.
+
+The current file record is metadata-only. Extracted text, chunks, embeddings, and search vectors are
+added by later ingestion and search phases.
+
+### `file_versions`
+
+- UUID primary key.
+- `owner_user_id` and `file_id`.
+- Version number.
+- Original and sanitized file names, MIME type, byte size, object bucket, object key, optional ETag,
+  storage version ID, checksum, and upload record ID.
+- Timestamps.
+
+Versions preserve original uploaded objects and give permanent deletion a clear set of storage
+objects to remove.
+
+### `upload_records`
+
+- UUID primary key.
+- `owner_user_id`.
+- Optional `file_id` after completion.
+- Original and sanitized file name, MIME type, byte size, file extension, file kind, object bucket,
+  object key, checksum, status, expiration timestamp, completion timestamp, and idempotency keys.
+- Timestamps.
+
+Upload initiation and completion are idempotent per owner and idempotency key.
+
+### `collections`, `collection_items`, `tags`, `file_tags`, `file_favorites`
+
+- Collections and tags are owner-scoped metadata records with normalized-name uniqueness per owner.
+- Join tables include `owner_user_id` and unique owner/file relationship constraints.
+- Favorites are represented as owner/file rows so they can be queried without mutating file
+  metadata.
+
+Collection membership, tags, and favorites do not grant access by themselves. File ownership remains
+the authorization boundary.
+
 ## Planned Later Tables
 
 Later schema slices will cover:
 
 - `world_locations`, `user_world_state`.
-- `files`, `file_versions`, `file_chunks`.
-- `collections`, `collection_items`, `tags`, `file_tags`.
+- `file_chunks`, extraction results, processing jobs, and embedding jobs.
 - `mentors`, `conversations`, `messages`, `message_sources`.
 - `subjects`, `topics`, `topic_relations`, `resources`.
 - `courses`, `modules`, `lessons`, `quizzes`, `questions`, `attempts`.

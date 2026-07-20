@@ -34,7 +34,8 @@
 | Email enumeration                         | Login uses one generic invalid-credential response for nonexistent users and wrong passwords. |
 | SQL injection                             | Use SQLAlchemy expressions and parameterized queries.                                         |
 | XSS from rendered user content            | Sanitize rendered documents and use CSP/security headers in later UI slices.                  |
-| Malicious uploads                         | Validate type and size, isolate parsing, add malware scanning integration point.              |
+| Malicious uploads                         | Validate type and size; use a malware scanning integration point before later parsing.        |
+| Object-key disclosure                     | Use server-generated object keys and return only expiring presigned URLs to owners.           |
 | AI data leakage                           | Require consent controls and provider-scoped policies.                                        |
 | Insecure code execution                   | Use mock code runner first; require isolated sandbox before real execution.                   |
 | Secret leakage                            | Keep secrets out of source and logs.                                                          |
@@ -56,6 +57,16 @@
 - Notification mutation and list routes filter by owner.
 - Domain events are idempotent per user and idempotency key.
 - Persistent audit logs sanitize metadata before storage.
+- Personal Vault tables are scoped by `owner_user_id` and route through owner-checked services.
+- Upload initiation validates file name, extension, MIME type, declared size, and idempotency key.
+- Original files are stored in Aetherium-owned private object buckets through server-generated keys.
+- Download access uses short-lived presigned URLs and never exposes object keys in normal file
+  responses.
+- File organization metadata, favorites, soft deletion, restoration, and permanent deletion are
+  owner-scoped.
+- Permanent deletion requires an existing soft-deleted record and removes known stored object
+  versions before deleting the file metadata.
+- Malware scanning is modeled as a status and integration point; no scanner is active in this slice.
 - CI runs independence checks, formatting, linting, type checks, tests, build, and migration smoke
   validation.
 
@@ -68,6 +79,7 @@
 - Audit-log retention policy.
 - Security headers and CSP.
 - Dependency vulnerability scanning.
-- Presigned object access.
+- Actual malware scanning service and quarantine workflow.
+- Background extraction sandboxing for PDFs, DOCX, images, and source files.
 - Account deletion and data export.
 - Authorization tests for every critical user-owned endpoint.

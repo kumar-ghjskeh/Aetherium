@@ -1,5 +1,5 @@
-import { SectionPage } from "../../../features/app-shell/section-page";
+import { LibraryPage } from "../../../features/file-vault/library-page";
 
-export default function LibraryPage(): React.ReactElement {
-  return <SectionPage section="library" />;
+export default function AppLibraryPage(): React.ReactElement {
+  return <LibraryPage />;
 }

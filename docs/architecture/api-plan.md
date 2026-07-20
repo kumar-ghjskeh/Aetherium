@@ -22,11 +22,28 @@ Current routes:
 - `GET /api/v1/notifications`
 - `POST /api/v1/notifications/{notification_id}/read`
 - `GET /api/v1/audit-logs`
+- `POST /api/v1/files/uploads`
+- `POST /api/v1/files/uploads/{upload_id}/complete`
+- `GET /api/v1/files`
+- `GET /api/v1/files/{file_id}`
+- `PATCH /api/v1/files/{file_id}`
+- `DELETE /api/v1/files/{file_id}`
+- `POST /api/v1/files/{file_id}/restore`
+- `DELETE /api/v1/files/{file_id}/permanent`
+- `GET /api/v1/files/{file_id}/download`
+- `POST /api/v1/files/{file_id}/favorite`
+- `DELETE /api/v1/files/{file_id}/favorite`
+- `GET /api/v1/files/collections`
+- `POST /api/v1/files/collections`
+- `POST /api/v1/files/collections/{collection_id}/items`
+- `DELETE /api/v1/files/collections/{collection_id}/items/{file_id}`
+- `GET /api/v1/files/tags`
+- `POST /api/v1/files/{file_id}/tags`
+- `DELETE /api/v1/files/{file_id}/tags/{tag_id}`
 
 Planned route groups:
 
 - `/api/v1/users`
-- `/api/v1/files`
 - `/api/v1/search`
 - `/api/v1/ai`
 - `/api/v1/mentors`
@@ -104,6 +121,31 @@ with bounded `limit` and `offset` parameters.
 
 `POST /api/v1/notifications/{notification_id}/read` marks only the authenticated user's notification
 as read. Cross-user IDs return `not_found`.
+
+## Personal Vault Routes
+
+`POST /api/v1/files/uploads` validates file name, extension, MIME type, size, and idempotency key,
+then creates an owner-scoped upload record and returns an expiring presigned `PUT` URL.
+
+`POST /api/v1/files/uploads/{upload_id}/complete` finalizes a pending upload for the authenticated
+owner, optionally verifies the object in storage, creates the file record and first file version,
+records a `file.uploaded` domain event, and writes a sanitized audit log. Repeated completion with
+the same idempotency key returns the existing file.
+
+`GET /api/v1/files` is paginated and supports metadata filtering by file name, favorite-only,
+collection, tag, and deleted-record visibility. It does not search extracted text yet.
+
+`GET /api/v1/files/{file_id}`, `PATCH /api/v1/files/{file_id}`, `DELETE /api/v1/files/{file_id}`,
+`POST /api/v1/files/{file_id}/restore`, and `DELETE /api/v1/files/{file_id}/permanent` all enforce
+owner scope. Permanent deletion requires an existing soft-deleted record and removes stored object
+versions before deleting metadata.
+
+`GET /api/v1/files/{file_id}/download` returns an expiring presigned `GET` URL for the authenticated
+owner. The API does not expose object keys in normal file responses.
+
+Collection, favorite, and tag routes are owner-scoped and designed as metadata-only organization for
+the current slice. Background ingestion, content search, and AI retrieval will consume the same file
+records in later phases.
 
 ## Generated Client
 

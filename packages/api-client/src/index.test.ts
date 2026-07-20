@@ -11,6 +11,36 @@ function jsonResponse(payload: unknown, status = 200): Response {
   });
 }
 
+function requestUrl(input: Parameters<typeof fetch>[0]): string {
+  if (typeof input === "string") {
+    return input;
+  }
+  if (input instanceof URL) {
+    return input.toString();
+  }
+  return input.url;
+}
+
+const vaultFile = {
+  collectionIds: [],
+  contentType: "application/pdf",
+  createdAt: "2026-07-20T00:00:00Z",
+  deletedAt: null,
+  deletionStatus: "active",
+  displayName: "Lecture notes",
+  fileExtension: ".pdf",
+  fileKind: "pdf",
+  id: "77777777-7777-4777-8777-777777777777",
+  isFavorite: false,
+  malwareScanStatus: "not_configured",
+  originalFileName: "notes.pdf",
+  processingStatus: "not_started",
+  sanitizedFileName: "notes.pdf",
+  sizeBytes: 1024,
+  tags: [],
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
 describe("createAetheriumApiClient", () => {
   it("fetches and validates API liveness", async () => {
     const fetcher = vi.fn<typeof fetch>(() =>
@@ -240,6 +270,191 @@ describe("createAetheriumApiClient", () => {
         }
       }
     );
+  });
+
+  it("initiates and completes file uploads through the file vault API", async () => {
+    const fetcher = vi.fn<typeof fetch>((input) => {
+      if (requestUrl(input).endsWith("/api/v1/files/uploads")) {
+        return Promise.resolve(
+          jsonResponse(
+            {
+              contentType: "application/pdf",
+              createdAt: "2026-07-20T00:00:00Z",
+              expiresAt: "2026-07-20T00:15:00Z",
+              fileName: "notes.pdf",
+              id: "88888888-8888-4888-8888-888888888888",
+              sanitizedFileName: "notes.pdf",
+              sizeBytes: 1024,
+              status: "pending",
+              uploadHeaders: { "Content-Type": "application/pdf" },
+              uploadMethod: "PUT",
+              uploadUrl: "https://storage.test/aetherium-private-files/notes.pdf"
+            },
+            201
+          )
+        );
+      }
+
+      return Promise.resolve(jsonResponse(vaultFile, 201));
+    });
+    const client = createAetheriumApiClient({ baseUrl: "http://localhost:8000", fetcher });
+
+    await expect(
+      client.files.createUpload({
+        contentType: "application/pdf",
+        fileName: "notes.pdf",
+        idempotencyKey: "upload-notes",
+        sizeBytes: 1024
+      })
+    ).resolves.toMatchObject({ status: "pending" });
+    await expect(
+      client.files.completeUpload("88888888-8888-4888-8888-888888888888", {
+        displayName: "Lecture notes",
+        idempotencyKey: "complete-notes"
+      })
+    ).resolves.toMatchObject({ displayName: "Lecture notes" });
+
+    expect(fetcher).toHaveBeenNthCalledWith(1, "http://localhost:8000/api/v1/files/uploads", {
+      body: JSON.stringify({
+        contentType: "application/pdf",
+        fileName: "notes.pdf",
+        idempotencyKey: "upload-notes",
+        sizeBytes: 1024
+      }),
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      method: "POST"
+    });
+    expect(fetcher).toHaveBeenNthCalledWith(
+      2,
+      "http://localhost:8000/api/v1/files/uploads/88888888-8888-4888-8888-888888888888/complete",
+      {
+        body: JSON.stringify({
+          displayName: "Lecture notes",
+          idempotencyKey: "complete-notes"
+        }),
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        method: "POST"
+      }
+    );
+  });
+
+  it("lists files and requests download URLs", async () => {
+    const fetcher = vi.fn<typeof fetch>((input) => {
+      if (requestUrl(input).includes("/download")) {
+        return Promise.resolve(
+          jsonResponse({
+            downloadHeaders: {},
+            downloadMethod: "GET",
+            downloadUrl: "https://storage.test/download",
+            expiresAt: "2026-07-20T00:05:00Z",
+            fileId: vaultFile.id
+          })
+        );
+      }
+
+      return Promise.resolve(
+        jsonResponse({
+          items: [vaultFile],
+          limit: 10,
+          offset: 0,
+          total: 1
+        })
+      );
+    });
+    const client = createAetheriumApiClient({ baseUrl: "http://localhost:8000", fetcher });
+
+    await expect(
+      client.files.list({
+        favoriteOnly: true,
+        includeDeleted: false,
+        limit: 10,
+        offset: 0,
+        query: "notes"
+      })
+    ).resolves.toMatchObject({ total: 1 });
+    await expect(client.files.download(vaultFile.id)).resolves.toMatchObject({
+      downloadMethod: "GET"
+    });
+
+    expect(fetcher).toHaveBeenNthCalledWith(
+      1,
+      "http://localhost:8000/api/v1/files?favoriteOnly=true&includeDeleted=false&limit=10&offset=0&query=notes",
+      {
+        credentials: "include",
+        headers: {
+          Accept: "application/json"
+        }
+      }
+    );
+  });
+
+  it("organizes vault files with collections, tags, and favorites", async () => {
+    const collection = {
+      createdAt: "2026-07-20T00:00:00Z",
+      description: null,
+      id: "99999999-9999-4999-8999-999999999999",
+      name: "Class Notes",
+      updatedAt: "2026-07-20T00:00:00Z"
+    };
+    const fetcher = vi.fn<typeof fetch>((input) => {
+      const url = requestUrl(input);
+      if (url.endsWith("/api/v1/files/collections")) {
+        return Promise.resolve(jsonResponse(collection, 201));
+      }
+      if (url.endsWith("/api/v1/files/tags")) {
+        return Promise.resolve(
+          jsonResponse({
+            items: [
+              {
+                color: "#8fd1c7",
+                createdAt: "2026-07-20T00:00:00Z",
+                id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+                name: "Research"
+              }
+            ],
+            limit: 20,
+            offset: 0,
+            total: 1
+          })
+        );
+      }
+      return Promise.resolve(
+        jsonResponse({
+          ...vaultFile,
+          collectionIds: [collection.id],
+          isFavorite: true,
+          tags: [
+            {
+              color: "#8fd1c7",
+              createdAt: "2026-07-20T00:00:00Z",
+              id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+              name: "Research"
+            }
+          ]
+        })
+      );
+    });
+    const client = createAetheriumApiClient({ baseUrl: "http://localhost:8000", fetcher });
+
+    await expect(client.files.createCollection({ name: "Class Notes" })).resolves.toMatchObject({
+      name: "Class Notes"
+    });
+    await expect(client.files.favorite(vaultFile.id)).resolves.toMatchObject({ isFavorite: true });
+    await expect(
+      client.files.addTag(vaultFile.id, { color: "#8fd1c7", name: "Research" })
+    ).resolves.toMatchObject({ tags: [{ name: "Research" }] });
+    await expect(client.files.listTags()).resolves.toMatchObject({ total: 1 });
+    await expect(
+      client.files.addFileToCollection(collection.id, { fileId: vaultFile.id })
+    ).resolves.toMatchObject({ collectionIds: [collection.id] });
   });
 
   it("posts registration payloads with credentials", async () => {

@@ -17,6 +17,10 @@ Backend:
 - User-owned foundation API tests for preference persistence, world profile updates, idempotent
   domain events, notification read state, audit sanitization, pagination, unauthenticated access,
   cross-user isolation, and database uniqueness.
+- Personal Vault backend tests for upload validation, idempotent upload initiation and completion,
+  file listing, rename, favorites, collections, tags, download URL ownership, soft deletion,
+  restoration, permanent deletion, unauthenticated access, cross-user isolation, and database
+  constraints.
 - Alembic migration smoke validation against PostgreSQL in CI.
 - Ruff formatting and linting.
 - mypy type checking.
@@ -33,7 +37,11 @@ Frontend and shared packages:
   rendering, anonymous redirect, `Ctrl/Cmd + K` command palette navigation, notification read state,
   shell data error state, and settings persistence through the shared API client.
 - API-client contract tests for the user-owned foundation endpoints.
+- API-client contract tests for Personal Vault upload, file, collection, tag, favorite, and download
+  methods.
 - Next.js build validation.
+- React Testing Library coverage for the Library page, including loading, empty, error, upload,
+  favorite, tag, and delete states.
 
 ## Future Backend Tests
 

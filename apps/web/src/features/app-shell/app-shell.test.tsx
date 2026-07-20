@@ -17,6 +17,7 @@ import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { AuthProvider } from "../auth/auth-provider";
+import { createUnusedFilesClient } from "../../test/api-client";
 import { AppDashboard } from "./app-dashboard";
 import { AppShell } from "./app-shell";
 import { SectionPage } from "./section-page";
@@ -153,6 +154,7 @@ function unauthenticatedError(): AetheriumApiError {
 function createClient(
   overrides: Partial<{
     auth: Partial<AetheriumApiClient["auth"]>;
+    files: Partial<AetheriumApiClient["files"]>;
     notifications: Partial<AetheriumApiClient["notifications"]>;
     settings: Partial<AetheriumApiClient["settings"]>;
     world: Partial<AetheriumApiClient["world"]>;
@@ -173,6 +175,7 @@ function createClient(
       create: vi.fn(() => Promise.resolve(domainEvent)),
       list: vi.fn(() => Promise.resolve(emptyDomainEventPage))
     },
+    files: { ...createUnusedFilesClient(), ...overrides.files },
     health: {
       live: vi.fn(() => Promise.resolve(health)),
       ready: vi.fn(() => Promise.resolve(health))

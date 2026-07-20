@@ -31,10 +31,12 @@ Current approved slice:
 - Command Mode app shell with protected `/app` routes, responsive sidebar and mobile navigation,
   command palette, notifications panel, profile menu, settings integration, and a non-visual future
   World Mode route.
+- Personal Vault file storage with user-owned metadata, presigned uploads/downloads, collections,
+  tags, favorites, deletion state, and a Library UI.
 
 Later Phase 1 slices:
 
-- File upload and async processing.
+- Async file processing and extracted text.
 - Search.
 - One general AI mentor with citations.
 - One daily habit and habit logging.

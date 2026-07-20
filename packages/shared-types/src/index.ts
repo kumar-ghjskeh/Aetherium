@@ -191,3 +191,131 @@ export interface DomainEventListQuery extends PaginationQuery {
 export interface NotificationListQuery extends PaginationQuery {
   unreadOnly?: boolean;
 }
+
+export type FileKind =
+  "pdf" | "text" | "markdown" | "docx" | "csv" | "json" | "source_code" | "image";
+
+export type FileProcessingStatus = "not_started" | "queued" | "processing" | "ready" | "failed";
+
+export type FileDeletionStatus = "active" | "soft_deleted";
+
+export type UploadStatus = "pending" | "completed" | "aborted" | "expired";
+
+export type MalwareScanStatus = "not_configured" | "pending" | "clean" | "suspicious" | "failed";
+
+export interface UploadInitiateRequest {
+  fileName: string;
+  contentType: string;
+  sizeBytes: number;
+  checksumSha256?: string | undefined;
+  idempotencyKey: string;
+}
+
+export interface UploadCompleteRequest {
+  idempotencyKey: string;
+  displayName?: string | undefined;
+}
+
+export interface UploadResponse {
+  id: string;
+  fileName: string;
+  sanitizedFileName: string;
+  contentType: string;
+  sizeBytes: number;
+  status: UploadStatus;
+  uploadUrl: string;
+  uploadMethod: "PUT";
+  uploadHeaders: Record<string, string>;
+  expiresAt: string;
+  createdAt: string;
+}
+
+export interface FileTag {
+  id: string;
+  name: string;
+  color: string | null;
+  createdAt: string;
+}
+
+export interface VaultFile {
+  id: string;
+  displayName: string;
+  originalFileName: string;
+  sanitizedFileName: string;
+  fileExtension: string;
+  fileKind: FileKind;
+  contentType: string;
+  sizeBytes: number;
+  processingStatus: FileProcessingStatus;
+  deletionStatus: FileDeletionStatus;
+  malwareScanStatus: MalwareScanStatus;
+  deletedAt: string | null;
+  isFavorite: boolean;
+  tags: FileTag[];
+  collectionIds: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface FilePage {
+  items: VaultFile[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface FileListQuery extends PaginationQuery {
+  collectionId?: string;
+  favoriteOnly?: boolean;
+  includeDeleted?: boolean;
+  query?: string;
+  tagId?: string;
+}
+
+export interface FileUpdateRequest {
+  displayName: string;
+}
+
+export interface DownloadUrlResponse {
+  fileId: string;
+  downloadUrl: string;
+  downloadMethod: "GET";
+  downloadHeaders: Record<string, string>;
+  expiresAt: string;
+}
+
+export interface Collection {
+  id: string;
+  name: string;
+  description: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CollectionPage {
+  items: Collection[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface CollectionCreateRequest {
+  name: string;
+  description?: string | null | undefined;
+}
+
+export interface CollectionItemRequest {
+  fileId: string;
+}
+
+export interface TagPage {
+  items: FileTag[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface FileTagCreateRequest {
+  name: string;
+  color?: string | null | undefined;
+}

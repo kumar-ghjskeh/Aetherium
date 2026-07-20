@@ -240,6 +240,9 @@ def test_cookie_security_settings_in_production(monkeypatch: pytest.MonkeyPatch)
     monkeypatch.setenv("AETHERIUM_APP_ENV", "production")
     monkeypatch.setenv("AETHERIUM_SESSION_SIGNING_SECRET", "aetherium-production-test-secret")
     monkeypatch.setenv("AETHERIUM_CORS_ORIGINS", VALID_ORIGIN)
+    monkeypatch.setenv("AETHERIUM_FILE_VAULT_VERIFY_UPLOADS", "true")
+    monkeypatch.setenv("AETHERIUM_S3_ACCESS_KEY_ID", "aetherium-access")
+    monkeypatch.setenv("AETHERIUM_S3_SECRET_ACCESS_KEY", "aetherium-secret")
     get_settings.cache_clear()
 
     engine = create_async_engine(

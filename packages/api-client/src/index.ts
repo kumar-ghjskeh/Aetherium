@@ -2,19 +2,34 @@ import type {
   ApiErrorBody,
   AuditLogPage,
   AuthResponse,
+  Collection,
+  CollectionCreateRequest,
+  CollectionItemRequest,
+  CollectionPage,
+  DownloadUrlResponse,
   DomainEvent,
   DomainEventCreateRequest,
   DomainEventListQuery,
   DomainEventPage,
+  FileListQuery,
+  FilePage,
+  FileTagCreateRequest,
+  FileUpdateRequest,
   HealthCheckResponse,
   LoginRequest,
   Notification,
   NotificationListQuery,
   NotificationPage,
+  PaginationQuery,
   PublicUser,
   RegisterRequest,
+  TagPage,
+  UploadCompleteRequest,
+  UploadInitiateRequest,
+  UploadResponse,
   UserPreferences,
   UserPreferencesUpdate,
+  VaultFile,
   WorldProfile,
   WorldProfileUpdate,
   WorldVisitRequest
@@ -23,13 +38,20 @@ import {
   apiErrorBodySchema,
   auditLogPageSchema,
   authResponseSchema,
+  collectionPageSchema,
+  collectionSchema,
+  downloadUrlResponseSchema,
   domainEventPageSchema,
   domainEventSchema,
+  filePageSchema,
+  tagPageSchema,
   healthCheckResponseSchema,
   notificationSchema,
   notificationPageSchema,
   publicUserSchema,
+  uploadResponseSchema,
   userPreferencesSchema,
+  vaultFileSchema,
   worldProfileSchema
 } from "@aetherium/validation";
 
@@ -51,6 +73,29 @@ export interface AetheriumApiClient {
   domainEvents: {
     create: (payload: DomainEventCreateRequest) => Promise<DomainEvent>;
     list: (query?: DomainEventListQuery) => Promise<DomainEventPage>;
+  };
+  files: {
+    addFileToCollection: (
+      collectionId: string,
+      payload: CollectionItemRequest
+    ) => Promise<VaultFile>;
+    addTag: (fileId: string, payload: FileTagCreateRequest) => Promise<VaultFile>;
+    completeUpload: (uploadId: string, payload: UploadCompleteRequest) => Promise<VaultFile>;
+    createCollection: (payload: CollectionCreateRequest) => Promise<Collection>;
+    createUpload: (payload: UploadInitiateRequest) => Promise<UploadResponse>;
+    download: (fileId: string) => Promise<DownloadUrlResponse>;
+    favorite: (fileId: string) => Promise<VaultFile>;
+    get: (fileId: string) => Promise<VaultFile>;
+    list: (query?: FileListQuery) => Promise<FilePage>;
+    listCollections: (query?: PaginationQuery) => Promise<CollectionPage>;
+    listTags: (query?: PaginationQuery) => Promise<TagPage>;
+    permanentDelete: (fileId: string) => Promise<void>;
+    removeFileFromCollection: (collectionId: string, fileId: string) => Promise<VaultFile>;
+    removeTag: (fileId: string, tagId: string) => Promise<VaultFile>;
+    restore: (fileId: string) => Promise<VaultFile>;
+    softDelete: (fileId: string) => Promise<VaultFile>;
+    unfavorite: (fileId: string) => Promise<VaultFile>;
+    update: (fileId: string, payload: FileUpdateRequest) => Promise<VaultFile>;
   };
   health: {
     live: () => Promise<HealthCheckResponse>;
@@ -127,6 +172,18 @@ function notificationQuery(query?: NotificationListQuery): string {
     ["unreadOnly", query?.unreadOnly],
     ["limit", query?.limit],
     ["offset", query?.offset]
+  ]);
+}
+
+function fileListQuery(query?: FileListQuery): string {
+  return queryString([
+    ["collectionId", query?.collectionId],
+    ["favoriteOnly", query?.favoriteOnly],
+    ["includeDeleted", query?.includeDeleted],
+    ["limit", query?.limit],
+    ["offset", query?.offset],
+    ["query", query?.query],
+    ["tagId", query?.tagId]
   ]);
 }
 
@@ -225,6 +282,157 @@ export function createAetheriumApiClient(options: AetheriumApiClientOptions): Ae
           `/api/v1/domain-events${domainEventQuery(query)}`
         );
         return domainEventPageSchema.parse(response);
+      }
+    },
+    files: {
+      addFileToCollection: async (collectionId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/files/collections/${collectionId}/items`,
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return vaultFileSchema.parse(response);
+      },
+      addTag: async (fileId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/files/${fileId}/tags`,
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return vaultFileSchema.parse(response);
+      },
+      completeUpload: async (uploadId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/files/uploads/${uploadId}/complete`,
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return vaultFileSchema.parse(response);
+      },
+      createCollection: async (payload) => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/files/collections", {
+          body: JSON.stringify(payload),
+          method: "POST"
+        });
+        return collectionSchema.parse(response);
+      },
+      createUpload: async (payload) => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/files/uploads", {
+          body: JSON.stringify(payload),
+          method: "POST"
+        });
+        return uploadResponseSchema.parse(response);
+      },
+      download: async (fileId) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/files/${fileId}/download`
+        );
+        return downloadUrlResponseSchema.parse(response);
+      },
+      favorite: async (fileId) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/files/${fileId}/favorite`,
+          { method: "POST" }
+        );
+        return vaultFileSchema.parse(response);
+      },
+      get: async (fileId) => {
+        const response = await requestJson(fetcher, options.baseUrl, `/api/v1/files/${fileId}`);
+        return vaultFileSchema.parse(response);
+      },
+      list: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/files${fileListQuery(query)}`
+        );
+        return filePageSchema.parse(response);
+      },
+      listCollections: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/files/collections${paginationQuery(query)}`
+        );
+        return collectionPageSchema.parse(response);
+      },
+      listTags: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/files/tags${paginationQuery(query)}`
+        );
+        return tagPageSchema.parse(response);
+      },
+      permanentDelete: async (fileId) => {
+        await requestJson(fetcher, options.baseUrl, `/api/v1/files/${fileId}/permanent`, {
+          method: "DELETE"
+        });
+      },
+      removeFileFromCollection: async (collectionId, fileId) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/files/collections/${collectionId}/items/${fileId}`,
+          { method: "DELETE" }
+        );
+        return vaultFileSchema.parse(response);
+      },
+      removeTag: async (fileId, tagId) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/files/${fileId}/tags/${tagId}`,
+          { method: "DELETE" }
+        );
+        return vaultFileSchema.parse(response);
+      },
+      restore: async (fileId) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/files/${fileId}/restore`,
+          { method: "POST" }
+        );
+        return vaultFileSchema.parse(response);
+      },
+      softDelete: async (fileId) => {
+        const response = await requestJson(fetcher, options.baseUrl, `/api/v1/files/${fileId}`, {
+          method: "DELETE"
+        });
+        return vaultFileSchema.parse(response);
+      },
+      unfavorite: async (fileId) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/files/${fileId}/favorite`,
+          { method: "DELETE" }
+        );
+        return vaultFileSchema.parse(response);
+      },
+      update: async (fileId, payload) => {
+        const response = await requestJson(fetcher, options.baseUrl, `/api/v1/files/${fileId}`, {
+          body: JSON.stringify(payload),
+          method: "PATCH"
+        });
+        return vaultFileSchema.parse(response);
       }
     },
     health: {

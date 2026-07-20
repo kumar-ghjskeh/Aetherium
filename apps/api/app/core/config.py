@@ -4,6 +4,12 @@ from typing import Literal
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.domain.file_vault import (
+    MAX_FILE_SIZE_BYTES,
+    PRESIGNED_DOWNLOAD_EXPIRES_SECONDS,
+    PRESIGNED_UPLOAD_EXPIRES_SECONDS,
+)
+
 DEFAULT_DEV_SESSION_SIGNING_SECRET = "aetherium-dev-session-secret-change-me"
 
 
@@ -33,9 +39,46 @@ class Settings(BaseSettings):
         default="aetherium:",
         validation_alias="AETHERIUM_REDIS_KEY_PREFIX",
     )
+    object_storage_endpoint: str = Field(
+        default="http://localhost:9000",
+        validation_alias="AETHERIUM_OBJECT_STORAGE_ENDPOINT",
+    )
     object_storage_bucket: str = Field(
-        default="aetherium-files-dev",
+        default="aetherium-private-files-dev",
         validation_alias="AETHERIUM_OBJECT_STORAGE_BUCKET",
+    )
+    object_storage_derived_assets_bucket: str = Field(
+        default="aetherium-derived-assets-dev",
+        validation_alias="AETHERIUM_OBJECT_STORAGE_DERIVED_ASSETS_BUCKET",
+    )
+    object_storage_user_avatars_bucket: str = Field(
+        default="aetherium-user-avatars-dev",
+        validation_alias="AETHERIUM_OBJECT_STORAGE_USER_AVATARS_BUCKET",
+    )
+    s3_access_key_id: str | None = Field(
+        default=None,
+        validation_alias="AETHERIUM_S3_ACCESS_KEY_ID",
+    )
+    s3_secret_access_key: str | None = Field(
+        default=None,
+        validation_alias="AETHERIUM_S3_SECRET_ACCESS_KEY",
+    )
+    s3_region: str = Field(default="us-east-1", validation_alias="AETHERIUM_S3_REGION")
+    file_vault_max_upload_bytes: int = Field(
+        default=MAX_FILE_SIZE_BYTES,
+        validation_alias="AETHERIUM_FILE_VAULT_MAX_UPLOAD_BYTES",
+    )
+    file_vault_upload_url_expires_seconds: int = Field(
+        default=PRESIGNED_UPLOAD_EXPIRES_SECONDS,
+        validation_alias="AETHERIUM_FILE_VAULT_UPLOAD_URL_EXPIRES_SECONDS",
+    )
+    file_vault_download_url_expires_seconds: int = Field(
+        default=PRESIGNED_DOWNLOAD_EXPIRES_SECONDS,
+        validation_alias="AETHERIUM_FILE_VAULT_DOWNLOAD_URL_EXPIRES_SECONDS",
+    )
+    file_vault_verify_uploads: bool = Field(
+        default=False,
+        validation_alias="AETHERIUM_FILE_VAULT_VERIFY_UPLOADS",
     )
     session_cookie_name: str = Field(
         default="aetherium_session",
@@ -105,11 +148,34 @@ class Settings(BaseSettings):
 
         return value
 
-    @field_validator("object_storage_bucket")
+    @field_validator(
+        "object_storage_bucket",
+        "object_storage_derived_assets_bucket",
+        "object_storage_user_avatars_bucket",
+    )
     @classmethod
     def require_aetherium_bucket_prefix(cls, value: str) -> str:
         if not value.startswith("aetherium"):
             raise ValueError("Aetherium object-storage buckets must use an 'aetherium' prefix")
+
+        return value
+
+    @field_validator("file_vault_max_upload_bytes")
+    @classmethod
+    def require_positive_file_upload_limit(cls, value: int) -> int:
+        if value < 1:
+            raise ValueError("Aetherium file upload limit must be positive")
+
+        return value
+
+    @field_validator(
+        "file_vault_upload_url_expires_seconds",
+        "file_vault_download_url_expires_seconds",
+    )
+    @classmethod
+    def require_positive_presign_expiration(cls, value: int) -> int:
+        if value < 60:
+            raise ValueError("Aetherium presigned URL expirations must be at least 60 seconds")
 
         return value
 
@@ -144,6 +210,10 @@ class Settings(BaseSettings):
                 raise ValueError("A production Aetherium session signing secret is required")
             if not self.should_secure_session_cookie:
                 raise ValueError("Aetherium production session cookies must be Secure")
+            if not self.file_vault_verify_uploads:
+                raise ValueError("Aetherium production file uploads must verify object storage")
+            if not self.s3_access_key_id or not self.s3_secret_access_key:
+                raise ValueError("Aetherium production object-storage credentials are required")
 
         return self
 

@@ -20,6 +20,11 @@ Core runtime:
 - `AETHERIUM_REDIS_KEY_PREFIX`
 - `AETHERIUM_OBJECT_STORAGE_ENDPOINT`
 - `AETHERIUM_OBJECT_STORAGE_BUCKET`
+- `AETHERIUM_OBJECT_STORAGE_DERIVED_ASSETS_BUCKET`
+- `AETHERIUM_OBJECT_STORAGE_USER_AVATARS_BUCKET`
+- `AETHERIUM_S3_ACCESS_KEY_ID`
+- `AETHERIUM_S3_SECRET_ACCESS_KEY`
+- `AETHERIUM_S3_REGION`
 - `AETHERIUM_CORS_ORIGINS`
 - `NEXT_PUBLIC_AETHERIUM_API_BASE_URL`
 
@@ -52,6 +57,14 @@ Development infrastructure:
 - `AETHERIUM_MINIO_ROOT_PASSWORD`
 - `AETHERIUM_MINIO_API_PORT`
 - `AETHERIUM_MINIO_CONSOLE_PORT`
+- `AETHERIUM_MINIO_CORS_ORIGINS`
+
+Personal Vault:
+
+- `AETHERIUM_FILE_VAULT_MAX_UPLOAD_BYTES`
+- `AETHERIUM_FILE_VAULT_UPLOAD_URL_EXPIRES_SECONDS`
+- `AETHERIUM_FILE_VAULT_DOWNLOAD_URL_EXPIRES_SECONDS`
+- `AETHERIUM_FILE_VAULT_VERIFY_UPLOADS`
 
 Future provider configuration:
 
@@ -73,5 +86,13 @@ and a non-default session signing secret.
 
 ## Object Storage
 
-Development and production buckets must use an `aetherium` prefix. The default development bucket is
-`aetherium-files-dev`; CI uses `aetherium-ci-files`.
+Development and production buckets must use an `aetherium` prefix. The default development buckets
+are:
+
+- `aetherium-private-files-dev`
+- `aetherium-derived-assets-dev`
+- `aetherium-user-avatars-dev`
+
+Production deployments must use separate Aetherium-owned buckets for private originals, derived
+assets, and user avatars. CI must use isolated Aetherium-prefixed bucket names if storage checks are
+enabled.

@@ -21,13 +21,15 @@ Implemented foundation slices:
 - Command Mode application shell with protected `/app` routes, responsive navigation, command
   palette, notification panel, profile menu, settings integration, and a non-visual `/app/world`
   placeholder.
+- Personal Vault file storage with user-owned metadata, presigned upload/download contracts,
+  collections, tags, favorites, deletion state, and Library UI.
 
 Still out of scope unless explicitly requested:
 
 - OAuth, social login, email delivery, password reset, MFA, and magic links.
 - 3D world scenes, React Three Fiber, player controls, map travel, or world progression.
-- File upload, document ingestion, AI chat, retrieval, habits, learning, projects, achievements, or
-  analytics.
+- Document ingestion, search indexing, AI chat, retrieval, habits, learning, projects, achievements,
+  or analytics.
 
 ## Product Independence
 

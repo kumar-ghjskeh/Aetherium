@@ -53,14 +53,16 @@ Implemented Phase 1 foundation slices:
 - Protected Command Mode shell with `/app` routes, responsive navigation, command palette,
   notification panel, profile menu, settings controls backed by the preferences API, and a
   non-visual `/app/world` placeholder.
+- Personal Vault storage for user-owned files, presigned uploads/downloads, collections, tags,
+  favorites, deletion state, and a real Library UI.
 
-3D functionality, AI, file handling, and habits are intentionally deferred.
+3D functionality, AI, document ingestion, search indexing, and habits are intentionally deferred.
 
 ## Non-Goals For Current Slice
 
 - No OAuth, social login, email delivery, password reset, MFA, or magic links.
 - No 3D scene or world interaction.
-- No file upload or ingestion.
+- No document ingestion, extracted-text search, embeddings, or citation-backed file Q&A.
 - No AI provider calls.
 - No habit, task, project, or learning domain behavior.
 - No claims that user-facing product workflows are complete.
@@ -79,3 +81,6 @@ Implemented Phase 1 foundation slices:
   only while authenticated.
 - A signed-in user can navigate the protected `/app` route family, open the command palette with
   `Ctrl/Cmd + K`, inspect notifications, and update implemented preference fields.
+- A signed-in user can upload supported files into the Personal Vault, list them in Library, create
+  collections, add tags, mark favorites, request expiring download URLs, soft delete, restore, and
+  permanently delete their own files.

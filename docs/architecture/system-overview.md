@@ -25,20 +25,24 @@ User
 ## Current Scaffold
 
 The current implemented slices provide the infrastructure shell, standalone authentication
-foundation, user-owned foundation, and protected Command Mode shell:
+foundation, user-owned foundation, protected Command Mode shell, and Personal Vault storage:
 
 - `apps/api`: FastAPI app, database settings, Alembic, health endpoints.
 - `apps/web`: Next.js App Router scaffold, web health route, auth UI, and protected `/app` Command
   Mode route family.
 - `packages/shared-types`: TypeScript contracts shared by frontend packages.
 - `packages/validation`: Zod schemas that validate API contract payloads.
-- `packages/api-client`: Typed API client for health, auth, and user-owned foundation APIs.
+- `packages/api-client`: Typed API client for health, auth, user-owned foundation, and Personal
+  Vault APIs.
 - Identity domain: Aetherium-owned `users` and `sessions` tables, Argon2id password hashing,
   server-side session revocation, and product-specific cookies.
 - User-owned foundation: preferences, non-visual world profile state, domain events, notifications,
   audit logs, ownership checks, and pagination.
 - Command Mode shell: responsive navigation, command palette, notifications panel, profile menu,
   settings controls, and real API-backed loading, empty, and error states.
+- Personal Vault: user-owned file metadata, presigned upload/download contracts, S3-compatible
+  object storage abstraction, collections, tags, favorites, soft deletion, permanent deletion, and a
+  Library page that avoids fake search or ingestion data.
 
 ## Frontend Boundaries
 
@@ -52,7 +56,7 @@ Three.js, React Three Fiber, scene assets, or player/camera controls until the v
 Backend domains will be added incrementally:
 
 - Additional world configuration and user world state beyond the current non-visual profile.
-- Files and knowledge.
+- File ingestion, search, and knowledge extraction on top of the current Personal Vault records.
 - AI conversations and mentors.
 - Learning.
 - Habits, goals, tasks, and projects.
@@ -76,6 +80,8 @@ plus reusable dependencies.
   dependency rather than route-local cookie parsing.
 - User-owned foundation routes are under `/api/v1/settings`, `/api/v1/world`,
   `/api/v1/domain-events`, `/api/v1/notifications`, and `/api/v1/audit-logs`.
+- Personal Vault routes are under `/api/v1/files` and use owner-scoped services plus presigned
+  object-storage URLs.
 - Streaming AI responses will use server-sent events or another explicit streaming response later.
 
 ## Configuration
