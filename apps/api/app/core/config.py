@@ -4,6 +4,16 @@ from typing import Literal
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.domain.ai import (
+    AETHERIUM_DETERMINISTIC_PROVIDER,
+    ANTHROPIC_PROVIDER,
+    DEFAULT_CHAT_MODEL_BY_PROVIDER,
+    DEFAULT_EMBEDDING_MODEL_BY_PROVIDER,
+    DISABLED_PROVIDER,
+    KNOWN_PROVIDER_NAMES,
+    OLLAMA_PROVIDER,
+    OPENAI_PROVIDER,
+)
 from app.domain.file_ingestion import (
     DEFAULT_CHUNK_OVERLAP_CHARS,
     DEFAULT_CHUNK_SIZE_CHARS,
@@ -109,6 +119,63 @@ class Settings(BaseSettings):
     worker_poll_seconds: int = Field(
         default=DEFAULT_WORKER_POLL_SECONDS,
         validation_alias="AETHERIUM_WORKER_POLL_SECONDS",
+    )
+    ai_provider_default: str = Field(
+        default=DISABLED_PROVIDER,
+        validation_alias="AETHERIUM_AI_PROVIDER_DEFAULT",
+    )
+    ai_external_calls_enabled: bool = Field(
+        default=False,
+        validation_alias="AETHERIUM_AI_EXTERNAL_CALLS_ENABLED",
+    )
+    ai_openai_api_key: str | None = Field(
+        default=None, validation_alias="AETHERIUM_AI_OPENAI_API_KEY"
+    )
+    ai_openai_base_url: str = Field(
+        default="https://api.openai.com/v1",
+        validation_alias="AETHERIUM_AI_OPENAI_BASE_URL",
+    )
+    ai_openai_chat_model: str = Field(
+        default=DEFAULT_CHAT_MODEL_BY_PROVIDER[OPENAI_PROVIDER],
+        validation_alias="AETHERIUM_AI_OPENAI_CHAT_MODEL",
+    )
+    ai_openai_embedding_model: str = Field(
+        default=DEFAULT_EMBEDDING_MODEL_BY_PROVIDER[OPENAI_PROVIDER],
+        validation_alias="AETHERIUM_AI_OPENAI_EMBEDDING_MODEL",
+    )
+    ai_anthropic_api_key: str | None = Field(
+        default=None,
+        validation_alias="AETHERIUM_AI_ANTHROPIC_API_KEY",
+    )
+    ai_anthropic_base_url: str = Field(
+        default="https://api.anthropic.com",
+        validation_alias="AETHERIUM_AI_ANTHROPIC_BASE_URL",
+    )
+    ai_anthropic_chat_model: str = Field(
+        default=DEFAULT_CHAT_MODEL_BY_PROVIDER[ANTHROPIC_PROVIDER],
+        validation_alias="AETHERIUM_AI_ANTHROPIC_CHAT_MODEL",
+    )
+    ai_ollama_base_url: str = Field(
+        default="http://localhost:11434",
+        validation_alias="AETHERIUM_AI_OLLAMA_BASE_URL",
+    )
+    ai_ollama_chat_model: str = Field(
+        default=DEFAULT_CHAT_MODEL_BY_PROVIDER[OLLAMA_PROVIDER],
+        validation_alias="AETHERIUM_AI_OLLAMA_CHAT_MODEL",
+    )
+    ai_ollama_embedding_model: str = Field(
+        default=DEFAULT_EMBEDDING_MODEL_BY_PROVIDER[OLLAMA_PROVIDER],
+        validation_alias="AETHERIUM_AI_OLLAMA_EMBEDDING_MODEL",
+    )
+    ai_timeout_seconds: int = Field(default=30, validation_alias="AETHERIUM_AI_TIMEOUT_SECONDS")
+    ai_max_retries: int = Field(default=1, validation_alias="AETHERIUM_AI_MAX_RETRIES")
+    ai_rate_limit_attempts: int = Field(
+        default=10,
+        validation_alias="AETHERIUM_AI_RATE_LIMIT_ATTEMPTS",
+    )
+    ai_rate_limit_window_seconds: int = Field(
+        default=60,
+        validation_alias="AETHERIUM_AI_RATE_LIMIT_WINDOW_SECONDS",
     )
     session_cookie_name: str = Field(
         default="aetherium_session",
@@ -226,6 +293,34 @@ class Settings(BaseSettings):
 
         return value
 
+    @field_validator("ai_provider_default")
+    @classmethod
+    def require_known_ai_provider(cls, value: str) -> str:
+        if value not in KNOWN_PROVIDER_NAMES:
+            raise ValueError("Unknown Aetherium AI provider")
+
+        return value
+
+    @field_validator(
+        "ai_timeout_seconds",
+        "ai_rate_limit_attempts",
+        "ai_rate_limit_window_seconds",
+    )
+    @classmethod
+    def require_positive_ai_numbers(cls, value: int) -> int:
+        if value < 1:
+            raise ValueError("Aetherium AI numeric settings must be positive")
+
+        return value
+
+    @field_validator("ai_max_retries")
+    @classmethod
+    def require_nonnegative_ai_retries(cls, value: int) -> int:
+        if value < 0:
+            raise ValueError("Aetherium AI retry count must not be negative")
+
+        return value
+
     @field_validator(
         "file_vault_upload_url_expires_seconds",
         "file_vault_download_url_expires_seconds",
@@ -272,8 +367,20 @@ class Settings(BaseSettings):
                 raise ValueError("Aetherium production file uploads must verify object storage")
             if not self.s3_access_key_id or not self.s3_secret_access_key:
                 raise ValueError("Aetherium production object-storage credentials are required")
+            if self.ai_provider_default == AETHERIUM_DETERMINISTIC_PROVIDER:
+                raise ValueError("Aetherium production AI provider must not be deterministic")
         if self.file_ingestion_chunk_overlap_chars >= self.file_ingestion_chunk_size_chars:
             raise ValueError("Aetherium ingestion chunk overlap must be smaller than chunk size")
+        if (
+            self.ai_provider_default != DISABLED_PROVIDER
+            and self.ai_provider_default != AETHERIUM_DETERMINISTIC_PROVIDER
+        ):
+            if not self.ai_external_calls_enabled:
+                raise ValueError("Aetherium external AI calls must be explicitly enabled")
+            if self.ai_provider_default == OPENAI_PROVIDER and not self.ai_openai_api_key:
+                raise ValueError("Aetherium OpenAI-compatible API key is required")
+            if self.ai_provider_default == ANTHROPIC_PROVIDER and not self.ai_anthropic_api_key:
+                raise ValueError("Aetherium Anthropic-compatible API key is required")
 
         return self
 

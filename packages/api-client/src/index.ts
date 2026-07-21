@@ -1,5 +1,17 @@
 import type {
   ApiErrorBody,
+  AIChatCompletionRequest,
+  AIChatCompletionResponse,
+  AIConsentPolicyPage,
+  AIConsentPolicyUpdate,
+  AIEmbeddingRequest,
+  AIEmbeddingResponse,
+  AIFeature,
+  AIModelConfigurationPage,
+  AIModelConfigurationUpdate,
+  AIProviderPage,
+  AIUsageQuery,
+  AIUsageRecordPage,
   AuditLogPage,
   AuthResponse,
   Collection,
@@ -41,6 +53,14 @@ import type {
   WorldVisitRequest
 } from "@aetherium/shared-types";
 import {
+  aiChatCompletionResponseSchema,
+  aiConsentPolicyPageSchema,
+  aiConsentPolicySchema,
+  aiEmbeddingResponseSchema,
+  aiModelConfigurationPageSchema,
+  aiModelConfigurationSchema,
+  aiProviderPageSchema,
+  aiUsageRecordPageSchema,
   apiErrorBodySchema,
   auditLogPageSchema,
   authResponseSchema,
@@ -72,6 +92,23 @@ export interface AetheriumApiClientOptions {
 }
 
 export interface AetheriumApiClient {
+  ai: {
+    completeChat: (payload: AIChatCompletionRequest) => Promise<AIChatCompletionResponse>;
+    createEmbeddings: (payload: AIEmbeddingRequest) => Promise<AIEmbeddingResponse>;
+    listConsent: () => Promise<AIConsentPolicyPage>;
+    listModelConfigs: () => Promise<AIModelConfigurationPage>;
+    listProviders: () => Promise<AIProviderPage>;
+    listUsage: (query?: AIUsageQuery) => Promise<AIUsageRecordPage>;
+    streamChat: (payload: AIChatCompletionRequest) => Promise<Response>;
+    updateConsent: (
+      feature: AIFeature,
+      payload: AIConsentPolicyUpdate
+    ) => Promise<AIConsentPolicyPage["items"][number]>;
+    updateModelConfig: (
+      feature: AIFeature,
+      payload: AIModelConfigurationUpdate
+    ) => Promise<AIModelConfigurationPage["items"][number]>;
+  };
   auditLogs: {
     list: (query?: { limit?: number; offset?: number }) => Promise<AuditLogPage>;
   };
@@ -195,6 +232,14 @@ function notificationQuery(query?: NotificationListQuery): string {
   ]);
 }
 
+function aiUsageQuery(query?: AIUsageQuery): string {
+  return queryString([
+    ["feature", query?.feature],
+    ["limit", query?.limit],
+    ["offset", query?.offset]
+  ]);
+}
+
 function fileListQuery(query?: FileListQuery): string {
   return queryString([
     ["collectionId", query?.collectionId],
@@ -252,6 +297,89 @@ export function createAetheriumApiClient(options: AetheriumApiClientOptions): Ae
   const fetcher = options.fetcher ?? fetch;
 
   return {
+    ai: {
+      completeChat: async (payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          "/api/v1/ai/chat/completions",
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return aiChatCompletionResponseSchema.parse(response);
+      },
+      createEmbeddings: async (payload) => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/ai/embeddings", {
+          body: JSON.stringify(payload),
+          method: "POST"
+        });
+        return aiEmbeddingResponseSchema.parse(response);
+      },
+      listConsent: async () => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/ai/consent");
+        return aiConsentPolicyPageSchema.parse(response);
+      },
+      listModelConfigs: async () => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/ai/model-configs");
+        return aiModelConfigurationPageSchema.parse(response);
+      },
+      listProviders: async () => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/ai/providers");
+        return aiProviderPageSchema.parse(response);
+      },
+      listUsage: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/ai/usage${aiUsageQuery(query)}`
+        );
+        return aiUsageRecordPageSchema.parse(response);
+      },
+      streamChat: async (payload) => {
+        const response = await fetcher(
+          `${normalizeBaseUrl(options.baseUrl)}/api/v1/ai/chat/completions/stream`,
+          {
+            body: JSON.stringify(payload),
+            credentials: "include",
+            headers: {
+              Accept: "text/event-stream",
+              "Content-Type": "application/json"
+            },
+            method: "POST"
+          }
+        );
+        if (!response.ok) {
+          throw new AetheriumApiError(response.status, await parseErrorResponse(response));
+        }
+        return response;
+      },
+      updateConsent: async (feature, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/ai/consent/${feature}`,
+          {
+            body: JSON.stringify(payload),
+            method: "PATCH"
+          }
+        );
+        return aiConsentPolicySchema.parse(response);
+      },
+      updateModelConfig: async (feature, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/ai/model-configs/${feature}`,
+          {
+            body: JSON.stringify(payload),
+            method: "PUT"
+          }
+        );
+        return aiModelConfigurationSchema.parse(response);
+      }
+    },
     auditLogs: {
       list: async (query) => {
         const response = await requestJson(

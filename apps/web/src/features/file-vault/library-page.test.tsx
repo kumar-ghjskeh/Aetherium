@@ -96,6 +96,17 @@ function createClient(overrides: Partial<AetheriumApiClient["files"]> = {}): Aet
   const reject = () => Promise.reject(new Error("Unexpected non-file call"));
 
   return {
+    ai: {
+      completeChat: vi.fn(reject),
+      createEmbeddings: vi.fn(reject),
+      listConsent: vi.fn(reject),
+      listModelConfigs: vi.fn(reject),
+      listProviders: vi.fn(reject),
+      listUsage: vi.fn(reject),
+      streamChat: vi.fn(reject),
+      updateConsent: vi.fn(reject),
+      updateModelConfig: vi.fn(reject)
+    },
     auditLogs: { list: vi.fn(reject) },
     auth: {
       login: vi.fn(reject),

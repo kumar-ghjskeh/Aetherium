@@ -57,5 +57,5 @@ count. Search uses `POST /api/v1/search` because recording a recent search write
 ## Semantic Boundary
 
 The API supports a `hybrid` mode contract, but `semanticEnabled` is currently `false`. Embedding
-generation, vector ranking, reranking, and AI retrieval are deferred until the AI gateway and
-consent controls are implemented.
+generation, vector ranking, reranking, and AI retrieval are deferred until a later semantic-search
+slice wires embedding jobs to the AI gateway with explicit consent controls.

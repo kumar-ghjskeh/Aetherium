@@ -7,15 +7,27 @@ rate limits, cost tracking, and source attribution rules.
 
 ## Current Status
 
-No AI provider integration is implemented in the current slice.
+The provider-neutral gateway foundation is implemented under `/api/v1/ai`.
+
+Implemented:
+
+- Provider metadata for Aetherium deterministic, OpenAI-compatible, Anthropic-compatible, and
+  Ollama-compatible adapters.
+- Owner-scoped consent policies that default to no external provider access and no automatic data
+  category access.
+- Owner-scoped feature model configurations.
+- Chat completion, streaming-response, and embedding gateway endpoints.
+- Metadata-only usage records for provider, model, feature, operation, status, token counts, cost
+  estimate placeholder, latency, fallback, and normalized errors.
+- Rate-limit, retry, timeout, and fallback foundations.
 
 Keyword search over owner-scoped files, extracted chunks, collections, and tags is implemented under
-`/api/v1/search`. Semantic ranking, embeddings, reranking, AI answer generation, and citations are
-not implemented yet.
+`/api/v1/search`. Semantic ranking, AI retrieval, reranking, citation-backed answer generation, and
+mentor conversations are not implemented yet.
 
 ## Required Capabilities
 
-Future adapters must support:
+Adapters support or reserve contracts for:
 
 - Chat completions.
 - Streaming.
@@ -35,9 +47,9 @@ Initial adapter targets:
 - Anthropic-compatible APIs.
 - Ollama-compatible local endpoints.
 
-## Retrieval
+## Retrieval Boundary
 
-The first AI retrieval implementation should build on PostgreSQL:
+The later AI retrieval implementation should build on PostgreSQL:
 
 - Full-text search.
 - pgvector embeddings.
@@ -52,6 +64,9 @@ insufficient.
 ## Privacy Rules
 
 - Do not send user content to external providers without feature-level consent.
+- External provider calls require both environment enablement and user consent.
+- Do not automatically attach uploaded files, conversations, projects, learning records, habits, or
+  profile data to gateway requests.
 - Do not silently modify user data from AI suggestions.
 - Require confirmation before destructive changes or externally visible actions.
 - Do not log raw sensitive prompts or full private documents by default.

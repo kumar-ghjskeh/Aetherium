@@ -75,12 +75,24 @@ Background ingestion:
 - `AETHERIUM_FILE_INGESTION_QUEUE_NAME`
 - `AETHERIUM_WORKER_POLL_SECONDS`
 
-Future provider configuration:
+AI gateway:
 
 - `AETHERIUM_AI_PROVIDER_DEFAULT`
+- `AETHERIUM_AI_EXTERNAL_CALLS_ENABLED`
 - `AETHERIUM_AI_OPENAI_API_KEY`
+- `AETHERIUM_AI_OPENAI_BASE_URL`
+- `AETHERIUM_AI_OPENAI_CHAT_MODEL`
+- `AETHERIUM_AI_OPENAI_EMBEDDING_MODEL`
 - `AETHERIUM_AI_ANTHROPIC_API_KEY`
+- `AETHERIUM_AI_ANTHROPIC_BASE_URL`
+- `AETHERIUM_AI_ANTHROPIC_CHAT_MODEL`
 - `AETHERIUM_AI_OLLAMA_BASE_URL`
+- `AETHERIUM_AI_OLLAMA_CHAT_MODEL`
+- `AETHERIUM_AI_OLLAMA_EMBEDDING_MODEL`
+- `AETHERIUM_AI_TIMEOUT_SECONDS`
+- `AETHERIUM_AI_MAX_RETRIES`
+- `AETHERIUM_AI_RATE_LIMIT_ATTEMPTS`
+- `AETHERIUM_AI_RATE_LIMIT_WINDOW_SECONDS`
 
 ## Redis Namespace
 
@@ -106,3 +118,15 @@ are:
 Production deployments must use separate Aetherium-owned buckets for private originals, derived
 assets, and user avatars. CI must use isolated Aetherium-prefixed bucket names if storage checks are
 enabled.
+
+## AI Providers
+
+The default AI provider is disabled unless `AETHERIUM_AI_PROVIDER_DEFAULT` is set. Local tests may
+set `AETHERIUM_AI_PROVIDER_DEFAULT=aetherium_deterministic` to exercise gateway contracts without an
+external network call. Production rejects that deterministic provider.
+
+External provider calls require both `AETHERIUM_AI_EXTERNAL_CALLS_ENABLED=true` and feature-level
+user consent stored in Aetherium's database. OpenAI-compatible and Anthropic-compatible providers
+also require Aetherium-specific API keys supplied by the deployment secret manager. Provider keys,
+base URLs, model names, timeout settings, retry settings, and rate-limit settings must not be shared
+with another private product.

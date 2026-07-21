@@ -23,6 +23,8 @@ Current migrations:
   job placeholders, and processing failures.
 - `0006_hybrid_search`: creates owner-scoped recent searches and PostgreSQL full-text expression
   indexes for implemented search targets.
+- `0007_ai_gateway`: creates owner-scoped AI consent policies, model configurations, and usage
+  records.
 
 ### `users`
 
@@ -126,8 +128,8 @@ Cross-user IDs are treated as not found.
 - Timestamps.
 
 The file record is the source of truth for original object storage and visible processing state.
-Extracted chunks are stored in the ingestion tables below. User-facing search, embeddings, and
-retrieval are added by later phases.
+Extracted chunks are stored in the ingestion tables below. User-facing metadata and chunk search are
+implemented; embeddings and AI retrieval are added by later phases.
 
 ### `file_versions`
 
@@ -192,7 +194,7 @@ worker does not accept a client-supplied owner identifier; it loads ownership fr
 - Extracted chunk text, normalized `search_text`, token estimate, page number or section label,
   status, source metadata, and optional future embedding payload.
 
-Chunks are ready for the later search phase but are not exposed as global search results yet.
+Chunks are exposed through owner-scoped file detail APIs and the global search result contract.
 
 ### `embedding_jobs`
 
@@ -201,8 +203,8 @@ Chunks are ready for the later search phase but are not exposed as global search
 - Status, provider/model placeholders, attempt counts, retry timing, completion timestamp, and last
   bounded error.
 
-Embedding jobs are skipped by default until the AI gateway and semantic-search phases implement
-provider adapters and user consent controls.
+Embedding jobs are skipped by default until a later semantic-search slice wires those jobs to the AI
+gateway with explicit user consent controls.
 
 ### `processing_failures`
 
@@ -235,6 +237,56 @@ PostgreSQL deployments also include full-text expression indexes over:
 - Collection name and description.
 - Tag name.
 
+## AI Gateway Schema
+
+### `ai_consent_policies`
+
+- UUID primary key.
+- `owner_user_id` foreign key to `users.id`.
+- Feature identifier.
+- External-provider consent flag.
+- Per-category consent flags for file content, collections, conversations, projects, learning
+  records, habit data, and profile data.
+- Optional allowed collection IDs for later retrieval scopes.
+- Unique owner/feature constraint.
+- Timestamps.
+
+Consent rows default to no external provider access and no automatic data-category access.
+
+### `ai_model_configurations`
+
+- UUID primary key.
+- `owner_user_id` foreign key to `users.id`.
+- Feature identifier.
+- Provider name and provider kind.
+- Model name.
+- Optional fallback provider and model.
+- Temperature, maximum output tokens, and enabled flag.
+- Unique owner/feature constraint.
+- Timestamps.
+
+### `ai_usage_records`
+
+- UUID primary key.
+- `owner_user_id` foreign key to `users.id`.
+- Request ID unique per owner.
+- Feature, provider, model, operation, status, token counts, cost estimate placeholder, latency, and
+  fallback flag.
+- Optional normalized error code and bounded message.
+- Timestamps and owner/feature indexes.
+
+Usage records are metadata-only and must not store raw prompts, raw responses, provider API keys,
+cookies, or session tokens.
+
+## Retrieval Model
+
+File chunks currently store extracted text, normalized `search_text`, source metadata, and owner
+scope. Current search uses those chunks for owner-scoped full-text results. Later retrieval phases
+will add optional embeddings, reranking, and AI context assembly.
+
+AI citations must reference retrieved chunks. Answers must not claim file support when retrieval did
+not produce evidence.
+
 ## Planned Later Tables
 
 Later schema slices will cover:
@@ -247,12 +299,3 @@ Later schema slices will cover:
 - `habits`, `habit_schedules`, `habit_logs`.
 - `goals`, `milestones`, `tasks`, `projects`, `project_files`.
 - `achievements`, `achievement_rules`, `user_achievements`.
-- `ai_usage_records`.
-
-## Retrieval Model
-
-File chunks currently store extracted text, normalized `search_text`, source metadata, and owner
-scope. Later search phases will add full-text ranking structures and optional embeddings.
-
-AI citations must reference retrieved chunks. Answers must not claim file support when retrieval did
-not produce evidence.

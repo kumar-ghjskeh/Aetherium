@@ -32,7 +32,7 @@ and future background-worker coordination, while durable job state stays in Post
 slice.
 
 Embeddings are represented by `embedding_jobs`, but embedding generation is skipped by default until
-the provider-neutral AI gateway and semantic search phases provide a real embedding adapter and user
+a later semantic search phase wires those jobs to the provider-neutral AI gateway with explicit user
 consent controls.
 
 ## Consequences

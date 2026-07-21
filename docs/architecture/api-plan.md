@@ -47,11 +47,19 @@ Current routes:
 - `GET /api/v1/files/{file_id}/chunks`
 - `POST /api/v1/search`
 - `GET /api/v1/search/recent`
+- `GET /api/v1/ai/providers`
+- `GET /api/v1/ai/consent`
+- `PATCH /api/v1/ai/consent/{feature}`
+- `GET /api/v1/ai/model-configs`
+- `PUT /api/v1/ai/model-configs/{feature}`
+- `GET /api/v1/ai/usage`
+- `POST /api/v1/ai/chat/completions`
+- `POST /api/v1/ai/chat/completions/stream`
+- `POST /api/v1/ai/embeddings`
 
 Planned route groups:
 
 - `/api/v1/users`
-- `/api/v1/ai`
 - `/api/v1/mentors`
 - `/api/v1/learning`
 - `/api/v1/habits`
@@ -181,6 +189,29 @@ response includes snippets, match reasons, open URLs, and future world-location 
 
 `GET /api/v1/search/recent` lists only the authenticated user's recent searches with bounded
 pagination.
+
+## AI Gateway Routes
+
+`GET /api/v1/ai/providers` returns provider metadata and configured status without exposing secrets.
+
+`GET /api/v1/ai/consent` returns owner-scoped AI consent policies for each supported feature.
+Policies default to no external provider access and no automatic data-category access.
+
+`PATCH /api/v1/ai/consent/{feature}` updates the authenticated user's feature consent policy and
+writes a sanitized audit log.
+
+`GET /api/v1/ai/model-configs` returns owner-scoped feature model configuration.
+
+`PUT /api/v1/ai/model-configs/{feature}` updates the selected provider, model, fallback,
+temperature, max output tokens, and enabled state for one feature.
+
+`GET /api/v1/ai/usage` returns paginated metadata-only usage records. Usage records do not include
+raw prompts or model responses.
+
+`POST /api/v1/ai/chat/completions`, `POST /api/v1/ai/chat/completions/stream`, and
+`POST /api/v1/ai/embeddings` call the provider-neutral gateway. External providers require
+environment enablement and explicit user consent. These routes do not retrieve files or create
+mentor conversations in this slice.
 
 ## Generated Client
 

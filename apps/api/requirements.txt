@@ -6,6 +6,7 @@ dramatiq[redis]>=1.17.0,<2
 email-validator>=2.2.0,<3
 fastapi>=0.115.0,<1
 greenlet>=3.1.0,<4
+httpx>=0.28.0,<1
 pydantic>=2.10.0,<3
 pydantic-settings>=2.7.0,<3
 pypdf>=5.0.0,<6

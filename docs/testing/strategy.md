@@ -26,6 +26,10 @@ Backend:
   derivative cleanup on permanent deletion.
 - Search backend tests for result production across files, chunks, collections, and tags; entity
   filters; pagination; recent searches; authentication; and cross-user isolation.
+- AI gateway backend tests for provider metadata, default owner-scoped consent and model
+  configuration, deterministic chat and embeddings, usage records that exclude raw prompts,
+  external-provider blocking, data-category consent, rate limiting, fallback behavior,
+  unauthenticated access, cross-user isolation, database uniqueness, and settings guardrails.
 - Alembic migration smoke validation against PostgreSQL in CI.
 - Ruff formatting and linting.
 - mypy type checking.
@@ -47,6 +51,7 @@ Frontend and shared packages:
   methods.
 - API-client contract tests for processing jobs, retries, and file chunks.
 - API-client contract tests for global search and recent-search endpoints.
+- API-client contract tests for provider-neutral AI gateway endpoints.
 - Next.js build validation.
 - React Testing Library coverage for the Library page, including loading, empty, error, upload,
   favorite, tag, delete, processing failure, and retry states.
@@ -59,7 +64,8 @@ Frontend and shared packages:
 - Factory fixtures for user-owned records.
 - Authorization tests for every critical endpoint.
 - Broader parser-specific ingestion tests for PDF, DOCX, image/OCR, and malformed document cases.
-- AI gateway contract tests with fake providers.
+- AI mentor, conversation, and citation-backed document Q&A tests using fake providers and fixture
+  retrieval results.
 
 ## Future Frontend Tests
 

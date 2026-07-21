@@ -30,7 +30,8 @@ future world-location identifier, and source metadata for file chunks.
 count. Search is a POST endpoint because recording a recent search is a write.
 
 Semantic search is represented by the `hybrid` mode contract but `semanticEnabled` remains `false`
-until the AI gateway, embedding jobs, and consent controls are implemented.
+until a later semantic-search slice wires embedding jobs to the AI gateway with explicit consent
+controls.
 
 ## Consequences
 

@@ -14,7 +14,7 @@ User
                   +-- FastAPI /api/v1
                           |
                           +-- Domain Services
-                          +-- AI Gateway later
+                          +-- AI Gateway
                           +-- Background Worker
                           |
                           +-- PostgreSQL + pgvector
@@ -26,15 +26,15 @@ User
 
 The current implemented slices provide the infrastructure shell, standalone authentication
 foundation, user-owned foundation, protected Command Mode shell, Personal Vault storage, background
-file ingestion, and global search:
+file ingestion, global search, and provider-neutral AI gateway:
 
 - `apps/api`: FastAPI app, database settings, Alembic, health endpoints.
 - `apps/web`: Next.js App Router scaffold, web health route, auth UI, and protected `/app` Command
   Mode route family.
 - `packages/shared-types`: TypeScript contracts shared by frontend packages.
 - `packages/validation`: Zod schemas that validate API contract payloads.
-- `packages/api-client`: Typed API client for health, auth, user-owned foundation, and Personal
-  Vault APIs.
+- `packages/api-client`: Typed API client for health, auth, user-owned foundation, Personal Vault,
+  search, and AI gateway APIs.
 - Identity domain: Aetherium-owned `users` and `sessions` tables, Argon2id password hashing,
   server-side session revocation, and product-specific cookies.
 - User-owned foundation: preferences, non-visual world profile state, domain events, notifications,
@@ -45,11 +45,13 @@ file ingestion, and global search:
   object storage abstraction, collections, tags, favorites, soft deletion, permanent deletion, and a
   Library page that avoids fake search or AI data while showing real processing state.
 - File ingestion: durable processing jobs, a standalone worker process, text extraction, chunk
-  storage, failure records, retry APIs, and Library retry controls. Chunks are prepared for later
-  search and retrieval but are not yet a user-facing search feature.
+  storage, failure records, retry APIs, and Library retry controls.
 - Search: owner-scoped global search over files, extracted chunks, collections, and tags with recent
   search persistence and Command Palette integration. Semantic/vector ranking remains disabled until
-  the AI gateway and embedding phases.
+  a later retrieval slice wires embedding jobs to the AI gateway with consent.
+- AI gateway: provider metadata, owner-scoped consent policies, feature model configurations, chat
+  completions, streaming responses, embeddings, metadata-only usage records, rate limits, retries,
+  and fallback. It does not create mentor conversations or retrieve files in this slice.
 
 ## Frontend Boundaries
 
@@ -63,8 +65,8 @@ Three.js, React Three Fiber, scene assets, or player/camera controls until the v
 Backend domains will be added incrementally:
 
 - Additional world configuration and user world state beyond the current non-visual profile.
-- Semantic retrieval and knowledge extraction on top of the current Personal Vault, ingestion, and
-  search records.
+- Semantic retrieval and knowledge extraction on top of the current Personal Vault, ingestion,
+  search, and AI gateway records.
 - AI conversations and mentors.
 - Learning.
 - Habits, goals, tasks, and projects.
@@ -94,7 +96,8 @@ plus reusable dependencies.
   and extracted chunks.
 - Search routes are under `/api/v1/search` and expose owner-scoped query results plus recent
   searches.
-- Streaming AI responses will use server-sent events or another explicit streaming response later.
+- AI gateway routes are under `/api/v1/ai` and expose provider metadata, consent policies, model
+  configuration, usage records, chat completions, streaming responses, and embeddings.
 
 ## Configuration
 

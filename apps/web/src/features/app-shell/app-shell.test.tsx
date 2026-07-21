@@ -162,6 +162,17 @@ function createClient(
   }> = {}
 ): AetheriumApiClient {
   return {
+    ai: {
+      completeChat: vi.fn(() => Promise.reject(new Error("unused"))),
+      createEmbeddings: vi.fn(() => Promise.reject(new Error("unused"))),
+      listConsent: vi.fn(() => Promise.reject(new Error("unused"))),
+      listModelConfigs: vi.fn(() => Promise.reject(new Error("unused"))),
+      listProviders: vi.fn(() => Promise.reject(new Error("unused"))),
+      listUsage: vi.fn(() => Promise.reject(new Error("unused"))),
+      streamChat: vi.fn(() => Promise.reject(new Error("unused"))),
+      updateConsent: vi.fn(() => Promise.reject(new Error("unused"))),
+      updateModelConfig: vi.fn(() => Promise.reject(new Error("unused")))
+    },
     auditLogs: {
       list: vi.fn(() => Promise.resolve(emptyAuditLogPage))
     },

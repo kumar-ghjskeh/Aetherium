@@ -516,6 +516,225 @@ export const recentSearchPageSchema = z.object({
   total: z.number().int().min(0)
 });
 
+export const aiFeatureSchema = z.enum([
+  "general_chat",
+  "embeddings",
+  "document_qa",
+  "mentor_chat",
+  "learning_assistant",
+  "coding_assistant"
+]);
+
+export const aiProviderKindSchema = z.enum([
+  "aetherium_deterministic",
+  "openai_compatible",
+  "anthropic_compatible",
+  "ollama_compatible"
+]);
+
+export const aiProviderCapabilitySchema = z.enum([
+  "chat",
+  "streaming_chat",
+  "embeddings",
+  "structured_outputs",
+  "tool_calling"
+]);
+
+export const aiMessageRoleSchema = z.enum(["system", "user", "assistant", "tool"]);
+
+export const aiDataCategorySchema = z.enum([
+  "file_content",
+  "collections",
+  "conversations",
+  "projects",
+  "learning_records",
+  "habit_data",
+  "profile_data"
+]);
+
+export const aiOperationSchema = z.enum([
+  "chat_completion",
+  "streaming_chat_completion",
+  "embedding"
+]);
+
+export const aiUsageStatusSchema = z.enum(["success", "failed", "blocked", "rate_limited"]);
+
+export const aiResponseFormatSchema = z.enum(["text", "json_object"]);
+
+export const aiProviderSchema = z.object({
+  capabilities: z.array(aiProviderCapabilitySchema),
+  configured: z.boolean(),
+  defaultChatModel: z.string().nullable(),
+  defaultEmbeddingModel: z.string().nullable(),
+  displayName: z.string().min(1),
+  external: z.boolean(),
+  kind: aiProviderKindSchema,
+  name: z.string().min(1)
+});
+
+export const aiProviderPageSchema = z.object({
+  items: z.array(aiProviderSchema)
+});
+
+export const aiConsentPolicySchema = z.object({
+  allowCollections: z.boolean(),
+  allowConversations: z.boolean(),
+  allowFileContent: z.boolean(),
+  allowHabitData: z.boolean(),
+  allowLearningRecords: z.boolean(),
+  allowProfileData: z.boolean(),
+  allowProjects: z.boolean(),
+  allowedCollectionIds: z.array(z.string()),
+  createdAt: z.string().min(1),
+  externalProvidersAllowed: z.boolean(),
+  feature: aiFeatureSchema,
+  id: z.string().uuid(),
+  updatedAt: z.string().min(1)
+});
+
+export const aiConsentPolicyPageSchema = z.object({
+  items: z.array(aiConsentPolicySchema)
+});
+
+export const aiConsentPolicyUpdateSchema = z
+  .object({
+    allowCollections: z.boolean().optional(),
+    allowConversations: z.boolean().optional(),
+    allowFileContent: z.boolean().optional(),
+    allowHabitData: z.boolean().optional(),
+    allowLearningRecords: z.boolean().optional(),
+    allowProfileData: z.boolean().optional(),
+    allowProjects: z.boolean().optional(),
+    allowedCollectionIds: z.array(z.string()).optional(),
+    externalProvidersAllowed: z.boolean().optional()
+  })
+  .refine((value) => Object.keys(value).length > 0, {
+    message: "At least one AI consent field is required."
+  });
+
+export const aiModelConfigurationSchema = z.object({
+  createdAt: z.string().min(1),
+  enabled: z.boolean(),
+  fallbackModelName: z.string().nullable(),
+  fallbackProviderName: z.string().nullable(),
+  feature: aiFeatureSchema,
+  id: z.string().uuid(),
+  maxOutputTokens: z.number().int().positive(),
+  modelName: z.string().min(1),
+  providerKind: aiProviderKindSchema,
+  providerName: z.string().min(1),
+  temperature: z.number().min(0).max(2),
+  updatedAt: z.string().min(1)
+});
+
+export const aiModelConfigurationPageSchema = z.object({
+  items: z.array(aiModelConfigurationSchema)
+});
+
+export const aiModelConfigurationUpdateSchema = z
+  .object({
+    enabled: z.boolean().optional(),
+    fallbackModelName: z.string().nullable().optional(),
+    fallbackProviderName: z.string().nullable().optional(),
+    maxOutputTokens: z.number().int().min(1).max(8192).optional(),
+    modelName: z.string().min(1).max(120).optional(),
+    providerName: z.string().min(1).max(80).optional(),
+    temperature: z.number().min(0).max(2).optional()
+  })
+  .refine((value) => Object.keys(value).length > 0, {
+    message: "At least one AI model configuration field is required."
+  });
+
+export const aiChatMessageSchema = z.object({
+  content: z.string().min(1).max(12000),
+  role: aiMessageRoleSchema
+});
+
+export const aiUsageSummarySchema = z.object({
+  estimatedCostMicroUsd: z.number().int().min(0),
+  inputTokens: z.number().int().min(0),
+  outputTokens: z.number().int().min(0),
+  totalTokens: z.number().int().min(0)
+});
+
+export const aiChatCompletionRequestSchema = z.object({
+  feature: aiFeatureSchema.optional(),
+  maxOutputTokens: z.number().int().min(1).max(8192).optional(),
+  messages: z.array(aiChatMessageSchema).min(1).max(30),
+  modelName: z.string().max(120).optional(),
+  providerName: z.string().max(80).optional(),
+  requestedDataCategories: z.array(aiDataCategorySchema).max(10).optional(),
+  responseFormat: aiResponseFormatSchema.optional(),
+  temperature: z.number().min(0).max(2).optional(),
+  toolChoice: z.record(z.unknown()).optional(),
+  tools: z.array(z.record(z.unknown())).max(20).optional()
+});
+
+export const aiChatCompletionResponseSchema = z.object({
+  feature: aiFeatureSchema,
+  message: aiChatMessageSchema,
+  modelName: z.string().min(1),
+  providerKind: aiProviderKindSchema,
+  providerName: z.string().min(1),
+  requestId: z.string().min(1),
+  usage: aiUsageSummarySchema,
+  usageRecordId: z.string().uuid(),
+  usedFallback: z.boolean()
+});
+
+export const aiEmbeddingRequestSchema = z.object({
+  feature: aiFeatureSchema.optional(),
+  input: z.array(z.string().min(1).max(12000)).min(1).max(64),
+  modelName: z.string().max(120).optional(),
+  providerName: z.string().max(80).optional(),
+  requestedDataCategories: z.array(aiDataCategorySchema).max(10).optional()
+});
+
+export const aiEmbeddingItemSchema = z.object({
+  embedding: z.array(z.number()),
+  index: z.number().int().min(0)
+});
+
+export const aiEmbeddingResponseSchema = z.object({
+  data: z.array(aiEmbeddingItemSchema),
+  feature: aiFeatureSchema,
+  modelName: z.string().min(1),
+  providerKind: aiProviderKindSchema,
+  providerName: z.string().min(1),
+  requestId: z.string().min(1),
+  usage: aiUsageSummarySchema,
+  usageRecordId: z.string().uuid(),
+  usedFallback: z.boolean()
+});
+
+export const aiUsageRecordSchema = z.object({
+  createdAt: z.string().min(1),
+  errorCode: z.string().nullable(),
+  errorMessage: z.string().nullable(),
+  estimatedCostMicroUsd: z.number().int().min(0),
+  feature: aiFeatureSchema,
+  id: z.string().uuid(),
+  inputTokens: z.number().int().min(0),
+  latencyMs: z.number().int().min(0),
+  modelName: z.string().min(1),
+  operation: aiOperationSchema,
+  outputTokens: z.number().int().min(0),
+  providerKind: aiProviderKindSchema,
+  providerName: z.string().min(1),
+  requestId: z.string().min(1),
+  status: aiUsageStatusSchema,
+  totalTokens: z.number().int().min(0),
+  usedFallback: z.boolean()
+});
+
+export const aiUsageRecordPageSchema = z.object({
+  items: z.array(aiUsageRecordSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
 export type HealthCheckResponseInput = z.input<typeof healthCheckResponseSchema>;
 export type HealthCheckResponseOutput = z.output<typeof healthCheckResponseSchema>;
 export type RegisterRequestInput = z.input<typeof registerRequestSchema>;

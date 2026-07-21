@@ -59,16 +59,20 @@ Implemented Phase 1 foundation slices:
   extraction, chunk storage, visible failure state, and retry controls.
 - Global search for implemented data, including files, extracted chunks, collections, tags, recent
   searches, and Command Palette integration.
+- Provider-neutral AI gateway foundation for consent policies, model configuration, chat
+  completions, streaming responses, embeddings, usage metadata, rate limits, retries, and fallback.
+  External provider calls are disabled unless environment configuration and user consent both allow
+  them.
 
-3D functionality, AI, semantic retrieval, citation-backed Q&A, and habits are intentionally
-deferred.
+3D functionality, mentor conversations, semantic retrieval, citation-backed Q&A, and habits are
+intentionally deferred.
 
 ## Non-Goals For Current Slice
 
 - No OAuth, social login, email delivery, password reset, MFA, or magic links.
 - No 3D scene or world interaction.
 - No semantic embeddings or citation-backed file Q&A.
-- No AI provider calls.
+- No user-facing mentor conversation workflow or document Q&A.
 - No habit, task, project, or learning domain behavior.
 - No claims that user-facing product workflows are complete.
 - No visual World Mode implementation.

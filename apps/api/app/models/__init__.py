@@ -1,3 +1,4 @@
+from app.models.ai import AIConsentPolicy, AIModelConfiguration, AIUsageRecord
 from app.models.auth import AuthSession, User
 from app.models.file_ingestion import (
     EmbeddingJob,
@@ -27,6 +28,9 @@ from app.models.search import RecentSearch
 
 __all__ = [
     "AuditLog",
+    "AIConsentPolicy",
+    "AIModelConfiguration",
+    "AIUsageRecord",
     "AuthSession",
     "Collection",
     "CollectionItem",

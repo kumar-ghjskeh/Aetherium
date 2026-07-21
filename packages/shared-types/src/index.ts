@@ -458,3 +458,209 @@ export interface RecentSearchPage {
   limit: number;
   offset: number;
 }
+
+export type AIFeature =
+  | "general_chat"
+  | "embeddings"
+  | "document_qa"
+  | "mentor_chat"
+  | "learning_assistant"
+  | "coding_assistant";
+
+export type AIProviderKind =
+  "aetherium_deterministic" | "openai_compatible" | "anthropic_compatible" | "ollama_compatible";
+
+export type AIProviderCapability =
+  "chat" | "streaming_chat" | "embeddings" | "structured_outputs" | "tool_calling";
+
+export type AIMessageRole = "system" | "user" | "assistant" | "tool";
+
+export type AIDataCategory =
+  | "file_content"
+  | "collections"
+  | "conversations"
+  | "projects"
+  | "learning_records"
+  | "habit_data"
+  | "profile_data";
+
+export type AIOperation = "chat_completion" | "streaming_chat_completion" | "embedding";
+
+export type AIUsageStatus = "success" | "failed" | "blocked" | "rate_limited";
+
+export type AIResponseFormat = "text" | "json_object";
+
+export interface AIProvider {
+  name: string;
+  kind: AIProviderKind;
+  displayName: string;
+  external: boolean;
+  configured: boolean;
+  capabilities: AIProviderCapability[];
+  defaultChatModel: string | null;
+  defaultEmbeddingModel: string | null;
+}
+
+export interface AIProviderPage {
+  items: AIProvider[];
+}
+
+export interface AIConsentPolicy {
+  id: string;
+  feature: AIFeature;
+  externalProvidersAllowed: boolean;
+  allowFileContent: boolean;
+  allowCollections: boolean;
+  allowConversations: boolean;
+  allowProjects: boolean;
+  allowLearningRecords: boolean;
+  allowHabitData: boolean;
+  allowProfileData: boolean;
+  allowedCollectionIds: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AIConsentPolicyPage {
+  items: AIConsentPolicy[];
+}
+
+export type AIConsentPolicyUpdate = Partial<
+  Pick<
+    AIConsentPolicy,
+    | "allowCollections"
+    | "allowConversations"
+    | "allowFileContent"
+    | "allowHabitData"
+    | "allowLearningRecords"
+    | "allowProfileData"
+    | "allowProjects"
+    | "allowedCollectionIds"
+    | "externalProvidersAllowed"
+  >
+>;
+
+export interface AIModelConfiguration {
+  id: string;
+  feature: AIFeature;
+  providerName: string;
+  providerKind: AIProviderKind;
+  modelName: string;
+  fallbackProviderName: string | null;
+  fallbackModelName: string | null;
+  temperature: number;
+  maxOutputTokens: number;
+  enabled: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AIModelConfigurationPage {
+  items: AIModelConfiguration[];
+}
+
+export type AIModelConfigurationUpdate = Partial<
+  Pick<
+    AIModelConfiguration,
+    | "enabled"
+    | "fallbackModelName"
+    | "fallbackProviderName"
+    | "maxOutputTokens"
+    | "modelName"
+    | "providerName"
+    | "temperature"
+  >
+>;
+
+export interface AIChatMessage {
+  role: AIMessageRole;
+  content: string;
+}
+
+export interface AIUsageSummary {
+  inputTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+  estimatedCostMicroUsd: number;
+}
+
+export interface AIChatCompletionRequest {
+  feature?: AIFeature;
+  messages: AIChatMessage[];
+  requestedDataCategories?: AIDataCategory[] | undefined;
+  providerName?: string | undefined;
+  modelName?: string | undefined;
+  temperature?: number | undefined;
+  maxOutputTokens?: number | undefined;
+  responseFormat?: AIResponseFormat | undefined;
+  tools?: Record<string, unknown>[] | undefined;
+  toolChoice?: Record<string, unknown> | undefined;
+}
+
+export interface AIChatCompletionResponse {
+  requestId: string;
+  feature: AIFeature;
+  providerName: string;
+  providerKind: AIProviderKind;
+  modelName: string;
+  message: AIChatMessage;
+  usage: AIUsageSummary;
+  usedFallback: boolean;
+  usageRecordId: string;
+}
+
+export interface AIEmbeddingRequest {
+  feature?: AIFeature;
+  input: string[];
+  requestedDataCategories?: AIDataCategory[] | undefined;
+  providerName?: string | undefined;
+  modelName?: string | undefined;
+}
+
+export interface AIEmbeddingItem {
+  index: number;
+  embedding: number[];
+}
+
+export interface AIEmbeddingResponse {
+  requestId: string;
+  feature: AIFeature;
+  providerName: string;
+  providerKind: AIProviderKind;
+  modelName: string;
+  data: AIEmbeddingItem[];
+  usage: AIUsageSummary;
+  usedFallback: boolean;
+  usageRecordId: string;
+}
+
+export interface AIUsageRecord {
+  id: string;
+  requestId: string;
+  feature: AIFeature;
+  providerName: string;
+  providerKind: AIProviderKind;
+  modelName: string;
+  operation: AIOperation;
+  status: AIUsageStatus;
+  inputTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+  estimatedCostMicroUsd: number;
+  latencyMs: number;
+  usedFallback: boolean;
+  errorCode: string | null;
+  errorMessage: string | null;
+  createdAt: string;
+}
+
+export interface AIUsageRecordPage {
+  items: AIUsageRecord[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface AIUsageQuery extends PaginationQuery {
+  feature?: AIFeature;
+}

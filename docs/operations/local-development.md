@@ -49,12 +49,18 @@ and future user avatars. Browser presigned uploads use `AETHERIUM_MINIO_CORS_ORI
 defaults to local web origins.
 
 `aetherium-worker` polls durable PostgreSQL processing jobs and reads originals from the local MinIO
-bucket. File chunks are stored in PostgreSQL; embeddings are skipped by default until the later AI
-gateway and semantic-search phases.
+bucket. File chunks are stored in PostgreSQL; embeddings are skipped by default until a later
+semantic-search slice explicitly wires ingestion to the AI gateway with user consent.
 
 Command Palette search uses the local PostgreSQL database only. It can search the signed-in user's
 file metadata, extracted chunks, collections, and tags after ingestion has produced chunks. Recent
 searches are stored as Aetherium-owned user metadata in PostgreSQL.
+
+The AI gateway is disabled by default in local development. Tests set
+`AETHERIUM_AI_PROVIDER_DEFAULT=aetherium_deterministic` to exercise gateway contracts without
+external network calls. To test an external provider locally, set
+`AETHERIUM_AI_EXTERNAL_CALLS_ENABLED=true`, provide only Aetherium-specific provider credentials,
+and grant feature-level consent through the API.
 
 ## Authentication Defaults
 
@@ -70,6 +76,8 @@ Local development uses:
 - User avatars bucket: `aetherium-user-avatars-dev`.
 - File ingestion queue name: `aetherium:file-ingestion`.
 - Worker poll interval: `5` seconds.
+- AI provider default: disabled unless explicitly configured.
+- External AI calls: disabled unless explicitly configured and consented.
 
 Do not use the development session signing secret in production.
 

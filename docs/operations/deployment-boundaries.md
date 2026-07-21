@@ -59,8 +59,12 @@ Before deploying a new environment, verify:
 - File-ingestion workers use Aetherium database, Redis namespace, and object-storage credentials
   only.
 - `AETHERIUM_FILE_INGESTION_QUEUE_NAME` starts with `aetherium:`.
-- Embedding generation remains disabled unless the AI gateway, semantic search, and consent controls
-  are deployed for that environment.
+- Embedding generation remains disabled unless semantic search explicitly wires the AI gateway into
+  ingestion for that environment with feature-level user consent.
+- External AI calls remain disabled unless `AETHERIUM_AI_EXTERNAL_CALLS_ENABLED=true` and the target
+  feature has user consent. Production must not use the deterministic test/local provider.
+- AI usage records must remain metadata-only and must not store raw prompts, raw responses, provider
+  keys, session cookies, or full private documents.
 - Global search uses only Aetherium-owned PostgreSQL records and must not federate into another
   product index or API.
 - File-parser dependencies and worker resource limits are reviewed before processing untrusted

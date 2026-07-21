@@ -94,6 +94,105 @@ const searchResult = {
   worldLocationId: "library"
 };
 
+const aiProvider = {
+  capabilities: ["chat", "streaming_chat", "embeddings"],
+  configured: true,
+  defaultChatModel: "aetherium-deterministic-chat",
+  defaultEmbeddingModel: "aetherium-deterministic-embedding",
+  displayName: "Aetherium deterministic adapter",
+  external: false,
+  kind: "aetherium_deterministic",
+  name: "aetherium_deterministic"
+};
+
+const aiConsentPolicy = {
+  allowCollections: false,
+  allowConversations: false,
+  allowFileContent: false,
+  allowHabitData: false,
+  allowLearningRecords: false,
+  allowProfileData: false,
+  allowProjects: false,
+  allowedCollectionIds: [],
+  createdAt: "2026-07-20T00:00:00Z",
+  externalProvidersAllowed: false,
+  feature: "general_chat",
+  id: "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const aiModelConfiguration = {
+  createdAt: "2026-07-20T00:00:00Z",
+  enabled: true,
+  fallbackModelName: null,
+  fallbackProviderName: null,
+  feature: "general_chat",
+  id: "f1111111-1111-4111-8111-111111111111",
+  maxOutputTokens: 512,
+  modelName: "aetherium-deterministic-chat",
+  providerKind: "aetherium_deterministic",
+  providerName: "aetherium_deterministic",
+  temperature: 0.2,
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const aiUsageRecord = {
+  createdAt: "2026-07-20T00:00:00Z",
+  errorCode: null,
+  errorMessage: null,
+  estimatedCostMicroUsd: 0,
+  feature: "general_chat",
+  id: "f2222222-2222-4222-8222-222222222222",
+  inputTokens: 3,
+  latencyMs: 5,
+  modelName: "aetherium-deterministic-chat",
+  operation: "chat_completion",
+  outputTokens: 4,
+  providerKind: "aetherium_deterministic",
+  providerName: "aetherium_deterministic",
+  requestId: "ai_test",
+  status: "success",
+  totalTokens: 7,
+  usedFallback: false
+};
+
+const aiChatCompletion = {
+  feature: "general_chat",
+  message: {
+    content: "Aetherium deterministic response: Explain indexes.",
+    role: "assistant"
+  },
+  modelName: "aetherium-deterministic-chat",
+  providerKind: "aetherium_deterministic",
+  providerName: "aetherium_deterministic",
+  requestId: "ai_test",
+  usage: {
+    estimatedCostMicroUsd: 0,
+    inputTokens: 3,
+    outputTokens: 4,
+    totalTokens: 7
+  },
+  usageRecordId: aiUsageRecord.id,
+  usedFallback: false
+};
+
+const aiEmbeddingResponse = {
+  data: [{ embedding: [0.1, -0.2], index: 0 }],
+  feature: "embeddings",
+  modelName: "aetherium-deterministic-embedding",
+  providerKind: "aetherium_deterministic",
+  providerName: "aetherium_deterministic",
+  requestId: "ai_embedding_test",
+  usage: {
+    estimatedCostMicroUsd: 0,
+    inputTokens: 2,
+    outputTokens: 0,
+    totalTokens: 2
+  },
+  usageRecordId: "f3333333-3333-4333-8333-333333333333",
+  usedFallback: false
+};
+
 describe("createAetheriumApiClient", () => {
   it("fetches and validates API liveness", async () => {
     const fetcher = vi.fn<typeof fetch>(() =>
@@ -616,6 +715,88 @@ describe("createAetheriumApiClient", () => {
         entityTypes: ["file", "file_chunk"],
         limit: 10,
         query: "alpha"
+      }),
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      method: "POST"
+    });
+  });
+
+  it("uses provider-neutral AI gateway endpoints", async () => {
+    const fetcher = vi.fn<typeof fetch>((input) => {
+      const url = requestUrl(input);
+      if (url.endsWith("/api/v1/ai/providers")) {
+        return Promise.resolve(jsonResponse({ items: [aiProvider] }));
+      }
+      if (url.endsWith("/api/v1/ai/consent")) {
+        return Promise.resolve(jsonResponse({ items: [aiConsentPolicy] }));
+      }
+      if (url.endsWith("/api/v1/ai/consent/general_chat")) {
+        return Promise.resolve(
+          jsonResponse({ ...aiConsentPolicy, externalProvidersAllowed: true })
+        );
+      }
+      if (url.endsWith("/api/v1/ai/model-configs")) {
+        return Promise.resolve(jsonResponse({ items: [aiModelConfiguration] }));
+      }
+      if (url.endsWith("/api/v1/ai/model-configs/general_chat")) {
+        return Promise.resolve(jsonResponse({ ...aiModelConfiguration, maxOutputTokens: 256 }));
+      }
+      if (url.endsWith("/api/v1/ai/chat/completions")) {
+        return Promise.resolve(jsonResponse(aiChatCompletion));
+      }
+      if (url.endsWith("/api/v1/ai/chat/completions/stream")) {
+        return Promise.resolve(new Response("event: done\ndata: [DONE]\n\n", { status: 200 }));
+      }
+      if (url.endsWith("/api/v1/ai/embeddings")) {
+        return Promise.resolve(jsonResponse(aiEmbeddingResponse));
+      }
+      if (url.endsWith("/api/v1/ai/usage?feature=general_chat&limit=5&offset=0")) {
+        return Promise.resolve(
+          jsonResponse({
+            items: [aiUsageRecord],
+            limit: 5,
+            offset: 0,
+            total: 1
+          })
+        );
+      }
+      return Promise.resolve(jsonResponse({ items: [] }));
+    });
+    const client = createAetheriumApiClient({ baseUrl: "http://localhost:8000", fetcher });
+
+    await expect(client.ai.listProviders()).resolves.toMatchObject({ items: [aiProvider] });
+    await expect(client.ai.listConsent()).resolves.toMatchObject({ items: [aiConsentPolicy] });
+    await expect(
+      client.ai.updateConsent("general_chat", { externalProvidersAllowed: true })
+    ).resolves.toMatchObject({ externalProvidersAllowed: true });
+    await expect(client.ai.listModelConfigs()).resolves.toMatchObject({
+      items: [aiModelConfiguration]
+    });
+    await expect(
+      client.ai.updateModelConfig("general_chat", { maxOutputTokens: 256 })
+    ).resolves.toMatchObject({ maxOutputTokens: 256 });
+    await expect(
+      client.ai.completeChat({
+        messages: [{ content: "Explain indexes.", role: "user" }]
+      })
+    ).resolves.toMatchObject({ requestId: "ai_test" });
+    await expect(
+      client.ai.streamChat({ messages: [{ content: "Stream.", role: "user" }] })
+    ).resolves.toBeInstanceOf(Response);
+    await expect(client.ai.createEmbeddings({ input: ["indexes"] })).resolves.toMatchObject({
+      data: [{ index: 0 }]
+    });
+    await expect(
+      client.ai.listUsage({ feature: "general_chat", limit: 5, offset: 0 })
+    ).resolves.toMatchObject({ total: 1 });
+
+    expect(fetcher).toHaveBeenCalledWith("http://localhost:8000/api/v1/ai/chat/completions", {
+      body: JSON.stringify({
+        messages: [{ content: "Explain indexes.", role: "user" }]
       }),
       credentials: "include",
       headers: {

@@ -37,6 +37,9 @@ Current approved slice:
   visibility, retries, and owner-scoped chunk/job APIs.
 - Global search over files, extracted chunks, collections, and tags with recent searches and Command
   Palette integration.
+- Provider-neutral AI gateway foundation with consent policies, model configurations, usage records,
+  deterministic test/local adapter, external provider adapter boundaries, rate limits, retries, and
+  fallback support.
 
 Later Phase 1 slices:
 

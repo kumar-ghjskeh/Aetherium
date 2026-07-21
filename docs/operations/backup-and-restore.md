@@ -16,6 +16,8 @@ Back up these Aetherium-owned resources independently:
   embedding job placeholders, and processing failures.
 - Search records in PostgreSQL, including recent-search metadata and PostgreSQL full-text search
   indexes.
+- AI gateway records in PostgreSQL, including consent policies, model configurations, and
+  metadata-only usage records.
 - Object-storage buckets with uploaded originals, generated derivatives, future avatars, and future
   exports.
 - Redis only for durable queues or future state that cannot be safely reconstructed.
@@ -77,3 +79,9 @@ The `0006_hybrid_search` migration introduces recent-search records and PostgreS
 indexes over file metadata, file chunks, collections, and tags. Recent-search rows are user-owned
 metadata and should be restored with the main database. Full-text expression indexes may be rebuilt
 after restore if needed; they do not replace the underlying user-owned records.
+
+The `0007_ai_gateway` migration introduces AI consent policies, model configurations, and usage
+records. Restores must preserve owner UUIDs and feature identifiers so consent decisions continue to
+apply to the correct user and capability. Usage records are metadata-only; if future provider
+credentials are rotated after restore, existing usage history remains valid but should not imply
+that old provider keys are still active.

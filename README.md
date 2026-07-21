@@ -7,7 +7,8 @@ This repository currently contains the Phase 0 documentation baseline and early 
 slices: the infrastructure scaffold, standalone password authentication with server-side sessions,
 the user-owned foundation, the protected Command Mode application shell, and Personal Vault file
 storage with background ingestion and global search. It does not yet implement visual 3D world
-navigation, semantic retrieval, AI chat, habits, or learning features.
+navigation, semantic retrieval, mentor conversations, citation-backed Q&A, habits, or learning
+features.
 
 Aetherium is a standalone product. It uses its own repository, database, Redis namespace,
 object-storage buckets, environment variables, Docker resources, CI workflow, and future
@@ -35,6 +36,10 @@ authentication/session system. See `docs/architecture/product-independence.md` a
   extraction, chunk storage, failure visibility, retry APIs, and Library retry controls.
 - Global search under `/api/v1/search` over files, extracted chunks, collections, and tags, with
   recent searches and Command Palette integration.
+- Provider-neutral AI gateway under `/api/v1/ai` with provider metadata, owner-scoped consent
+  policies, feature model configuration, chat completions, streaming responses, embeddings, usage
+  records, rate limits, retries, and fallback. External provider calls are disabled unless both the
+  environment and user consent allow them.
 - Non-visual `/app/world` route that clearly marks visual World Mode as future work.
 - Docker Compose development infrastructure for Aetherium-isolated PostgreSQL, Redis, MinIO, API,
   worker, and web services.
@@ -186,6 +191,16 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
 - Run search: `POST http://localhost:8000/api/v1/search`
 - Recent searches: `GET http://localhost:8000/api/v1/search/recent`
 
+## AI Gateway Endpoints
+
+- Providers: `GET http://localhost:8000/api/v1/ai/providers`
+- Consent policies: `GET/PATCH http://localhost:8000/api/v1/ai/consent`
+- Model configurations: `GET/PUT http://localhost:8000/api/v1/ai/model-configs`
+- Usage records: `GET http://localhost:8000/api/v1/ai/usage`
+- Chat completions: `POST http://localhost:8000/api/v1/ai/chat/completions`
+- Streaming chat completions: `POST http://localhost:8000/api/v1/ai/chat/completions/stream`
+- Embeddings: `POST http://localhost:8000/api/v1/ai/embeddings`
+
 ## Local Resource Names
 
 - Compose project: `aetherium`
@@ -210,7 +225,8 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
 - Email verification, password reset, OAuth, MFA, and magic links are not implemented yet.
 - Personal Vault ingestion extracts text and stores chunks, and global search can find those chunks.
   Semantic embeddings, AI retrieval, and citations are not implemented yet.
-- Embedding jobs are recorded as skipped by default until the AI gateway and semantic search slices
-  provide real provider adapters and consent controls.
-- No AI provider, habit workflow, learning domain, project workspace, real analytics, or visual 3D
+- File-ingestion embedding jobs are still recorded as skipped by default until semantic search wires
+  the AI gateway into the worker with explicit consent.
+- The AI gateway is infrastructure only. No mentor UI, persistent AI conversations, retrieval-based
+  document Q&A, habit workflow, learning domain, project workspace, real analytics, or visual 3D
   scene exists yet.

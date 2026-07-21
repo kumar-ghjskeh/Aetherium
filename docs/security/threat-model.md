@@ -73,11 +73,21 @@
 - Extracted chunks include `owner_user_id` and remain in Aetherium PostgreSQL; they are not sent to
   AI providers in this slice.
 - Processing retries are owner-scoped and limited by configured attempts.
-- Embedding jobs are skipped by default until provider adapters and consent controls exist.
+- Embedding jobs are skipped by default until a semantic-search slice wires them to the AI gateway
+  with explicit consent controls.
 - Global search is owner-scoped across files, chunks, collections, tags, and recent searches.
 - Search snippets are plain text and must not be rendered as trusted HTML.
 - Recent searches store only the authenticated user's query, filters, and result count; they do not
   grant access to results.
+- The AI gateway uses Aetherium-owned provider configuration, consent policies, model
+  configurations, and usage records.
+- External AI calls are disabled unless `AETHERIUM_AI_EXTERNAL_CALLS_ENABLED` and feature-level user
+  consent both allow them.
+- AI consent policies default to no external-provider access and no automatic access to files,
+  collections, conversations, projects, learning records, habit data, or profile data.
+- AI usage records store metadata, token counts, cost estimates, latency, fallback state, and
+  bounded errors, but not raw prompts, raw responses, provider secrets, cookies, or session tokens.
+- Gateway calls are rate limited through the Aetherium namespace and normalize provider errors.
 - CI runs independence checks, formatting, linting, type checks, tests, build, and migration smoke
   validation.
 
@@ -93,7 +103,7 @@
 - Actual malware scanning service and quarantine workflow.
 - Background extraction sandboxing and resource limits for PDFs, DOCX, images, and source files.
 - Malware-scanning execution before or during ingestion.
-- Semantic-search consent controls and prompt-injection review before file chunks are used for AI
-  answers.
+- Semantic-search prompt-injection review before file chunks are used for AI answers.
+- Production validation of provider-specific request mappings before broad external-provider use.
 - Account deletion and data export.
 - Authorization tests for every critical user-owned endpoint.

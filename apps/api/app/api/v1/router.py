@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from app.api.v1 import (
+    ai,
     audit_logs,
     auth,
     domain_events,
@@ -22,3 +23,4 @@ api_router.include_router(notifications.router, prefix="/notifications", tags=["
 api_router.include_router(audit_logs.router, prefix="/audit-logs", tags=["audit-logs"])
 api_router.include_router(files.router, prefix="/files", tags=["files"])
 api_router.include_router(search.router, prefix="/search", tags=["search"])
+api_router.include_router(ai.router, prefix="/ai", tags=["ai"])
