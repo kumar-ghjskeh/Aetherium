@@ -164,6 +164,7 @@ function createClient(
 ): AetheriumApiClient {
   return {
     ai: {
+      answerDocumentQuestion: vi.fn(() => Promise.reject(new Error("unused"))),
       completeChat: vi.fn(() => Promise.reject(new Error("unused"))),
       createEmbeddings: vi.fn(() => Promise.reject(new Error("unused"))),
       listConsent: vi.fn(() => Promise.reject(new Error("unused"))),

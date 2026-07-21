@@ -56,6 +56,7 @@ Current routes:
 - `POST /api/v1/ai/chat/completions`
 - `POST /api/v1/ai/chat/completions/stream`
 - `POST /api/v1/ai/embeddings`
+- `POST /api/v1/ai/document-qa`
 - `GET /api/v1/mentors`
 - `POST /api/v1/mentors`
 - `GET /api/v1/mentors/{mentor_id}`
@@ -232,6 +233,13 @@ raw prompts or model responses.
 `POST /api/v1/ai/embeddings` call the provider-neutral gateway. External providers require
 environment enablement and explicit user consent. These routes do not retrieve files or create
 mentor conversations in this slice.
+
+`POST /api/v1/ai/document-qa` answers questions against the authenticated user's processed Personal
+Vault chunks. It requires document-QA feature consent for file-content access, accepts optional
+owned file and collection filters, retrieves only active ready chunks, optionally reranks candidates
+with stored embeddings, calls the provider-neutral gateway with bounded source excerpts, and returns
+validated source citations. If no supporting chunks are found, it returns an `insufficient_evidence`
+response with no citations and no AI usage record instead of fabricating an answer.
 
 ## AI Mentor Routes
 

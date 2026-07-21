@@ -43,10 +43,11 @@ Current approved slice:
 - AI mentors and conversations with fictional default mentors, custom mentor creation, owner-scoped
   conversation history, memory controls, exports, edit/resend, regeneration, AI Hall UI, and
   conversation search.
+- Citation-backed document Q&A with explicit AI file-content consent, owner-scoped ready-chunk
+  retrieval, source-label validation, no-evidence responses, and AI Hall document workflow.
 
 Later Phase 1 slices:
 
-- Citation-backed document Q&A.
 - One daily habit and habit logging.
 - User profile beyond the current `/auth/me` public profile.
 - Non-visual world data expansion only until the visual 3D phase is explicitly started.

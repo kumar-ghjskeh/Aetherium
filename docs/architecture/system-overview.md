@@ -26,7 +26,8 @@ User
 
 The current implemented slices provide the infrastructure shell, standalone authentication
 foundation, user-owned foundation, protected Command Mode shell, Personal Vault storage, background
-file ingestion, global search, provider-neutral AI gateway, and AI mentor conversations:
+file ingestion, global search, provider-neutral AI gateway, AI mentor conversations, and
+citation-backed document Q&A:
 
 - `apps/api`: FastAPI app, database settings, Alembic, health endpoints.
 - `apps/web`: Next.js App Router scaffold, web health route, auth UI, and protected `/app` Command
@@ -34,7 +35,7 @@ file ingestion, global search, provider-neutral AI gateway, and AI mentor conver
 - `packages/shared-types`: TypeScript contracts shared by frontend packages.
 - `packages/validation`: Zod schemas that validate API contract payloads.
 - `packages/api-client`: Typed API client for health, auth, user-owned foundation, Personal Vault,
-  search, AI gateway, and mentor conversation APIs.
+  search, AI gateway, document Q&A, and mentor conversation APIs.
 - Identity domain: Aetherium-owned `users` and `sessions` tables, Argon2id password hashing,
   server-side session revocation, and product-specific cookies.
 - User-owned foundation: preferences, non-visual world profile state, domain events, notifications,
@@ -57,6 +58,9 @@ file ingestion, global search, provider-neutral AI gateway, and AI mentor conver
   conversations and messages, memory settings, exports, edit/resend, regeneration, and Command Mode
   AI Hall UI. Mentor chat uses bounded conversation context and does not retrieve files in this
   slice.
+- Document Q&A: explicit document-QA file-content consent, owner-scoped active ready-chunk
+  retrieval, optional file and collection filters, bounded semantic reranking when stored embeddings
+  exist, AI gateway generation, and validated source citations linked back to the Library.
 
 ## Frontend Boundaries
 
@@ -70,9 +74,9 @@ Three.js, React Three Fiber, scene assets, or player/camera controls until the v
 Backend domains will be added incrementally:
 
 - Additional world configuration and user world state beyond the current non-visual profile.
-- Semantic retrieval and knowledge extraction on top of the current Personal Vault, ingestion,
+- Global semantic search and knowledge extraction on top of the current Personal Vault, ingestion,
   search, and AI gateway records.
-- Citation-backed AI retrieval over files and later mentor tools.
+- Mentor tools that can reuse citation-backed retrieval after explicit user approval.
 - Learning.
 - Habits, goals, tasks, and projects.
 - Achievements and domain events.
@@ -102,7 +106,7 @@ plus reusable dependencies.
 - Search routes are under `/api/v1/search` and expose owner-scoped query results plus recent
   searches.
 - AI gateway routes are under `/api/v1/ai` and expose provider metadata, consent policies, model
-  configuration, usage records, chat completions, streaming responses, and embeddings.
+  configuration, usage records, chat completions, streaming responses, embeddings, and document Q&A.
 - AI mentor routes are under `/api/v1/mentors` and expose mentors, permissions, conversations,
   messages, memory settings, exports, edit/resend, regeneration, and stop-generation behavior.
 

@@ -736,6 +736,65 @@ export const aiUsageRecordPageSchema = z.object({
   total: z.number().int().min(0)
 });
 
+export const documentQAModeSchema = z.enum([
+  "explain",
+  "summarize",
+  "compare",
+  "quiz_me",
+  "create_flashcards",
+  "extract_tasks",
+  "create_study_notes",
+  "identify_contradictions"
+]);
+
+export const documentQAEvidenceStatusSchema = z.enum(["supported", "insufficient_evidence"]);
+
+export const documentQARequestSchema = z.object({
+  collectionIds: z.array(z.string().uuid()).max(20).optional(),
+  fileIds: z.array(z.string().uuid()).max(20).optional(),
+  maxSources: z.number().int().min(1).max(8).optional(),
+  mode: documentQAModeSchema.optional(),
+  modelName: z.string().max(120).optional(),
+  providerName: z.string().max(80).optional(),
+  question: z.string().trim().min(3).max(2000)
+});
+
+export const documentQACitationSchema = z.object({
+  chunkId: z.string().uuid(),
+  fileId: z.string().uuid(),
+  fileName: z.string().min(1),
+  label: z.string().min(1),
+  metadata: z.record(z.unknown()),
+  openUrl: z.string().min(1),
+  pageNumber: z.number().int().nullable(),
+  score: z.number(),
+  sectionLabel: z.string().nullable(),
+  snippet: z.string(),
+  sourceType: z.literal("user_file_evidence")
+});
+
+export const documentQARetrievalSchema = z.object({
+  candidateCount: z.number().int().min(0),
+  retrievedCount: z.number().int().min(0),
+  semanticEnabled: z.boolean(),
+  usedCollectionFilter: z.boolean(),
+  usedFileFilter: z.boolean()
+});
+
+export const documentQAResponseSchema = z.object({
+  answer: z.string(),
+  citations: z.array(documentQACitationSchema),
+  evidenceStatus: documentQAEvidenceStatusSchema,
+  mode: documentQAModeSchema,
+  modelName: z.string().nullable(),
+  providerName: z.string().nullable(),
+  question: z.string().min(1),
+  retrieval: documentQARetrievalSchema,
+  usage: aiUsageSummarySchema.nullable(),
+  usageRecordId: z.string().uuid().nullable(),
+  usedFallback: z.boolean()
+});
+
 export const mentorToneSchema = z.enum(["calm", "direct", "analytical", "encouraging"]);
 
 export const mentorToolSchema = z.enum([

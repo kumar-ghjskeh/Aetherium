@@ -8,7 +8,7 @@ from fastapi.responses import StreamingResponse
 
 from app.core.errors import AppError
 from app.core.pagination import PaginationParams
-from app.dependencies.ai import get_ai_gateway_service
+from app.dependencies.ai import get_ai_gateway_service, get_document_qa_service
 from app.dependencies.auth import get_current_user, verify_allowed_origin
 from app.dependencies.pagination import get_pagination
 from app.domain.ai import AIFeature, AIOperation
@@ -30,8 +30,10 @@ from app.schemas.ai import (
     AIUsageRecordResponse,
 )
 from app.schemas.common import ApiErrorResponse
+from app.schemas.document_qa import DocumentQARequest, DocumentQAResponse
 from app.services.ai_adapters import AIAdapterMessage
 from app.services.ai_gateway import AIGatewayService
+from app.services.document_qa import DocumentQAService
 
 router = APIRouter()
 
@@ -147,6 +149,38 @@ async def list_usage_records(
         limit=page.limit,
         offset=page.offset,
     )
+
+
+@router.post(
+    "/document-qa",
+    response_model=DocumentQAResponse,
+    responses=ERROR_RESPONSES,
+    dependencies=[Depends(verify_allowed_origin)],
+)
+async def answer_document_question(
+    payload: DocumentQARequest,
+    current_user: Annotated[User, Depends(get_current_user)],
+    service: Annotated[DocumentQAService, Depends(get_document_qa_service)],
+) -> DocumentQAResponse:
+    try:
+        answer = await service.answer_question(
+            current_user,
+            question=payload.question,
+            mode=payload.mode,
+            file_ids=payload.file_ids,
+            collection_ids=payload.collection_ids,
+            max_sources=payload.max_sources,
+            provider_name=payload.provider_name,
+            model_name=payload.model_name,
+        )
+        await service.db.commit()
+        return DocumentQAResponse.from_answer(answer)
+    except AppError:
+        await service.db.commit()
+        raise
+    except Exception:
+        await service.db.rollback()
+        raise
 
 
 @router.post(

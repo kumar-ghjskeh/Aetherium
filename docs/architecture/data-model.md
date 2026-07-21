@@ -130,8 +130,9 @@ Cross-user IDs are treated as not found.
 - Timestamps.
 
 The file record is the source of truth for original object storage and visible processing state.
-Extracted chunks are stored in the ingestion tables below. User-facing metadata and chunk search are
-implemented; embeddings and AI retrieval are added by later phases.
+Extracted chunks are stored in the ingestion tables below. User-facing metadata, chunk search, and
+citation-backed document Q&A retrieval are implemented; global semantic search remains a later
+optimization.
 
 ### `file_versions`
 
@@ -196,7 +197,9 @@ worker does not accept a client-supplied owner identifier; it loads ownership fr
 - Extracted chunk text, normalized `search_text`, token estimate, page number or section label,
   status, source metadata, and optional future embedding payload.
 
-Chunks are exposed through owner-scoped file detail APIs and the global search result contract.
+Chunks are exposed through owner-scoped file detail APIs, the global search result contract, and the
+document-QA retrieval service. Document Q&A only retrieves ready chunks whose file is active and
+owned by the authenticated user.
 
 ### `embedding_jobs`
 
@@ -206,7 +209,8 @@ Chunks are exposed through owner-scoped file detail APIs and the global search r
   bounded error.
 
 Embedding jobs are skipped by default until a later semantic-search slice wires those jobs to the AI
-gateway with explicit user consent controls.
+gateway with explicit user consent controls. Document Q&A can rerank chunks with stored embeddings
+when they already exist, but it does not require embeddings to answer.
 
 ### `processing_failures`
 
@@ -344,12 +348,18 @@ fabricate citations or claim file support.
 
 ## Retrieval Model
 
-File chunks currently store extracted text, normalized `search_text`, source metadata, and owner
-scope. Current search uses those chunks for owner-scoped full-text results. Later retrieval phases
-will add optional embeddings, reranking, and AI context assembly.
+File chunks currently store extracted text, normalized `search_text`, source metadata, optional
+embedding payloads, and owner scope. Global search uses those chunks for owner-scoped full-text
+results.
+
+Document Q&A reuses these tables without adding a new migration. It validates optional file and
+collection filters, applies AI consent collection scopes, retrieves bounded ready chunks, optionally
+uses existing embeddings for reranking, and returns citation objects that point to the retrieved
+chunk and Library URL.
 
 AI citations must reference retrieved chunks. Answers must not claim file support when retrieval did
-not produce evidence.
+not produce evidence. No-evidence document-QA responses return `insufficient_evidence` without
+creating an AI usage record.
 
 ## Planned Later Tables
 

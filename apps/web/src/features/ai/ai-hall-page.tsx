@@ -1,12 +1,16 @@
 "use client";
 
 import type { AetheriumApiClient } from "@aetherium/api-client";
+import { AetheriumApiError } from "@aetherium/api-client";
 import type {
   Conversation,
   ConversationMemoryPolicy,
+  DocumentQAMode,
+  DocumentQAResponse,
   Mentor,
   MentorTone,
-  Message
+  Message,
+  VaultFile
 } from "@aetherium/shared-types";
 import React from "react";
 
@@ -14,6 +18,7 @@ import { createBrowserApiClient } from "../auth/auth-provider";
 
 type DataStatus = "loading" | "ready" | "error";
 type SendStatus = "idle" | "loading";
+type DocumentQAStatus = "idle" | "loading";
 type PermissionToggle = "allowConversations" | "allowFileContent" | "allowProfileData";
 
 interface MentorFormState {
@@ -31,6 +36,17 @@ const emptyMentorForm: MentorFormState = {
   systemInstructions: "",
   tone: "calm"
 };
+
+const documentModes: Array<{ label: string; value: DocumentQAMode }> = [
+  { label: "Explain", value: "explain" },
+  { label: "Summarize", value: "summarize" },
+  { label: "Compare", value: "compare" },
+  { label: "Quiz me", value: "quiz_me" },
+  { label: "Flashcards", value: "create_flashcards" },
+  { label: "Tasks", value: "extract_tasks" },
+  { label: "Study notes", value: "create_study_notes" },
+  { label: "Contradictions", value: "identify_contradictions" }
+];
 
 function friendlyError(error: unknown): string {
   if (error instanceof Error) {
@@ -63,6 +79,14 @@ export function AiHallPage({
   const [mentorFormError, setMentorFormError] = React.useState<string | null>(null);
   const [renameTitle, setRenameTitle] = React.useState("");
   const [exportPreview, setExportPreview] = React.useState<string | null>(null);
+  const [readyFiles, setReadyFiles] = React.useState<VaultFile[]>([]);
+  const [documentQuestion, setDocumentQuestion] = React.useState("");
+  const [documentMode, setDocumentMode] = React.useState<DocumentQAMode>("explain");
+  const [selectedDocumentFileId, setSelectedDocumentFileId] = React.useState("");
+  const [documentAnswer, setDocumentAnswer] = React.useState<DocumentQAResponse | null>(null);
+  const [documentStatus, setDocumentStatus] = React.useState<DocumentQAStatus>("idle");
+  const [documentError, setDocumentError] = React.useState<string | null>(null);
+  const [filesUnavailable, setFilesUnavailable] = React.useState(false);
   const skipMessageLoadForConversation = React.useRef<string | null>(null);
 
   const selectedMentor = React.useMemo(
@@ -99,6 +123,22 @@ export function AiHallPage({
             current ?? conversationPage.items[0]?.mentorId ?? mentorPage.items[0]?.id ?? null
         );
         setStatus("ready");
+        try {
+          const filePage = await apiClient.files.list({ limit: 50, offset: 0 });
+          if (!isActive) {
+            return;
+          }
+          setReadyFiles(
+            filePage.items.filter(
+              (file) => file.processingStatus === "ready" && file.deletionStatus === "active"
+            )
+          );
+          setFilesUnavailable(false);
+        } catch {
+          if (isActive) {
+            setFilesUnavailable(true);
+          }
+        }
       } catch (loadError) {
         if (!isActive) {
           return;
@@ -388,6 +428,53 @@ export function AiHallPage({
     }
   }
 
+  async function handleDocumentQuestion(event: React.FormEvent<HTMLFormElement>): Promise<void> {
+    event.preventDefault();
+    const question = documentQuestion.trim();
+    if (question.length < 3) {
+      setDocumentError("Write a document question first.");
+      return;
+    }
+    setDocumentStatus("loading");
+    setDocumentError(null);
+    setDocumentAnswer(null);
+    try {
+      const answer = await apiClient.ai.answerDocumentQuestion({
+        fileIds: selectedDocumentFileId ? [selectedDocumentFileId] : undefined,
+        maxSources: 4,
+        mode: documentMode,
+        question
+      });
+      setDocumentAnswer(answer);
+      setNotice(
+        answer.evidenceStatus === "supported"
+          ? "Document answer generated with citations."
+          : "No supporting document evidence was found."
+      );
+    } catch (questionError) {
+      if (
+        questionError instanceof AetheriumApiError &&
+        questionError.code === "ai_data_consent_required"
+      ) {
+        setDocumentError("File-content access is not enabled for document Q&A.");
+      } else {
+        setDocumentError(friendlyError(questionError));
+      }
+    } finally {
+      setDocumentStatus("idle");
+    }
+  }
+
+  async function handleEnableDocumentAccess(): Promise<void> {
+    setDocumentError(null);
+    try {
+      await apiClient.ai.updateConsent("document_qa", { allowFileContent: true });
+      setNotice("Document Q&A file access enabled.");
+    } catch (consentError) {
+      setDocumentError(friendlyError(consentError));
+    }
+  }
+
   if (status === "loading") {
     return (
       <section className="content-stack" aria-busy="true">
@@ -529,6 +616,112 @@ export function AiHallPage({
           )}
         </section>
       </div>
+
+      <section className="work-panel document-qa-panel">
+        <div className="vault-panel-header">
+          <div>
+            <h2>Document Q&A</h2>
+            <p className="empty-note">Answers are limited to retrieved Personal Vault citations.</p>
+          </div>
+          <span className="state-pill">{readyFiles.length} ready files</span>
+        </div>
+
+        {documentError ? (
+          <section className="inline-alert" role="alert">
+            <span>{documentError}</span>
+            {documentError.includes("File-content access") ? (
+              <button
+                className="secondary-action"
+                onClick={() => void handleEnableDocumentAccess()}
+                type="button"
+              >
+                Enable access
+              </button>
+            ) : null}
+          </section>
+        ) : null}
+
+        {filesUnavailable ? (
+          <p className="empty-note">Ready vault files could not be loaded.</p>
+        ) : null}
+
+        <form className="document-qa-form" onSubmit={(event) => void handleDocumentQuestion(event)}>
+          <label>
+            Answer mode
+            <select
+              onChange={(event) => setDocumentMode(event.target.value as DocumentQAMode)}
+              value={documentMode}
+            >
+              {documentModes.map((mode) => (
+                <option key={mode.value} value={mode.value}>
+                  {mode.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Source file
+            <select
+              onChange={(event) => setSelectedDocumentFileId(event.target.value)}
+              value={selectedDocumentFileId}
+            >
+              <option value="">All processed files</option>
+              {readyFiles.map((file) => (
+                <option key={file.id} value={file.id}>
+                  {file.displayName}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="document-question-field">
+            Question
+            <textarea
+              onChange={(event) => setDocumentQuestion(event.target.value)}
+              value={documentQuestion}
+            />
+          </label>
+          <button className="primary-action" disabled={documentStatus === "loading"} type="submit">
+            {documentStatus === "loading" ? "Asking" : "Ask documents"}
+          </button>
+        </form>
+
+        {readyFiles.length === 0 && !filesUnavailable ? (
+          <p className="empty-note">No processed Vault files are ready for document Q&A.</p>
+        ) : null}
+
+        {documentAnswer ? (
+          <article className="document-answer">
+            <header>
+              <strong>
+                {documentAnswer.evidenceStatus === "supported"
+                  ? "Source-backed answer"
+                  : "Insufficient evidence"}
+              </strong>
+              <small>
+                {documentAnswer.retrieval.retrievedCount} sources - semantic{" "}
+                {documentAnswer.retrieval.semanticEnabled ? "on" : "off"}
+              </small>
+            </header>
+            <div className="message-body">{renderMessageContent(documentAnswer.answer)}</div>
+            {documentAnswer.citations.length > 0 ? (
+              <ol className="citation-list">
+                {documentAnswer.citations.map((citation) => (
+                  <li key={citation.chunkId}>
+                    <a href={citation.openUrl}>
+                      [{citation.label}] {citation.fileName}
+                    </a>
+                    <span>
+                      {citation.pageNumber ? ` page ${citation.pageNumber}` : ""}
+                      {citation.sectionLabel ? ` ${citation.sectionLabel}` : ""}
+                    </span>
+                    <p>{citation.snippet}</p>
+                  </li>
+                ))}
+              </ol>
+            ) : null}
+          </article>
+        ) : null}
+      </section>
 
       <div className="ai-chat-layout">
         <section className="work-panel ai-chat-panel">

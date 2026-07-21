@@ -57,5 +57,10 @@ count. Search uses `POST /api/v1/search` because recording a recent search write
 ## Semantic Boundary
 
 The API supports a `hybrid` mode contract, but `semanticEnabled` is currently `false`. Embedding
-generation, vector ranking, reranking, and AI retrieval are deferred until a later semantic-search
-slice wires embedding jobs to the AI gateway with explicit consent controls.
+generation for global search and pgvector-backed result ranking remain deferred until a later
+semantic-search slice wires embedding jobs to the AI gateway with explicit consent controls.
+
+Document Q&A now has its own bounded retrieval path under `/api/v1/ai/document-qa`. It searches
+owner-scoped ready chunks, can rerank bounded candidates with stored chunk embeddings when present,
+and returns citations only for retrieved chunks. That implementation does not change the global
+search endpoint's `semanticEnabled` flag yet.

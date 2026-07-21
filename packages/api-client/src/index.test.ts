@@ -193,6 +193,45 @@ const aiEmbeddingResponse = {
   usedFallback: false
 };
 
+const documentQAResponse = {
+  answer: "Alpha systems use retrieval notes. [S1]",
+  citations: [
+    {
+      chunkId: fileChunk.id,
+      fileId: vaultFile.id,
+      fileName: vaultFile.displayName,
+      label: "S1",
+      metadata: { sequenceNumber: 0 },
+      openUrl: `/app/library?file=${vaultFile.id}&chunk=${fileChunk.id}`,
+      pageNumber: null,
+      score: 1.2,
+      sectionLabel: "document",
+      snippet: "Alpha systems notes.",
+      sourceType: "user_file_evidence"
+    }
+  ],
+  evidenceStatus: "supported",
+  mode: "explain",
+  modelName: "aetherium-deterministic-chat",
+  providerName: "aetherium_deterministic",
+  question: "What do the alpha notes say?",
+  retrieval: {
+    candidateCount: 1,
+    retrievedCount: 1,
+    semanticEnabled: false,
+    usedCollectionFilter: false,
+    usedFileFilter: true
+  },
+  usage: {
+    estimatedCostMicroUsd: 0,
+    inputTokens: 10,
+    outputTokens: 5,
+    totalTokens: 15
+  },
+  usageRecordId: aiUsageRecord.id,
+  usedFallback: false
+};
+
 const mentorPermission = {
   allowConversations: false,
   allowFileContent: false,
@@ -844,6 +883,9 @@ describe("createAetheriumApiClient", () => {
       if (url.endsWith("/api/v1/ai/embeddings")) {
         return Promise.resolve(jsonResponse(aiEmbeddingResponse));
       }
+      if (url.endsWith("/api/v1/ai/document-qa")) {
+        return Promise.resolve(jsonResponse(documentQAResponse));
+      }
       if (url.endsWith("/api/v1/ai/usage?feature=general_chat&limit=5&offset=0")) {
         return Promise.resolve(
           jsonResponse({
@@ -879,6 +921,16 @@ describe("createAetheriumApiClient", () => {
     ).resolves.toBeInstanceOf(Response);
     await expect(client.ai.createEmbeddings({ input: ["indexes"] })).resolves.toMatchObject({
       data: [{ index: 0 }]
+    });
+    await expect(
+      client.ai.answerDocumentQuestion({
+        fileIds: [vaultFile.id],
+        mode: "explain",
+        question: "What do the alpha notes say?"
+      })
+    ).resolves.toMatchObject({
+      citations: [{ label: "S1" }],
+      evidenceStatus: "supported"
     });
     await expect(
       client.ai.listUsage({ feature: "general_chat", limit: 5, offset: 0 })

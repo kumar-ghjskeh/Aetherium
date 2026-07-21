@@ -35,6 +35,9 @@ Backend:
   memory preference enforcement, edit/resend, regeneration, export, stop-generation conflict,
   searchable conversation titles, unauthenticated access, cross-user isolation, and database
   uniqueness.
+- Document-QA backend tests for explicit file-content consent, source-backed answers, validated
+  citations, no-evidence responses, usage records, collection consent scoping, unauthenticated
+  access, validation failures, and cross-user isolation.
 - Alembic migration smoke validation against PostgreSQL in CI.
 - Ruff formatting and linting.
 - mypy type checking.
@@ -57,6 +60,7 @@ Frontend and shared packages:
 - API-client contract tests for processing jobs, retries, and file chunks.
 - API-client contract tests for global search and recent-search endpoints.
 - API-client contract tests for provider-neutral AI gateway endpoints.
+- API-client contract tests for citation-backed document-QA responses.
 - API-client contract tests for mentor, permission, conversation, message, memory, export,
   edit/resend, regeneration, and stop-generation endpoints.
 - Next.js build validation.
@@ -64,7 +68,8 @@ Frontend and shared packages:
   favorite, tag, delete, processing failure, and retry states.
 - React Testing Library coverage for Command Palette global search and result navigation.
 - React Testing Library coverage for the AI Hall page, including loading, empty, message-send,
-  gateway error, custom mentor creation, and permission-update states.
+  gateway error, custom mentor creation, permission-update states, document-QA citation rendering,
+  and document-QA consent error handling.
 
 ## Future Backend Tests
 
@@ -73,7 +78,7 @@ Frontend and shared packages:
 - Factory fixtures for user-owned records.
 - Authorization tests for every critical endpoint.
 - Broader parser-specific ingestion tests for PDF, DOCX, image/OCR, and malformed document cases.
-- Citation-backed document Q&A tests using fake providers and fixture retrieval results.
+- Citation validation fuzzing for provider outputs with malformed or adversarial source labels.
 
 ## Future Frontend Tests
 

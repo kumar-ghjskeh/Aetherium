@@ -23,10 +23,15 @@ Implemented:
 - AI mentor conversations under `/api/v1/mentors`, including fictional default mentors, custom
   mentors, owner-scoped conversations, messages, memory settings, exports, edit/resend,
   regeneration, and stop-generation API behavior.
+- Citation-backed document Q&A under `/api/v1/ai/document-qa`, including explicit file-content
+  consent enforcement, owner-scoped ready-chunk retrieval, optional file and collection filters,
+  bounded source context, AI gateway generation, validated citation labels, and no-evidence
+  responses that do not fabricate sources.
 
 Keyword search over owner-scoped files, extracted chunks, collections, tags, and AI conversation
-titles is implemented under `/api/v1/search`. Semantic ranking, AI retrieval, reranking, and
-citation-backed answer generation are not implemented yet.
+titles is implemented under `/api/v1/search`. Global semantic result ranking is still disabled in
+the search endpoint. Document Q&A can use stored chunk embeddings for bounded reranking when
+embeddings exist; otherwise it falls back to lexical retrieval.
 
 ## Mentor Chat Boundary
 
@@ -64,10 +69,10 @@ Initial adapter targets:
 
 ## Retrieval Boundary
 
-The later AI retrieval implementation should build on PostgreSQL:
+Document Q&A retrieval builds on PostgreSQL-owned records:
 
 - Full-text search.
-- pgvector embeddings.
+- Stored chunk embeddings when present.
 - Hybrid ranking.
 - Metadata filtering.
 - Permission-aware retrieval.
@@ -75,6 +80,11 @@ The later AI retrieval implementation should build on PostgreSQL:
 
 No separate vector database should be introduced until PostgreSQL is measured and found
 insufficient.
+
+The current document-QA implementation retrieves only `file_chunks` whose owner matches the
+authenticated user, whose file is active, and whose chunk status is ready. File and collection
+filters are validated against the same owner. AI consent can further restrict document Q&A to
+specific collection IDs.
 
 ## Privacy Rules
 
@@ -90,3 +100,8 @@ insufficient.
 
 AI answers based on uploaded content must cite retrieved source chunks. If retrieval did not support
 an answer, the UI and response metadata must not imply that it came from the user's files.
+
+The document-QA service returns citation objects only for retrieved chunks and strips invalid inline
+source labels from model output. If the model returns source-backed text without labels, Aetherium
+adds a source-reference footer using the validated retrieved labels. If no chunks support the
+question, Aetherium returns `insufficient_evidence` without calling a model.

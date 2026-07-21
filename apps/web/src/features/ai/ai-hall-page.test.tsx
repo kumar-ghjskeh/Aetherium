@@ -1,6 +1,12 @@
 import type { AetheriumApiClient } from "@aetherium/api-client";
 import { AetheriumApiError } from "@aetherium/api-client";
-import type { Conversation, Mentor, Message } from "@aetherium/shared-types";
+import type {
+  Conversation,
+  DocumentQAResponse,
+  Mentor,
+  Message,
+  VaultFile
+} from "@aetherium/shared-types";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
@@ -89,11 +95,75 @@ const assistantMessage: Message = {
   role: "assistant"
 };
 
-function createClient(overrides: Partial<AetheriumApiClient["mentors"]> = {}): AetheriumApiClient {
+const readyFile: VaultFile = {
+  collectionIds: [],
+  contentType: "text/plain",
+  createdAt: "2026-07-20T00:00:00Z",
+  deletedAt: null,
+  deletionStatus: "active",
+  displayName: "Retrieval Notes",
+  fileExtension: ".txt",
+  fileKind: "text",
+  id: "99999999-9999-4999-8999-999999999999",
+  isFavorite: false,
+  malwareScanStatus: "not_configured",
+  originalFileName: "retrieval-notes.txt",
+  processingStatus: "ready",
+  sanitizedFileName: "retrieval-notes.txt",
+  sizeBytes: 512,
+  tags: [],
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const documentAnswer: DocumentQAResponse = {
+  answer: "Retrieval notes mention source-grounded review. [S1]",
+  citations: [
+    {
+      chunkId: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      fileId: readyFile.id,
+      fileName: readyFile.displayName,
+      label: "S1",
+      metadata: { sequenceNumber: 0 },
+      openUrl: `/app/library?file=${readyFile.id}&chunk=aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa`,
+      pageNumber: 2,
+      score: 1.5,
+      sectionLabel: "notes",
+      snippet: "Retrieval notes mention source-grounded review.",
+      sourceType: "user_file_evidence"
+    }
+  ],
+  evidenceStatus: "supported",
+  mode: "explain",
+  modelName: "aetherium-deterministic-chat",
+  providerName: "aetherium_deterministic",
+  question: "What do the retrieval notes mention?",
+  retrieval: {
+    candidateCount: 1,
+    retrievedCount: 1,
+    semanticEnabled: false,
+    usedCollectionFilter: false,
+    usedFileFilter: true
+  },
+  usage: {
+    estimatedCostMicroUsd: 0,
+    inputTokens: 10,
+    outputTokens: 8,
+    totalTokens: 18
+  },
+  usageRecordId: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+  usedFallback: false
+};
+
+function createClient(
+  mentorOverrides: Partial<AetheriumApiClient["mentors"]> = {},
+  aiOverrides: Partial<AetheriumApiClient["ai"]> = {},
+  fileOverrides: Partial<AetheriumApiClient["files"]> = {}
+): AetheriumApiClient {
   const reject = () => Promise.reject(new Error("Unexpected non-mentor call"));
 
   return {
     ai: {
+      answerDocumentQuestion: vi.fn(reject),
       completeChat: vi.fn(reject),
       createEmbeddings: vi.fn(reject),
       listConsent: vi.fn(reject),
@@ -102,7 +172,8 @@ function createClient(overrides: Partial<AetheriumApiClient["mentors"]> = {}): A
       listUsage: vi.fn(reject),
       streamChat: vi.fn(reject),
       updateConsent: vi.fn(reject),
-      updateModelConfig: vi.fn(reject)
+      updateModelConfig: vi.fn(reject),
+      ...aiOverrides
     },
     auditLogs: { list: vi.fn(reject) },
     auth: {
@@ -112,7 +183,11 @@ function createClient(overrides: Partial<AetheriumApiClient["mentors"]> = {}): A
       register: vi.fn(reject)
     },
     domainEvents: { create: vi.fn(reject), list: vi.fn(reject) },
-    files: createUnusedFilesClient(),
+    files: {
+      ...createUnusedFilesClient(),
+      list: vi.fn(() => Promise.resolve({ items: [], limit: 50, offset: 0, total: 0 })),
+      ...fileOverrides
+    },
     health: { live: vi.fn(reject), ready: vi.fn(reject) },
     mentors: {
       ...createUnusedMentorsClient(),
@@ -140,7 +215,7 @@ function createClient(overrides: Partial<AetheriumApiClient["mentors"]> = {}): A
       updatePermissions: vi.fn(() =>
         Promise.resolve({ ...mentor.permissions, allowFileContent: true })
       ),
-      ...overrides
+      ...mentorOverrides
     },
     notifications: { list: vi.fn(reject), markRead: vi.fn(reject) },
     search: { recent: vi.fn(reject), run: vi.fn(reject) },
@@ -272,5 +347,92 @@ describe("AiHallPage", () => {
       })
     );
     expect(await screen.findByText("Mentor permissions updated.")).toBeInTheDocument();
+  });
+
+  it("asks processed vault files and renders source citations", async () => {
+    const client = createClient(
+      {},
+      {
+        answerDocumentQuestion: vi.fn(() => Promise.resolve(documentAnswer))
+      },
+      {
+        list: vi.fn(() => Promise.resolve({ items: [readyFile], limit: 50, offset: 0, total: 1 }))
+      }
+    );
+
+    render(<AiHallPage client={client} />);
+
+    await screen.findByRole("button", { name: /Lyra/i });
+    await screen.findByText("1 ready files");
+    await userEvent.selectOptions(screen.getByLabelText("Source file"), readyFile.id);
+    await userEvent.type(screen.getByLabelText("Question"), "What do the retrieval notes mention?");
+    await userEvent.click(screen.getByRole("button", { name: "Ask documents" }));
+
+    await waitFor(() =>
+      expect(client.ai.answerDocumentQuestion).toHaveBeenCalledWith({
+        fileIds: [readyFile.id],
+        maxSources: 4,
+        mode: "explain",
+        question: "What do the retrieval notes mention?"
+      })
+    );
+    expect(await screen.findByText("Source-backed answer")).toBeInTheDocument();
+    expect(screen.getByText(/\[S1\] Retrieval Notes/i)).toBeInTheDocument();
+  });
+
+  it("requires explicit document access consent before using file content", async () => {
+    const client = createClient(
+      {},
+      {
+        answerDocumentQuestion: vi.fn(() =>
+          Promise.reject(
+            new AetheriumApiError(403, {
+              error: {
+                code: "ai_data_consent_required",
+                message: "Document Q&A requires explicit file access."
+              }
+            })
+          )
+        ),
+        updateConsent: vi.fn(() =>
+          Promise.resolve({
+            allowCollections: false,
+            allowConversations: false,
+            allowFileContent: true,
+            allowHabitData: false,
+            allowLearningRecords: false,
+            allowProfileData: false,
+            allowProjects: false,
+            allowedCollectionIds: [],
+            createdAt: "2026-07-20T00:00:00Z",
+            externalProvidersAllowed: false,
+            feature: "document_qa" as const,
+            id: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+            updatedAt: "2026-07-20T00:00:00Z"
+          })
+        )
+      },
+      {
+        list: vi.fn(() => Promise.resolve({ items: [readyFile], limit: 50, offset: 0, total: 1 }))
+      }
+    );
+
+    render(<AiHallPage client={client} />);
+
+    await screen.findByRole("button", { name: /Lyra/i });
+    await userEvent.type(screen.getByLabelText("Question"), "Use my retrieval notes.");
+    await userEvent.click(screen.getByRole("button", { name: "Ask documents" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "File-content access is not enabled for document Q&A."
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Enable access" }));
+
+    await waitFor(() =>
+      expect(client.ai.updateConsent).toHaveBeenCalledWith("document_qa", {
+        allowFileContent: true
+      })
+    );
+    expect(await screen.findByText("Document Q&A file access enabled.")).toBeInTheDocument();
   });
 });

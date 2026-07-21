@@ -884,6 +884,8 @@ kbd {
 .vault-filter-row input:focus,
 .vault-organize-row input:focus,
 .vault-organize-row select:focus,
+.document-qa-form select:focus,
+.document-qa-form textarea:focus,
 .ai-message-form textarea:focus,
 .conversation-tools input:focus,
 .create-mentor-form input:focus,
@@ -915,6 +917,79 @@ kbd {
   display: grid;
   gap: 16px;
   grid-template-columns: minmax(0, 0.85fr) minmax(320px, 1fr);
+}
+
+.document-qa-panel {
+  gap: 16px;
+}
+
+.document-qa-form {
+  align-items: end;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(140px, 0.75fr) minmax(170px, 1fr) minmax(220px, 2fr) auto;
+}
+
+.document-qa-form label {
+  color: var(--muted);
+  display: grid;
+  font-size: 0.84rem;
+  font-weight: 800;
+  gap: 8px;
+}
+
+.document-qa-form select,
+.document-qa-form textarea {
+  background: #0d1113;
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  padding: 10px;
+  width: 100%;
+}
+
+.document-question-field textarea {
+  min-height: 72px;
+  resize: vertical;
+}
+
+.document-answer {
+  background: #111719;
+  border: 1px solid var(--panel-border);
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.document-answer header {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.document-answer small,
+.citation-list,
+.citation-list li span,
+.citation-list p {
+  color: var(--muted);
+}
+
+.citation-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 20px;
+}
+
+.citation-list a {
+  color: var(--text);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.citation-list p {
+  margin: 4px 0 0;
 }
 
 .mentor-list,
@@ -1131,6 +1206,7 @@ kbd {
   .settings-grid,
   .ai-hall-grid,
   .ai-chat-layout,
+  .document-qa-form,
   .vault-grid,
   .vault-metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1163,6 +1239,7 @@ kbd {
   .ai-chat-layout,
   .conversation-tools,
   .create-mentor-form,
+  .document-qa-form,
   .vault-grid,
   .vault-filter-row,
   .vault-metrics {

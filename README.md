@@ -6,9 +6,9 @@ interface backed by an optional cinematic world presentation layer.
 This repository currently contains the Phase 0 documentation baseline and early non-3D vertical
 slices: the infrastructure scaffold, standalone password authentication with server-side sessions,
 the user-owned foundation, the protected Command Mode application shell, and Personal Vault file
-storage with background ingestion, global search, the provider-neutral AI gateway, and AI mentor
-conversations. It does not yet implement visual 3D world navigation, semantic retrieval,
-citation-backed document Q&A, habits, or learning features.
+storage with background ingestion, global search, the provider-neutral AI gateway, AI mentor
+conversations, and citation-backed document Q&A. It does not yet implement visual 3D world
+navigation, habits, projects, analytics, achievements, or learning features.
 
 Aetherium is a standalone product. It uses its own repository, database, Redis namespace,
 object-storage buckets, environment variables, Docker resources, CI workflow, and future
@@ -44,6 +44,9 @@ authentication/session system. See `docs/architecture/product-independence.md` a
   permissions, owner-scoped conversations, messages, memory settings, exports, edit/resend,
   regeneration, and a Command Mode AI Hall UI. Mentor chat uses the AI gateway and does not
   automatically attach private files or other product data.
+- Citation-backed document Q&A under `/api/v1/ai/document-qa`, using explicit document-QA
+  file-content consent, owner-scoped ready chunk retrieval, bounded semantic reranking when
+  embeddings exist, validated source labels, and citation links back to the Library.
 - Non-visual `/app/world` route that clearly marks visual World Mode as future work.
 - Docker Compose development infrastructure for Aetherium-isolated PostgreSQL, Redis, MinIO, API,
   worker, and web services.
@@ -204,6 +207,7 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
 - Chat completions: `POST http://localhost:8000/api/v1/ai/chat/completions`
 - Streaming chat completions: `POST http://localhost:8000/api/v1/ai/chat/completions/stream`
 - Embeddings: `POST http://localhost:8000/api/v1/ai/embeddings`
+- Document Q&A: `POST http://localhost:8000/api/v1/ai/document-qa`
 
 ## AI Mentor Endpoints
 
@@ -245,9 +249,9 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
 - Docker is scaffolded but not required for unit tests.
 - API readiness requires PostgreSQL.
 - Email verification, password reset, OAuth, MFA, and magic links are not implemented yet.
-- Personal Vault ingestion extracts text and stores chunks, and global search can find those chunks.
-  Semantic embeddings, AI retrieval, and citations are not implemented yet.
+- Personal Vault ingestion extracts text and stores chunks. Global search can find those chunks, and
+  document Q&A can answer against them with citations when explicit file-content consent is enabled.
 - File-ingestion embedding jobs are still recorded as skipped by default until semantic search wires
   the AI gateway into the worker with explicit consent.
-- AI mentors are persistent and gateway-backed, but retrieval-based document Q&A, habit workflow,
-  learning domain, project workspace, real analytics, and visual 3D scenes do not exist yet.
+- AI mentors are persistent and gateway-backed, but habit workflow, learning domain, project
+  workspace, real analytics, achievements, and visual 3D scenes do not exist yet.

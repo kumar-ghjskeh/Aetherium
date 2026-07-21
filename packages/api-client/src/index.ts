@@ -25,6 +25,8 @@ import type {
   ConversationMemorySettingsUpdate,
   ConversationPage,
   ConversationUpdateRequest,
+  DocumentQARequest,
+  DocumentQAResponse,
   DownloadUrlResponse,
   DomainEvent,
   DomainEventCreateRequest,
@@ -87,6 +89,7 @@ import {
   conversationMemorySettingsSchema,
   conversationPageSchema,
   conversationSchema,
+  documentQAResponseSchema,
   downloadUrlResponseSchema,
   domainEventPageSchema,
   domainEventSchema,
@@ -120,6 +123,7 @@ export interface AetheriumApiClientOptions {
 
 export interface AetheriumApiClient {
   ai: {
+    answerDocumentQuestion: (payload: DocumentQARequest) => Promise<DocumentQAResponse>;
     completeChat: (payload: AIChatCompletionRequest) => Promise<AIChatCompletionResponse>;
     createEmbeddings: (payload: AIEmbeddingRequest) => Promise<AIEmbeddingResponse>;
     listConsent: () => Promise<AIConsentPolicyPage>;
@@ -377,6 +381,13 @@ export function createAetheriumApiClient(options: AetheriumApiClientOptions): Ae
 
   return {
     ai: {
+      answerDocumentQuestion: async (payload) => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/ai/document-qa", {
+          body: JSON.stringify(payload),
+          method: "POST"
+        });
+        return documentQAResponseSchema.parse(response);
+      },
       completeChat: async (payload) => {
         const response = await requestJson(
           fetcher,

@@ -665,6 +665,64 @@ export interface AIUsageQuery extends PaginationQuery {
   feature?: AIFeature;
 }
 
+export type DocumentQAMode =
+  | "explain"
+  | "summarize"
+  | "compare"
+  | "quiz_me"
+  | "create_flashcards"
+  | "extract_tasks"
+  | "create_study_notes"
+  | "identify_contradictions";
+
+export type DocumentQAEvidenceStatus = "supported" | "insufficient_evidence";
+
+export interface DocumentQARequest {
+  question: string;
+  mode?: DocumentQAMode | undefined;
+  fileIds?: string[] | undefined;
+  collectionIds?: string[] | undefined;
+  maxSources?: number | undefined;
+  providerName?: string | undefined;
+  modelName?: string | undefined;
+}
+
+export interface DocumentQACitation {
+  label: string;
+  fileId: string;
+  chunkId: string;
+  fileName: string;
+  pageNumber: number | null;
+  sectionLabel: string | null;
+  snippet: string;
+  score: number;
+  openUrl: string;
+  sourceType: "user_file_evidence";
+  metadata: Record<string, unknown>;
+}
+
+export interface DocumentQARetrieval {
+  semanticEnabled: boolean;
+  candidateCount: number;
+  retrievedCount: number;
+  usedCollectionFilter: boolean;
+  usedFileFilter: boolean;
+}
+
+export interface DocumentQAResponse {
+  question: string;
+  mode: DocumentQAMode;
+  answer: string;
+  evidenceStatus: DocumentQAEvidenceStatus;
+  citations: DocumentQACitation[];
+  retrieval: DocumentQARetrieval;
+  providerName: string | null;
+  modelName: string | null;
+  usage: AIUsageSummary | null;
+  usageRecordId: string | null;
+  usedFallback: boolean;
+}
+
 export type MentorTone = "calm" | "direct" | "analytical" | "encouraging";
 
 export type MentorTool =

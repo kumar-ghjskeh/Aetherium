@@ -97,6 +97,7 @@ function createClient(overrides: Partial<AetheriumApiClient["files"]> = {}): Aet
 
   return {
     ai: {
+      answerDocumentQuestion: vi.fn(reject),
       completeChat: vi.fn(reject),
       createEmbeddings: vi.fn(reject),
       listConsent: vi.fn(reject),

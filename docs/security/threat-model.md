@@ -37,6 +37,8 @@
 | Malicious uploads                         | Validate type and size; use a malware scanning integration point before later parsing.        |
 | Object-key disclosure                     | Use server-generated object keys and return only expiring presigned URLs to owners.           |
 | AI data leakage                           | Require consent controls and provider-scoped policies.                                        |
+| Prompt injection from retrieved files     | Source-bounded document-QA prompts, no automatic mutation tools, and citation validation.     |
+| Fabricated citations                      | Return citations only for retrieved owner-scoped chunks and no-evidence responses when empty. |
 | Insecure code execution                   | Use mock code runner first; require isolated sandbox before real execution.                   |
 | Secret leakage                            | Keep secrets out of source and logs.                                                          |
 | Cross-tenant data access                  | Include tenant/owner scoping in schema and data-access tests.                                 |
@@ -99,6 +101,14 @@
   sources.
 - Stop-generation currently reports an honest conflict when no active generation exists instead of
   displaying a false success state.
+- Document Q&A requires explicit `document_qa` file-content consent before sending retrieved chunks
+  to the AI gateway.
+- Document Q&A validates optional file and collection filters against the authenticated owner and
+  can restrict retrieval to consent-approved collections.
+- Document Q&A retrieves only active ready chunks, strips invalid inline source labels from model
+  output, and returns citation objects only for retrieved chunks.
+- If no source chunks support the question, Document Q&A returns `insufficient_evidence` without
+  calling a model or fabricating sources.
 - CI runs independence checks, formatting, linting, type checks, tests, build, and migration smoke
   validation.
 
@@ -114,8 +124,8 @@
 - Actual malware scanning service and quarantine workflow.
 - Background extraction sandboxing and resource limits for PDFs, DOCX, images, and source files.
 - Malware-scanning execution before or during ingestion.
-- Semantic-search and document-Q&A prompt-injection review before file chunks are used for AI
-  answers.
+- Deeper semantic-search prompt-injection review before global semantic ranking or mentor tools use
+  retrieved chunks automatically.
 - Production validation of provider-specific request mappings before broad external-provider use.
 - Account deletion and data export.
 - Authorization tests for every critical user-owned endpoint.
