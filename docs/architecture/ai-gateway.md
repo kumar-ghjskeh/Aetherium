@@ -20,10 +20,25 @@ Implemented:
 - Metadata-only usage records for provider, model, feature, operation, status, token counts, cost
   estimate placeholder, latency, fallback, and normalized errors.
 - Rate-limit, retry, timeout, and fallback foundations.
+- AI mentor conversations under `/api/v1/mentors`, including fictional default mentors, custom
+  mentors, owner-scoped conversations, messages, memory settings, exports, edit/resend,
+  regeneration, and stop-generation API behavior.
 
-Keyword search over owner-scoped files, extracted chunks, collections, and tags is implemented under
-`/api/v1/search`. Semantic ranking, AI retrieval, reranking, citation-backed answer generation, and
-mentor conversations are not implemented yet.
+Keyword search over owner-scoped files, extracted chunks, collections, tags, and AI conversation
+titles is implemented under `/api/v1/search`. Semantic ranking, AI retrieval, reranking, and
+citation-backed answer generation are not implemented yet.
+
+## Mentor Chat Boundary
+
+Mentor chat calls the AI gateway with:
+
+- The mentor's owner-scoped system instructions.
+- A bounded window of the current conversation's complete messages.
+- No uploaded file chunks, projects, habits, learning records, profile data, or citations.
+
+The mentor system prompt explicitly states that mentors are fictional AI and must not claim access
+to private content unless Aetherium provides retrieved context. Durable data changes remain separate
+application actions that require user approval.
 
 ## Required Capabilities
 

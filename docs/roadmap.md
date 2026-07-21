@@ -40,10 +40,13 @@ Current approved slice:
 - Provider-neutral AI gateway foundation with consent policies, model configurations, usage records,
   deterministic test/local adapter, external provider adapter boundaries, rate limits, retries, and
   fallback support.
+- AI mentors and conversations with fictional default mentors, custom mentor creation, owner-scoped
+  conversation history, memory controls, exports, edit/resend, regeneration, AI Hall UI, and
+  conversation search.
 
 Later Phase 1 slices:
 
-- One general AI mentor with citations.
+- Citation-backed document Q&A.
 - One daily habit and habit logging.
 - User profile beyond the current `/auth/me` public profile.
 - Non-visual world data expansion only until the visual 3D phase is explicitly started.

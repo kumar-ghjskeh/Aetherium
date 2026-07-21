@@ -17,7 +17,7 @@ import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { AuthProvider } from "../auth/auth-provider";
-import { createUnusedFilesClient } from "../../test/api-client";
+import { createUnusedFilesClient, createUnusedMentorsClient } from "../../test/api-client";
 import { AppDashboard } from "./app-dashboard";
 import { AppShell } from "./app-shell";
 import { SectionPage } from "./section-page";
@@ -155,6 +155,7 @@ function createClient(
   overrides: Partial<{
     auth: Partial<AetheriumApiClient["auth"]>;
     files: Partial<AetheriumApiClient["files"]>;
+    mentors: Partial<AetheriumApiClient["mentors"]>;
     notifications: Partial<AetheriumApiClient["notifications"]>;
     search: Partial<AetheriumApiClient["search"]>;
     settings: Partial<AetheriumApiClient["settings"]>;
@@ -192,6 +193,7 @@ function createClient(
       live: vi.fn(() => Promise.resolve(health)),
       ready: vi.fn(() => Promise.resolve(health))
     },
+    mentors: { ...createUnusedMentorsClient(), ...(overrides.mentors ?? {}) },
     notifications: {
       list: vi.fn(() => Promise.resolve(notificationPage)),
       markRead: vi.fn(() => Promise.resolve(readNotification)),
@@ -375,7 +377,7 @@ describe("Command Mode shell", () => {
     renderShell(client, <SectionPage section="settings" />);
 
     expect(await screen.findByRole("heading", { name: "Preferences" })).toBeInTheDocument();
-    await userEvent.selectOptions(screen.getByLabelText("Theme"), "dark");
+    await userEvent.selectOptions(await screen.findByLabelText("Theme"), "dark");
 
     await waitFor(() =>
       expect(client.settings.updatePreferences).toHaveBeenCalledWith({ theme: "dark" })

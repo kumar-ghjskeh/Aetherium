@@ -56,11 +56,30 @@ Current routes:
 - `POST /api/v1/ai/chat/completions`
 - `POST /api/v1/ai/chat/completions/stream`
 - `POST /api/v1/ai/embeddings`
+- `GET /api/v1/mentors`
+- `POST /api/v1/mentors`
+- `GET /api/v1/mentors/{mentor_id}`
+- `PATCH /api/v1/mentors/{mentor_id}`
+- `POST /api/v1/mentors/{mentor_id}/archive`
+- `GET /api/v1/mentors/{mentor_id}/permissions`
+- `PATCH /api/v1/mentors/{mentor_id}/permissions`
+- `GET /api/v1/mentors/conversations`
+- `POST /api/v1/mentors/conversations`
+- `GET /api/v1/mentors/conversations/{conversation_id}`
+- `PATCH /api/v1/mentors/conversations/{conversation_id}`
+- `DELETE /api/v1/mentors/conversations/{conversation_id}`
+- `POST /api/v1/mentors/conversations/{conversation_id}/archive`
+- `PATCH /api/v1/mentors/conversations/{conversation_id}/memory`
+- `GET /api/v1/mentors/conversations/{conversation_id}/messages`
+- `POST /api/v1/mentors/conversations/{conversation_id}/messages`
+- `PATCH /api/v1/mentors/conversations/{conversation_id}/messages/{message_id}`
+- `POST /api/v1/mentors/conversations/{conversation_id}/messages/{message_id}/regenerate`
+- `POST /api/v1/mentors/conversations/{conversation_id}/stop`
+- `GET /api/v1/mentors/conversations/{conversation_id}/export`
 
 Planned route groups:
 
 - `/api/v1/users`
-- `/api/v1/mentors`
 - `/api/v1/learning`
 - `/api/v1/habits`
 - `/api/v1/goals`
@@ -183,9 +202,10 @@ low-level owner-scoped data API for future search and retrieval work, not a glob
 ## Search Routes
 
 `POST /api/v1/search` searches the authenticated user's implemented Aetherium data and records a
-recent search. Current result producers cover file metadata, file chunks, collections, and tags. The
-response includes snippets, match reasons, open URLs, and future world-location identifiers.
-`semanticEnabled` is `false` until embeddings and AI consent controls are implemented.
+recent search. Current result producers cover file metadata, file chunks, collections, tags, and AI
+conversation titles. The response includes snippets, match reasons, open URLs, and future
+world-location identifiers. `semanticEnabled` is `false` until embeddings and AI retrieval controls
+are implemented.
 
 `GET /api/v1/search/recent` lists only the authenticated user's recent searches with bounded
 pagination.
@@ -212,6 +232,46 @@ raw prompts or model responses.
 `POST /api/v1/ai/embeddings` call the provider-neutral gateway. External providers require
 environment enablement and explicit user consent. These routes do not retrieve files or create
 mentor conversations in this slice.
+
+## AI Mentor Routes
+
+`GET /api/v1/mentors` returns the authenticated user's default and custom mentors. Default fictional
+mentors are created as owner-scoped rows on first access.
+
+`POST /api/v1/mentors`, `PATCH /api/v1/mentors/{mentor_id}`, and
+`POST /api/v1/mentors/{mentor_id}/archive` manage custom mentor metadata. Default mentors cannot be
+archived.
+
+`GET/PATCH /api/v1/mentors/{mentor_id}/permissions` reads and updates explicit mentor data-access
+flags and tool allowlists. The current mentor chat still sends no private domain data unless later
+retrieval phases add approved context assembly.
+
+`GET/POST /api/v1/mentors/conversations` lists and creates owner-scoped conversations with bounded
+pagination.
+
+`GET/PATCH/DELETE /api/v1/mentors/conversations/{conversation_id}` reads, renames, and soft-deletes
+owned conversations. Cross-user IDs return `not_found`.
+
+`POST /api/v1/mentors/conversations/{conversation_id}/archive` archives an owned conversation.
+
+`PATCH /api/v1/mentors/conversations/{conversation_id}/memory` persists conversation memory settings
+and rejects enabling memory while the user's global AI memory preference is disabled.
+
+`GET/POST /api/v1/mentors/conversations/{conversation_id}/messages` lists messages and sends a new
+user message. Assistant replies are generated through the AI gateway with bounded conversation
+context and usage tracking.
+
+`PATCH /api/v1/mentors/conversations/{conversation_id}/messages/{message_id}` edits and resends a
+user message as a new turn, preserving history.
+
+`POST /api/v1/mentors/conversations/{conversation_id}/messages/{message_id}/regenerate` regenerates
+an assistant message as a new turn linked to the original.
+
+`POST /api/v1/mentors/conversations/{conversation_id}/stop` exists for the future streaming
+generation workflow and currently returns an honest conflict when no active generation exists.
+
+`GET /api/v1/mentors/conversations/{conversation_id}/export` returns an owner-scoped JSON export of
+the conversation, mentor metadata, messages, and any stored message sources.
 
 ## Generated Client
 

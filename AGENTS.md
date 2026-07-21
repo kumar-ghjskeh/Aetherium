@@ -30,13 +30,15 @@ Implemented foundation slices:
 - Provider-neutral AI gateway foundation with consent policies, model configuration, usage records,
   deterministic test/local adapter, OpenAI-compatible, Anthropic-compatible, and Ollama-compatible
   adapter boundaries, rate limits, retries, and fallback support.
+- AI mentors and conversations with fictional default mentors, custom mentor creation, mentor
+  permissions, owner-scoped conversations, messages, memory settings, exports, edit/resend,
+  regeneration, stop-generation API behavior, AI Hall UI, and conversation search.
 
 Still out of scope unless explicitly requested:
 
 - OAuth, social login, email delivery, password reset, MFA, and magic links.
 - 3D world scenes, React Three Fiber, player controls, map travel, or world progression.
-- Semantic retrieval, mentor UI, persistent AI conversations, citation-backed Q&A, habits, learning,
-  projects, achievements, or analytics.
+- Semantic retrieval, citation-backed Q&A, habits, learning, projects, achievements, or analytics.
 
 ## Product Independence
 

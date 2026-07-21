@@ -12,7 +12,7 @@ import userEvent from "@testing-library/user-event";
 import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { createUnusedFilesClient } from "../../test/api-client";
+import { createUnusedFilesClient, createUnusedMentorsClient } from "../../test/api-client";
 import { LibraryPage } from "./library-page";
 
 const vaultFile: VaultFile = {
@@ -125,6 +125,7 @@ function createClient(overrides: Partial<AetheriumApiClient["files"]> = {}): Aet
       ...overrides
     },
     health: { live: vi.fn(reject), ready: vi.fn(reject) },
+    mentors: createUnusedMentorsClient(),
     notifications: { list: vi.fn(reject), markRead: vi.fn(reject) },
     search: { recent: vi.fn(reject), run: vi.fn(reject) },
     settings: { getPreferences: vi.fn(reject), updatePreferences: vi.fn(reject) },

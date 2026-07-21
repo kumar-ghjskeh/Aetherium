@@ -24,6 +24,14 @@ from app.models.foundation import (
     UserPreferences,
     WorldProfile,
 )
+from app.models.mentors import (
+    Conversation,
+    ConversationMemorySettings,
+    Mentor,
+    MentorPermission,
+    Message,
+    MessageSource,
+)
 from app.models.search import RecentSearch
 
 __all__ = [
@@ -34,6 +42,8 @@ __all__ = [
     "AuthSession",
     "Collection",
     "CollectionItem",
+    "Conversation",
+    "ConversationMemorySettings",
     "DomainEvent",
     "EmbeddingJob",
     "ExtractionResult",
@@ -42,6 +52,10 @@ __all__ = [
     "FileRecord",
     "FileTag",
     "FileVersion",
+    "Mentor",
+    "MentorPermission",
+    "Message",
+    "MessageSource",
     "Notification",
     "ProcessingFailure",
     "ProcessingJob",

@@ -25,6 +25,8 @@ Current migrations:
   indexes for implemented search targets.
 - `0007_ai_gateway`: creates owner-scoped AI consent policies, model configurations, and usage
   records.
+- `0008_ai_mentors`: creates owner-scoped mentors, mentor permissions, conversations, memory
+  settings, messages, and message sources.
 
 ### `users`
 
@@ -236,6 +238,7 @@ PostgreSQL deployments also include full-text expression indexes over:
 - File chunk `search_text`.
 - Collection name and description.
 - Tag name.
+- Conversation title.
 
 ## AI Gateway Schema
 
@@ -278,6 +281,67 @@ Consent rows default to no external provider access and no automatic data-catego
 Usage records are metadata-only and must not store raw prompts, raw responses, provider API keys,
 cookies, or session tokens.
 
+## AI Mentor Schema
+
+All AI mentor records are owner-scoped. Default mentors are copied into each user's own rows on
+first access so no mutable mentor state is shared between users.
+
+### `mentors`
+
+- UUID primary key.
+- `owner_user_id` foreign key to `users.id`.
+- Slug unique per owner.
+- Name, fictional identity, optional avatar reference, description, system instructions, tone,
+  preferred model name, default flag, archive timestamp, and timestamps.
+
+### `mentor_permissions`
+
+- UUID primary key.
+- `owner_user_id` and unique `mentor_id`.
+- JSON allowlist of mentor tools.
+- JSON allowed collection IDs for later retrieval scopes.
+- Boolean access flags for files, conversations, projects, learning records, habits, and profile
+  data.
+
+Permissions default to no automatic private data access. The current mentor-chat service passes no
+file, project, habit, learning, or profile data to the AI gateway.
+
+### `conversations`
+
+- UUID primary key.
+- `owner_user_id` and `mentor_id`.
+- Title, active/archive/delete status, archive/delete timestamps, last-message timestamp, and
+  timestamps.
+- Owner/status indexes for bounded conversation lists.
+
+### `conversation_memory_settings`
+
+- UUID primary key.
+- `owner_user_id` and unique `conversation_id`.
+- Memory enabled flag, memory policy, optional bounded memory summary, and timestamps.
+
+Memory can only be enabled when the user's global AI memory preference allows it.
+
+### `messages`
+
+- UUID primary key.
+- `owner_user_id` and `conversation_id`.
+- Role, content, complete/failed status, optional AI usage record reference, provider/model
+  metadata, bounded error fields, edit/regeneration lineage, and timestamps.
+
+Messages store user prompts and assistant responses as user-owned conversation data. AI usage
+records remain metadata-only and do not duplicate raw prompts.
+
+### `message_sources`
+
+- UUID primary key.
+- `owner_user_id` and `message_id`.
+- Source type, optional source identifier, title, URL, page/section metadata, snippet, source
+  metadata JSON, and created timestamp.
+
+Message sources are present for future citation-backed retrieval. Phase 7 mentor chat does not
+fabricate citations or claim file support.
+
 ## Retrieval Model
 
 File chunks currently store extracted text, normalized `search_text`, source metadata, and owner
@@ -292,7 +356,6 @@ not produce evidence.
 Later schema slices will cover:
 
 - `world_locations`, `user_world_state`.
-- `mentors`, `conversations`, `messages`, `message_sources`.
 - `subjects`, `topics`, `topic_relations`, `resources`.
 - `courses`, `modules`, `lessons`, `quizzes`, `questions`, `attempts`.
 - `flashcards`, `review_events`, `study_sessions`, `mastery_records`.

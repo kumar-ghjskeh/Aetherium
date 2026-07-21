@@ -11,11 +11,11 @@ Implemented targets:
 - Extracted file chunks.
 - Collections.
 - Tags.
+- AI conversation titles.
 
 Reserved future targets:
 
 - Notes.
-- AI conversations.
 - Learning topics.
 - Projects.
 - Tasks.
@@ -27,8 +27,8 @@ Reserved targets do not return fake results before their tables exist.
 ## Ranking
 
 PostgreSQL deployments use full-text search functions and GIN expression indexes over file metadata,
-chunk `search_text`, collection metadata, and tag names. SQLite-backed tests use a deterministic
-case-insensitive fallback.
+chunk `search_text`, collection metadata, tag names, and conversation titles. SQLite-backed tests
+use a deterministic case-insensitive fallback.
 
 Search results are merged in the service layer and sorted by relevance or recency. Result pages are
 bounded by request limits, and the API enforces owner scope in every target query.

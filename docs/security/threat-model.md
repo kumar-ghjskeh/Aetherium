@@ -88,6 +88,17 @@
 - AI usage records store metadata, token counts, cost estimates, latency, fallback state, and
   bounded errors, but not raw prompts, raw responses, provider secrets, cookies, or session tokens.
 - Gateway calls are rate limited through the Aetherium namespace and normalize provider errors.
+- AI mentors, mentor permissions, conversations, messages, memory settings, and message sources are
+  owner-scoped and protected by reusable authentication dependencies.
+- Default mentors are fictional and copied into each user's own rows; no shared private mentor state
+  is mutable across tenants.
+- Mentor chat uses bounded conversation history and does not automatically attach uploaded files,
+  projects, habits, learning records, profile data, or citations.
+- Conversation memory can only be enabled when the user's global AI memory preference allows it.
+- Conversation exports are owner-scoped and return only the authenticated user's messages and stored
+  sources.
+- Stop-generation currently reports an honest conflict when no active generation exists instead of
+  displaying a false success state.
 - CI runs independence checks, formatting, linting, type checks, tests, build, and migration smoke
   validation.
 
@@ -103,7 +114,8 @@
 - Actual malware scanning service and quarantine workflow.
 - Background extraction sandboxing and resource limits for PDFs, DOCX, images, and source files.
 - Malware-scanning execution before or during ingestion.
-- Semantic-search prompt-injection review before file chunks are used for AI answers.
+- Semantic-search and document-Q&A prompt-injection review before file chunks are used for AI
+  answers.
 - Production validation of provider-specific request mappings before broad external-provider use.
 - Account deletion and data export.
 - Authorization tests for every critical user-owned endpoint.

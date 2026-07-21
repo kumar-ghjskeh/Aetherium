@@ -193,6 +193,96 @@ const aiEmbeddingResponse = {
   usedFallback: false
 };
 
+const mentorPermission = {
+  allowConversations: false,
+  allowFileContent: false,
+  allowHabitData: false,
+  allowLearningRecords: false,
+  allowProfileData: false,
+  allowProjects: false,
+  allowedCollectionIds: [],
+  allowedTools: ["explain", "quiz"],
+  createdAt: "2026-07-20T00:00:00Z",
+  id: "f4444444-4444-4444-8444-444444444444",
+  mentorId: "f5555555-5555-4555-8555-555555555555",
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const mentor = {
+  archivedAt: null,
+  avatarReference: null,
+  createdAt: "2026-07-20T00:00:00Z",
+  description: "General learning mentor.",
+  fictionalIdentity: "A fictional AI mentor.",
+  id: mentorPermission.mentorId,
+  isDefault: true,
+  name: "Lyra",
+  permissions: mentorPermission,
+  preferredModelName: null,
+  slug: "lyra",
+  systemInstructions: "Support practical learning without silently changing user data.",
+  tone: "calm",
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const conversationMemorySettings = {
+  conversationId: "f6666666-6666-4666-8666-666666666666",
+  createdAt: "2026-07-20T00:00:00Z",
+  id: "f7777777-7777-4777-8777-777777777777",
+  memoryEnabled: false,
+  memoryPolicy: "disabled",
+  memorySummary: null,
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const conversation = {
+  archivedAt: null,
+  createdAt: "2026-07-20T00:00:00Z",
+  deletedAt: null,
+  id: conversationMemorySettings.conversationId,
+  lastMessageAt: null,
+  memorySettings: conversationMemorySettings,
+  mentorId: mentor.id,
+  mentorName: mentor.name,
+  messageCount: 0,
+  status: "active",
+  title: "Index review",
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const userMessage = {
+  aiUsageRecordId: null,
+  content: "Explain indexes.",
+  conversationId: conversation.id,
+  createdAt: "2026-07-20T00:00:00Z",
+  editedFromMessageId: null,
+  errorCode: null,
+  errorMessage: null,
+  id: "f8888888-8888-4888-8888-888888888888",
+  modelName: null,
+  providerName: null,
+  regeneratedFromMessageId: null,
+  role: "user",
+  status: "complete",
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const assistantMessage = {
+  ...userMessage,
+  aiUsageRecordId: aiUsageRecord.id,
+  content: "Aetherium deterministic response: Explain indexes.",
+  id: "f9999999-9999-4999-8999-999999999999",
+  modelName: "aetherium-deterministic-chat",
+  providerName: "aetherium_deterministic",
+  role: "assistant"
+};
+
+const messageSendResponse = {
+  assistantMessage,
+  conversation: { ...conversation, lastMessageAt: "2026-07-20T00:01:00Z", messageCount: 2 },
+  userMessage
+};
+
 describe("createAetheriumApiClient", () => {
   it("fetches and validates API liveness", async () => {
     const fetcher = vi.fn<typeof fetch>(() =>
@@ -805,6 +895,172 @@ describe("createAetheriumApiClient", () => {
       },
       method: "POST"
     });
+  });
+
+  it("uses AI mentor and conversation endpoints", async () => {
+    const fetcher = vi.fn<typeof fetch>((input, init) => {
+      const url = requestUrl(input);
+      if (url === "http://localhost:8000/api/v1/mentors?includeArchived=true") {
+        return Promise.resolve(jsonResponse({ items: [mentor] }));
+      }
+      if (url === `http://localhost:8000/api/v1/mentors/${mentor.id}`) {
+        return Promise.resolve(jsonResponse({ ...mentor, name: "Lyra Prime" }));
+      }
+      if (url === `http://localhost:8000/api/v1/mentors/${mentor.id}/permissions`) {
+        return Promise.resolve(jsonResponse({ ...mentorPermission, allowConversations: true }));
+      }
+      if (url === `http://localhost:8000/api/v1/mentors/${mentor.id}/archive`) {
+        return Promise.resolve(jsonResponse({ ...mentor, archivedAt: "2026-07-20T00:10:00Z" }));
+      }
+      if (url === "http://localhost:8000/api/v1/mentors") {
+        return Promise.resolve(jsonResponse({ ...mentor, isDefault: false, slug: "custom-lyra" }));
+      }
+      if (
+        url ===
+        "http://localhost:8000/api/v1/mentors/conversations?includeArchived=true&limit=5&offset=0"
+      ) {
+        return Promise.resolve(
+          jsonResponse({ items: [conversation], limit: 5, offset: 0, total: 1 })
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/mentors/conversations") {
+        return Promise.resolve(jsonResponse(conversation, 201));
+      }
+      if (url === `http://localhost:8000/api/v1/mentors/conversations/${conversation.id}`) {
+        if (init?.method === "DELETE") {
+          return Promise.resolve(new Response(null, { status: 204 }));
+        }
+        return Promise.resolve(jsonResponse({ ...conversation, title: "Renamed review" }));
+      }
+      if (url === `http://localhost:8000/api/v1/mentors/conversations/${conversation.id}/archive`) {
+        return Promise.resolve(jsonResponse({ ...conversation, status: "archived" }));
+      }
+      if (url === `http://localhost:8000/api/v1/mentors/conversations/${conversation.id}/memory`) {
+        return Promise.resolve(
+          jsonResponse({
+            ...conversationMemorySettings,
+            memoryEnabled: true,
+            memoryPolicy: "persistent"
+          })
+        );
+      }
+      if (
+        url ===
+        `http://localhost:8000/api/v1/mentors/conversations/${conversation.id}/messages?limit=10&offset=0`
+      ) {
+        return Promise.resolve(
+          jsonResponse({ items: [userMessage, assistantMessage], limit: 10, offset: 0, total: 2 })
+        );
+      }
+      if (
+        url === `http://localhost:8000/api/v1/mentors/conversations/${conversation.id}/messages`
+      ) {
+        return Promise.resolve(jsonResponse(messageSendResponse));
+      }
+      if (
+        url ===
+        `http://localhost:8000/api/v1/mentors/conversations/${conversation.id}/messages/${userMessage.id}`
+      ) {
+        return Promise.resolve(jsonResponse(messageSendResponse));
+      }
+      if (
+        url ===
+        `http://localhost:8000/api/v1/mentors/conversations/${conversation.id}/messages/${assistantMessage.id}/regenerate`
+      ) {
+        return Promise.resolve(jsonResponse({ ...messageSendResponse, userMessage: null }));
+      }
+      if (url === `http://localhost:8000/api/v1/mentors/conversations/${conversation.id}/stop`) {
+        return Promise.resolve(jsonResponse({ reason: "stopped", stopped: true }));
+      }
+      if (url === `http://localhost:8000/api/v1/mentors/conversations/${conversation.id}/export`) {
+        return Promise.resolve(
+          jsonResponse({
+            conversation,
+            exportedAt: "2026-07-20T00:05:00Z",
+            mentor,
+            messages: [{ ...userMessage, sources: [] }]
+          })
+        );
+      }
+      return Promise.resolve(jsonResponse({ items: [] }));
+    });
+    const client = createAetheriumApiClient({ baseUrl: "http://localhost:8000", fetcher });
+
+    await expect(client.mentors.list({ includeArchived: true })).resolves.toMatchObject({
+      items: [mentor]
+    });
+    await expect(
+      client.mentors.create({
+        description: "General learning mentor.",
+        fictionalIdentity: "A fictional AI mentor.",
+        name: "Lyra",
+        systemInstructions: "Support practical learning without changing user data.",
+        tone: "calm"
+      })
+    ).resolves.toMatchObject({ isDefault: false });
+    await expect(client.mentors.get(mentor.id)).resolves.toMatchObject({ name: "Lyra Prime" });
+    await expect(client.mentors.update(mentor.id, { name: "Lyra Prime" })).resolves.toMatchObject({
+      name: "Lyra Prime"
+    });
+    await expect(client.mentors.getPermissions(mentor.id)).resolves.toMatchObject({
+      allowConversations: true
+    });
+    await expect(
+      client.mentors.updatePermissions(mentor.id, { allowConversations: true })
+    ).resolves.toMatchObject({ allowConversations: true });
+    await expect(client.mentors.archive(mentor.id)).resolves.toMatchObject({
+      archivedAt: "2026-07-20T00:10:00Z"
+    });
+    await expect(
+      client.mentors.listConversations({ includeArchived: true, limit: 5, offset: 0 })
+    ).resolves.toMatchObject({ total: 1 });
+    await expect(
+      client.mentors.createConversation({ mentorId: mentor.id, title: "Index review" })
+    ).resolves.toMatchObject({ title: "Index review" });
+    await expect(client.mentors.getConversation(conversation.id)).resolves.toMatchObject({
+      title: "Renamed review"
+    });
+    await expect(
+      client.mentors.updateConversation(conversation.id, { title: "Renamed review" })
+    ).resolves.toMatchObject({ title: "Renamed review" });
+    await expect(client.mentors.archiveConversation(conversation.id)).resolves.toMatchObject({
+      status: "archived"
+    });
+    await expect(
+      client.mentors.updateMemory(conversation.id, {
+        memoryEnabled: true,
+        memoryPolicy: "persistent"
+      })
+    ).resolves.toMatchObject({ memoryEnabled: true });
+    await expect(
+      client.mentors.listMessages(conversation.id, { limit: 10, offset: 0 })
+    ).resolves.toMatchObject({ total: 2 });
+    await expect(
+      client.mentors.sendMessage(conversation.id, { content: "Explain indexes." })
+    ).resolves.toMatchObject({ assistantMessage });
+    await expect(
+      client.mentors.editAndResendMessage(conversation.id, userMessage.id, {
+        content: "Explain indexes again."
+      })
+    ).resolves.toMatchObject({ userMessage });
+    await expect(
+      client.mentors.regenerateMessage(conversation.id, assistantMessage.id)
+    ).resolves.toMatchObject({ userMessage: null });
+    await expect(client.mentors.stopGeneration(conversation.id)).resolves.toMatchObject({
+      stopped: true
+    });
+    await expect(client.mentors.exportConversation(conversation.id)).resolves.toMatchObject({
+      messages: [{ sources: [] }]
+    });
+    await expect(client.mentors.deleteConversation(conversation.id)).resolves.toBeUndefined();
+
+    expect(fetcher).toHaveBeenCalledWith(
+      "http://localhost:8000/api/v1/mentors/conversations?includeArchived=true&limit=5&offset=0",
+      {
+        credentials: "include",
+        headers: { Accept: "application/json" }
+      }
+    );
   });
 
   it("posts registration payloads with credentials", async () => {

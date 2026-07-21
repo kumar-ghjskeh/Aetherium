@@ -401,7 +401,7 @@ export type SearchMode = "keyword" | "hybrid";
 export type SearchSort = "relevance" | "recent";
 
 export type SearchMatchReason =
-  "file_metadata" | "file_content" | "collection_metadata" | "tag_metadata";
+  "file_metadata" | "file_content" | "collection_metadata" | "tag_metadata" | "ai_conversation";
 
 export interface SearchRequest {
   query: string;
@@ -663,4 +663,200 @@ export interface AIUsageRecordPage {
 
 export interface AIUsageQuery extends PaginationQuery {
   feature?: AIFeature;
+}
+
+export type MentorTone = "calm" | "direct" | "analytical" | "encouraging";
+
+export type MentorTool =
+  "explain" | "quiz" | "flashcards" | "summarize" | "study_plan" | "code_review";
+
+export type ConversationStatus = "active" | "archived" | "deleted";
+
+export type ConversationMemoryPolicy = "disabled" | "session_only" | "persistent";
+
+export type MessageStatus = "complete" | "failed";
+
+export type MessageSourceType =
+  "file_chunk" | "general_model_knowledge" | "user_message" | "inference";
+
+export interface MentorPermission {
+  id: string;
+  mentorId: string;
+  allowedTools: MentorTool[];
+  allowedCollectionIds: string[];
+  allowFileContent: boolean;
+  allowConversations: boolean;
+  allowProjects: boolean;
+  allowLearningRecords: boolean;
+  allowHabitData: boolean;
+  allowProfileData: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Mentor {
+  id: string;
+  slug: string;
+  name: string;
+  fictionalIdentity: string;
+  avatarReference: string | null;
+  description: string;
+  systemInstructions: string;
+  tone: MentorTone;
+  preferredModelName: string | null;
+  isDefault: boolean;
+  archivedAt: string | null;
+  permissions: MentorPermission;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MentorPage {
+  items: Mentor[];
+}
+
+export interface MentorCreateRequest {
+  name: string;
+  fictionalIdentity: string;
+  avatarReference?: string | null | undefined;
+  description: string;
+  systemInstructions: string;
+  tone?: MentorTone | undefined;
+  preferredModelName?: string | null | undefined;
+  allowedTools?: MentorTool[] | undefined;
+}
+
+export type MentorUpdateRequest = Partial<
+  Pick<
+    Mentor,
+    | "avatarReference"
+    | "description"
+    | "fictionalIdentity"
+    | "name"
+    | "preferredModelName"
+    | "systemInstructions"
+    | "tone"
+  >
+>;
+
+export type MentorPermissionUpdate = Partial<
+  Pick<
+    MentorPermission,
+    | "allowConversations"
+    | "allowFileContent"
+    | "allowHabitData"
+    | "allowLearningRecords"
+    | "allowProfileData"
+    | "allowProjects"
+    | "allowedCollectionIds"
+    | "allowedTools"
+  >
+>;
+
+export interface ConversationMemorySettings {
+  id: string;
+  conversationId: string;
+  memoryEnabled: boolean;
+  memoryPolicy: ConversationMemoryPolicy;
+  memorySummary: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Conversation {
+  id: string;
+  mentorId: string;
+  mentorName: string;
+  title: string;
+  status: ConversationStatus;
+  archivedAt: string | null;
+  deletedAt: string | null;
+  lastMessageAt: string | null;
+  messageCount: number;
+  memorySettings: ConversationMemorySettings;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ConversationPage {
+  items: Conversation[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface ConversationCreateRequest {
+  mentorId: string;
+  title?: string | undefined;
+}
+
+export type ConversationUpdateRequest = Partial<Pick<Conversation, "title">>;
+
+export interface ConversationMemorySettingsUpdate {
+  memoryEnabled: boolean;
+  memoryPolicy?: ConversationMemoryPolicy | undefined;
+}
+
+export interface MessageSource {
+  id: string;
+  messageId: string;
+  sourceType: MessageSourceType;
+  sourceId: string | null;
+  title: string;
+  url: string | null;
+  pageNumber: number | null;
+  sectionLabel: string | null;
+  snippet: string | null;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+}
+
+export interface Message {
+  id: string;
+  conversationId: string;
+  role: AIMessageRole;
+  content: string;
+  status: MessageStatus;
+  aiUsageRecordId: string | null;
+  providerName: string | null;
+  modelName: string | null;
+  errorCode: string | null;
+  errorMessage: string | null;
+  editedFromMessageId: string | null;
+  regeneratedFromMessageId: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MessagePage {
+  items: Message[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface MessageSendRequest {
+  content: string;
+}
+
+export interface MessageSendResponse {
+  conversation: Conversation;
+  userMessage: Message | null;
+  assistantMessage: Message;
+}
+
+export interface ConversationExportMessage extends Message {
+  sources: MessageSource[];
+}
+
+export interface ConversationExport {
+  exportedAt: string;
+  conversation: Conversation;
+  mentor: Mentor;
+  messages: ConversationExportMessage[];
+}
+
+export interface StopGenerationResponse {
+  stopped: boolean;
+  reason: string;
 }

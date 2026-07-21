@@ -18,6 +18,13 @@ import type {
   CollectionCreateRequest,
   CollectionItemRequest,
   CollectionPage,
+  Conversation,
+  ConversationCreateRequest,
+  ConversationExport,
+  ConversationMemorySettings,
+  ConversationMemorySettingsUpdate,
+  ConversationPage,
+  ConversationUpdateRequest,
   DownloadUrlResponse,
   DomainEvent,
   DomainEventCreateRequest,
@@ -30,6 +37,15 @@ import type {
   FileUpdateRequest,
   HealthCheckResponse,
   LoginRequest,
+  Mentor,
+  MentorCreateRequest,
+  MentorPage,
+  MentorPermission,
+  MentorPermissionUpdate,
+  MentorUpdateRequest,
+  MessagePage,
+  MessageSendRequest,
+  MessageSendResponse,
   Notification,
   NotificationListQuery,
   NotificationPage,
@@ -41,6 +57,7 @@ import type {
   RegisterRequest,
   SearchRequest,
   SearchResponse,
+  StopGenerationResponse,
   TagPage,
   UploadCompleteRequest,
   UploadInitiateRequest,
@@ -66,6 +83,10 @@ import {
   authResponseSchema,
   collectionPageSchema,
   collectionSchema,
+  conversationExportSchema,
+  conversationMemorySettingsSchema,
+  conversationPageSchema,
+  conversationSchema,
   downloadUrlResponseSchema,
   domainEventPageSchema,
   domainEventSchema,
@@ -73,6 +94,11 @@ import {
   filePageSchema,
   tagPageSchema,
   healthCheckResponseSchema,
+  mentorPageSchema,
+  mentorPermissionSchema,
+  mentorSchema,
+  messagePageSchema,
+  messageSendResponseSchema,
   notificationSchema,
   notificationPageSchema,
   processingJobPageSchema,
@@ -80,6 +106,7 @@ import {
   publicUserSchema,
   recentSearchPageSchema,
   searchResponseSchema,
+  stopGenerationResponseSchema,
   uploadResponseSchema,
   userPreferencesSchema,
   vaultFileSchema,
@@ -153,6 +180,46 @@ export interface AetheriumApiClient {
   health: {
     live: () => Promise<HealthCheckResponse>;
     ready: () => Promise<HealthCheckResponse>;
+  };
+  mentors: {
+    archive: (mentorId: string) => Promise<Mentor>;
+    archiveConversation: (conversationId: string) => Promise<Conversation>;
+    create: (payload: MentorCreateRequest) => Promise<Mentor>;
+    createConversation: (payload: ConversationCreateRequest) => Promise<Conversation>;
+    deleteConversation: (conversationId: string) => Promise<void>;
+    editAndResendMessage: (
+      conversationId: string,
+      messageId: string,
+      payload: MessageSendRequest
+    ) => Promise<MessageSendResponse>;
+    exportConversation: (conversationId: string) => Promise<ConversationExport>;
+    get: (mentorId: string) => Promise<Mentor>;
+    getConversation: (conversationId: string) => Promise<Conversation>;
+    getPermissions: (mentorId: string) => Promise<MentorPermission>;
+    list: (query?: { includeArchived?: boolean }) => Promise<MentorPage>;
+    listConversations: (
+      query?: PaginationQuery & { includeArchived?: boolean }
+    ) => Promise<ConversationPage>;
+    listMessages: (conversationId: string, query?: PaginationQuery) => Promise<MessagePage>;
+    regenerateMessage: (conversationId: string, messageId: string) => Promise<MessageSendResponse>;
+    sendMessage: (
+      conversationId: string,
+      payload: MessageSendRequest
+    ) => Promise<MessageSendResponse>;
+    stopGeneration: (conversationId: string) => Promise<StopGenerationResponse>;
+    update: (mentorId: string, payload: MentorUpdateRequest) => Promise<Mentor>;
+    updateConversation: (
+      conversationId: string,
+      payload: ConversationUpdateRequest
+    ) => Promise<Conversation>;
+    updateMemory: (
+      conversationId: string,
+      payload: ConversationMemorySettingsUpdate
+    ) => Promise<ConversationMemorySettings>;
+    updatePermissions: (
+      mentorId: string,
+      payload: MentorPermissionUpdate
+    ) => Promise<MentorPermission>;
   };
   notifications: {
     list: (query?: NotificationListQuery) => Promise<NotificationPage>;
@@ -235,6 +302,18 @@ function notificationQuery(query?: NotificationListQuery): string {
 function aiUsageQuery(query?: AIUsageQuery): string {
   return queryString([
     ["feature", query?.feature],
+    ["limit", query?.limit],
+    ["offset", query?.offset]
+  ]);
+}
+
+function mentorListQuery(query?: { includeArchived?: boolean }): string {
+  return queryString([["includeArchived", query?.includeArchived]]);
+}
+
+function conversationListQuery(query?: PaginationQuery & { includeArchived?: boolean }): string {
+  return queryString([
+    ["includeArchived", query?.includeArchived],
     ["limit", query?.limit],
     ["offset", query?.offset]
   ]);
@@ -633,6 +712,195 @@ export function createAetheriumApiClient(options: AetheriumApiClientOptions): Ae
       ready: async () => {
         const payload = await requestJson(fetcher, options.baseUrl, "/api/v1/health/ready");
         return healthCheckResponseSchema.parse(payload);
+      }
+    },
+    mentors: {
+      archive: async (mentorId) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/mentors/${mentorId}/archive`,
+          { method: "POST" }
+        );
+        return mentorSchema.parse(response);
+      },
+      archiveConversation: async (conversationId) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/mentors/conversations/${conversationId}/archive`,
+          { method: "POST" }
+        );
+        return conversationSchema.parse(response);
+      },
+      create: async (payload) => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/mentors", {
+          body: JSON.stringify(payload),
+          method: "POST"
+        });
+        return mentorSchema.parse(response);
+      },
+      createConversation: async (payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          "/api/v1/mentors/conversations",
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return conversationSchema.parse(response);
+      },
+      deleteConversation: async (conversationId) => {
+        await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/mentors/conversations/${conversationId}`,
+          { method: "DELETE" }
+        );
+      },
+      editAndResendMessage: async (conversationId, messageId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/mentors/conversations/${conversationId}/messages/${messageId}`,
+          {
+            body: JSON.stringify(payload),
+            method: "PATCH"
+          }
+        );
+        return messageSendResponseSchema.parse(response);
+      },
+      exportConversation: async (conversationId) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/mentors/conversations/${conversationId}/export`
+        );
+        return conversationExportSchema.parse(response);
+      },
+      get: async (mentorId) => {
+        const response = await requestJson(fetcher, options.baseUrl, `/api/v1/mentors/${mentorId}`);
+        return mentorSchema.parse(response);
+      },
+      getConversation: async (conversationId) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/mentors/conversations/${conversationId}`
+        );
+        return conversationSchema.parse(response);
+      },
+      getPermissions: async (mentorId) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/mentors/${mentorId}/permissions`
+        );
+        return mentorPermissionSchema.parse(response);
+      },
+      list: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/mentors${mentorListQuery(query)}`
+        );
+        return mentorPageSchema.parse(response);
+      },
+      listConversations: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/mentors/conversations${conversationListQuery(query)}`
+        );
+        return conversationPageSchema.parse(response);
+      },
+      listMessages: async (conversationId, query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/mentors/conversations/${conversationId}/messages${paginationQuery(query)}`
+        );
+        return messagePageSchema.parse(response);
+      },
+      regenerateMessage: async (conversationId, messageId) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/mentors/conversations/${conversationId}/messages/${messageId}/regenerate`,
+          { method: "POST" }
+        );
+        return messageSendResponseSchema.parse(response);
+      },
+      sendMessage: async (conversationId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/mentors/conversations/${conversationId}/messages`,
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return messageSendResponseSchema.parse(response);
+      },
+      stopGeneration: async (conversationId) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/mentors/conversations/${conversationId}/stop`,
+          { method: "POST" }
+        );
+        return stopGenerationResponseSchema.parse(response);
+      },
+      update: async (mentorId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/mentors/${mentorId}`,
+          {
+            body: JSON.stringify(payload),
+            method: "PATCH"
+          }
+        );
+        return mentorSchema.parse(response);
+      },
+      updateConversation: async (conversationId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/mentors/conversations/${conversationId}`,
+          {
+            body: JSON.stringify(payload),
+            method: "PATCH"
+          }
+        );
+        return conversationSchema.parse(response);
+      },
+      updateMemory: async (conversationId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/mentors/conversations/${conversationId}/memory`,
+          {
+            body: JSON.stringify(payload),
+            method: "PATCH"
+          }
+        );
+        return conversationMemorySettingsSchema.parse(response);
+      },
+      updatePermissions: async (mentorId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/mentors/${mentorId}/permissions`,
+          {
+            body: JSON.stringify(payload),
+            method: "PATCH"
+          }
+        );
+        return mentorPermissionSchema.parse(response);
       }
     },
     notifications: {

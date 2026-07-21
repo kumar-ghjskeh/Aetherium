@@ -26,7 +26,7 @@ User
 
 The current implemented slices provide the infrastructure shell, standalone authentication
 foundation, user-owned foundation, protected Command Mode shell, Personal Vault storage, background
-file ingestion, global search, and provider-neutral AI gateway:
+file ingestion, global search, provider-neutral AI gateway, and AI mentor conversations:
 
 - `apps/api`: FastAPI app, database settings, Alembic, health endpoints.
 - `apps/web`: Next.js App Router scaffold, web health route, auth UI, and protected `/app` Command
@@ -34,7 +34,7 @@ file ingestion, global search, and provider-neutral AI gateway:
 - `packages/shared-types`: TypeScript contracts shared by frontend packages.
 - `packages/validation`: Zod schemas that validate API contract payloads.
 - `packages/api-client`: Typed API client for health, auth, user-owned foundation, Personal Vault,
-  search, and AI gateway APIs.
+  search, AI gateway, and mentor conversation APIs.
 - Identity domain: Aetherium-owned `users` and `sessions` tables, Argon2id password hashing,
   server-side session revocation, and product-specific cookies.
 - User-owned foundation: preferences, non-visual world profile state, domain events, notifications,
@@ -46,12 +46,17 @@ file ingestion, global search, and provider-neutral AI gateway:
   Library page that avoids fake search or AI data while showing real processing state.
 - File ingestion: durable processing jobs, a standalone worker process, text extraction, chunk
   storage, failure records, retry APIs, and Library retry controls.
-- Search: owner-scoped global search over files, extracted chunks, collections, and tags with recent
-  search persistence and Command Palette integration. Semantic/vector ranking remains disabled until
-  a later retrieval slice wires embedding jobs to the AI gateway with consent.
+- Search: owner-scoped global search over files, extracted chunks, collections, tags, and AI
+  conversation titles with recent search persistence and Command Palette integration.
+  Semantic/vector ranking remains disabled until a later retrieval slice wires embedding jobs to the
+  AI gateway with consent.
 - AI gateway: provider metadata, owner-scoped consent policies, feature model configurations, chat
   completions, streaming responses, embeddings, metadata-only usage records, rate limits, retries,
-  and fallback. It does not create mentor conversations or retrieve files in this slice.
+  and fallback.
+- AI mentors: fictional default mentors, custom mentors, explicit mentor permissions, owner-scoped
+  conversations and messages, memory settings, exports, edit/resend, regeneration, and Command Mode
+  AI Hall UI. Mentor chat uses bounded conversation context and does not retrieve files in this
+  slice.
 
 ## Frontend Boundaries
 
@@ -67,7 +72,7 @@ Backend domains will be added incrementally:
 - Additional world configuration and user world state beyond the current non-visual profile.
 - Semantic retrieval and knowledge extraction on top of the current Personal Vault, ingestion,
   search, and AI gateway records.
-- AI conversations and mentors.
+- Citation-backed AI retrieval over files and later mentor tools.
 - Learning.
 - Habits, goals, tasks, and projects.
 - Achievements and domain events.
@@ -98,6 +103,8 @@ plus reusable dependencies.
   searches.
 - AI gateway routes are under `/api/v1/ai` and expose provider metadata, consent policies, model
   configuration, usage records, chat completions, streaming responses, and embeddings.
+- AI mentor routes are under `/api/v1/mentors` and expose mentors, permissions, conversations,
+  messages, memory settings, exports, edit/resend, regeneration, and stop-generation behavior.
 
 ## Configuration
 

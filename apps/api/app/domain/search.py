@@ -30,3 +30,4 @@ class SearchMatchReason(StrEnum):
     FILE_CONTENT = "file_content"
     COLLECTION_METADATA = "collection_metadata"
     TAG_METADATA = "tag_metadata"
+    AI_CONVERSATION = "ai_conversation"

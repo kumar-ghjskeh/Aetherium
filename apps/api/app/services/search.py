@@ -12,10 +12,13 @@ from app.core.errors import AppError
 from app.core.pagination import PaginationParams
 from app.domain.file_ingestion import ChunkStatus
 from app.domain.file_vault import FileDeletionStatus
+from app.domain.foundation import WorldLocationId
+from app.domain.mentors import ConversationStatus
 from app.domain.search import SearchEntityType, SearchMatchReason, SearchMode, SearchSort
 from app.models.auth import User
 from app.models.file_ingestion import FileChunk
 from app.models.file_vault import Collection, FileRecord, Tag
+from app.models.mentors import Conversation
 from app.models.search import RecentSearch
 from app.services.foundation import PageResult
 
@@ -24,6 +27,7 @@ IMPLEMENTED_ENTITY_TYPES = (
     SearchEntityType.FILE_CHUNK,
     SearchEntityType.COLLECTION,
     SearchEntityType.TAG,
+    SearchEntityType.AI_CONVERSATION,
 )
 MAX_SNIPPET_LENGTH = 180
 
@@ -93,6 +97,12 @@ class SearchService:
             tag_items, tag_total = await self._search_tags(user, query, fetch_limit)
             candidates.extend(tag_items)
             total += tag_total
+        if SearchEntityType.AI_CONVERSATION in target_types:
+            conversation_items, conversation_total = await self._search_conversations(
+                user, query, fetch_limit
+            )
+            candidates.extend(conversation_items)
+            total += conversation_total
 
         ordered = _sort_results(candidates, sort)
         items = ordered[pagination.offset : pagination.offset + pagination.limit]
@@ -346,6 +356,55 @@ class SearchService:
         total = await self._count(select(func.count(Tag.id)).where(*predicates))
         return items, total
 
+    async def _search_conversations(
+        self,
+        user: User,
+        query: str,
+        limit: int,
+    ) -> tuple[list[SearchResultItem], int]:
+        predicates = [
+            Conversation.owner_user_id == user.id,
+            Conversation.status != ConversationStatus.DELETED.value,
+        ]
+        if self._is_postgres:
+            vector = func.to_tsvector("english", func.coalesce(Conversation.title, ""))
+            ts_query = func.plainto_tsquery("english", query)
+            predicates.append(vector.op("@@")(ts_query))
+            score_expression = func.ts_rank_cd(vector, ts_query).label("score")
+            result = await self.db.execute(
+                select(Conversation, score_expression)
+                .where(*predicates)
+                .order_by(score_expression.desc(), Conversation.updated_at.desc())
+                .limit(limit)
+            )
+            rows = result.all()
+            items = [
+                self._conversation_result(
+                    conversation,
+                    query=query,
+                    score=float(score or 0.0),
+                )
+                for conversation, score in rows
+            ]
+        else:
+            predicates.append(_contains(Conversation.title, query))
+            result = await self.db.execute(
+                select(Conversation)
+                .where(*predicates)
+                .order_by(Conversation.updated_at.desc())
+                .limit(limit)
+            )
+            items = [
+                self._conversation_result(
+                    conversation,
+                    query=query,
+                    score=_metadata_score(conversation.title, query),
+                )
+                for conversation in result.scalars().all()
+            ]
+        total = await self._count(select(func.count(Conversation.id)).where(*predicates))
+        return items, total
+
     def _file_result(self, file: FileRecord, *, query: str, score: float) -> SearchResultItem:
         return SearchResultItem(
             id=f"file:{file.id}",
@@ -424,6 +483,27 @@ class SearchService:
             world_location_id="library",
             source=None,
             created_at=tag.created_at,
+        )
+
+    def _conversation_result(
+        self,
+        conversation: Conversation,
+        *,
+        query: str,
+        score: float,
+    ) -> SearchResultItem:
+        return SearchResultItem(
+            id=f"ai_conversation:{conversation.id}",
+            entity_type=SearchEntityType.AI_CONVERSATION,
+            entity_id=conversation.id,
+            title=conversation.title,
+            snippet=_snippet(f"AI conversation: {conversation.title}", query),
+            match_reason=SearchMatchReason.AI_CONVERSATION,
+            score=max(score, _metadata_score(conversation.title, query)),
+            open_url=f"/app/ai?conversation={conversation.id}",
+            world_location_id=WorldLocationId.AI_HALL.value,
+            source=None,
+            created_at=conversation.created_at,
         )
 
     @property

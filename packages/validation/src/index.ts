@@ -457,7 +457,8 @@ export const searchMatchReasonSchema = z.enum([
   "file_metadata",
   "file_content",
   "collection_metadata",
-  "tag_metadata"
+  "tag_metadata",
+  "ai_conversation"
 ]);
 
 export const searchRequestSchema = z.object({
@@ -733,6 +734,220 @@ export const aiUsageRecordPageSchema = z.object({
   limit: z.number().int().min(1),
   offset: z.number().int().min(0),
   total: z.number().int().min(0)
+});
+
+export const mentorToneSchema = z.enum(["calm", "direct", "analytical", "encouraging"]);
+
+export const mentorToolSchema = z.enum([
+  "explain",
+  "quiz",
+  "flashcards",
+  "summarize",
+  "study_plan",
+  "code_review"
+]);
+
+export const conversationStatusSchema = z.enum(["active", "archived", "deleted"]);
+
+export const conversationMemoryPolicySchema = z.enum(["disabled", "session_only", "persistent"]);
+
+export const messageStatusSchema = z.enum(["complete", "failed"]);
+
+export const messageSourceTypeSchema = z.enum([
+  "file_chunk",
+  "general_model_knowledge",
+  "user_message",
+  "inference"
+]);
+
+export const mentorPermissionSchema = z.object({
+  allowConversations: z.boolean(),
+  allowFileContent: z.boolean(),
+  allowHabitData: z.boolean(),
+  allowLearningRecords: z.boolean(),
+  allowProfileData: z.boolean(),
+  allowProjects: z.boolean(),
+  allowedCollectionIds: z.array(z.string()),
+  allowedTools: z.array(mentorToolSchema),
+  createdAt: z.string().min(1),
+  id: z.string().uuid(),
+  mentorId: z.string().uuid(),
+  updatedAt: z.string().min(1)
+});
+
+export const mentorSchema = z.object({
+  archivedAt: z.string().min(1).nullable(),
+  avatarReference: z.string().nullable(),
+  createdAt: z.string().min(1),
+  description: z.string().min(1),
+  fictionalIdentity: z.string().min(1),
+  id: z.string().uuid(),
+  isDefault: z.boolean(),
+  name: z.string().min(1),
+  permissions: mentorPermissionSchema,
+  preferredModelName: z.string().nullable(),
+  slug: z.string().min(1),
+  systemInstructions: z.string().min(1),
+  tone: mentorToneSchema,
+  updatedAt: z.string().min(1)
+});
+
+export const mentorPageSchema = z.object({
+  items: z.array(mentorSchema)
+});
+
+export const mentorCreateRequestSchema = z.object({
+  allowedTools: z.array(mentorToolSchema).max(20).optional(),
+  avatarReference: z.string().max(160).nullable().optional(),
+  description: z.string().min(1).max(2000),
+  fictionalIdentity: z.string().min(1).max(160),
+  name: z.string().trim().min(1).max(80),
+  preferredModelName: z.string().max(120).nullable().optional(),
+  systemInstructions: z.string().min(20).max(12000),
+  tone: mentorToneSchema.optional()
+});
+
+export const mentorUpdateRequestSchema = z
+  .object({
+    avatarReference: z.string().max(160).nullable().optional(),
+    description: z.string().min(1).max(2000).optional(),
+    fictionalIdentity: z.string().min(1).max(160).optional(),
+    name: z.string().trim().min(1).max(80).optional(),
+    preferredModelName: z.string().max(120).nullable().optional(),
+    systemInstructions: z.string().min(20).max(12000).optional(),
+    tone: mentorToneSchema.optional()
+  })
+  .refine((value) => Object.keys(value).length > 0, {
+    message: "At least one mentor field is required."
+  });
+
+export const mentorPermissionUpdateSchema = z
+  .object({
+    allowConversations: z.boolean().optional(),
+    allowFileContent: z.boolean().optional(),
+    allowHabitData: z.boolean().optional(),
+    allowLearningRecords: z.boolean().optional(),
+    allowProfileData: z.boolean().optional(),
+    allowProjects: z.boolean().optional(),
+    allowedCollectionIds: z.array(z.string()).max(100).optional(),
+    allowedTools: z.array(mentorToolSchema).max(20).optional()
+  })
+  .refine((value) => Object.keys(value).length > 0, {
+    message: "At least one mentor permission field is required."
+  });
+
+export const conversationMemorySettingsSchema = z.object({
+  conversationId: z.string().uuid(),
+  createdAt: z.string().min(1),
+  id: z.string().uuid(),
+  memoryEnabled: z.boolean(),
+  memoryPolicy: conversationMemoryPolicySchema,
+  memorySummary: z.string().nullable(),
+  updatedAt: z.string().min(1)
+});
+
+export const conversationSchema = z.object({
+  archivedAt: z.string().min(1).nullable(),
+  createdAt: z.string().min(1),
+  deletedAt: z.string().min(1).nullable(),
+  id: z.string().uuid(),
+  lastMessageAt: z.string().min(1).nullable(),
+  memorySettings: conversationMemorySettingsSchema,
+  mentorId: z.string().uuid(),
+  mentorName: z.string().min(1),
+  messageCount: z.number().int().min(0),
+  status: conversationStatusSchema,
+  title: z.string().min(1),
+  updatedAt: z.string().min(1)
+});
+
+export const conversationPageSchema = z.object({
+  items: z.array(conversationSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const conversationCreateRequestSchema = z.object({
+  mentorId: z.string().uuid(),
+  title: z.string().min(1).max(160).optional()
+});
+
+export const conversationUpdateRequestSchema = z
+  .object({
+    title: z.string().min(1).max(160).optional()
+  })
+  .refine((value) => Object.keys(value).length > 0, {
+    message: "At least one conversation field is required."
+  });
+
+export const conversationMemorySettingsUpdateSchema = z.object({
+  memoryEnabled: z.boolean(),
+  memoryPolicy: conversationMemoryPolicySchema.optional()
+});
+
+export const messageSourceSchema = z.object({
+  createdAt: z.string().min(1),
+  id: z.string().uuid(),
+  messageId: z.string().uuid(),
+  metadata: z.record(z.unknown()),
+  pageNumber: z.number().int().nullable(),
+  sectionLabel: z.string().nullable(),
+  snippet: z.string().nullable(),
+  sourceId: z.string().nullable(),
+  sourceType: messageSourceTypeSchema,
+  title: z.string().min(1),
+  url: z.string().nullable()
+});
+
+export const messageSchema = z.object({
+  aiUsageRecordId: z.string().uuid().nullable(),
+  content: z.string(),
+  conversationId: z.string().uuid(),
+  createdAt: z.string().min(1),
+  editedFromMessageId: z.string().uuid().nullable(),
+  errorCode: z.string().nullable(),
+  errorMessage: z.string().nullable(),
+  id: z.string().uuid(),
+  modelName: z.string().nullable(),
+  providerName: z.string().nullable(),
+  regeneratedFromMessageId: z.string().uuid().nullable(),
+  role: aiMessageRoleSchema,
+  status: messageStatusSchema,
+  updatedAt: z.string().min(1)
+});
+
+export const messagePageSchema = z.object({
+  items: z.array(messageSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const messageSendRequestSchema = z.object({
+  content: z.string().trim().min(1).max(12000)
+});
+
+export const messageSendResponseSchema = z.object({
+  assistantMessage: messageSchema,
+  conversation: conversationSchema,
+  userMessage: messageSchema.nullable()
+});
+
+export const conversationExportMessageSchema = messageSchema.extend({
+  sources: z.array(messageSourceSchema)
+});
+
+export const conversationExportSchema = z.object({
+  conversation: conversationSchema,
+  exportedAt: z.string().min(1),
+  mentor: mentorSchema,
+  messages: z.array(conversationExportMessageSchema)
+});
+
+export const stopGenerationResponseSchema = z.object({
+  reason: z.string().min(1),
+  stopped: z.boolean()
 });
 
 export type HealthCheckResponseInput = z.input<typeof healthCheckResponseSchema>;
