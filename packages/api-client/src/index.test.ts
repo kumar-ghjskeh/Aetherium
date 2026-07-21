@@ -94,6 +94,96 @@ const searchResult = {
   worldLocationId: "library"
 };
 
+const habit = {
+  archivedAt: null,
+  color: "#5d8f7d",
+  completedToday: false,
+  createdAt: "2026-07-20T00:00:00Z",
+  description: "Read one technical page without rushing.",
+  id: "dddddddd-1111-4111-8111-111111111111",
+  logCount30d: 0,
+  name: "Deep reading",
+  schedule: {
+    createdAt: "2026-07-20T00:00:00Z",
+    id: "dddddddd-2222-4222-8222-222222222222",
+    scheduleType: "daily",
+    startsOn: "2026-07-20",
+    timeZone: "UTC",
+    updatedAt: "2026-07-20T00:00:00Z",
+    weekdays: [],
+    weeklyTarget: null
+  },
+  status: "active",
+  streak: {
+    bestStreak: 0,
+    completionRate30d: 0,
+    createdAt: "2026-07-20T00:00:00Z",
+    currentStreak: 0,
+    id: "dddddddd-4444-4444-8444-444444444444",
+    lastLoggedOn: null,
+    recoveryStreak: 0,
+    updatedAt: "2026-07-20T00:00:00Z"
+  },
+  target: {
+    createdAt: "2026-07-20T00:00:00Z",
+    id: "dddddddd-3333-4333-8333-333333333333",
+    targetPeriod: "day",
+    targetUnit: "pages",
+    targetValue: 1,
+    updatedAt: "2026-07-20T00:00:00Z"
+  },
+  updatedAt: "2026-07-20T00:00:00Z",
+  valueType: "quantity"
+};
+
+const habitLog = {
+  createdAt: "2026-07-20T00:05:00Z",
+  habitId: habit.id,
+  id: "dddddddd-5555-4555-8555-555555555555",
+  logDate: "2026-07-20",
+  note: "Finished a dense section.",
+  status: "completed",
+  unit: "pages",
+  updatedAt: "2026-07-20T00:05:00Z",
+  value: 2
+};
+
+const habitSummary = {
+  activeHabitCount: 1,
+  bestStreak: 1,
+  completedLogCount: 1,
+  completionRate: 1,
+  currentStreakTotal: 1,
+  endDate: "2026-07-26",
+  gardenGrowthPoints: 1,
+  period: "week",
+  recoveryStreakTotal: 0,
+  scheduledCount: 1,
+  startDate: "2026-07-20"
+};
+
+const dailyCheckIn = {
+  checkInDate: "2026-07-20",
+  createdAt: "2026-07-20T00:00:00Z",
+  energy: 4,
+  id: "dddddddd-6666-4666-8666-666666666666",
+  mood: 5,
+  notes: "Focused start.",
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const weeklyReview = {
+  challenges: "One late night.",
+  createdAt: "2026-07-20T00:00:00Z",
+  id: "dddddddd-7777-4777-8777-777777777777",
+  metadata: {},
+  nextSteps: "Keep sessions shorter.",
+  period: "week",
+  updatedAt: "2026-07-20T00:00:00Z",
+  weekStart: "2026-07-20",
+  wins: "Logged the first habit."
+};
+
 const aiProvider = {
   capabilities: ["chat", "streaming_chat", "embeddings"],
   configured: true,
@@ -852,6 +942,114 @@ describe("createAetheriumApiClient", () => {
       },
       method: "POST"
     });
+  });
+
+  it("uses habit tracking endpoints", async () => {
+    const fetcher = vi.fn<typeof fetch>((input, init) => {
+      const url = requestUrl(input);
+      if (url === "http://localhost:8000/api/v1/habits?includeArchived=true&limit=5&offset=0") {
+        return Promise.resolve(jsonResponse({ items: [habit], limit: 5, offset: 0, total: 1 }));
+      }
+      if (url === "http://localhost:8000/api/v1/habits") {
+        return Promise.resolve(jsonResponse(habit, 201));
+      }
+      if (url === `http://localhost:8000/api/v1/habits/${habit.id}`) {
+        return Promise.resolve(jsonResponse({ ...habit, name: "Deep reading focus" }));
+      }
+      if (url === `http://localhost:8000/api/v1/habits/${habit.id}/archive`) {
+        return Promise.resolve(jsonResponse({ ...habit, archivedAt: "2026-07-20T00:10:00Z" }));
+      }
+      if (url === `http://localhost:8000/api/v1/habits/${habit.id}/logs`) {
+        return Promise.resolve(jsonResponse(habitLog, 201));
+      }
+      if (url === `http://localhost:8000/api/v1/habits/${habit.id}/logs?limit=10&offset=0`) {
+        return Promise.resolve(jsonResponse({ items: [habitLog], limit: 10, offset: 0, total: 1 }));
+      }
+      if (url === "http://localhost:8000/api/v1/habits/summary?period=week") {
+        return Promise.resolve(jsonResponse(habitSummary));
+      }
+      if (url === "http://localhost:8000/api/v1/habits/check-ins/2026-07-20") {
+        if (init?.method === "PUT") {
+          return Promise.resolve(jsonResponse(dailyCheckIn));
+        }
+        return Promise.resolve(jsonResponse(dailyCheckIn));
+      }
+      if (url === "http://localhost:8000/api/v1/habits/weekly-reviews") {
+        return Promise.resolve(jsonResponse(weeklyReview, 201));
+      }
+      if (url === "http://localhost:8000/api/v1/habits/weekly-reviews?limit=5&offset=0") {
+        return Promise.resolve(
+          jsonResponse({ items: [weeklyReview], limit: 5, offset: 0, total: 1 })
+        );
+      }
+      return Promise.resolve(jsonResponse(habit));
+    });
+    const client = createAetheriumApiClient({ baseUrl: "http://localhost:8000", fetcher });
+
+    await expect(
+      client.habits.list({ includeArchived: true, limit: 5, offset: 0 })
+    ).resolves.toMatchObject({ total: 1 });
+    await expect(
+      client.habits.create({
+        name: "Deep reading",
+        scheduleType: "daily",
+        targetUnit: "pages",
+        targetValue: 1,
+        valueType: "quantity"
+      })
+    ).resolves.toMatchObject({ name: "Deep reading" });
+    await expect(client.habits.get(habit.id)).resolves.toMatchObject({
+      name: "Deep reading focus"
+    });
+    await expect(
+      client.habits.update(habit.id, { name: "Deep reading focus" })
+    ).resolves.toMatchObject({
+      name: "Deep reading focus"
+    });
+    await expect(
+      client.habits.log(habit.id, {
+        logDate: "2026-07-20",
+        note: "Finished a dense section.",
+        value: 2
+      })
+    ).resolves.toMatchObject({ status: "completed" });
+    await expect(client.habits.listLogs(habit.id, { limit: 10, offset: 0 })).resolves.toMatchObject(
+      { total: 1 }
+    );
+    await expect(client.habits.getSummary({ period: "week" })).resolves.toMatchObject({
+      completionRate: 1
+    });
+    await expect(client.habits.getCheckIn("2026-07-20")).resolves.toMatchObject({
+      mood: 5
+    });
+    await expect(
+      client.habits.upsertCheckIn("2026-07-20", { energy: 4, mood: 5 })
+    ).resolves.toMatchObject({
+      energy: 4
+    });
+    await expect(
+      client.habits.upsertWeeklyReview({
+        nextSteps: "Keep sessions shorter.",
+        weekStart: "2026-07-20",
+        wins: "Logged the first habit."
+      })
+    ).resolves.toMatchObject({ wins: "Logged the first habit." });
+    await expect(client.habits.listWeeklyReviews({ limit: 5, offset: 0 })).resolves.toMatchObject({
+      total: 1
+    });
+    await expect(client.habits.archive(habit.id)).resolves.toMatchObject({
+      archivedAt: "2026-07-20T00:10:00Z"
+    });
+
+    expect(fetcher).toHaveBeenCalledWith(
+      "http://localhost:8000/api/v1/habits?includeArchived=true&limit=5&offset=0",
+      {
+        credentials: "include",
+        headers: {
+          Accept: "application/json"
+        }
+      }
+    );
   });
 
   it("uses provider-neutral AI gateway endpoints", async () => {

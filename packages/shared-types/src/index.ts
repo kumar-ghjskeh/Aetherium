@@ -401,7 +401,12 @@ export type SearchMode = "keyword" | "hybrid";
 export type SearchSort = "relevance" | "recent";
 
 export type SearchMatchReason =
-  "file_metadata" | "file_content" | "collection_metadata" | "tag_metadata" | "ai_conversation";
+  | "file_metadata"
+  | "file_content"
+  | "collection_metadata"
+  | "tag_metadata"
+  | "ai_conversation"
+  | "habit_metadata";
 
 export interface SearchRequest {
   query: string;
@@ -454,6 +459,191 @@ export interface RecentSearch {
 
 export interface RecentSearchPage {
   items: RecentSearch[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export type HabitStatus = "active" | "archived";
+
+export type HabitValueType = "boolean" | "duration" | "count" | "quantity";
+
+export type HabitScheduleType = "daily" | "selected_weekdays" | "weekly_target";
+
+export type HabitTargetPeriod = "day" | "week";
+
+export type HabitLogStatus = "completed";
+
+export type ReviewPeriod = "week" | "month";
+
+export interface HabitSchedule {
+  id: string;
+  scheduleType: HabitScheduleType;
+  weekdays: number[];
+  weeklyTarget: number | null;
+  startsOn: string;
+  timeZone: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface HabitTarget {
+  id: string;
+  targetValue: number;
+  targetUnit: string | null;
+  targetPeriod: HabitTargetPeriod;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface HabitStreak {
+  id: string;
+  currentStreak: number;
+  bestStreak: number;
+  recoveryStreak: number;
+  completionRate30d: number;
+  lastLoggedOn: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Habit {
+  id: string;
+  name: string;
+  description: string | null;
+  status: HabitStatus;
+  valueType: HabitValueType;
+  color: string | null;
+  archivedAt: string | null;
+  schedule: HabitSchedule;
+  target: HabitTarget;
+  streak: HabitStreak;
+  completedToday: boolean;
+  logCount30d: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface HabitPage {
+  items: Habit[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface HabitListQuery extends PaginationQuery {
+  includeArchived?: boolean;
+}
+
+export interface HabitCreateRequest {
+  name: string;
+  description?: string | null | undefined;
+  valueType?: HabitValueType | undefined;
+  targetValue?: number | undefined;
+  targetUnit?: string | null | undefined;
+  scheduleType?: HabitScheduleType | undefined;
+  weekdays?: number[] | undefined;
+  weeklyTarget?: number | null | undefined;
+  startsOn?: string | undefined;
+  timeZone?: string | undefined;
+  color?: string | null | undefined;
+}
+
+export type HabitUpdateRequest = Partial<
+  Pick<
+    HabitCreateRequest,
+    | "color"
+    | "description"
+    | "name"
+    | "scheduleType"
+    | "targetUnit"
+    | "targetValue"
+    | "weekdays"
+    | "weeklyTarget"
+  >
+>;
+
+export interface HabitLogRequest {
+  logDate?: string | undefined;
+  value?: number | undefined;
+  note?: string | null | undefined;
+}
+
+export interface HabitLog {
+  id: string;
+  habitId: string;
+  logDate: string;
+  value: number;
+  unit: string | null;
+  note: string | null;
+  status: HabitLogStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface HabitLogPage {
+  items: HabitLog[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface HabitSummary {
+  period: ReviewPeriod;
+  startDate: string;
+  endDate: string;
+  activeHabitCount: number;
+  completedLogCount: number;
+  scheduledCount: number;
+  completionRate: number;
+  bestStreak: number;
+  currentStreakTotal: number;
+  recoveryStreakTotal: number;
+  gardenGrowthPoints: number;
+}
+
+export interface HabitSummaryQuery {
+  period?: ReviewPeriod;
+  startDate?: string;
+}
+
+export interface DailyCheckInUpsert {
+  mood?: number | null | undefined;
+  energy?: number | null | undefined;
+  notes?: string | null | undefined;
+}
+
+export interface DailyCheckIn {
+  id: string;
+  checkInDate: string;
+  mood: number | null;
+  energy: number | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WeeklyReviewUpsert {
+  weekStart: string;
+  wins?: string | null | undefined;
+  challenges?: string | null | undefined;
+  nextSteps?: string | null | undefined;
+}
+
+export interface WeeklyReview {
+  id: string;
+  weekStart: string;
+  wins: string | null;
+  challenges: string | null;
+  nextSteps: string | null;
+  period: ReviewPeriod;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WeeklyReviewPage {
+  items: WeeklyReview[];
   total: number;
   limit: number;
   offset: number;

@@ -6,6 +6,7 @@ from app.api.v1 import (
     auth,
     domain_events,
     files,
+    habits,
     health,
     mentors,
     notifications,
@@ -23,6 +24,7 @@ api_router.include_router(domain_events.router, prefix="/domain-events", tags=["
 api_router.include_router(notifications.router, prefix="/notifications", tags=["notifications"])
 api_router.include_router(audit_logs.router, prefix="/audit-logs", tags=["audit-logs"])
 api_router.include_router(files.router, prefix="/files", tags=["files"])
+api_router.include_router(habits.router, prefix="/habits", tags=["habits"])
 api_router.include_router(search.router, prefix="/search", tags=["search"])
 api_router.include_router(ai.router, prefix="/ai", tags=["ai"])
 api_router.include_router(mentors.router, prefix="/mentors", tags=["mentors"])

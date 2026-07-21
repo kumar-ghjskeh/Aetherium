@@ -458,7 +458,8 @@ export const searchMatchReasonSchema = z.enum([
   "file_content",
   "collection_metadata",
   "tag_metadata",
-  "ai_conversation"
+  "ai_conversation",
+  "habit_metadata"
 ]);
 
 export const searchRequestSchema = z.object({
@@ -512,6 +513,198 @@ export const recentSearchSchema = z.object({
 
 export const recentSearchPageSchema = z.object({
   items: z.array(recentSearchSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const habitStatusSchema = z.enum(["active", "archived"]);
+
+export const habitValueTypeSchema = z.enum(["boolean", "duration", "count", "quantity"]);
+
+export const habitScheduleTypeSchema = z.enum(["daily", "selected_weekdays", "weekly_target"]);
+
+export const habitTargetPeriodSchema = z.enum(["day", "week"]);
+
+export const habitLogStatusSchema = z.enum(["completed"]);
+
+export const reviewPeriodSchema = z.enum(["week", "month"]);
+
+const habitWeekdaysSchema = z
+  .array(z.number().int().min(0).max(6))
+  .max(7)
+  .transform((value) => Array.from(new Set(value)).sort((left, right) => left - right));
+
+export const habitScheduleSchema = z.object({
+  createdAt: z.string().min(1),
+  id: z.string().uuid(),
+  scheduleType: habitScheduleTypeSchema,
+  startsOn: z.string().min(1),
+  timeZone: z.string().min(1),
+  updatedAt: z.string().min(1),
+  weekdays: habitWeekdaysSchema,
+  weeklyTarget: z.number().int().min(1).max(7).nullable()
+});
+
+export const habitTargetSchema = z.object({
+  createdAt: z.string().min(1),
+  id: z.string().uuid(),
+  targetPeriod: habitTargetPeriodSchema,
+  targetUnit: z.string().nullable(),
+  targetValue: z.number().positive(),
+  updatedAt: z.string().min(1)
+});
+
+export const habitStreakSchema = z.object({
+  bestStreak: z.number().int().min(0),
+  completionRate30d: z.number().min(0).max(1),
+  createdAt: z.string().min(1),
+  currentStreak: z.number().int().min(0),
+  id: z.string().uuid(),
+  lastLoggedOn: z.string().min(1).nullable(),
+  recoveryStreak: z.number().int().min(0),
+  updatedAt: z.string().min(1)
+});
+
+export const habitSchema = z.object({
+  archivedAt: z.string().min(1).nullable(),
+  color: z.string().nullable(),
+  completedToday: z.boolean(),
+  createdAt: z.string().min(1),
+  description: z.string().nullable(),
+  id: z.string().uuid(),
+  logCount30d: z.number().int().min(0),
+  name: z.string().min(1),
+  schedule: habitScheduleSchema,
+  status: habitStatusSchema,
+  streak: habitStreakSchema,
+  target: habitTargetSchema,
+  updatedAt: z.string().min(1),
+  valueType: habitValueTypeSchema
+});
+
+export const habitPageSchema = z.object({
+  items: z.array(habitSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const habitCreateRequestSchema = z
+  .object({
+    color: z.string().max(32).nullable().optional(),
+    description: z.string().max(4000).nullable().optional(),
+    name: z.string().trim().min(1).max(120),
+    scheduleType: habitScheduleTypeSchema.optional(),
+    startsOn: z.string().min(1).optional(),
+    targetUnit: z.string().max(40).nullable().optional(),
+    targetValue: z.number().positive().max(1_000_000).optional(),
+    timeZone: z.string().min(1).max(64).optional(),
+    valueType: habitValueTypeSchema.optional(),
+    weekdays: habitWeekdaysSchema.optional(),
+    weeklyTarget: z.number().int().min(1).max(7).nullable().optional()
+  })
+  .refine(
+    (value) =>
+      value.scheduleType !== "selected_weekdays" ||
+      (value.weekdays !== undefined && value.weekdays.length > 0),
+    { message: "Selected weekday habits require at least one weekday." }
+  )
+  .refine((value) => value.scheduleType !== "weekly_target" || value.weeklyTarget !== undefined, {
+    message: "Weekly target habits require a weekly target."
+  });
+
+export const habitUpdateRequestSchema = z
+  .object({
+    color: z.string().max(32).nullable().optional(),
+    description: z.string().max(4000).nullable().optional(),
+    name: z.string().trim().min(1).max(120).optional(),
+    scheduleType: habitScheduleTypeSchema.optional(),
+    targetUnit: z.string().max(40).nullable().optional(),
+    targetValue: z.number().positive().max(1_000_000).optional(),
+    weekdays: habitWeekdaysSchema.optional(),
+    weeklyTarget: z.number().int().min(1).max(7).nullable().optional()
+  })
+  .refine((value) => Object.keys(value).length > 0, {
+    message: "At least one habit field is required."
+  });
+
+export const habitLogRequestSchema = z.object({
+  logDate: z.string().min(1).optional(),
+  note: z.string().max(2000).nullable().optional(),
+  value: z.number().positive().max(1_000_000).optional()
+});
+
+export const habitLogSchema = z.object({
+  createdAt: z.string().min(1),
+  habitId: z.string().uuid(),
+  id: z.string().uuid(),
+  logDate: z.string().min(1),
+  note: z.string().nullable(),
+  status: habitLogStatusSchema,
+  unit: z.string().nullable(),
+  updatedAt: z.string().min(1),
+  value: z.number().min(0)
+});
+
+export const habitLogPageSchema = z.object({
+  items: z.array(habitLogSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const habitSummarySchema = z.object({
+  activeHabitCount: z.number().int().min(0),
+  bestStreak: z.number().int().min(0),
+  completedLogCount: z.number().int().min(0),
+  completionRate: z.number().min(0).max(1),
+  currentStreakTotal: z.number().int().min(0),
+  endDate: z.string().min(1),
+  gardenGrowthPoints: z.number().int().min(0),
+  period: reviewPeriodSchema,
+  recoveryStreakTotal: z.number().int().min(0),
+  scheduledCount: z.number().int().min(0),
+  startDate: z.string().min(1)
+});
+
+export const dailyCheckInUpsertSchema = z.object({
+  energy: z.number().int().min(1).max(5).nullable().optional(),
+  mood: z.number().int().min(1).max(5).nullable().optional(),
+  notes: z.string().max(2000).nullable().optional()
+});
+
+export const dailyCheckInSchema = z.object({
+  checkInDate: z.string().min(1),
+  createdAt: z.string().min(1),
+  energy: z.number().int().min(1).max(5).nullable(),
+  id: z.string().uuid(),
+  mood: z.number().int().min(1).max(5).nullable(),
+  notes: z.string().nullable(),
+  updatedAt: z.string().min(1)
+});
+
+export const weeklyReviewUpsertSchema = z.object({
+  challenges: z.string().max(4000).nullable().optional(),
+  nextSteps: z.string().max(4000).nullable().optional(),
+  weekStart: z.string().min(1),
+  wins: z.string().max(4000).nullable().optional()
+});
+
+export const weeklyReviewSchema = z.object({
+  challenges: z.string().nullable(),
+  createdAt: z.string().min(1),
+  id: z.string().uuid(),
+  metadata: z.record(z.unknown()),
+  nextSteps: z.string().nullable(),
+  period: reviewPeriodSchema,
+  updatedAt: z.string().min(1),
+  weekStart: z.string().min(1),
+  wins: z.string().nullable()
+});
+
+export const weeklyReviewPageSchema = z.object({
+  items: z.array(weeklyReviewSchema),
   limit: z.number().int().min(1),
   offset: z.number().int().min(0),
   total: z.number().int().min(0)

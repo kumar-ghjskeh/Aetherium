@@ -12,7 +12,11 @@ import userEvent from "@testing-library/user-event";
 import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { createUnusedFilesClient, createUnusedMentorsClient } from "../../test/api-client";
+import {
+  createUnusedFilesClient,
+  createUnusedHabitsClient,
+  createUnusedMentorsClient
+} from "../../test/api-client";
 import { AiHallPage } from "./ai-hall-page";
 
 const mentor: Mentor = {
@@ -188,6 +192,7 @@ function createClient(
       list: vi.fn(() => Promise.resolve({ items: [], limit: 50, offset: 0, total: 0 })),
       ...fileOverrides
     },
+    habits: createUnusedHabitsClient(),
     health: { live: vi.fn(reject), ready: vi.fn(reject) },
     mentors: {
       ...createUnusedMentorsClient(),

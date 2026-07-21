@@ -38,6 +38,9 @@ Backend:
 - Document-QA backend tests for explicit file-content consent, source-backed answers, validated
   citations, no-evidence responses, usage records, collection consent scoping, unauthenticated
   access, validation failures, and cross-user isolation.
+- Habit backend tests for creation, validation failures, pagination, logging, summary metrics,
+  idempotent domain events, audit logs, check-ins, weekly reviews, archive behavior, search
+  integration, unauthenticated access, cross-user isolation, and database uniqueness.
 - Alembic migration smoke validation against PostgreSQL in CI.
 - Ruff formatting and linting.
 - mypy type checking.
@@ -63,6 +66,7 @@ Frontend and shared packages:
 - API-client contract tests for citation-backed document-QA responses.
 - API-client contract tests for mentor, permission, conversation, message, memory, export,
   edit/resend, regeneration, and stop-generation endpoints.
+- API-client contract tests for habit, log, summary, daily check-in, and weekly review endpoints.
 - Next.js build validation.
 - React Testing Library coverage for the Library page, including loading, empty, error, upload,
   favorite, tag, delete, processing failure, and retry states.
@@ -70,6 +74,8 @@ Frontend and shared packages:
 - React Testing Library coverage for the AI Hall page, including loading, empty, message-send,
   gateway error, custom mentor creation, permission-update states, document-QA citation rendering,
   and document-QA consent error handling.
+- React Testing Library coverage for the Habits page, including loading, empty, error, creation
+  validation, creation submission, logging, daily check-in, and weekly review states.
 
 ## Future Backend Tests
 

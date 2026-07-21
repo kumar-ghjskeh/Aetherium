@@ -45,10 +45,12 @@ Current approved slice:
   conversation search.
 - Citation-backed document Q&A with explicit AI file-content consent, owner-scoped ready-chunk
   retrieval, source-label validation, no-evidence responses, and AI Hall document workflow.
+- Habit tracking with owner-scoped habits, schedules, targets, logs, streaks, daily check-ins,
+  weekly reviews, summary metrics, non-visual Habit Garden progress signals, global search, and the
+  Command Mode Habits UI.
 
 Later Phase 1 slices:
 
-- One daily habit and habit logging.
 - User profile beyond the current `/auth/me` public profile.
 - Non-visual world data expansion only until the visual 3D phase is explicitly started.
 

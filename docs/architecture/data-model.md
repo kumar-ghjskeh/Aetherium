@@ -27,6 +27,8 @@ Current migrations:
   records.
 - `0008_ai_mentors`: creates owner-scoped mentors, mentor permissions, conversations, memory
   settings, messages, and message sources.
+- `0009_habit_tracking`: creates owner-scoped habits, schedules, targets, logs, streaks, daily
+  check-ins, and weekly reviews.
 
 ### `users`
 
@@ -243,6 +245,7 @@ PostgreSQL deployments also include full-text expression indexes over:
 - Collection name and description.
 - Tag name.
 - Conversation title.
+- Habit name and description.
 
 ## AI Gateway Schema
 
@@ -361,6 +364,70 @@ AI citations must reference retrieved chunks. Answers must not claim file suppor
 not produce evidence. No-evidence document-QA responses return `insufficient_evidence` without
 creating an AI usage record.
 
+## Habit Tracking Schema
+
+All habit tables include `owner_user_id`. Habit APIs query through the authenticated user's owner
+scope, and cross-user identifiers return not-found style responses.
+
+### `habits`
+
+- UUID primary key.
+- `owner_user_id` foreign key to `users.id`.
+- Name, optional description, active/archive status, value type, optional display color, archive
+  timestamp, and timestamps.
+- Owner/status indexes and PostgreSQL full-text index over name and description.
+
+### `habit_schedules`
+
+- UUID primary key.
+- `owner_user_id` and unique `habit_id`.
+- Schedule type: daily, selected weekdays, or weekly target.
+- JSON weekday list, weekly target count, start date, time zone, and timestamps.
+
+Selected-weekday schedules must include at least one weekday at the service layer. Weekly-target
+schedules must include a target between one and seven.
+
+### `habit_targets`
+
+- UUID primary key.
+- `owner_user_id` and unique `habit_id`.
+- Positive target value, optional unit, day/week target period, and timestamps.
+
+### `habit_logs`
+
+- UUID primary key.
+- `owner_user_id`, `habit_id`, log date, value, optional unit, optional note, completion status, and
+  timestamps.
+- Unique owner/habit/date constraint so repeated logging updates the same day's record.
+
+Logging an active habit creates an idempotent `habit.logged` domain event and sanitized audit log.
+Archived habits cannot be logged, but their historical logs remain available.
+
+### `habit_streaks`
+
+- UUID primary key.
+- `owner_user_id` and unique `habit_id`.
+- Current streak, best streak, recovery streak, 30-day completion rate, last logged date, and
+  timestamps.
+
+Streaks are recalculated from stored logs and schedules. A missed day does not delete historical
+progress.
+
+### `daily_check_ins`
+
+- UUID primary key.
+- `owner_user_id`, check-in date, optional mood, optional energy, notes, and timestamps.
+- Unique owner/date constraint.
+
+Mood and energy are optional personal context fields and are not medical measurements.
+
+### `weekly_reviews`
+
+- UUID primary key.
+- `owner_user_id`, normalized week start, wins, challenges, next steps, period, metadata, and
+  timestamps.
+- Unique owner/week constraint.
+
 ## Planned Later Tables
 
 Later schema slices will cover:
@@ -369,6 +436,5 @@ Later schema slices will cover:
 - `subjects`, `topics`, `topic_relations`, `resources`.
 - `courses`, `modules`, `lessons`, `quizzes`, `questions`, `attempts`.
 - `flashcards`, `review_events`, `study_sessions`, `mastery_records`.
-- `habits`, `habit_schedules`, `habit_logs`.
 - `goals`, `milestones`, `tasks`, `projects`, `project_files`.
 - `achievements`, `achievement_rules`, `user_achievements`.

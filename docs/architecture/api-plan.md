@@ -77,12 +77,23 @@ Current routes:
 - `POST /api/v1/mentors/conversations/{conversation_id}/messages/{message_id}/regenerate`
 - `POST /api/v1/mentors/conversations/{conversation_id}/stop`
 - `GET /api/v1/mentors/conversations/{conversation_id}/export`
+- `GET /api/v1/habits`
+- `POST /api/v1/habits`
+- `GET /api/v1/habits/summary`
+- `GET /api/v1/habits/check-ins/{check_in_date}`
+- `PUT /api/v1/habits/check-ins/{check_in_date}`
+- `GET /api/v1/habits/weekly-reviews`
+- `POST /api/v1/habits/weekly-reviews`
+- `GET /api/v1/habits/{habit_id}`
+- `PATCH /api/v1/habits/{habit_id}`
+- `POST /api/v1/habits/{habit_id}/archive`
+- `GET /api/v1/habits/{habit_id}/logs`
+- `POST /api/v1/habits/{habit_id}/logs`
 
 Planned route groups:
 
 - `/api/v1/users`
 - `/api/v1/learning`
-- `/api/v1/habits`
 - `/api/v1/goals`
 - `/api/v1/tasks`
 - `/api/v1/projects`
@@ -203,10 +214,10 @@ low-level owner-scoped data API for future search and retrieval work, not a glob
 ## Search Routes
 
 `POST /api/v1/search` searches the authenticated user's implemented Aetherium data and records a
-recent search. Current result producers cover file metadata, file chunks, collections, tags, and AI
-conversation titles. The response includes snippets, match reasons, open URLs, and future
-world-location identifiers. `semanticEnabled` is `false` until embeddings and AI retrieval controls
-are implemented.
+recent search. Current result producers cover file metadata, file chunks, collections, tags, AI
+conversation titles, and active habit metadata. The response includes snippets, match reasons, open
+URLs, and future world-location identifiers. `semanticEnabled` is `false` until embeddings and AI
+retrieval controls are implemented.
 
 `GET /api/v1/search/recent` lists only the authenticated user's recent searches with bounded
 pagination.
@@ -280,6 +291,31 @@ generation workflow and currently returns an honest conflict when no active gene
 
 `GET /api/v1/mentors/conversations/{conversation_id}/export` returns an owner-scoped JSON export of
 the conversation, mentor metadata, messages, and any stored message sources.
+
+## Habit Routes
+
+`GET/POST /api/v1/habits` lists and creates active owner-scoped habits with bounded pagination.
+Habit creation stores one habit record plus schedule, target, and streak records.
+
+`GET/PATCH /api/v1/habits/{habit_id}` reads and updates an owned habit. Cross-user IDs return
+`not_found`. Schedule changes are validated so selected-weekday and weekly-target habits cannot
+persist invalid schedule state.
+
+`POST /api/v1/habits/{habit_id}/archive` archives an owned habit without deleting its historical
+logs. Archived habits cannot be logged.
+
+`GET/POST /api/v1/habits/{habit_id}/logs` lists and upserts dated habit logs. Logging creates an
+idempotent `habit.logged` domain event keyed by user, habit, and date, writes a sanitized audit log,
+and refreshes streak metrics.
+
+`GET /api/v1/habits/summary` returns weekly or monthly summary metrics derived from stored active
+habits and logs only. It does not fabricate analytics.
+
+`GET/PUT /api/v1/habits/check-ins/{check_in_date}` reads or saves optional mood, energy, and notes
+for the authenticated user.
+
+`GET/POST /api/v1/habits/weekly-reviews` lists and saves owner-scoped weekly review notes. Submitted
+dates are normalized to the week start.
 
 ## Generated Client
 

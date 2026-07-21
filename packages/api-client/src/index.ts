@@ -37,6 +37,18 @@ import type {
   FilePage,
   FileTagCreateRequest,
   FileUpdateRequest,
+  DailyCheckIn,
+  DailyCheckInUpsert,
+  Habit,
+  HabitCreateRequest,
+  HabitListQuery,
+  HabitLog,
+  HabitLogPage,
+  HabitLogRequest,
+  HabitPage,
+  HabitSummary,
+  HabitSummaryQuery,
+  HabitUpdateRequest,
   HealthCheckResponse,
   LoginRequest,
   Mentor,
@@ -69,7 +81,10 @@ import type {
   VaultFile,
   WorldProfile,
   WorldProfileUpdate,
-  WorldVisitRequest
+  WorldVisitRequest,
+  WeeklyReview,
+  WeeklyReviewPage,
+  WeeklyReviewUpsert
 } from "@aetherium/shared-types";
 import {
   aiChatCompletionResponseSchema,
@@ -96,6 +111,12 @@ import {
   fileChunkPageSchema,
   filePageSchema,
   tagPageSchema,
+  dailyCheckInSchema,
+  habitLogPageSchema,
+  habitLogSchema,
+  habitPageSchema,
+  habitSchema,
+  habitSummarySchema,
   healthCheckResponseSchema,
   mentorPageSchema,
   mentorPermissionSchema,
@@ -113,6 +134,8 @@ import {
   uploadResponseSchema,
   userPreferencesSchema,
   vaultFileSchema,
+  weeklyReviewPageSchema,
+  weeklyReviewSchema,
   worldProfileSchema
 } from "@aetherium/validation";
 
@@ -180,6 +203,20 @@ export interface AetheriumApiClient {
     softDelete: (fileId: string) => Promise<VaultFile>;
     unfavorite: (fileId: string) => Promise<VaultFile>;
     update: (fileId: string, payload: FileUpdateRequest) => Promise<VaultFile>;
+  };
+  habits: {
+    archive: (habitId: string) => Promise<Habit>;
+    create: (payload: HabitCreateRequest) => Promise<Habit>;
+    get: (habitId: string) => Promise<Habit>;
+    getCheckIn: (checkInDate: string) => Promise<DailyCheckIn | null>;
+    getSummary: (query?: HabitSummaryQuery) => Promise<HabitSummary>;
+    list: (query?: HabitListQuery) => Promise<HabitPage>;
+    listLogs: (habitId: string, query?: PaginationQuery) => Promise<HabitLogPage>;
+    listWeeklyReviews: (query?: PaginationQuery) => Promise<WeeklyReviewPage>;
+    log: (habitId: string, payload: HabitLogRequest) => Promise<HabitLog>;
+    update: (habitId: string, payload: HabitUpdateRequest) => Promise<Habit>;
+    upsertCheckIn: (checkInDate: string, payload: DailyCheckInUpsert) => Promise<DailyCheckIn>;
+    upsertWeeklyReview: (payload: WeeklyReviewUpsert) => Promise<WeeklyReview>;
   };
   health: {
     live: () => Promise<HealthCheckResponse>;
@@ -332,6 +369,21 @@ function fileListQuery(query?: FileListQuery): string {
     ["offset", query?.offset],
     ["query", query?.query],
     ["tagId", query?.tagId]
+  ]);
+}
+
+function habitListQuery(query?: HabitListQuery): string {
+  return queryString([
+    ["includeArchived", query?.includeArchived],
+    ["limit", query?.limit],
+    ["offset", query?.offset]
+  ]);
+}
+
+function habitSummaryQuery(query?: HabitSummaryQuery): string {
+  return queryString([
+    ["period", query?.period],
+    ["startDate", query?.startDate]
   ]);
 }
 
@@ -713,6 +765,111 @@ export function createAetheriumApiClient(options: AetheriumApiClientOptions): Ae
           method: "PATCH"
         });
         return vaultFileSchema.parse(response);
+      }
+    },
+    habits: {
+      archive: async (habitId) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/habits/${habitId}/archive`,
+          { method: "POST" }
+        );
+        return habitSchema.parse(response);
+      },
+      create: async (payload) => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/habits", {
+          body: JSON.stringify(payload),
+          method: "POST"
+        });
+        return habitSchema.parse(response);
+      },
+      get: async (habitId) => {
+        const response = await requestJson(fetcher, options.baseUrl, `/api/v1/habits/${habitId}`);
+        return habitSchema.parse(response);
+      },
+      getCheckIn: async (checkInDate) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/habits/check-ins/${checkInDate}`
+        );
+        return response === null ? null : dailyCheckInSchema.parse(response);
+      },
+      getSummary: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/habits/summary${habitSummaryQuery(query)}`
+        );
+        return habitSummarySchema.parse(response);
+      },
+      list: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/habits${habitListQuery(query)}`
+        );
+        return habitPageSchema.parse(response);
+      },
+      listLogs: async (habitId, query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/habits/${habitId}/logs${paginationQuery(query)}`
+        );
+        return habitLogPageSchema.parse(response);
+      },
+      listWeeklyReviews: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/habits/weekly-reviews${paginationQuery(query)}`
+        );
+        return weeklyReviewPageSchema.parse(response);
+      },
+      log: async (habitId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/habits/${habitId}/logs`,
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return habitLogSchema.parse(response);
+      },
+      update: async (habitId, payload) => {
+        const response = await requestJson(fetcher, options.baseUrl, `/api/v1/habits/${habitId}`, {
+          body: JSON.stringify(payload),
+          method: "PATCH"
+        });
+        return habitSchema.parse(response);
+      },
+      upsertCheckIn: async (checkInDate, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/habits/check-ins/${checkInDate}`,
+          {
+            body: JSON.stringify(payload),
+            method: "PUT"
+          }
+        );
+        return dailyCheckInSchema.parse(response);
+      },
+      upsertWeeklyReview: async (payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          "/api/v1/habits/weekly-reviews",
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return weeklyReviewSchema.parse(response);
       }
     },
     health: {

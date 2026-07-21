@@ -29,7 +29,8 @@ body {
 
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
 }
 
@@ -884,6 +885,14 @@ kbd {
 .vault-filter-row input:focus,
 .vault-organize-row input:focus,
 .vault-organize-row select:focus,
+.habit-create-form input:focus,
+.habit-create-form select:focus,
+.habit-create-form textarea:focus,
+.habit-log-row input:focus,
+.check-in-form select:focus,
+.check-in-form textarea:focus,
+.weekly-review-form input:focus,
+.weekly-review-form textarea:focus,
 .document-qa-form select:focus,
 .document-qa-form textarea:focus,
 .ai-message-form textarea:focus,
@@ -910,6 +919,189 @@ kbd {
 .command-palette header button:focus {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+
+.habit-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 0.84fr) minmax(320px, 1fr);
+}
+
+.habit-metrics {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.habit-garden-panel {
+  align-content: start;
+}
+
+.habit-growth-track {
+  background: #0d1113;
+  border: 1px solid var(--panel-border);
+  height: 18px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.habit-growth-track span {
+  background: linear-gradient(90deg, var(--accent), #bfc66a, var(--accent-strong));
+  display: block;
+  height: 100%;
+}
+
+.habit-create-form,
+.check-in-form,
+.weekly-review-form {
+  display: grid;
+  gap: 12px;
+}
+
+.habit-create-form {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.habit-create-form label,
+.check-in-form label,
+.weekly-review-form label {
+  color: var(--muted);
+  display: grid;
+  font-size: 0.86rem;
+  font-weight: 800;
+  gap: 8px;
+}
+
+.habit-create-form input,
+.habit-create-form select,
+.habit-create-form textarea,
+.habit-log-row input,
+.check-in-form select,
+.check-in-form textarea,
+.weekly-review-form input,
+.weekly-review-form textarea {
+  background: #0d1113;
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  min-height: 42px;
+  padding: 0 10px;
+  width: 100%;
+}
+
+.habit-create-form textarea,
+.check-in-form textarea,
+.weekly-review-form textarea {
+  min-height: 90px;
+  padding: 10px;
+  resize: vertical;
+}
+
+.habit-description-field,
+.weekday-picker,
+.habit-create-form .primary-action {
+  grid-column: 1 / -1;
+}
+
+.weekday-picker {
+  border: 1px solid var(--panel-border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 12px;
+}
+
+.weekday-picker legend {
+  color: var(--muted);
+  font-weight: 800;
+  padding: 0 6px;
+}
+
+.weekday-picker label {
+  align-items: center;
+  background: #111719;
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  display: inline-flex;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 9px;
+}
+
+.habit-panel-header {
+  align-items: start;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.habit-list {
+  display: grid;
+  gap: 12px;
+}
+
+.habit-row {
+  background: #111719;
+  border: 1px solid var(--panel-border);
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.habit-row-main {
+  align-items: start;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.habit-row-main h3 {
+  font-size: 1.1rem;
+  margin: 0 0 5px;
+  overflow-wrap: anywhere;
+}
+
+.habit-row-main p {
+  color: var(--muted);
+  margin: 0;
+}
+
+.status-token.muted {
+  border-color: var(--panel-border);
+  color: var(--muted);
+}
+
+.habit-detail-grid {
+  border-top: 1px solid var(--panel-border);
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding-top: 12px;
+}
+
+.habit-detail-grid div {
+  min-width: 0;
+}
+
+.habit-log-row {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 120px minmax(0, 1fr) auto auto;
+}
+
+.check-in-form {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.check-in-form .habit-description-field,
+.check-in-form .primary-action,
+.weekly-review-form label,
+.weekly-review-form .primary-action {
+  grid-column: 1 / -1;
+}
+
+.plain-list small {
+  color: var(--muted);
+  display: block;
+  margin-top: 4px;
 }
 
 .ai-hall-grid,
@@ -1206,6 +1398,8 @@ kbd {
   .settings-grid,
   .ai-hall-grid,
   .ai-chat-layout,
+  .habit-grid,
+  .habit-metrics,
   .document-qa-form,
   .vault-grid,
   .vault-metrics {
@@ -1237,6 +1431,11 @@ kbd {
   .settings-grid,
   .ai-hall-grid,
   .ai-chat-layout,
+  .habit-grid,
+  .habit-create-form,
+  .habit-detail-grid,
+  .habit-log-row,
+  .habit-metrics,
   .conversation-tools,
   .create-mentor-form,
   .document-qa-form,

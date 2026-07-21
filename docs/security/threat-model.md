@@ -39,6 +39,7 @@
 | AI data leakage                           | Require consent controls and provider-scoped policies.                                        |
 | Prompt injection from retrieved files     | Source-bounded document-QA prompts, no automatic mutation tools, and citation validation.     |
 | Fabricated citations                      | Return citations only for retrieved owner-scoped chunks and no-evidence responses when empty. |
+| Habit privacy leakage                     | Owner-scoped habit tables, not-found cross-user behavior, and no external sharing by default. |
 | Insecure code execution                   | Use mock code runner first; require isolated sandbox before real execution.                   |
 | Secret leakage                            | Keep secrets out of source and logs.                                                          |
 | Cross-tenant data access                  | Include tenant/owner scoping in schema and data-access tests.                                 |
@@ -109,6 +110,15 @@
   output, and returns citation objects only for retrieved chunks.
 - If no source chunks support the question, Document Q&A returns `insufficient_evidence` without
   calling a model or fabricating sources.
+- Habit records, schedules, targets, logs, streaks, daily check-ins, and weekly reviews are scoped
+  by `owner_user_id`.
+- Habit logging writes idempotent `habit.logged` domain events and sanitized audit logs without
+  storing secrets or authentication material.
+- Habit summaries and the non-visual Habit Garden signal are derived only from stored habit logs and
+  schedules; no fake analytics are displayed.
+- Mood and energy check-in fields are optional personal context fields and are not positioned as
+  diagnosis or treatment data.
+- Active habit metadata is searchable only inside the authenticated user's own search scope.
 - CI runs independence checks, formatting, linting, type checks, tests, build, and migration smoke
   validation.
 

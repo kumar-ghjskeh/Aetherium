@@ -7,8 +7,9 @@ This repository currently contains the Phase 0 documentation baseline and early 
 slices: the infrastructure scaffold, standalone password authentication with server-side sessions,
 the user-owned foundation, the protected Command Mode application shell, and Personal Vault file
 storage with background ingestion, global search, the provider-neutral AI gateway, AI mentor
-conversations, and citation-backed document Q&A. It does not yet implement visual 3D world
-navigation, habits, projects, analytics, achievements, or learning features.
+conversations, citation-backed document Q&A, and habit tracking. It does not yet implement visual 3D
+world navigation, projects, analytics, achievements, learning features, or coding workspace
+features.
 
 Aetherium is a standalone product. It uses its own repository, database, Redis namespace,
 object-storage buckets, environment variables, Docker resources, CI workflow, and future
@@ -34,8 +35,8 @@ authentication/session system. See `docs/architecture/product-independence.md` a
   download URLs, collections, tags, favorites, soft deletion, permanent deletion, and a Library UI.
 - Background file ingestion with durable processing jobs, a standalone `aetherium-worker`, text
   extraction, chunk storage, failure visibility, retry APIs, and Library retry controls.
-- Global search under `/api/v1/search` over files, extracted chunks, collections, and tags, with
-  recent searches and Command Palette integration.
+- Global search under `/api/v1/search` over files, extracted chunks, collections, tags, AI
+  conversations, and habits, with recent searches and Command Palette integration.
 - Provider-neutral AI gateway under `/api/v1/ai` with provider metadata, owner-scoped consent
   policies, feature model configuration, chat completions, streaming responses, embeddings, usage
   records, rate limits, retries, and fallback. External provider calls are disabled unless both the
@@ -47,6 +48,9 @@ authentication/session system. See `docs/architecture/product-independence.md` a
 - Citation-backed document Q&A under `/api/v1/ai/document-qa`, using explicit document-QA
   file-content consent, owner-scoped ready chunk retrieval, bounded semantic reranking when
   embeddings exist, validated source labels, and citation links back to the Library.
+- Habit tracking under `/api/v1/habits` with owner-scoped habits, schedules, targets, logs, streaks,
+  daily check-ins, weekly reviews, weekly/monthly summaries, domain events, audit logs, global
+  search integration, and a Command Mode Habits UI.
 - Non-visual `/app/world` route that clearly marks visual World Mode as future work.
 - Docker Compose development infrastructure for Aetherium-isolated PostgreSQL, Redis, MinIO, API,
   worker, and web services.
@@ -198,6 +202,16 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
 - Run search: `POST http://localhost:8000/api/v1/search`
 - Recent searches: `GET http://localhost:8000/api/v1/search/recent`
 
+## Habit Endpoints
+
+- Habits: `GET/POST http://localhost:8000/api/v1/habits`
+- Habit detail: `GET/PATCH http://localhost:8000/api/v1/habits/{id}`
+- Archive habit: `POST http://localhost:8000/api/v1/habits/{id}/archive`
+- Habit logs: `GET/POST http://localhost:8000/api/v1/habits/{id}/logs`
+- Habit summary: `GET http://localhost:8000/api/v1/habits/summary`
+- Daily check-in: `GET/PUT http://localhost:8000/api/v1/habits/check-ins/{date}`
+- Weekly reviews: `GET/POST http://localhost:8000/api/v1/habits/weekly-reviews`
+
 ## AI Gateway Endpoints
 
 - Providers: `GET http://localhost:8000/api/v1/ai/providers`
@@ -253,5 +267,6 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
   document Q&A can answer against them with citations when explicit file-content consent is enabled.
 - File-ingestion embedding jobs are still recorded as skipped by default until semantic search wires
   the AI gateway into the worker with explicit consent.
-- AI mentors are persistent and gateway-backed, but habit workflow, learning domain, project
-  workspace, real analytics, achievements, and visual 3D scenes do not exist yet.
+- AI mentors are persistent and gateway-backed. Learning domain, project workspace, real analytics,
+  achievements, coding workspace, and visual 3D scenes do not exist yet.
+- Habit reminders and external notifications are deferred to the notification/review workflow slice.

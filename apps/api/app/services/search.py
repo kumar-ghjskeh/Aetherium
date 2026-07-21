@@ -13,11 +13,13 @@ from app.core.pagination import PaginationParams
 from app.domain.file_ingestion import ChunkStatus
 from app.domain.file_vault import FileDeletionStatus
 from app.domain.foundation import WorldLocationId
+from app.domain.habits import HabitStatus
 from app.domain.mentors import ConversationStatus
 from app.domain.search import SearchEntityType, SearchMatchReason, SearchMode, SearchSort
 from app.models.auth import User
 from app.models.file_ingestion import FileChunk
 from app.models.file_vault import Collection, FileRecord, Tag
+from app.models.habits import Habit
 from app.models.mentors import Conversation
 from app.models.search import RecentSearch
 from app.services.foundation import PageResult
@@ -28,6 +30,7 @@ IMPLEMENTED_ENTITY_TYPES = (
     SearchEntityType.COLLECTION,
     SearchEntityType.TAG,
     SearchEntityType.AI_CONVERSATION,
+    SearchEntityType.HABIT,
 )
 MAX_SNIPPET_LENGTH = 180
 
@@ -103,6 +106,10 @@ class SearchService:
             )
             candidates.extend(conversation_items)
             total += conversation_total
+        if SearchEntityType.HABIT in target_types:
+            habit_items, habit_total = await self._search_habits(user, query, fetch_limit)
+            candidates.extend(habit_items)
+            total += habit_total
 
         ordered = _sort_results(candidates, sort)
         items = ordered[pagination.offset : pagination.offset + pagination.limit]
@@ -405,6 +412,59 @@ class SearchService:
         total = await self._count(select(func.count(Conversation.id)).where(*predicates))
         return items, total
 
+    async def _search_habits(
+        self,
+        user: User,
+        query: str,
+        limit: int,
+    ) -> tuple[list[SearchResultItem], int]:
+        predicates = [
+            Habit.owner_user_id == user.id,
+            Habit.status == HabitStatus.ACTIVE.value,
+        ]
+        if self._is_postgres:
+            vector = func.to_tsvector(
+                "english",
+                func.concat(
+                    func.coalesce(Habit.name, ""),
+                    " ",
+                    func.coalesce(Habit.description, ""),
+                    " ",
+                    func.coalesce(Habit.value_type, ""),
+                ),
+            )
+            ts_query = func.plainto_tsquery("english", query)
+            predicates.append(vector.op("@@")(ts_query))
+            score_expression = func.ts_rank_cd(vector, ts_query).label("score")
+            result = await self.db.execute(
+                select(Habit, score_expression)
+                .where(*predicates)
+                .order_by(score_expression.desc(), Habit.updated_at.desc())
+                .limit(limit)
+            )
+            rows = result.all()
+            items = [
+                self._habit_result(habit, query=query, score=float(score or 0.0))
+                for habit, score in rows
+            ]
+        else:
+            predicates.append(
+                or_(_contains(Habit.name, query), _contains(Habit.description, query))
+            )
+            result = await self.db.execute(
+                select(Habit).where(*predicates).order_by(Habit.updated_at.desc()).limit(limit)
+            )
+            items = [
+                self._habit_result(
+                    habit,
+                    query=query,
+                    score=_metadata_score(habit.name, query),
+                )
+                for habit in result.scalars().all()
+            ]
+        total = await self._count(select(func.count(Habit.id)).where(*predicates))
+        return items, total
+
     def _file_result(self, file: FileRecord, *, query: str, score: float) -> SearchResultItem:
         return SearchResultItem(
             id=f"file:{file.id}",
@@ -504,6 +564,21 @@ class SearchService:
             world_location_id=WorldLocationId.AI_HALL.value,
             source=None,
             created_at=conversation.created_at,
+        )
+
+    def _habit_result(self, habit: Habit, *, query: str, score: float) -> SearchResultItem:
+        return SearchResultItem(
+            id=f"habit:{habit.id}",
+            entity_type=SearchEntityType.HABIT,
+            entity_id=habit.id,
+            title=habit.name,
+            snippet=_snippet(habit.description or f"{habit.value_type.title()} habit", query),
+            match_reason=SearchMatchReason.HABIT_METADATA,
+            score=max(score, _metadata_score(habit.name, query)),
+            open_url=f"/app/habits?habit={habit.id}",
+            world_location_id=WorldLocationId.HABIT_GARDEN.value,
+            source=None,
+            created_at=habit.created_at,
         )
 
     @property

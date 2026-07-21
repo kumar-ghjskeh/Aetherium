@@ -31,3 +31,4 @@ class SearchMatchReason(StrEnum):
     COLLECTION_METADATA = "collection_metadata"
     TAG_METADATA = "tag_metadata"
     AI_CONVERSATION = "ai_conversation"
+    HABIT_METADATA = "habit_metadata"

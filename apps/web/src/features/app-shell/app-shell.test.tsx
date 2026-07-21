@@ -17,7 +17,11 @@ import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { AuthProvider } from "../auth/auth-provider";
-import { createUnusedFilesClient, createUnusedMentorsClient } from "../../test/api-client";
+import {
+  createUnusedFilesClient,
+  createUnusedHabitsClient,
+  createUnusedMentorsClient
+} from "../../test/api-client";
 import { AppDashboard } from "./app-dashboard";
 import { AppShell } from "./app-shell";
 import { SectionPage } from "./section-page";
@@ -155,6 +159,7 @@ function createClient(
   overrides: Partial<{
     auth: Partial<AetheriumApiClient["auth"]>;
     files: Partial<AetheriumApiClient["files"]>;
+    habits: Partial<AetheriumApiClient["habits"]>;
     mentors: Partial<AetheriumApiClient["mentors"]>;
     notifications: Partial<AetheriumApiClient["notifications"]>;
     search: Partial<AetheriumApiClient["search"]>;
@@ -190,6 +195,7 @@ function createClient(
       list: vi.fn(() => Promise.resolve(emptyDomainEventPage))
     },
     files: { ...createUnusedFilesClient(), ...overrides.files },
+    habits: { ...createUnusedHabitsClient(), ...(overrides.habits ?? {}) },
     health: {
       live: vi.fn(() => Promise.resolve(health)),
       ready: vi.fn(() => Promise.resolve(health))

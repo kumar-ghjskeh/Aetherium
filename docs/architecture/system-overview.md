@@ -26,8 +26,8 @@ User
 
 The current implemented slices provide the infrastructure shell, standalone authentication
 foundation, user-owned foundation, protected Command Mode shell, Personal Vault storage, background
-file ingestion, global search, provider-neutral AI gateway, AI mentor conversations, and
-citation-backed document Q&A:
+file ingestion, global search, provider-neutral AI gateway, AI mentor conversations, citation-backed
+document Q&A, and habit tracking:
 
 - `apps/api`: FastAPI app, database settings, Alembic, health endpoints.
 - `apps/web`: Next.js App Router scaffold, web health route, auth UI, and protected `/app` Command
@@ -35,7 +35,7 @@ citation-backed document Q&A:
 - `packages/shared-types`: TypeScript contracts shared by frontend packages.
 - `packages/validation`: Zod schemas that validate API contract payloads.
 - `packages/api-client`: Typed API client for health, auth, user-owned foundation, Personal Vault,
-  search, AI gateway, document Q&A, and mentor conversation APIs.
+  search, AI gateway, document Q&A, mentor conversation, and habit APIs.
 - Identity domain: Aetherium-owned `users` and `sessions` tables, Argon2id password hashing,
   server-side session revocation, and product-specific cookies.
 - User-owned foundation: preferences, non-visual world profile state, domain events, notifications,
@@ -47,10 +47,10 @@ citation-backed document Q&A:
   Library page that avoids fake search or AI data while showing real processing state.
 - File ingestion: durable processing jobs, a standalone worker process, text extraction, chunk
   storage, failure records, retry APIs, and Library retry controls.
-- Search: owner-scoped global search over files, extracted chunks, collections, tags, and AI
-  conversation titles with recent search persistence and Command Palette integration.
-  Semantic/vector ranking remains disabled until a later retrieval slice wires embedding jobs to the
-  AI gateway with consent.
+- Search: owner-scoped global search over files, extracted chunks, collections, tags, AI
+  conversation titles, and active habits with recent search persistence and Command Palette
+  integration. Semantic/vector ranking remains disabled until a later retrieval slice wires
+  embedding jobs to the AI gateway with consent.
 - AI gateway: provider metadata, owner-scoped consent policies, feature model configurations, chat
   completions, streaming responses, embeddings, metadata-only usage records, rate limits, retries,
   and fallback.
@@ -61,6 +61,9 @@ citation-backed document Q&A:
 - Document Q&A: explicit document-QA file-content consent, owner-scoped active ready-chunk
   retrieval, optional file and collection filters, bounded semantic reranking when stored embeddings
   exist, AI gateway generation, and validated source citations linked back to the Library.
+- Habits: owner-scoped habits, schedules, targets, logs, streak metrics, daily check-ins, weekly
+  reviews, idempotent `habit.logged` domain events, audit logs, search results, and a Command Mode
+  Habits UI. The Habit Garden is represented only as non-visual progress data in this slice.
 
 ## Frontend Boundaries
 
@@ -78,7 +81,7 @@ Backend domains will be added incrementally:
   search, and AI gateway records.
 - Mentor tools that can reuse citation-backed retrieval after explicit user approval.
 - Learning.
-- Habits, goals, tasks, and projects.
+- Goals, tasks, and projects.
 - Achievements and domain events.
 - Analytics, notifications, audit, and security.
 
@@ -109,6 +112,8 @@ plus reusable dependencies.
   configuration, usage records, chat completions, streaming responses, embeddings, and document Q&A.
 - AI mentor routes are under `/api/v1/mentors` and expose mentors, permissions, conversations,
   messages, memory settings, exports, edit/resend, regeneration, and stop-generation behavior.
+- Habit routes are under `/api/v1/habits` and expose habits, logs, summaries, daily check-ins, and
+  weekly reviews.
 
 ## Configuration
 

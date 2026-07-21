@@ -25,8 +25,8 @@ Implemented foundation slices:
   collections, tags, favorites, deletion state, and Library UI.
 - Background file ingestion with durable processing jobs, a standalone worker process, extraction
   results, chunks, failure records, retry APIs, and visible Library retry state.
-- Global search over files, extracted chunks, collections, and tags, with recent searches and
-  Command Palette integration.
+- Global search over files, extracted chunks, collections, tags, AI conversations, and habits, with
+  recent searches and Command Palette integration.
 - Provider-neutral AI gateway foundation with consent policies, model configuration, usage records,
   deterministic test/local adapter, OpenAI-compatible, Anthropic-compatible, and Ollama-compatible
   adapter boundaries, rate limits, retries, and fallback support.
@@ -35,12 +35,14 @@ Implemented foundation slices:
   regeneration, stop-generation API behavior, AI Hall UI, and conversation search.
 - Citation-backed document Q&A under `/api/v1/ai/document-qa`, with explicit file-content consent,
   owner-scoped ready-chunk retrieval, validated source citations, and an AI Hall document panel.
+- Habit tracking with owner-scoped habits, schedules, targets, logs, streaks, daily check-ins,
+  weekly reviews, summary metrics, Command Mode Habits UI, domain events, and audit logs.
 
 Still out of scope unless explicitly requested:
 
 - OAuth, social login, email delivery, password reset, MFA, and magic links.
 - 3D world scenes, React Three Fiber, player controls, map travel, or world progression.
-- Habits, learning, projects, achievements, analytics, or visual world progression.
+- Learning, projects, achievements, analytics, or visual world progression.
 
 ## Product Independence
 

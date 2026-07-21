@@ -19,7 +19,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AuthForm } from "./auth-form";
 import { AuthProvider, useAuth } from "./auth-provider";
 import { ProtectedCommandMode } from "../command/protected-command-mode";
-import { createUnusedFilesClient, createUnusedMentorsClient } from "../../test/api-client";
+import {
+  createUnusedFilesClient,
+  createUnusedHabitsClient,
+  createUnusedMentorsClient
+} from "../../test/api-client";
 
 const push = vi.fn();
 const replace = vi.fn();
@@ -165,6 +169,7 @@ function createClient(overrides: Partial<AetheriumApiClient["auth"]>): Aetherium
       list: vi.fn(() => Promise.resolve(emptyDomainEventPage))
     },
     files: createUnusedFilesClient(),
+    habits: createUnusedHabitsClient(),
     health: {
       live: vi.fn(() => Promise.resolve(health)),
       ready: vi.fn(() => Promise.resolve(health))

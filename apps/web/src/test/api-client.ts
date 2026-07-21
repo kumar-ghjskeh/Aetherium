@@ -57,3 +57,22 @@ export function createUnusedMentorsClient(): AetheriumApiClient["mentors"] {
     updatePermissions: vi.fn(reject)
   };
 }
+
+export function createUnusedHabitsClient(): AetheriumApiClient["habits"] {
+  const reject = () => Promise.reject(new Error("Unexpected habit call"));
+
+  return {
+    archive: vi.fn(reject),
+    create: vi.fn(reject),
+    get: vi.fn(reject),
+    getCheckIn: vi.fn(reject),
+    getSummary: vi.fn(reject),
+    list: vi.fn(reject),
+    listLogs: vi.fn(reject),
+    listWeeklyReviews: vi.fn(reject),
+    log: vi.fn(reject),
+    update: vi.fn(reject),
+    upsertCheckIn: vi.fn(reject),
+    upsertWeeklyReview: vi.fn(reject)
+  };
+}

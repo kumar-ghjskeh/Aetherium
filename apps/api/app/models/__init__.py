@@ -24,6 +24,15 @@ from app.models.foundation import (
     UserPreferences,
     WorldProfile,
 )
+from app.models.habits import (
+    DailyCheckIn,
+    Habit,
+    HabitLog,
+    HabitSchedule,
+    HabitStreak,
+    HabitTarget,
+    WeeklyReview,
+)
 from app.models.mentors import (
     Conversation,
     ConversationMemorySettings,
@@ -52,6 +61,12 @@ __all__ = [
     "FileRecord",
     "FileTag",
     "FileVersion",
+    "DailyCheckIn",
+    "Habit",
+    "HabitLog",
+    "HabitSchedule",
+    "HabitStreak",
+    "HabitTarget",
     "Mentor",
     "MentorPermission",
     "Message",
@@ -64,5 +79,6 @@ __all__ = [
     "UploadRecord",
     "User",
     "UserPreferences",
+    "WeeklyReview",
     "WorldProfile",
 ]

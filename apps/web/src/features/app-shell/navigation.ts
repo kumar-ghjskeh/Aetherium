@@ -31,12 +31,7 @@ export const commandActions: CommandAction[] = [
   { available: true, href: "/app/library", id: "open-library", label: "Open Library" },
   { available: true, href: "/app/ai", id: "ask-ai", label: "Ask AI" },
   { available: true, href: "/app/library", id: "upload-file", label: "Upload file" },
-  {
-    available: false,
-    id: "create-habit",
-    label: "Create habit",
-    reason: "Habit creation arrives in the habit tracking slice."
-  },
+  { available: true, href: "/app/habits", id: "create-habit", label: "Create habit" },
   {
     available: false,
     id: "create-task",

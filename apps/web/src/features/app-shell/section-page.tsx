@@ -33,7 +33,7 @@ const sections = {
     title: "Coding"
   },
   habits: {
-    body: "Habit creation and logging are not implemented yet.",
+    body: "Habit creation and logging are available from the dedicated Habits route.",
     label: "Rhythm",
     title: "Habits"
   },

@@ -1,5 +1,5 @@
-import { SectionPage } from "../../../features/app-shell/section-page";
+import { HabitsPage } from "../../../features/habits/habits-page";
 
-export default function HabitsPage(): React.ReactElement {
-  return <SectionPage section="habits" />;
+export default function HabitsRoute(): React.ReactElement {
+  return <HabitsPage />;
 }
