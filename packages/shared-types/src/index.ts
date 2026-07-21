@@ -203,6 +203,21 @@ export type UploadStatus = "pending" | "completed" | "aborted" | "expired";
 
 export type MalwareScanStatus = "not_configured" | "pending" | "clean" | "suspicious" | "failed";
 
+export type ProcessingJobStatus = "queued" | "processing" | "completed" | "failed" | "canceled";
+
+export type ProcessingStage =
+  | "queued"
+  | "validating"
+  | "extracting"
+  | "chunking"
+  | "indexing"
+  | "embedding"
+  | "ready"
+  | "failed"
+  | "canceled";
+
+export type ChunkStatus = "ready" | "deleted";
+
 export interface UploadInitiateRequest {
   fileName: string;
   contentType: string;
@@ -318,4 +333,52 @@ export interface TagPage {
 export interface FileTagCreateRequest {
   name: string;
   color?: string | null | undefined;
+}
+
+export interface ProcessingJob {
+  id: string;
+  fileId: string;
+  status: ProcessingJobStatus;
+  stage: ProcessingStage;
+  attemptCount: number;
+  maxAttempts: number;
+  failureCount: number;
+  lockedAt: string | null;
+  startedAt: string | null;
+  completedAt: string | null;
+  nextAttemptAt: string | null;
+  lastErrorCode: string | null;
+  lastErrorMessage: string | null;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProcessingJobPage {
+  items: ProcessingJob[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface FileChunk {
+  id: string;
+  fileId: string;
+  processingJobId: string;
+  sequenceNumber: number;
+  chunkText: string;
+  tokenEstimate: number;
+  pageNumber: number | null;
+  sectionLabel: string | null;
+  status: ChunkStatus;
+  sourceMetadata: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface FileChunkPage {
+  items: FileChunk[];
+  total: number;
+  limit: number;
+  offset: number;
 }

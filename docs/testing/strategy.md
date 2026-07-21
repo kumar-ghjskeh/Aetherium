@@ -21,9 +21,13 @@ Backend:
   file listing, rename, favorites, collections, tags, download URL ownership, soft deletion,
   restoration, permanent deletion, unauthenticated access, cross-user isolation, and database
   constraints.
+- File-ingestion backend tests for upload-created queue jobs, idempotent queueing, worker
+  processing, chunk creation, visible failures, retry behavior, owner-scoped jobs and chunks, and
+  derivative cleanup on permanent deletion.
 - Alembic migration smoke validation against PostgreSQL in CI.
 - Ruff formatting and linting.
 - mypy type checking.
+- Separate Ruff and mypy validation for the `apps/worker` ingestion process.
 
 Frontend and shared packages:
 
@@ -39,9 +43,10 @@ Frontend and shared packages:
 - API-client contract tests for the user-owned foundation endpoints.
 - API-client contract tests for Personal Vault upload, file, collection, tag, favorite, and download
   methods.
+- API-client contract tests for processing jobs, retries, and file chunks.
 - Next.js build validation.
 - React Testing Library coverage for the Library page, including loading, empty, error, upload,
-  favorite, tag, and delete states.
+  favorite, tag, delete, processing failure, and retry states.
 
 ## Future Backend Tests
 
@@ -49,7 +54,7 @@ Frontend and shared packages:
 - pytest integration tests against PostgreSQL for user-owned domains.
 - Factory fixtures for user-owned records.
 - Authorization tests for every critical endpoint.
-- File ingestion job tests with parser failure cases.
+- Broader parser-specific ingestion tests for PDF, DOCX, image/OCR, and malformed document cases.
 - AI gateway contract tests with fake providers.
 
 ## Future Frontend Tests

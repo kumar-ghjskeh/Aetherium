@@ -13,7 +13,7 @@ Production must provide Aetherium-owned or Aetherium-dedicated resources for:
   avatars.
 - API runtime.
 - Web runtime.
-- Background workers.
+- Background workers, including file-ingestion workers.
 - AI-provider credentials and model configuration.
 - Session signing, encryption, and future token secrets.
 - Logging, monitoring, alerting, backup, and restore configuration.
@@ -55,6 +55,13 @@ Before deploying a new environment, verify:
 - Object bucket names start with `aetherium` and are not shared with another product.
 - Presigned upload and download URL lifetimes are explicitly configured.
 - Production enables `AETHERIUM_FILE_VAULT_VERIFY_UPLOADS`.
+- File-ingestion workers use Aetherium database, Redis namespace, and object-storage credentials
+  only.
+- `AETHERIUM_FILE_INGESTION_QUEUE_NAME` starts with `aetherium:`.
+- Embedding generation remains disabled unless the AI gateway, semantic search, and consent controls
+  are deployed for that environment.
+- File-parser dependencies and worker resource limits are reviewed before processing untrusted
+  production documents at scale.
 - Session cookie name includes `aetherium` and is not generic.
 - Session signing secret is not the development default.
 - AI-provider credentials are configured specifically for Aetherium.

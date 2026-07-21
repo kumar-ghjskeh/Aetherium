@@ -33,10 +33,11 @@ Current approved slice:
   World Mode route.
 - Personal Vault file storage with user-owned metadata, presigned uploads/downloads, collections,
   tags, favorites, deletion state, and a Library UI.
+- Async file processing with durable jobs, worker processing, extraction results, chunks, failure
+  visibility, retries, and owner-scoped chunk/job APIs.
 
 Later Phase 1 slices:
 
-- Async file processing and extracted text.
 - Search.
 - One general AI mentor with citations.
 - One daily habit and habit logging.

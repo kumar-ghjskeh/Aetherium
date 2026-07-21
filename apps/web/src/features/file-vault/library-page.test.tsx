@@ -3,6 +3,7 @@ import type {
   Collection,
   FilePage,
   FileTag,
+  ProcessingJob,
   UploadResponse,
   VaultFile
 } from "@aetherium/shared-types";
@@ -61,6 +62,25 @@ const uploadResponse: UploadResponse = {
   uploadHeaders: { "Content-Type": "text/plain" },
   uploadMethod: "PUT",
   uploadUrl: "https://storage.example/upload"
+};
+
+const failedProcessingJob: ProcessingJob = {
+  attemptCount: 1,
+  completedAt: null,
+  createdAt: "2026-07-20T00:00:00Z",
+  failureCount: 1,
+  fileId: vaultFile.id,
+  id: "55555555-5555-4555-8555-555555555555",
+  lastErrorCode: "object_read_failed",
+  lastErrorMessage: "Aetherium could not read the object from storage.",
+  lockedAt: null,
+  maxAttempts: 3,
+  metadata: { queueName: "aetherium:file-ingestion" },
+  nextAttemptAt: "2026-07-20T00:10:00Z",
+  stage: "failed",
+  startedAt: "2026-07-20T00:05:00Z",
+  status: "failed",
+  updatedAt: "2026-07-20T00:06:00Z"
 };
 
 function filePage(items: VaultFile[]): FilePage {
@@ -216,5 +236,46 @@ describe("LibraryPage", () => {
     await waitFor(() => expect(client.files.softDelete).toHaveBeenCalledWith(vaultFile.id));
     expect(await screen.findByText("File moved to deleted records.")).toBeInTheDocument();
     expect(screen.getByText("No files in your Personal Vault yet.")).toBeInTheDocument();
+  });
+
+  it("retries a failed file processing job and refreshes the file state", async () => {
+    const failedFile = { ...vaultFile, processingStatus: "failed" as const };
+    const queuedFile = { ...vaultFile, processingStatus: "queued" as const };
+    const queuedProcessingJob: ProcessingJob = {
+      ...failedProcessingJob,
+      lastErrorCode: null,
+      lastErrorMessage: null,
+      stage: "queued",
+      status: "queued"
+    };
+    const client = createClient({
+      get: vi.fn(() => Promise.resolve(queuedFile)),
+      list: vi.fn(() => Promise.resolve(filePage([failedFile]))),
+      listFileProcessingJobs: vi.fn(() =>
+        Promise.resolve({
+          items: [failedProcessingJob],
+          limit: 5,
+          offset: 0,
+          total: 1
+        })
+      ),
+      retryProcessingJob: vi.fn(() => Promise.resolve(queuedProcessingJob))
+    });
+
+    render(<LibraryPage client={client} />);
+
+    expect(await screen.findByText("Processing failed")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Retry processing" }));
+
+    await waitFor(() =>
+      expect(client.files.listFileProcessingJobs).toHaveBeenCalledWith(vaultFile.id, {
+        limit: 5,
+        offset: 0
+      })
+    );
+    expect(client.files.retryProcessingJob).toHaveBeenCalledWith(failedProcessingJob.id);
+    expect(client.files.get).toHaveBeenCalledWith(vaultFile.id);
+    expect(await screen.findByText("File processing queued.")).toBeInTheDocument();
+    expect(screen.getByText("Queued for extraction")).toBeInTheDocument();
   });
 });

@@ -19,6 +19,8 @@ Current migrations:
   notifications, and audit logs.
 - `0004_file_vault`: creates user-owned Personal Vault metadata, upload records, file versions,
   collections, tags, favorites, and deletion state.
+- `0005_file_ingestion`: creates durable file-processing jobs, extraction results, chunks, embedding
+  job placeholders, and processing failures.
 
 ### `users`
 
@@ -121,8 +123,9 @@ Cross-user IDs are treated as not found.
 - Processing status, deletion status, malware scan status, and deleted timestamp.
 - Timestamps.
 
-The current file record is metadata-only. Extracted text, chunks, embeddings, and search vectors are
-added by later ingestion and search phases.
+The file record is the source of truth for original object storage and visible processing state.
+Extracted chunks are stored in the ingestion tables below. User-facing search, embeddings, and
+retrieval are added by later phases.
 
 ### `file_versions`
 
@@ -157,12 +160,62 @@ Upload initiation and completion are idempotent per owner and idempotency key.
 Collection membership, tags, and favorites do not grant access by themselves. File ownership remains
 the authorization boundary.
 
+## File Ingestion Schema
+
+All ingestion tables include `owner_user_id` and are queried through owner-scoped services. The
+worker does not accept a client-supplied owner identifier; it loads ownership from PostgreSQL.
+
+### `processing_jobs`
+
+- UUID primary key.
+- `owner_user_id` and `file_id`.
+- Per-owner idempotency key.
+- Status, stage, attempt count, max attempts, lock timestamp, start/completion timestamps, next
+  attempt timestamp, and last bounded error.
+- JSON metadata, currently including the Aetherium queue name.
+- Indexes for owner/file history and queued-job polling.
+
+### `extraction_results`
+
+- UUID primary key.
+- `owner_user_id`, `file_id`, and unique `processing_job_id`.
+- Extraction status, extractor name, text character count, chunk count, source metadata, and
+  optional bounded error message.
+
+### `file_chunks`
+
+- UUID primary key.
+- `owner_user_id`, `file_id`, and `processing_job_id`.
+- Sequence number unique per file.
+- Extracted chunk text, normalized `search_text`, token estimate, page number or section label,
+  status, source metadata, and optional future embedding payload.
+
+Chunks are ready for the later search phase but are not exposed as global search results yet.
+
+### `embedding_jobs`
+
+- UUID primary key.
+- `owner_user_id`, `file_id`, and unique `processing_job_id`.
+- Status, provider/model placeholders, attempt counts, retry timing, completion timestamp, and last
+  bounded error.
+
+Embedding jobs are skipped by default until the AI gateway and semantic-search phases implement
+provider adapters and user consent controls.
+
+### `processing_failures`
+
+- UUID primary key.
+- `owner_user_id`, `file_id`, and `processing_job_id`.
+- Failure kind, bounded error code/message, retryable flag, and timestamps.
+
+Failure rows support user-visible processing state and audit/debug workflows without storing raw
+document bodies.
+
 ## Planned Later Tables
 
 Later schema slices will cover:
 
 - `world_locations`, `user_world_state`.
-- `file_chunks`, extraction results, processing jobs, and embedding jobs.
 - `mentors`, `conversations`, `messages`, `message_sources`.
 - `subjects`, `topics`, `topic_relations`, `resources`.
 - `courses`, `modules`, `lessons`, `quizzes`, `questions`, `attempts`.
@@ -174,8 +227,8 @@ Later schema slices will cover:
 
 ## Retrieval Model
 
-File chunks will store extracted text, source metadata, full-text search vectors, optional
-embeddings, and permission scope inherited from the source file and collection membership.
+File chunks currently store extracted text, normalized `search_text`, source metadata, and owner
+scope. Later search phases will add full-text ranking structures and optional embeddings.
 
 AI citations must reference retrieved chunks. Answers must not claim file support when retrieval did
 not produce evidence.

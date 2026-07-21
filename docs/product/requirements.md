@@ -55,14 +55,17 @@ Implemented Phase 1 foundation slices:
   non-visual `/app/world` placeholder.
 - Personal Vault storage for user-owned files, presigned uploads/downloads, collections, tags,
   favorites, deletion state, and a real Library UI.
+- Background file ingestion for uploaded files, including durable processing jobs, worker-based text
+  extraction, chunk storage, visible failure state, and retry controls.
 
-3D functionality, AI, document ingestion, search indexing, and habits are intentionally deferred.
+3D functionality, AI, user-facing search, semantic retrieval, citation-backed Q&A, and habits are
+intentionally deferred.
 
 ## Non-Goals For Current Slice
 
 - No OAuth, social login, email delivery, password reset, MFA, or magic links.
 - No 3D scene or world interaction.
-- No document ingestion, extracted-text search, embeddings, or citation-backed file Q&A.
+- No user-facing extracted-text search, semantic embeddings, or citation-backed file Q&A.
 - No AI provider calls.
 - No habit, task, project, or learning domain behavior.
 - No claims that user-facing product workflows are complete.
@@ -84,3 +87,6 @@ Implemented Phase 1 foundation slices:
 - A signed-in user can upload supported files into the Personal Vault, list them in Library, create
   collections, add tags, mark favorites, request expiring download URLs, soft delete, restore, and
   permanently delete their own files.
+- Uploaded files are queued for background processing; the worker can extract supported content into
+  owner-scoped chunks, record failures, and expose retry state without sending content to an AI
+  provider.

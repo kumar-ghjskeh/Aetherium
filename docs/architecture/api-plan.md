@@ -40,6 +40,11 @@ Current routes:
 - `GET /api/v1/files/tags`
 - `POST /api/v1/files/{file_id}/tags`
 - `DELETE /api/v1/files/{file_id}/tags/{tag_id}`
+- `GET /api/v1/files/processing-jobs`
+- `POST /api/v1/files/processing-jobs/{job_id}/retry`
+- `GET /api/v1/files/{file_id}/processing-jobs`
+- `POST /api/v1/files/{file_id}/processing-jobs`
+- `GET /api/v1/files/{file_id}/chunks`
 
 Planned route groups:
 
@@ -144,8 +149,27 @@ versions before deleting metadata.
 owner. The API does not expose object keys in normal file responses.
 
 Collection, favorite, and tag routes are owner-scoped and designed as metadata-only organization for
-the current slice. Background ingestion, content search, and AI retrieval will consume the same file
-records in later phases.
+the current slice.
+
+## File Ingestion Routes
+
+`POST /api/v1/files/uploads/{upload_id}/complete` also creates an idempotent queued processing job
+for the completed file.
+
+`GET /api/v1/files/processing-jobs` returns the authenticated user's processing jobs with bounded
+pagination.
+
+`GET /api/v1/files/{file_id}/processing-jobs` lists jobs for one owned file. Cross-user file IDs
+return `not_found`.
+
+`POST /api/v1/files/{file_id}/processing-jobs` queues processing for an owned active file and
+returns the existing job for duplicate idempotency.
+
+`POST /api/v1/files/processing-jobs/{job_id}/retry` requeues only the authenticated user's failed
+job when it has retry attempts remaining.
+
+`GET /api/v1/files/{file_id}/chunks` returns extracted chunks for an owned active file. This is a
+low-level owner-scoped data API for future search and retrieval work, not a global search endpoint.
 
 ## Generated Client
 

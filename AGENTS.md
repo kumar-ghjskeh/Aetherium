@@ -23,13 +23,15 @@ Implemented foundation slices:
   placeholder.
 - Personal Vault file storage with user-owned metadata, presigned upload/download contracts,
   collections, tags, favorites, deletion state, and Library UI.
+- Background file ingestion with durable processing jobs, a standalone worker process, extraction
+  results, chunks, failure records, retry APIs, and visible Library retry state.
 
 Still out of scope unless explicitly requested:
 
 - OAuth, social login, email delivery, password reset, MFA, and magic links.
 - 3D world scenes, React Three Fiber, player controls, map travel, or world progression.
-- Document ingestion, search indexing, AI chat, retrieval, habits, learning, projects, achievements,
-  or analytics.
+- Search, semantic retrieval, AI chat, citation-backed Q&A, habits, learning, projects,
+  achievements, or analytics.
 
 ## Product Independence
 

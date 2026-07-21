@@ -11,6 +11,7 @@ def test_settings_defaults_use_aetherium_isolation_names() -> None:
     assert settings.object_storage_bucket.startswith("aetherium")
     assert settings.object_storage_derived_assets_bucket.startswith("aetherium")
     assert settings.object_storage_user_avatars_bucket.startswith("aetherium")
+    assert settings.file_ingestion_queue_name.startswith("aetherium:")
     assert settings.session_cookie_name != "session"
     assert "aetherium" in settings.session_cookie_name
 
@@ -31,6 +32,25 @@ def test_settings_reject_generic_session_cookie_name(monkeypatch: pytest.MonkeyP
 
 def test_settings_reject_non_aetherium_bucket_name(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("AETHERIUM_OBJECT_STORAGE_BUCKET", "shared-files")
+
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None)
+
+
+def test_settings_reject_non_aetherium_file_ingestion_queue(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("AETHERIUM_FILE_INGESTION_QUEUE_NAME", "shared:file-ingestion")
+
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None)
+
+
+def test_settings_reject_ingestion_overlap_larger_than_chunk_size(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("AETHERIUM_FILE_INGESTION_CHUNK_SIZE_CHARS", "100")
+    monkeypatch.setenv("AETHERIUM_FILE_INGESTION_CHUNK_OVERLAP_CHARS", "100")
 
     with pytest.raises(ValidationError):
         Settings(_env_file=None)

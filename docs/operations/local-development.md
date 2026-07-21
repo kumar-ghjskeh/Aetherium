@@ -11,6 +11,7 @@ Aetherium-prefixed volumes.
 | Compose project              | `aetherium`                    |
 | Network                      | `aetherium_internal`           |
 | API service/container        | `aetherium-api`                |
+| Worker service/container     | `aetherium-worker`             |
 | Web service/container        | `aetherium-web`                |
 | PostgreSQL service/container | `aetherium-postgres`           |
 | Redis service/container      | `aetherium-redis`              |
@@ -27,6 +28,7 @@ Aetherium-prefixed volumes.
 | Derived assets bucket        | `aetherium-derived-assets-dev` |
 | User avatars bucket          | `aetherium-user-avatars-dev`   |
 | Redis key prefix             | `aetherium:`                   |
+| File ingestion queue         | `aetherium:file-ingestion`     |
 
 ## Startup
 
@@ -38,13 +40,17 @@ Aetherium-prefixed volumes.
    docker compose up --build
    ```
 
-The API reads `AETHERIUM_DATABASE_URL` and `AETHERIUM_REDIS_URL`. Docker Compose sets those values
-for local containers so they point at `aetherium-postgres` and `aetherium-redis` on the private
-Compose network.
+The API and worker read `AETHERIUM_DATABASE_URL` and `AETHERIUM_REDIS_URL`. Docker Compose sets
+those values for local containers so they point at `aetherium-postgres` and `aetherium-redis` on the
+private Compose network.
 
 Docker Compose also creates Aetherium-specific MinIO buckets for private originals, derived assets,
 and future user avatars. Browser presigned uploads use `AETHERIUM_MINIO_CORS_ORIGINS`, which
 defaults to local web origins.
+
+`aetherium-worker` polls durable PostgreSQL processing jobs and reads originals from the local MinIO
+bucket. File chunks are stored in PostgreSQL; embeddings are skipped by default until the later AI
+gateway and semantic-search phases.
 
 ## Authentication Defaults
 
@@ -58,6 +64,8 @@ Local development uses:
 - Private files bucket: `aetherium-private-files-dev`.
 - Derived assets bucket: `aetherium-derived-assets-dev`.
 - User avatars bucket: `aetherium-user-avatars-dev`.
+- File ingestion queue name: `aetherium:file-ingestion`.
+- Worker poll interval: `5` seconds.
 
 Do not use the development session signing secret in production.
 

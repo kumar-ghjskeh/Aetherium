@@ -6,8 +6,8 @@ interface backed by an optional cinematic world presentation layer.
 This repository currently contains the Phase 0 documentation baseline and early non-3D vertical
 slices: the infrastructure scaffold, standalone password authentication with server-side sessions,
 the user-owned foundation, the protected Command Mode application shell, and Personal Vault file
-storage. It does not yet implement visual 3D world navigation, file ingestion, search indexing, AI
-chat, habits, or learning features.
+storage with background ingestion. It does not yet implement visual 3D world navigation, user-facing
+search, semantic retrieval, AI chat, habits, or learning features.
 
 Aetherium is a standalone product. It uses its own repository, database, Redis namespace,
 object-storage buckets, environment variables, Docker resources, CI workflow, and future
@@ -31,9 +31,11 @@ authentication/session system. See `docs/architecture/product-independence.md` a
   API-backed loading, empty, and error states.
 - Personal Vault storage under `/api/v1/files` with user-owned file metadata, presigned upload and
   download URLs, collections, tags, favorites, soft deletion, permanent deletion, and a Library UI.
+- Background file ingestion with durable processing jobs, a standalone `aetherium-worker`, text
+  extraction, chunk storage, failure visibility, retry APIs, and Library retry controls.
 - Non-visual `/app/world` route that clearly marks visual World Mode as future work.
 - Docker Compose development infrastructure for Aetherium-isolated PostgreSQL, Redis, MinIO, API,
-  and web services.
+  worker, and web services.
 - CI workflow for independence checks, formatting, linting, type checks, tests, build, and Alembic
   migration smoke validation.
 
@@ -172,13 +174,17 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
   `DELETE http://localhost:8000/api/v1/files/collections/{collection_id}/items/{file_id}`
 - Tags: `GET http://localhost:8000/api/v1/files/tags`
 - File tags: `POST/DELETE http://localhost:8000/api/v1/files/{id}/tags`
+- Processing jobs: `GET http://localhost:8000/api/v1/files/processing-jobs`
+- Retry processing job: `POST http://localhost:8000/api/v1/files/processing-jobs/{job_id}/retry`
+- File processing jobs: `GET/POST http://localhost:8000/api/v1/files/{id}/processing-jobs`
+- File chunks: `GET http://localhost:8000/api/v1/files/{id}/chunks`
 
 ## Local Resource Names
 
 - Compose project: `aetherium`
 - Network: `aetherium_internal`
 - Containers: `aetherium-postgres`, `aetherium-redis`, `aetherium-minio`, `aetherium-minio-init`,
-  `aetherium-api`, `aetherium-web`
+  `aetherium-api`, `aetherium-worker`, `aetherium-web`
 - Volumes: `aetherium_postgres_data`, `aetherium_redis_data`, `aetherium_minio_data`,
   `aetherium_web_node_modules`, `aetherium_web_next`
 - Development database: `aetherium_app_dev`
@@ -187,6 +193,7 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
 - Derived assets bucket: `aetherium-derived-assets-dev`
 - User avatars bucket: `aetherium-user-avatars-dev`
 - Redis key prefix: `aetherium:`
+- File ingestion queue name: `aetherium:file-ingestion`
 - Session cookie: `aetherium_session`
 
 ## Current Limitations
@@ -194,7 +201,9 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
 - Docker is scaffolded but not required for unit tests.
 - API readiness requires PostgreSQL.
 - Email verification, password reset, OAuth, MFA, and magic links are not implemented yet.
-- Personal Vault stores originals and metadata only; text extraction, chunking, search indexing,
-  embeddings, and AI citations are not implemented yet.
+- Personal Vault ingestion extracts text and stores chunks, but user-facing search, semantic
+  embeddings, AI retrieval, and citations are not implemented yet.
+- Embedding jobs are recorded as skipped by default until the AI gateway and semantic search slices
+  provide real provider adapters and consent controls.
 - No AI provider, habit workflow, learning domain, project workspace, real analytics, or visual 3D
   scene exists yet.

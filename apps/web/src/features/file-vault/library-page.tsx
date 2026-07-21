@@ -85,6 +85,23 @@ function updateFileInPage(page: FilePage | null, file: VaultFile): FilePage | nu
   };
 }
 
+function processingStatusLabel(status: VaultFile["processingStatus"]): string {
+  switch (status) {
+    case "not_started":
+      return "Not queued";
+    case "queued":
+      return "Queued for extraction";
+    case "processing":
+      return "Extracting text";
+    case "ready":
+      return "Ready for search";
+    case "failed":
+      return "Processing failed";
+    default:
+      return status;
+  }
+}
+
 export function LibraryPage({
   client
 }: Readonly<{
@@ -327,6 +344,23 @@ export function LibraryPage({
     });
   }
 
+  async function handleRetryProcessing(file: VaultFile): Promise<void> {
+    await runFileAction(`processing:${file.id}`, async () => {
+      const jobs = await apiClient.files.listFileProcessingJobs(file.id, { limit: 5, offset: 0 });
+      const retryableJob =
+        jobs.items.find((job) => job.status === "failed") ??
+        jobs.items.find((job) => job.fileId === file.id);
+      if (!retryableJob) {
+        await apiClient.files.queueProcessing(file.id);
+      } else {
+        await apiClient.files.retryProcessingJob(retryableJob.id);
+      }
+      const updated = await apiClient.files.get(file.id);
+      setFiles((current) => updateFileInPage(current, updated));
+      setNotice("File processing queued.");
+    });
+  }
+
   async function runFileAction(actionId: string, action: () => Promise<void>): Promise<void> {
     setActiveAction(actionId);
     setError(null);
@@ -528,7 +562,7 @@ export function LibraryPage({
                   <div>
                     <h3>{file.displayName}</h3>
                     <p>
-                      {file.fileKind} / {formatBytes(file.sizeBytes)} / {file.processingStatus}
+                      {file.fileKind} / {formatBytes(file.sizeBytes)}
                     </p>
                   </div>
                   <span
@@ -546,6 +580,20 @@ export function LibraryPage({
                   <span>{file.originalFileName}</span>
                   <span>{file.contentType}</span>
                   <span>{file.malwareScanStatus.replace("_", " ")}</span>
+                </div>
+
+                <div className="vault-processing-row">
+                  <span>{processingStatusLabel(file.processingStatus)}</span>
+                  {file.processingStatus === "failed" && file.deletionStatus === "active" ? (
+                    <button
+                      className="secondary-action"
+                      disabled={activeAction === `processing:${file.id}`}
+                      onClick={() => void handleRetryProcessing(file)}
+                      type="button"
+                    >
+                      Retry processing
+                    </button>
+                  ) : null}
                 </div>
 
                 {file.tags.length ? (

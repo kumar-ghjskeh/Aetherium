@@ -41,6 +41,40 @@ const vaultFile = {
   updatedAt: "2026-07-20T00:00:00Z"
 };
 
+const processingJob = {
+  attemptCount: 1,
+  completedAt: null,
+  createdAt: "2026-07-20T00:00:00Z",
+  failureCount: 0,
+  fileId: vaultFile.id,
+  id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+  lastErrorCode: null,
+  lastErrorMessage: null,
+  lockedAt: null,
+  maxAttempts: 3,
+  metadata: { queueName: "aetherium:file-ingestion" },
+  nextAttemptAt: "2026-07-20T00:00:00Z",
+  stage: "queued",
+  startedAt: null,
+  status: "queued",
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const fileChunk = {
+  chunkText: "Alpha systems notes.",
+  createdAt: "2026-07-20T00:00:00Z",
+  fileId: vaultFile.id,
+  id: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+  pageNumber: null,
+  processingJobId: processingJob.id,
+  sectionLabel: "document",
+  sequenceNumber: 0,
+  sourceMetadata: { charStart: 0 },
+  status: "ready",
+  tokenEstimate: 5,
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
 describe("createAetheriumApiClient", () => {
   it("fetches and validates API liveness", async () => {
     const fetcher = vi.fn<typeof fetch>(() =>
@@ -455,6 +489,60 @@ describe("createAetheriumApiClient", () => {
     await expect(
       client.files.addFileToCollection(collection.id, { fileId: vaultFile.id })
     ).resolves.toMatchObject({ collectionIds: [collection.id] });
+  });
+
+  it("tracks file processing jobs and chunks", async () => {
+    const fetcher = vi.fn<typeof fetch>((input, init) => {
+      const url = requestUrl(input);
+      if (url.includes("/chunks")) {
+        return Promise.resolve(
+          jsonResponse({
+            items: [fileChunk],
+            limit: 20,
+            offset: 0,
+            total: 1
+          })
+        );
+      }
+      if (url.includes("/processing-jobs")) {
+        if (init?.method === "POST") {
+          return Promise.resolve(jsonResponse(processingJob, 200));
+        }
+        return Promise.resolve(
+          jsonResponse({
+            items: [processingJob],
+            limit: 20,
+            offset: 0,
+            total: 1
+          })
+        );
+      }
+      return Promise.resolve(jsonResponse(vaultFile));
+    });
+    const client = createAetheriumApiClient({ baseUrl: "http://localhost:8000", fetcher });
+
+    await expect(client.files.listProcessingJobs()).resolves.toMatchObject({ total: 1 });
+    await expect(client.files.listFileProcessingJobs(vaultFile.id)).resolves.toMatchObject({
+      total: 1
+    });
+    await expect(client.files.queueProcessing(vaultFile.id)).resolves.toMatchObject({
+      status: "queued"
+    });
+    await expect(client.files.retryProcessingJob(processingJob.id)).resolves.toMatchObject({
+      status: "queued"
+    });
+    await expect(client.files.listChunks(vaultFile.id)).resolves.toMatchObject({ total: 1 });
+
+    expect(fetcher).toHaveBeenNthCalledWith(
+      1,
+      "http://localhost:8000/api/v1/files/processing-jobs",
+      {
+        credentials: "include",
+        headers: {
+          Accept: "application/json"
+        }
+      }
+    );
   });
 
   it("posts registration payloads with credentials", async () => {

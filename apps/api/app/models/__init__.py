@@ -1,4 +1,11 @@
 from app.models.auth import AuthSession, User
+from app.models.file_ingestion import (
+    EmbeddingJob,
+    ExtractionResult,
+    FileChunk,
+    ProcessingFailure,
+    ProcessingJob,
+)
 from app.models.file_vault import (
     Collection,
     CollectionItem,
@@ -23,11 +30,16 @@ __all__ = [
     "Collection",
     "CollectionItem",
     "DomainEvent",
+    "EmbeddingJob",
+    "ExtractionResult",
     "FileFavorite",
+    "FileChunk",
     "FileRecord",
     "FileTag",
     "FileVersion",
     "Notification",
+    "ProcessingFailure",
+    "ProcessingJob",
     "Tag",
     "UploadRecord",
     "User",

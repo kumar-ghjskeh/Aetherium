@@ -27,6 +27,13 @@ class ObjectStat:
     size_bytes: int
 
 
+@dataclass(frozen=True)
+class ObjectContent:
+    body: bytes
+    content_type: str | None
+    etag: str | None = None
+
+
 class ObjectStorageService(Protocol):
     async def create_presigned_upload(
         self,
@@ -49,6 +56,8 @@ class ObjectStorageService(Protocol):
     async def head_object(self, *, bucket: str, key: str) -> ObjectStat: ...
 
     async def delete_object(self, *, bucket: str, key: str) -> None: ...
+
+    async def read_object(self, *, bucket: str, key: str, max_bytes: int) -> ObjectContent: ...
 
 
 class S3CompatibleObjectStorage:
@@ -166,6 +175,26 @@ class S3CompatibleObjectStorage:
             await asyncio.to_thread(delete)
         except Exception as exc:  # pragma: no cover - adapter boundary
             raise ObjectStorageError("Could not delete Aetherium object from storage.") from exc
+
+    async def read_object(self, *, bucket: str, key: str, max_bytes: int) -> ObjectContent:
+        def read() -> ObjectContent:
+            client = self._get_client()
+            response = client.get_object(Bucket=bucket, Key=key)
+            body = response["Body"].read(max_bytes + 1)
+            if len(body) > max_bytes:
+                raise ObjectStorageError("Aetherium object exceeds the configured read limit.")
+            return ObjectContent(
+                body=body,
+                content_type=response.get("ContentType"),
+                etag=response.get("ETag"),
+            )
+
+        try:
+            return await asyncio.to_thread(read)
+        except ObjectStorageError:
+            raise
+        except Exception as exc:  # pragma: no cover - adapter boundary
+            raise ObjectStorageError("Could not read Aetherium object from storage.") from exc
 
 
 def create_object_storage_service(settings: Settings) -> ObjectStorageService:

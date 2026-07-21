@@ -12,6 +12,8 @@ Back up these Aetherium-owned resources independently:
   notifications, and sanitized audit logs.
 - Personal Vault records in PostgreSQL, including files, file versions, upload records, collections,
   tags, favorites, and deletion state.
+- File-ingestion records in PostgreSQL, including processing jobs, extraction results, chunks,
+  embedding job placeholders, and processing failures.
 - Object-storage buckets with uploaded originals, generated derivatives, future avatars, and future
   exports.
 - Redis only for durable queues or future state that cannot be safely reconstructed.
@@ -63,3 +65,8 @@ The `0004_file_vault` migration introduces Personal Vault metadata. Restores mus
 file records and object-storage buckets consistent. If object storage is restored to a different
 bucket name during disaster recovery, update Aetherium environment variables before serving
 downloads and run a targeted integrity check against restored file versions.
+
+The `0005_file_ingestion` migration introduces processing jobs, extraction results, chunks,
+embedding job placeholders, and processing failures. Restores must keep chunk rows aligned with the
+restored `files` records. If object storage was only partially restored, failed or stale processing
+jobs should be retried after object integrity checks rather than deleting extracted chunks blindly.

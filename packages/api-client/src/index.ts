@@ -11,6 +11,7 @@ import type {
   DomainEventCreateRequest,
   DomainEventListQuery,
   DomainEventPage,
+  FileChunkPage,
   FileListQuery,
   FilePage,
   FileTagCreateRequest,
@@ -21,6 +22,8 @@ import type {
   NotificationListQuery,
   NotificationPage,
   PaginationQuery,
+  ProcessingJobPage,
+  ProcessingJob,
   PublicUser,
   RegisterRequest,
   TagPage,
@@ -43,11 +46,14 @@ import {
   downloadUrlResponseSchema,
   domainEventPageSchema,
   domainEventSchema,
+  fileChunkPageSchema,
   filePageSchema,
   tagPageSchema,
   healthCheckResponseSchema,
   notificationSchema,
   notificationPageSchema,
+  processingJobPageSchema,
+  processingJobSchema,
   publicUserSchema,
   uploadResponseSchema,
   userPreferencesSchema,
@@ -87,12 +93,17 @@ export interface AetheriumApiClient {
     favorite: (fileId: string) => Promise<VaultFile>;
     get: (fileId: string) => Promise<VaultFile>;
     list: (query?: FileListQuery) => Promise<FilePage>;
+    listChunks: (fileId: string, query?: PaginationQuery) => Promise<FileChunkPage>;
     listCollections: (query?: PaginationQuery) => Promise<CollectionPage>;
+    listFileProcessingJobs: (fileId: string, query?: PaginationQuery) => Promise<ProcessingJobPage>;
+    listProcessingJobs: (query?: PaginationQuery) => Promise<ProcessingJobPage>;
     listTags: (query?: PaginationQuery) => Promise<TagPage>;
     permanentDelete: (fileId: string) => Promise<void>;
+    queueProcessing: (fileId: string) => Promise<ProcessingJob>;
     removeFileFromCollection: (collectionId: string, fileId: string) => Promise<VaultFile>;
     removeTag: (fileId: string, tagId: string) => Promise<VaultFile>;
     restore: (fileId: string) => Promise<VaultFile>;
+    retryProcessingJob: (jobId: string) => Promise<ProcessingJob>;
     softDelete: (fileId: string) => Promise<VaultFile>;
     unfavorite: (fileId: string) => Promise<VaultFile>;
     update: (fileId: string, payload: FileUpdateRequest) => Promise<VaultFile>;
@@ -364,6 +375,14 @@ export function createAetheriumApiClient(options: AetheriumApiClientOptions): Ae
         );
         return filePageSchema.parse(response);
       },
+      listChunks: async (fileId, query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/files/${fileId}/chunks${paginationQuery(query)}`
+        );
+        return fileChunkPageSchema.parse(response);
+      },
       listCollections: async (query) => {
         const response = await requestJson(
           fetcher,
@@ -371,6 +390,22 @@ export function createAetheriumApiClient(options: AetheriumApiClientOptions): Ae
           `/api/v1/files/collections${paginationQuery(query)}`
         );
         return collectionPageSchema.parse(response);
+      },
+      listFileProcessingJobs: async (fileId, query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/files/${fileId}/processing-jobs${paginationQuery(query)}`
+        );
+        return processingJobPageSchema.parse(response);
+      },
+      listProcessingJobs: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/files/processing-jobs${paginationQuery(query)}`
+        );
+        return processingJobPageSchema.parse(response);
       },
       listTags: async (query) => {
         const response = await requestJson(
@@ -384,6 +419,15 @@ export function createAetheriumApiClient(options: AetheriumApiClientOptions): Ae
         await requestJson(fetcher, options.baseUrl, `/api/v1/files/${fileId}/permanent`, {
           method: "DELETE"
         });
+      },
+      queueProcessing: async (fileId) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/files/${fileId}/processing-jobs`,
+          { method: "POST" }
+        );
+        return processingJobSchema.parse(response);
       },
       removeFileFromCollection: async (collectionId, fileId) => {
         const response = await requestJson(
@@ -402,6 +446,15 @@ export function createAetheriumApiClient(options: AetheriumApiClientOptions): Ae
           { method: "DELETE" }
         );
         return vaultFileSchema.parse(response);
+      },
+      retryProcessingJob: async (jobId) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/files/processing-jobs/${jobId}/retry`,
+          { method: "POST" }
+        );
+        return processingJobSchema.parse(response);
       },
       restore: async (fileId) => {
         const response = await requestJson(

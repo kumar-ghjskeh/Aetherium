@@ -15,7 +15,7 @@ User
                           |
                           +-- Domain Services
                           +-- AI Gateway later
-                          +-- Background Jobs later
+                          +-- Background Worker
                           |
                           +-- PostgreSQL + pgvector
                           +-- Redis
@@ -25,7 +25,8 @@ User
 ## Current Scaffold
 
 The current implemented slices provide the infrastructure shell, standalone authentication
-foundation, user-owned foundation, protected Command Mode shell, and Personal Vault storage:
+foundation, user-owned foundation, protected Command Mode shell, Personal Vault storage, and
+background file ingestion:
 
 - `apps/api`: FastAPI app, database settings, Alembic, health endpoints.
 - `apps/web`: Next.js App Router scaffold, web health route, auth UI, and protected `/app` Command
@@ -42,7 +43,10 @@ foundation, user-owned foundation, protected Command Mode shell, and Personal Va
   settings controls, and real API-backed loading, empty, and error states.
 - Personal Vault: user-owned file metadata, presigned upload/download contracts, S3-compatible
   object storage abstraction, collections, tags, favorites, soft deletion, permanent deletion, and a
-  Library page that avoids fake search or ingestion data.
+  Library page that avoids fake search or AI data while showing real processing state.
+- File ingestion: durable processing jobs, a standalone worker process, text extraction, chunk
+  storage, failure records, retry APIs, and Library retry controls. Chunks are prepared for later
+  search and retrieval but are not yet a user-facing search feature.
 
 ## Frontend Boundaries
 
@@ -56,7 +60,7 @@ Three.js, React Three Fiber, scene assets, or player/camera controls until the v
 Backend domains will be added incrementally:
 
 - Additional world configuration and user world state beyond the current non-visual profile.
-- File ingestion, search, and knowledge extraction on top of the current Personal Vault records.
+- Search and knowledge extraction on top of the current Personal Vault and ingestion records.
 - AI conversations and mentors.
 - Learning.
 - Habits, goals, tasks, and projects.
@@ -82,6 +86,8 @@ plus reusable dependencies.
   `/api/v1/domain-events`, `/api/v1/notifications`, and `/api/v1/audit-logs`.
 - Personal Vault routes are under `/api/v1/files` and use owner-scoped services plus presigned
   object-storage URLs.
+- File ingestion routes are under `/api/v1/files` and expose owner-scoped processing jobs, retries,
+  and extracted chunks.
 - Streaming AI responses will use server-sent events or another explicit streaming response later.
 
 ## Configuration

@@ -211,7 +211,7 @@ def test_upload_flow_creates_file_event_and_audit_log(
     assert "objectKey" not in upload
     assert upload["uploadHeaders"] == {"Content-Type": "application/pdf"}
     assert file_payload["displayName"] == "Lecture notes"
-    assert file_payload["processingStatus"] == "not_started"
+    assert file_payload["processingStatus"] == "queued"
     assert file_payload["deletionStatus"] == "active"
     assert file_payload["malwareScanStatus"] == "not_configured"
     assert files.status_code == 200

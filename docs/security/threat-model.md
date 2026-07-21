@@ -67,6 +67,13 @@
 - Permanent deletion requires an existing soft-deleted record and removes known stored object
   versions before deleting the file metadata.
 - Malware scanning is modeled as a status and integration point; no scanner is active in this slice.
+- Upload completion queues owner-scoped file-processing jobs without parsing files in the request.
+- The worker reads originals through Aetherium-owned object storage and records bounded processing
+  failures without logging raw document bodies.
+- Extracted chunks include `owner_user_id` and remain in Aetherium PostgreSQL; they are not sent to
+  AI providers in this slice.
+- Processing retries are owner-scoped and limited by configured attempts.
+- Embedding jobs are skipped by default until provider adapters and consent controls exist.
 - CI runs independence checks, formatting, linting, type checks, tests, build, and migration smoke
   validation.
 
@@ -80,6 +87,7 @@
 - Security headers and CSP.
 - Dependency vulnerability scanning.
 - Actual malware scanning service and quarantine workflow.
-- Background extraction sandboxing for PDFs, DOCX, images, and source files.
+- Background extraction sandboxing and resource limits for PDFs, DOCX, images, and source files.
+- Malware-scanning execution before or during ingestion.
 - Account deletion and data export.
 - Authorization tests for every critical user-owned endpoint.

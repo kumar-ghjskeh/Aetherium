@@ -17,9 +17,9 @@ Aetherium owns its own:
 - FastAPI backend under this repository.
 - API namespace under `/api/v1` for the current scaffold.
 - Future authentication, session, encryption, and signing secrets.
-- Future background workers.
+- Background workers, including the `aetherium-worker` file-ingestion process.
 - Future AI-provider configuration and consent policy.
-- Future search indexes and embedding storage.
+- File-ingestion chunks plus future search indexes and embedding storage.
 - Next.js web frontend.
 - Domain names, deployment configuration, logs, monitoring, backups, and restore procedures.
 - User records and all product data.
@@ -42,10 +42,10 @@ validated by CI.
 
 ## Current Audit Result
 
-The current scaffold and Personal Vault slice contain no references to another private product,
-another private repository, another product database, another product API, or another product object
-bucket. The audit found generic environment and Docker resource names in the initial scaffold; those
-were replaced with Aetherium-specific names.
+The current scaffold, Personal Vault slice, and background file-ingestion slice contain no
+references to another private product, another private repository, another product database, another
+product API, or another product object bucket. The audit found generic environment and Docker
+resource names in the initial scaffold; those were replaced with Aetherium-specific names.
 
 ## Enforcement
 

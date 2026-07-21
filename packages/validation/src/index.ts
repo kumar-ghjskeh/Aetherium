@@ -249,6 +249,28 @@ export const malwareScanStatusSchema = z.enum([
   "failed"
 ]);
 
+export const processingJobStatusSchema = z.enum([
+  "queued",
+  "processing",
+  "completed",
+  "failed",
+  "canceled"
+]);
+
+export const processingStageSchema = z.enum([
+  "queued",
+  "validating",
+  "extracting",
+  "chunking",
+  "indexing",
+  "embedding",
+  "ready",
+  "failed",
+  "canceled"
+]);
+
+export const chunkStatusSchema = z.enum(["ready", "deleted"]);
+
 export const uploadInitiateRequestSchema = z.object({
   checksumSha256: z
     .string()
@@ -363,6 +385,54 @@ export const tagPageSchema = z.object({
 export const fileTagCreateRequestSchema = z.object({
   color: z.string().max(32).nullable().optional(),
   name: z.string().trim().min(1).max(80)
+});
+
+export const processingJobSchema = z.object({
+  attemptCount: z.number().int().min(0),
+  completedAt: z.string().min(1).nullable(),
+  createdAt: z.string().min(1),
+  failureCount: z.number().int().min(0),
+  fileId: z.string().uuid(),
+  id: z.string().uuid(),
+  lastErrorCode: z.string().nullable(),
+  lastErrorMessage: z.string().nullable(),
+  lockedAt: z.string().min(1).nullable(),
+  maxAttempts: z.number().int().positive(),
+  metadata: z.record(z.unknown()),
+  nextAttemptAt: z.string().min(1).nullable(),
+  stage: processingStageSchema,
+  startedAt: z.string().min(1).nullable(),
+  status: processingJobStatusSchema,
+  updatedAt: z.string().min(1)
+});
+
+export const processingJobPageSchema = z.object({
+  items: z.array(processingJobSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const fileChunkSchema = z.object({
+  chunkText: z.string(),
+  createdAt: z.string().min(1),
+  fileId: z.string().uuid(),
+  id: z.string().uuid(),
+  pageNumber: z.number().int().nullable(),
+  processingJobId: z.string().uuid(),
+  sectionLabel: z.string().nullable(),
+  sequenceNumber: z.number().int().min(0),
+  sourceMetadata: z.record(z.unknown()),
+  status: chunkStatusSchema,
+  tokenEstimate: z.number().int().min(0),
+  updatedAt: z.string().min(1)
+});
+
+export const fileChunkPageSchema = z.object({
+  items: z.array(fileChunkSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
 });
 
 export type HealthCheckResponseInput = z.input<typeof healthCheckResponseSchema>;

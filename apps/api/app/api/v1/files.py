@@ -5,10 +5,17 @@ from fastapi import APIRouter, Depends, Query, Response, status
 
 from app.core.pagination import PaginationParams
 from app.dependencies.auth import get_current_user, verify_allowed_origin
+from app.dependencies.file_ingestion import get_file_ingestion_service
 from app.dependencies.file_vault import get_file_vault_service
 from app.dependencies.pagination import get_pagination
 from app.models.auth import User
 from app.schemas.common import ApiErrorResponse
+from app.schemas.file_ingestion import (
+    FileChunkPage,
+    FileChunkResponse,
+    ProcessingJobPage,
+    ProcessingJobResponse,
+)
 from app.schemas.file_vault import (
     CollectionCreateRequest,
     CollectionItemRequest,
@@ -25,6 +32,7 @@ from app.schemas.file_vault import (
     UploadInitiateRequest,
     UploadResponse,
 )
+from app.services.file_ingestion import FileIngestionService
 from app.services.file_vault import FileVaultService
 
 router = APIRouter()
@@ -208,6 +216,46 @@ async def list_tags(
     )
 
 
+@router.get(
+    "/processing-jobs",
+    response_model=ProcessingJobPage,
+    responses=ERROR_RESPONSES,
+)
+async def list_processing_jobs(
+    current_user: User = Depends(get_current_user),
+    pagination: PaginationParams = Depends(get_pagination),
+    service: FileIngestionService = Depends(get_file_ingestion_service),
+) -> ProcessingJobPage:
+    page = await service.list_jobs(current_user, pagination)
+    await service.db.commit()
+    return ProcessingJobPage(
+        items=[ProcessingJobResponse.from_view(item) for item in page.items],
+        total=page.total,
+        limit=page.limit,
+        offset=page.offset,
+    )
+
+
+@router.post(
+    "/processing-jobs/{job_id}/retry",
+    response_model=ProcessingJobResponse,
+    responses=ERROR_RESPONSES,
+    dependencies=[Depends(verify_allowed_origin)],
+)
+async def retry_processing_job(
+    job_id: UUID,
+    current_user: User = Depends(get_current_user),
+    service: FileIngestionService = Depends(get_file_ingestion_service),
+) -> ProcessingJobResponse:
+    try:
+        view = await service.retry_job(current_user, job_id)
+        await service.db.commit()
+        return ProcessingJobResponse.from_view(view)
+    except Exception:
+        await service.db.rollback()
+        raise
+
+
 @router.get("", response_model=FilePage, responses=ERROR_RESPONSES)
 async def list_files(
     include_deleted: bool = Query(default=False, alias="includeDeleted"),
@@ -231,6 +279,73 @@ async def list_files(
     await service.db.commit()
     return FilePage(
         items=[FileResponse.from_view(item) for item in page.items],
+        total=page.total,
+        limit=page.limit,
+        offset=page.offset,
+    )
+
+
+@router.get(
+    "/{file_id}/processing-jobs",
+    response_model=ProcessingJobPage,
+    responses=ERROR_RESPONSES,
+)
+async def list_file_processing_jobs(
+    file_id: UUID,
+    current_user: User = Depends(get_current_user),
+    pagination: PaginationParams = Depends(get_pagination),
+    service: FileIngestionService = Depends(get_file_ingestion_service),
+) -> ProcessingJobPage:
+    page = await service.list_jobs(current_user, pagination, file_id=file_id)
+    await service.db.commit()
+    return ProcessingJobPage(
+        items=[ProcessingJobResponse.from_view(item) for item in page.items],
+        total=page.total,
+        limit=page.limit,
+        offset=page.offset,
+    )
+
+
+@router.post(
+    "/{file_id}/processing-jobs",
+    response_model=ProcessingJobResponse,
+    status_code=status.HTTP_201_CREATED,
+    responses=ERROR_RESPONSES,
+    dependencies=[Depends(verify_allowed_origin)],
+)
+async def queue_file_processing(
+    file_id: UUID,
+    response: Response,
+    current_user: User = Depends(get_current_user),
+    service: FileIngestionService = Depends(get_file_ingestion_service),
+) -> ProcessingJobResponse:
+    try:
+        result = await service.queue_file(current_user, file_id)
+        await service.db.commit()
+        if not result.created:
+            response.status_code = status.HTTP_200_OK
+        view = await service.job_view(result.job)
+        return ProcessingJobResponse.from_view(view)
+    except Exception:
+        await service.db.rollback()
+        raise
+
+
+@router.get(
+    "/{file_id}/chunks",
+    response_model=FileChunkPage,
+    responses=ERROR_RESPONSES,
+)
+async def list_file_chunks(
+    file_id: UUID,
+    current_user: User = Depends(get_current_user),
+    pagination: PaginationParams = Depends(get_pagination),
+    service: FileIngestionService = Depends(get_file_ingestion_service),
+) -> FileChunkPage:
+    page = await service.list_chunks(current_user, file_id, pagination)
+    await service.db.commit()
+    return FileChunkPage(
+        items=[FileChunkResponse.from_chunk(item) for item in page.items],
         total=page.total,
         limit=page.limit,
         offset=page.offset,

@@ -35,6 +35,7 @@ from app.models.file_vault import (
     Tag,
     UploadRecord,
 )
+from app.services.file_ingestion import FileIngestionService
 from app.services.foundation import PageResult, UserDataService
 from app.services.object_storage import (
     ObjectStorageError,
@@ -278,6 +279,15 @@ class FileVaultService:
                 "sizeBytes": file.size_bytes,
             },
         )
+        await FileIngestionService(
+            db=self.db,
+            settings=self.settings,
+            storage=self.storage,
+        ).queue_owned_file(
+            user,
+            file,
+            idempotency_key=f"file.ingestion:{file.id}:initial",
+        )
         await self.db.flush()
         return await self._build_file_view(file)
 
@@ -432,6 +442,11 @@ class FileVaultService:
             entity_id=file.id,
             metadata={"versionCount": len(versions)},
         )
+        await FileIngestionService(
+            db=self.db,
+            settings=self.settings,
+            storage=self.storage,
+        ).delete_file_derivatives(user, file.id)
         await self.db.execute(
             delete(UploadRecord).where(
                 UploadRecord.owner_user_id == user.id,

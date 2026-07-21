@@ -4,6 +4,12 @@ from typing import Literal
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.domain.file_ingestion import (
+    DEFAULT_CHUNK_OVERLAP_CHARS,
+    DEFAULT_CHUNK_SIZE_CHARS,
+    DEFAULT_INGESTION_MAX_ATTEMPTS,
+    DEFAULT_WORKER_POLL_SECONDS,
+)
 from app.domain.file_vault import (
     MAX_FILE_SIZE_BYTES,
     PRESIGNED_DOWNLOAD_EXPIRES_SECONDS,
@@ -79,6 +85,30 @@ class Settings(BaseSettings):
     file_vault_verify_uploads: bool = Field(
         default=False,
         validation_alias="AETHERIUM_FILE_VAULT_VERIFY_UPLOADS",
+    )
+    file_ingestion_max_attempts: int = Field(
+        default=DEFAULT_INGESTION_MAX_ATTEMPTS,
+        validation_alias="AETHERIUM_FILE_INGESTION_MAX_ATTEMPTS",
+    )
+    file_ingestion_chunk_size_chars: int = Field(
+        default=DEFAULT_CHUNK_SIZE_CHARS,
+        validation_alias="AETHERIUM_FILE_INGESTION_CHUNK_SIZE_CHARS",
+    )
+    file_ingestion_chunk_overlap_chars: int = Field(
+        default=DEFAULT_CHUNK_OVERLAP_CHARS,
+        validation_alias="AETHERIUM_FILE_INGESTION_CHUNK_OVERLAP_CHARS",
+    )
+    file_ingestion_embeddings_enabled: bool = Field(
+        default=False,
+        validation_alias="AETHERIUM_FILE_INGESTION_EMBEDDINGS_ENABLED",
+    )
+    file_ingestion_queue_name: str = Field(
+        default="aetherium:file-ingestion",
+        validation_alias="AETHERIUM_FILE_INGESTION_QUEUE_NAME",
+    )
+    worker_poll_seconds: int = Field(
+        default=DEFAULT_WORKER_POLL_SECONDS,
+        validation_alias="AETHERIUM_WORKER_POLL_SECONDS",
     )
     session_cookie_name: str = Field(
         default="aetherium_session",
@@ -169,6 +199,34 @@ class Settings(BaseSettings):
         return value
 
     @field_validator(
+        "file_ingestion_max_attempts",
+        "file_ingestion_chunk_size_chars",
+        "worker_poll_seconds",
+    )
+    @classmethod
+    def require_positive_ingestion_numbers(cls, value: int) -> int:
+        if value < 1:
+            raise ValueError("Aetherium ingestion numeric settings must be positive")
+
+        return value
+
+    @field_validator("file_ingestion_chunk_overlap_chars")
+    @classmethod
+    def require_nonnegative_chunk_overlap(cls, value: int) -> int:
+        if value < 0:
+            raise ValueError("Aetherium ingestion chunk overlap must not be negative")
+
+        return value
+
+    @field_validator("file_ingestion_queue_name")
+    @classmethod
+    def require_aetherium_ingestion_queue(cls, value: str) -> str:
+        if not value.startswith("aetherium:"):
+            raise ValueError("Aetherium ingestion queues must use the 'aetherium:' namespace")
+
+        return value
+
+    @field_validator(
         "file_vault_upload_url_expires_seconds",
         "file_vault_download_url_expires_seconds",
     )
@@ -214,6 +272,8 @@ class Settings(BaseSettings):
                 raise ValueError("Aetherium production file uploads must verify object storage")
             if not self.s3_access_key_id or not self.s3_secret_access_key:
                 raise ValueError("Aetherium production object-storage credentials are required")
+        if self.file_ingestion_chunk_overlap_chars >= self.file_ingestion_chunk_size_chars:
+            raise ValueError("Aetherium ingestion chunk overlap must be smaller than chunk size")
 
         return self
 

@@ -66,6 +66,15 @@ Personal Vault:
 - `AETHERIUM_FILE_VAULT_DOWNLOAD_URL_EXPIRES_SECONDS`
 - `AETHERIUM_FILE_VAULT_VERIFY_UPLOADS`
 
+Background ingestion:
+
+- `AETHERIUM_FILE_INGESTION_MAX_ATTEMPTS`
+- `AETHERIUM_FILE_INGESTION_CHUNK_SIZE_CHARS`
+- `AETHERIUM_FILE_INGESTION_CHUNK_OVERLAP_CHARS`
+- `AETHERIUM_FILE_INGESTION_EMBEDDINGS_ENABLED`
+- `AETHERIUM_FILE_INGESTION_QUEUE_NAME`
+- `AETHERIUM_WORKER_POLL_SECONDS`
+
 Future provider configuration:
 
 - `AETHERIUM_AI_PROVIDER_DEFAULT`
@@ -76,7 +85,8 @@ Future provider configuration:
 ## Redis Namespace
 
 All Aetherium Redis keys must start with `aetherium:`. The API settings reject any configured Redis
-key prefix that does not start with that namespace.
+key prefix that does not start with that namespace. The default file-ingestion queue name is
+`aetherium:file-ingestion`.
 
 ## Session Cookies
 
