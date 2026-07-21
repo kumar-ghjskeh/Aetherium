@@ -51,6 +51,8 @@ import type {
   HabitUpdateRequest,
   HealthCheckResponse,
   LoginRequest,
+  Attempt,
+  AttemptCreateRequest,
   Mentor,
   MentorCreateRequest,
   MentorPage,
@@ -64,15 +66,56 @@ import type {
   NotificationListQuery,
   NotificationPage,
   PaginationQuery,
+  Course,
+  CourseCreateRequest,
+  CourseModule,
+  CourseModuleCreateRequest,
+  CoursePage,
+  Flashcard,
+  FlashcardCreateRequest,
+  FlashcardPage,
+  FlashcardReview,
+  FlashcardReviewCreateRequest,
+  LearningGoal,
+  LearningGoalCreateRequest,
+  LearningGoalPage,
+  LearningResource,
+  LearningResourceCreateRequest,
+  LearningResourceListQuery,
+  LearningResourcePage,
+  Lesson,
+  LessonCreateRequest,
+  MasteryRecord,
   ProcessingJobPage,
   ProcessingJob,
   PublicUser,
+  Question,
+  QuestionCreateRequest,
+  Quiz,
+  QuizCreateRequest,
+  QuizPage,
   RecentSearchPage,
   RegisterRequest,
   SearchRequest,
   SearchResponse,
   StopGenerationResponse,
+  StudyRoadmap,
+  StudyRoadmapCreateRequest,
+  StudyRoadmapPage,
+  StudySession,
+  StudySessionCreateRequest,
+  StudySessionEndRequest,
+  StudySessionPage,
+  Subject,
+  SubjectCreateRequest,
+  SubjectPage,
   TagPage,
+  Topic,
+  TopicCreateRequest,
+  TopicListQuery,
+  TopicPage,
+  TopicRelation,
+  TopicRelationCreateRequest,
   UploadCompleteRequest,
   UploadInitiateRequest,
   UploadResponse,
@@ -118,6 +161,13 @@ import {
   habitSchema,
   habitSummarySchema,
   healthCheckResponseSchema,
+  attemptSchema,
+  courseModuleSchema,
+  coursePageSchema,
+  courseSchema,
+  flashcardPageSchema,
+  flashcardReviewSchema,
+  flashcardSchema,
   mentorPageSchema,
   mentorPermissionSchema,
   mentorSchema,
@@ -125,13 +175,31 @@ import {
   messageSendResponseSchema,
   notificationSchema,
   notificationPageSchema,
+  learningGoalPageSchema,
+  learningGoalSchema,
+  learningResourcePageSchema,
+  learningResourceSchema,
+  lessonSchema,
+  masteryRecordSchema,
   processingJobPageSchema,
   processingJobSchema,
   publicUserSchema,
+  questionSchema,
+  quizPageSchema,
+  quizSchema,
   recentSearchPageSchema,
   searchResponseSchema,
   stopGenerationResponseSchema,
+  studyRoadmapPageSchema,
+  studyRoadmapSchema,
+  studySessionPageSchema,
+  studySessionSchema,
+  subjectPageSchema,
+  subjectSchema,
   uploadResponseSchema,
+  topicPageSchema,
+  topicRelationSchema,
+  topicSchema,
   userPreferencesSchema,
   vaultFileSchema,
   weeklyReviewPageSchema,
@@ -217,6 +285,41 @@ export interface AetheriumApiClient {
     update: (habitId: string, payload: HabitUpdateRequest) => Promise<Habit>;
     upsertCheckIn: (checkInDate: string, payload: DailyCheckInUpsert) => Promise<DailyCheckIn>;
     upsertWeeklyReview: (payload: WeeklyReviewUpsert) => Promise<WeeklyReview>;
+  };
+  learning: {
+    addPrerequisite: (
+      topicId: string,
+      payload: TopicRelationCreateRequest
+    ) => Promise<TopicRelation>;
+    addQuestion: (quizId: string, payload: QuestionCreateRequest) => Promise<Question>;
+    completeLesson: (lessonId: string) => Promise<Lesson>;
+    createCourse: (payload: CourseCreateRequest) => Promise<Course>;
+    createFlashcard: (payload: FlashcardCreateRequest) => Promise<Flashcard>;
+    createGoal: (payload: LearningGoalCreateRequest) => Promise<LearningGoal>;
+    createModule: (courseId: string, payload: CourseModuleCreateRequest) => Promise<CourseModule>;
+    createQuiz: (payload: QuizCreateRequest) => Promise<Quiz>;
+    createResource: (payload: LearningResourceCreateRequest) => Promise<LearningResource>;
+    createRoadmap: (payload: StudyRoadmapCreateRequest) => Promise<StudyRoadmap>;
+    createSession: (payload: StudySessionCreateRequest) => Promise<StudySession>;
+    createSubject: (payload: SubjectCreateRequest) => Promise<Subject>;
+    createTopic: (payload: TopicCreateRequest) => Promise<Topic>;
+    createLesson: (moduleId: string, payload: LessonCreateRequest) => Promise<Lesson>;
+    endSession: (sessionId: string, payload: StudySessionEndRequest) => Promise<StudySession>;
+    getMastery: (topicId: string) => Promise<MasteryRecord>;
+    listCourses: (query?: PaginationQuery) => Promise<CoursePage>;
+    listFlashcards: (query?: PaginationQuery) => Promise<FlashcardPage>;
+    listGoals: (query?: PaginationQuery) => Promise<LearningGoalPage>;
+    listQuizzes: (query?: PaginationQuery) => Promise<QuizPage>;
+    listResources: (query?: LearningResourceListQuery) => Promise<LearningResourcePage>;
+    listRoadmaps: (query?: PaginationQuery) => Promise<StudyRoadmapPage>;
+    listSessions: (query?: PaginationQuery) => Promise<StudySessionPage>;
+    listSubjects: (query?: PaginationQuery & { includeArchived?: boolean }) => Promise<SubjectPage>;
+    listTopics: (query?: TopicListQuery) => Promise<TopicPage>;
+    reviewFlashcard: (
+      flashcardId: string,
+      payload: FlashcardReviewCreateRequest
+    ) => Promise<FlashcardReview>;
+    submitAttempt: (quizId: string, payload: AttemptCreateRequest) => Promise<Attempt>;
   };
   health: {
     live: () => Promise<HealthCheckResponse>;
@@ -384,6 +487,31 @@ function habitSummaryQuery(query?: HabitSummaryQuery): string {
   return queryString([
     ["period", query?.period],
     ["startDate", query?.startDate]
+  ]);
+}
+
+function subjectListQuery(query?: PaginationQuery & { includeArchived?: boolean }): string {
+  return queryString([
+    ["includeArchived", query?.includeArchived],
+    ["limit", query?.limit],
+    ["offset", query?.offset]
+  ]);
+}
+
+function topicListQuery(query?: TopicListQuery): string {
+  return queryString([
+    ["includeArchived", query?.includeArchived],
+    ["limit", query?.limit],
+    ["offset", query?.offset],
+    ["subjectId", query?.subjectId]
+  ]);
+}
+
+function learningResourceListQuery(query?: LearningResourceListQuery): string {
+  return queryString([
+    ["limit", query?.limit],
+    ["offset", query?.offset],
+    ["topicId", query?.topicId]
   ]);
 }
 
@@ -870,6 +998,254 @@ export function createAetheriumApiClient(options: AetheriumApiClientOptions): Ae
           }
         );
         return weeklyReviewSchema.parse(response);
+      }
+    },
+    learning: {
+      addPrerequisite: async (topicId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/learning/topics/${topicId}/prerequisites`,
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return topicRelationSchema.parse(response);
+      },
+      addQuestion: async (quizId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/learning/quizzes/${quizId}/questions`,
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return questionSchema.parse(response);
+      },
+      completeLesson: async (lessonId) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/learning/lessons/${lessonId}/complete`,
+          { method: "POST" }
+        );
+        return lessonSchema.parse(response);
+      },
+      createCourse: async (payload) => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/learning/courses", {
+          body: JSON.stringify(payload),
+          method: "POST"
+        });
+        return courseSchema.parse(response);
+      },
+      createFlashcard: async (payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          "/api/v1/learning/flashcards",
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return flashcardSchema.parse(response);
+      },
+      createGoal: async (payload) => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/learning/goals", {
+          body: JSON.stringify(payload),
+          method: "POST"
+        });
+        return learningGoalSchema.parse(response);
+      },
+      createLesson: async (moduleId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/learning/modules/${moduleId}/lessons`,
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return lessonSchema.parse(response);
+      },
+      createModule: async (courseId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/learning/courses/${courseId}/modules`,
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return courseModuleSchema.parse(response);
+      },
+      createQuiz: async (payload) => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/learning/quizzes", {
+          body: JSON.stringify(payload),
+          method: "POST"
+        });
+        return quizSchema.parse(response);
+      },
+      createResource: async (payload) => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/learning/resources", {
+          body: JSON.stringify(payload),
+          method: "POST"
+        });
+        return learningResourceSchema.parse(response);
+      },
+      createRoadmap: async (payload) => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/learning/roadmaps", {
+          body: JSON.stringify(payload),
+          method: "POST"
+        });
+        return studyRoadmapSchema.parse(response);
+      },
+      createSession: async (payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          "/api/v1/learning/study-sessions",
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return studySessionSchema.parse(response);
+      },
+      createSubject: async (payload) => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/learning/subjects", {
+          body: JSON.stringify(payload),
+          method: "POST"
+        });
+        return subjectSchema.parse(response);
+      },
+      createTopic: async (payload) => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/learning/topics", {
+          body: JSON.stringify(payload),
+          method: "POST"
+        });
+        return topicSchema.parse(response);
+      },
+      endSession: async (sessionId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/learning/study-sessions/${sessionId}/end`,
+          {
+            body: JSON.stringify(payload),
+            method: "PATCH"
+          }
+        );
+        return studySessionSchema.parse(response);
+      },
+      getMastery: async (topicId) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/learning/topics/${topicId}/mastery`
+        );
+        return masteryRecordSchema.parse(response);
+      },
+      listCourses: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/learning/courses${paginationQuery(query)}`
+        );
+        return coursePageSchema.parse(response);
+      },
+      listFlashcards: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/learning/flashcards${paginationQuery(query)}`
+        );
+        return flashcardPageSchema.parse(response);
+      },
+      listGoals: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/learning/goals${paginationQuery(query)}`
+        );
+        return learningGoalPageSchema.parse(response);
+      },
+      listQuizzes: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/learning/quizzes${paginationQuery(query)}`
+        );
+        return quizPageSchema.parse(response);
+      },
+      listResources: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/learning/resources${learningResourceListQuery(query)}`
+        );
+        return learningResourcePageSchema.parse(response);
+      },
+      listRoadmaps: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/learning/roadmaps${paginationQuery(query)}`
+        );
+        return studyRoadmapPageSchema.parse(response);
+      },
+      listSessions: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/learning/study-sessions${paginationQuery(query)}`
+        );
+        return studySessionPageSchema.parse(response);
+      },
+      listSubjects: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/learning/subjects${subjectListQuery(query)}`
+        );
+        return subjectPageSchema.parse(response);
+      },
+      listTopics: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/learning/topics${topicListQuery(query)}`
+        );
+        return topicPageSchema.parse(response);
+      },
+      reviewFlashcard: async (flashcardId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/learning/flashcards/${flashcardId}/reviews`,
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return flashcardReviewSchema.parse(response);
+      },
+      submitAttempt: async (quizId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/learning/quizzes/${quizId}/attempts`,
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return attemptSchema.parse(response);
       }
     },
     health: {

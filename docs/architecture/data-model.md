@@ -29,6 +29,9 @@ Current migrations:
   settings, messages, and message sources.
 - `0009_habit_tracking`: creates owner-scoped habits, schedules, targets, logs, streaks, daily
   check-ins, and weekly reviews.
+- `0010_learning_engine`: creates owner-scoped subjects, topics, topic relations, learning
+  resources, courses, modules, lessons, study sessions, quizzes, questions, attempts, flashcards,
+  flashcard reviews, mastery records, learning goals, and study roadmaps.
 
 ### `users`
 
@@ -246,6 +249,7 @@ PostgreSQL deployments also include full-text expression indexes over:
 - Tag name.
 - Conversation title.
 - Habit name and description.
+- Topic name and description.
 
 ## AI Gateway Schema
 
@@ -428,13 +432,94 @@ Mood and energy are optional personal context fields and are not medical measure
   timestamps.
 - Unique owner/week constraint.
 
+## Learning Schema
+
+All learning tables include `owner_user_id`. Learning APIs query through the authenticated user's
+owner scope, and cross-user identifiers return not-found style responses.
+
+### `subjects`
+
+- UUID primary key.
+- `owner_user_id` foreign key to `users.id`.
+- Name, normalized name, optional description, status, and timestamps.
+- Unique owner/normalized-name constraint and PostgreSQL full-text index over name and description.
+
+### `topics`
+
+- UUID primary key.
+- `owner_user_id` and optional `subject_id`.
+- Name, normalized name, optional description, status, and timestamps.
+- Unique owner/normalized-name constraint and PostgreSQL full-text index over name and description.
+
+### `topic_relations`
+
+- UUID primary key.
+- `owner_user_id`, source topic, target topic, relation type, and timestamps.
+- Unique owner/source/target/relation-type constraint.
+- Prerequisites are represented as `requires` relations.
+
+### `learning_resources`
+
+- UUID primary key.
+- `owner_user_id` and optional `topic_id`.
+- Title, resource type, optional URL, optional file ID, optional notes, and timestamps.
+- File-linked resources must reference files owned by the same user at the service layer.
+
+### `courses`, `course_modules`, and `lessons`
+
+- Courses store owner-scoped title, optional subject, description, status, and timestamps.
+- Course modules store owner, course, title, position, optional description, and timestamps.
+- Lessons store owner, module, optional topic, title, position, content summary, status, completion
+  state, estimated duration, and timestamps.
+- Position constraints keep module and lesson ordering deterministic.
+- Completing a lesson emits an idempotent `lesson.completed` event and updates mastery with an
+  exercise-completion signal when the lesson is linked to a topic.
+
+### `study_sessions`
+
+- UUID primary key.
+- `owner_user_id`, mode, optional subject/topic/course/lesson references, optional started and ended
+  timestamps, duration, notes, and timestamps.
+- Study time is stored for history but does not increase mastery by itself.
+
+### `quizzes`, `questions`, and `attempts`
+
+- Quizzes store owner, optional topic/lesson, title, status, and timestamps.
+- Questions store owner, quiz, prompt, question type, answer, options, explanation, difficulty,
+  position, and timestamps.
+- Attempts store owner, quiz, optional topic, score, max score, accuracy, submitted answers, hint
+  count, completion status, and timestamps.
+- Completed attempts emit an idempotent `quiz.completed` event and update mastery with quiz,
+  confidence, and hint signals.
+
+### `flashcards` and `flashcard_reviews`
+
+- Flashcards store owner, optional topic, front, back, status, and timestamps.
+- Flashcard reviews store owner, flashcard, optional topic, rating, confidence, next due date, and
+  timestamps.
+- Reviews update topic mastery with recall, confidence, and recency signals when linked to a topic.
+
+### `mastery_records`
+
+- UUID primary key.
+- `owner_user_id` and unique `topic_id`.
+- Mastery score from zero to one, transparent calculation JSON, signal counters, last reviewed
+  timestamp, confidence average, and timestamps.
+- The score is a transparent heuristic from stored quiz accuracy, successful recall, exercise
+  completion, confidence, review recency, hint usage, and future project evidence. It is not a
+  scientific measurement.
+
+### `learning_goals` and `study_roadmaps`
+
+- Learning goals store owner, optional subject/topic, title, description, target date, status, and
+  timestamps.
+- Study roadmaps store owner, title, description, JSON step list, status, and timestamps.
+- These records are non-visual foundations for later reminders, analytics, and AI-assisted planning.
+
 ## Planned Later Tables
 
 Later schema slices will cover:
 
 - `world_locations`, `user_world_state`.
-- `subjects`, `topics`, `topic_relations`, `resources`.
-- `courses`, `modules`, `lessons`, `quizzes`, `questions`, `attempts`.
-- `flashcards`, `review_events`, `study_sessions`, `mastery_records`.
 - `goals`, `milestones`, `tasks`, `projects`, `project_files`.
 - `achievements`, `achievement_rules`, `user_achievements`.

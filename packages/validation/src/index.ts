@@ -459,7 +459,8 @@ export const searchMatchReasonSchema = z.enum([
   "collection_metadata",
   "tag_metadata",
   "ai_conversation",
-  "habit_metadata"
+  "habit_metadata",
+  "learning_topic_metadata"
 ]);
 
 export const searchRequestSchema = z.object({
@@ -705,6 +706,412 @@ export const weeklyReviewSchema = z.object({
 
 export const weeklyReviewPageSchema = z.object({
   items: z.array(weeklyReviewSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const learningRecordStatusSchema = z.enum(["active", "archived"]);
+
+export const courseStatusSchema = z.enum(["draft", "active", "archived"]);
+
+export const lessonStatusSchema = z.enum(["draft", "active", "completed"]);
+
+export const learningResourceTypeSchema = z.enum(["document", "link", "note", "video", "file"]);
+
+export const studySessionModeSchema = z.enum([
+  "guided_course",
+  "free_exploration",
+  "document_based",
+  "project_based",
+  "exam_preparation",
+  "coding_practice",
+  "quick_review"
+]);
+
+export const quizStatusSchema = z.enum(["draft", "active", "archived"]);
+
+export const questionTypeSchema = z.enum(["multiple_choice", "free_text", "code"]);
+
+export const flashcardStatusSchema = z.enum(["active", "archived"]);
+
+export const flashcardReviewRatingSchema = z.enum(["again", "hard", "good", "easy"]);
+
+export const learningGoalStatusSchema = z.enum(["active", "completed", "archived"]);
+
+export const studyRoadmapStatusSchema = z.enum(["active", "completed", "archived"]);
+
+export const subjectCreateRequestSchema = z.object({
+  description: z.string().max(4000).nullable().optional(),
+  name: z.string().trim().min(1).max(160)
+});
+
+export const subjectSchema = z.object({
+  createdAt: z.string().min(1),
+  description: z.string().nullable(),
+  id: z.string().uuid(),
+  name: z.string().min(1),
+  status: learningRecordStatusSchema,
+  updatedAt: z.string().min(1)
+});
+
+export const subjectPageSchema = z.object({
+  items: z.array(subjectSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const topicCreateRequestSchema = z.object({
+  description: z.string().max(4000).nullable().optional(),
+  name: z.string().trim().min(1).max(160),
+  subjectId: z.string().uuid().nullable().optional()
+});
+
+export const topicSchema = z.object({
+  createdAt: z.string().min(1),
+  description: z.string().nullable(),
+  id: z.string().uuid(),
+  name: z.string().min(1),
+  status: learningRecordStatusSchema,
+  subjectId: z.string().uuid().nullable(),
+  updatedAt: z.string().min(1)
+});
+
+export const topicPageSchema = z.object({
+  items: z.array(topicSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const topicRelationCreateRequestSchema = z.object({
+  prerequisiteTopicId: z.string().uuid()
+});
+
+export const topicRelationSchema = z.object({
+  createdAt: z.string().min(1),
+  id: z.string().uuid(),
+  relationType: z.string().min(1),
+  sourceTopicId: z.string().uuid(),
+  targetTopicId: z.string().uuid(),
+  updatedAt: z.string().min(1)
+});
+
+export const learningResourceCreateRequestSchema = z.object({
+  fileId: z.string().uuid().nullable().optional(),
+  notes: z.string().max(4000).nullable().optional(),
+  resourceType: learningResourceTypeSchema,
+  subjectId: z.string().uuid().nullable().optional(),
+  title: z.string().trim().min(1).max(200),
+  topicId: z.string().uuid().nullable().optional(),
+  url: z.string().max(1000).nullable().optional()
+});
+
+export const learningResourceSchema = z.object({
+  createdAt: z.string().min(1),
+  fileId: z.string().uuid().nullable(),
+  id: z.string().uuid(),
+  notes: z.string().nullable(),
+  resourceType: learningResourceTypeSchema,
+  subjectId: z.string().uuid().nullable(),
+  title: z.string().min(1),
+  topicId: z.string().uuid().nullable(),
+  updatedAt: z.string().min(1),
+  url: z.string().nullable()
+});
+
+export const learningResourcePageSchema = z.object({
+  items: z.array(learningResourceSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const courseCreateRequestSchema = z.object({
+  description: z.string().max(4000).nullable().optional(),
+  subjectId: z.string().uuid().nullable().optional(),
+  title: z.string().trim().min(1).max(200)
+});
+
+export const courseSchema = z.object({
+  createdAt: z.string().min(1),
+  description: z.string().nullable(),
+  id: z.string().uuid(),
+  status: courseStatusSchema,
+  subjectId: z.string().uuid().nullable(),
+  title: z.string().min(1),
+  updatedAt: z.string().min(1)
+});
+
+export const coursePageSchema = z.object({
+  items: z.array(courseSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const courseModuleCreateRequestSchema = z.object({
+  description: z.string().max(4000).nullable().optional(),
+  position: z.number().int().min(0).optional(),
+  title: z.string().trim().min(1).max(200)
+});
+
+export const courseModuleSchema = z.object({
+  courseId: z.string().uuid(),
+  createdAt: z.string().min(1),
+  description: z.string().nullable(),
+  id: z.string().uuid(),
+  position: z.number().int().min(0),
+  title: z.string().min(1),
+  updatedAt: z.string().min(1)
+});
+
+export const lessonCreateRequestSchema = z.object({
+  content: z.string().max(20000).nullable().optional(),
+  estimatedMinutes: z.number().int().positive().max(5000).nullable().optional(),
+  position: z.number().int().min(0).optional(),
+  title: z.string().trim().min(1).max(200),
+  topicId: z.string().uuid().nullable().optional()
+});
+
+export const lessonSchema = z.object({
+  content: z.string().nullable(),
+  createdAt: z.string().min(1),
+  estimatedMinutes: z.number().int().positive().nullable(),
+  id: z.string().uuid(),
+  moduleId: z.string().uuid(),
+  position: z.number().int().min(0),
+  status: lessonStatusSchema,
+  title: z.string().min(1),
+  topicId: z.string().uuid().nullable(),
+  updatedAt: z.string().min(1)
+});
+
+export const studySessionCreateRequestSchema = z.object({
+  courseId: z.string().uuid().nullable().optional(),
+  lessonId: z.string().uuid().nullable().optional(),
+  mode: studySessionModeSchema,
+  notes: z.string().max(4000).nullable().optional(),
+  startedAt: z.string().min(1).optional(),
+  subjectId: z.string().uuid().nullable().optional(),
+  topicId: z.string().uuid().nullable().optional()
+});
+
+export const studySessionEndRequestSchema = z.object({
+  endedAt: z.string().min(1).optional(),
+  notes: z.string().max(4000).nullable().optional()
+});
+
+export const studySessionSchema = z.object({
+  courseId: z.string().uuid().nullable(),
+  createdAt: z.string().min(1),
+  durationMinutes: z.number().int().min(0).nullable(),
+  endedAt: z.string().min(1).nullable(),
+  id: z.string().uuid(),
+  lessonId: z.string().uuid().nullable(),
+  mode: studySessionModeSchema,
+  notes: z.string().nullable(),
+  startedAt: z.string().min(1),
+  subjectId: z.string().uuid().nullable(),
+  topicId: z.string().uuid().nullable(),
+  updatedAt: z.string().min(1)
+});
+
+export const studySessionPageSchema = z.object({
+  items: z.array(studySessionSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const quizCreateRequestSchema = z.object({
+  lessonId: z.string().uuid().nullable().optional(),
+  title: z.string().trim().min(1).max(200),
+  topicId: z.string().uuid().nullable().optional()
+});
+
+export const quizSchema = z.object({
+  createdAt: z.string().min(1),
+  id: z.string().uuid(),
+  lessonId: z.string().uuid().nullable(),
+  status: quizStatusSchema,
+  title: z.string().min(1),
+  topicId: z.string().uuid().nullable(),
+  updatedAt: z.string().min(1)
+});
+
+export const quizPageSchema = z.object({
+  items: z.array(quizSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const questionCreateRequestSchema = z
+  .object({
+    choices: z.array(z.string().min(1)).max(12).optional(),
+    correctAnswer: z.string().max(4000).nullable().optional(),
+    difficulty: z.number().int().min(1).max(5).optional(),
+    explanation: z.string().max(4000).nullable().optional(),
+    position: z.number().int().min(0).optional(),
+    prompt: z.string().trim().min(1).max(12000),
+    questionType: questionTypeSchema.optional()
+  })
+  .refine(
+    (value) =>
+      value.questionType !== "multiple_choice" ||
+      (value.choices !== undefined && value.choices.length >= 2),
+    { message: "Multiple-choice questions require at least two choices." }
+  );
+
+export const questionSchema = z.object({
+  choices: z.array(z.string()),
+  correctAnswer: z.string().nullable(),
+  createdAt: z.string().min(1),
+  difficulty: z.number().int().min(1).max(5),
+  explanation: z.string().nullable(),
+  id: z.string().uuid(),
+  position: z.number().int().min(0),
+  prompt: z.string().min(1),
+  questionType: questionTypeSchema,
+  quizId: z.string().uuid(),
+  updatedAt: z.string().min(1)
+});
+
+export const attemptCreateRequestSchema = z
+  .object({
+    confidence: z.number().int().min(1).max(5).nullable().optional(),
+    feedback: z.string().max(4000).nullable().optional(),
+    hintsUsed: z.number().int().min(0).max(100).optional(),
+    maxScore: z.number().positive(),
+    questionId: z.string().uuid().nullable().optional(),
+    score: z.number().min(0),
+    submittedAnswer: z.string().max(12000).nullable().optional()
+  })
+  .refine((value) => value.score <= value.maxScore, {
+    message: "Score cannot exceed max score."
+  });
+
+export const attemptSchema = z.object({
+  accuracy: z.number().min(0).max(1),
+  confidence: z.number().int().min(1).max(5).nullable(),
+  createdAt: z.string().min(1),
+  feedback: z.string().nullable(),
+  hintsUsed: z.number().int().min(0),
+  id: z.string().uuid(),
+  maxScore: z.number().positive(),
+  questionId: z.string().uuid().nullable(),
+  quizId: z.string().uuid(),
+  score: z.number().min(0),
+  status: z.string().min(1),
+  submittedAnswer: z.string().nullable(),
+  updatedAt: z.string().min(1)
+});
+
+export const flashcardCreateRequestSchema = z.object({
+  back: z.string().trim().min(1).max(12000),
+  front: z.string().trim().min(1).max(12000),
+  topicId: z.string().uuid().nullable().optional()
+});
+
+export const flashcardSchema = z.object({
+  back: z.string().min(1),
+  createdAt: z.string().min(1),
+  front: z.string().min(1),
+  id: z.string().uuid(),
+  status: flashcardStatusSchema,
+  topicId: z.string().uuid().nullable(),
+  updatedAt: z.string().min(1)
+});
+
+export const flashcardPageSchema = z.object({
+  items: z.array(flashcardSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const flashcardReviewCreateRequestSchema = z.object({
+  confidence: z.number().int().min(1).max(5).nullable().optional(),
+  rating: flashcardReviewRatingSchema,
+  reviewedAt: z.string().min(1).optional()
+});
+
+export const flashcardReviewSchema = z.object({
+  confidence: z.number().int().min(1).max(5).nullable(),
+  createdAt: z.string().min(1),
+  flashcardId: z.string().uuid(),
+  id: z.string().uuid(),
+  nextReviewAt: z.string().min(1).nullable(),
+  rating: flashcardReviewRatingSchema,
+  reviewedAt: z.string().min(1),
+  updatedAt: z.string().min(1)
+});
+
+export const masteryRecordSchema = z.object({
+  calculation: z.record(z.unknown()),
+  confidenceScore: z.number().min(0).max(1),
+  createdAt: z.string().min(1),
+  exerciseScore: z.number().min(0).max(1),
+  hintsPenalty: z.number().min(0).max(1),
+  id: z.string().uuid(),
+  masteryScore: z.number().min(0).max(1),
+  projectEvidenceScore: z.number().min(0).max(1),
+  quizAccuracy: z.number().min(0).max(1),
+  reviewRecencyScore: z.number().min(0).max(1),
+  successfulRecallScore: z.number().min(0).max(1),
+  topicId: z.string().uuid(),
+  updatedAt: z.string().min(1)
+});
+
+export const learningGoalCreateRequestSchema = z.object({
+  description: z.string().max(4000).nullable().optional(),
+  subjectId: z.string().uuid().nullable().optional(),
+  targetDate: z.string().min(1).nullable().optional(),
+  title: z.string().trim().min(1).max(200),
+  topicId: z.string().uuid().nullable().optional()
+});
+
+export const learningGoalSchema = z.object({
+  createdAt: z.string().min(1),
+  description: z.string().nullable(),
+  id: z.string().uuid(),
+  status: learningGoalStatusSchema,
+  subjectId: z.string().uuid().nullable(),
+  targetDate: z.string().min(1).nullable(),
+  title: z.string().min(1),
+  topicId: z.string().uuid().nullable(),
+  updatedAt: z.string().min(1)
+});
+
+export const learningGoalPageSchema = z.object({
+  items: z.array(learningGoalSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const studyRoadmapCreateRequestSchema = z.object({
+  description: z.string().max(4000).nullable().optional(),
+  steps: z.array(z.record(z.unknown())).max(100).optional(),
+  subjectId: z.string().uuid().nullable().optional(),
+  title: z.string().trim().min(1).max(200)
+});
+
+export const studyRoadmapSchema = z.object({
+  createdAt: z.string().min(1),
+  description: z.string().nullable(),
+  id: z.string().uuid(),
+  status: studyRoadmapStatusSchema,
+  steps: z.array(z.record(z.unknown())),
+  subjectId: z.string().uuid().nullable(),
+  title: z.string().min(1),
+  updatedAt: z.string().min(1)
+});
+
+export const studyRoadmapPageSchema = z.object({
+  items: z.array(studyRoadmapSchema),
   limit: z.number().int().min(1),
   offset: z.number().int().min(0),
   total: z.number().int().min(0)

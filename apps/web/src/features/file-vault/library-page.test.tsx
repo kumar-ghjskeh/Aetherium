@@ -15,6 +15,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   createUnusedFilesClient,
   createUnusedHabitsClient,
+  createUnusedLearningClient,
   createUnusedMentorsClient
 } from "../../test/api-client";
 import { LibraryPage } from "./library-page";
@@ -131,6 +132,7 @@ function createClient(overrides: Partial<AetheriumApiClient["files"]> = {}): Aet
     },
     habits: createUnusedHabitsClient(),
     health: { live: vi.fn(reject), ready: vi.fn(reject) },
+    learning: createUnusedLearningClient(),
     mentors: createUnusedMentorsClient(),
     notifications: { list: vi.fn(reject), markRead: vi.fn(reject) },
     search: { recent: vi.fn(reject), run: vi.fn(reject) },

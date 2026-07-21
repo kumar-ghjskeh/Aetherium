@@ -885,6 +885,9 @@ kbd {
 .vault-filter-row input:focus,
 .vault-organize-row input:focus,
 .vault-organize-row select:focus,
+.learning-form input:focus,
+.learning-form select:focus,
+.learning-form textarea:focus,
 .habit-create-form input:focus,
 .habit-create-form select:focus,
 .habit-create-form textarea:focus,
@@ -1102,6 +1105,128 @@ kbd {
   color: var(--muted);
   display: block;
   margin-top: 4px;
+}
+
+.learning-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.9fr);
+}
+
+.learning-metrics {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.learning-form {
+  border-top: 1px solid var(--panel-border);
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding-top: 14px;
+}
+
+.learning-form label {
+  color: var(--muted);
+  display: grid;
+  font-size: 0.86rem;
+  font-weight: 800;
+  gap: 8px;
+}
+
+.learning-form input,
+.learning-form select,
+.learning-form textarea {
+  background: #0d1113;
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  min-height: 42px;
+  padding: 0 10px;
+  width: 100%;
+}
+
+.learning-form textarea {
+  min-height: 88px;
+  padding: 10px;
+  resize: vertical;
+}
+
+.learning-form .wide-field,
+.learning-form .primary-action,
+.learning-form .secondary-action {
+  grid-column: 1 / -1;
+}
+
+.topic-list,
+.learning-list {
+  display: grid;
+  gap: 10px;
+}
+
+.topic-row,
+.learning-row {
+  background: #111719;
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+}
+
+.topic-row {
+  cursor: pointer;
+  display: grid;
+  gap: 5px;
+  min-height: 64px;
+  padding: 11px 12px;
+  text-align: left;
+}
+
+.topic-row[aria-pressed="true"] {
+  border-color: var(--accent);
+}
+
+.topic-row small,
+.learning-row small {
+  color: var(--muted);
+}
+
+.learning-row {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 12px;
+}
+
+.learning-row span {
+  min-width: 0;
+}
+
+.learning-row strong,
+.topic-row span {
+  overflow-wrap: anywhere;
+}
+
+.stacked-learning-row {
+  align-items: stretch;
+  display: grid;
+}
+
+.learning-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mastery-meter {
+  background: #0d1113;
+  border: 1px solid var(--panel-border);
+  height: 18px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.mastery-meter span {
+  background: linear-gradient(90deg, var(--accent), #c7cf7b, var(--accent-strong));
+  display: block;
+  height: 100%;
 }
 
 .ai-hall-grid,
@@ -1361,6 +1486,7 @@ kbd {
 }
 
 .mentor-row:focus,
+.topic-row:focus,
 .conversation-row:focus,
 .permission-grid input:focus {
   outline: 2px solid var(--accent);
@@ -1398,8 +1524,10 @@ kbd {
   .settings-grid,
   .ai-hall-grid,
   .ai-chat-layout,
+  .learning-grid,
   .habit-grid,
   .habit-metrics,
+  .learning-metrics,
   .document-qa-form,
   .vault-grid,
   .vault-metrics {
@@ -1431,11 +1559,14 @@ kbd {
   .settings-grid,
   .ai-hall-grid,
   .ai-chat-layout,
+  .learning-grid,
+  .learning-form,
   .habit-grid,
   .habit-create-form,
   .habit-detail-grid,
   .habit-log-row,
   .habit-metrics,
+  .learning-metrics,
   .conversation-tools,
   .create-mentor-form,
   .document-qa-form,

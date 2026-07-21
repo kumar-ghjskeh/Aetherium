@@ -22,6 +22,7 @@ import { ProtectedCommandMode } from "../command/protected-command-mode";
 import {
   createUnusedFilesClient,
   createUnusedHabitsClient,
+  createUnusedLearningClient,
   createUnusedMentorsClient
 } from "../../test/api-client";
 
@@ -174,6 +175,7 @@ function createClient(overrides: Partial<AetheriumApiClient["auth"]>): Aetherium
       live: vi.fn(() => Promise.resolve(health)),
       ready: vi.fn(() => Promise.resolve(health))
     },
+    learning: createUnusedLearningClient(),
     mentors: createUnusedMentorsClient(),
     notifications: {
       list: vi.fn(() => Promise.resolve(emptyNotificationPage)),

@@ -15,6 +15,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   createUnusedFilesClient,
   createUnusedHabitsClient,
+  createUnusedLearningClient,
   createUnusedMentorsClient
 } from "../../test/api-client";
 import { AiHallPage } from "./ai-hall-page";
@@ -194,6 +195,7 @@ function createClient(
     },
     habits: createUnusedHabitsClient(),
     health: { live: vi.fn(reject), ready: vi.fn(reject) },
+    learning: createUnusedLearningClient(),
     mentors: {
       ...createUnusedMentorsClient(),
       create: vi.fn(() =>

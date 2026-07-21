@@ -184,6 +184,173 @@ const weeklyReview = {
   wins: "Logged the first habit."
 };
 
+const learningSubject = {
+  createdAt: "2026-07-20T00:00:00Z",
+  description: "Hardware and systems topics.",
+  id: "eeeeeeee-1111-4111-8111-111111111111",
+  name: "Computer Architecture",
+  status: "active",
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const learningTopic = {
+  createdAt: "2026-07-20T00:00:00Z",
+  description: "Instruction overlap and hazards.",
+  id: "eeeeeeee-2222-4222-8222-222222222222",
+  name: "Pipelining",
+  status: "active",
+  subjectId: learningSubject.id,
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const masteryRecord = {
+  calculation: { method: "transparent_heuristic_v1" },
+  confidenceScore: 0.75,
+  createdAt: "2026-07-20T00:00:00Z",
+  exerciseScore: 0.2,
+  hintsPenalty: 0.1,
+  id: "eeeeeeee-3333-4333-8333-333333333333",
+  masteryScore: 0.56,
+  projectEvidenceScore: 0,
+  quizAccuracy: 0.8,
+  reviewRecencyScore: 1,
+  successfulRecallScore: 0.2,
+  topicId: learningTopic.id,
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const learningCourse = {
+  createdAt: "2026-07-20T00:00:00Z",
+  description: null,
+  id: "eeeeeeee-4444-4444-8444-444444444444",
+  status: "active",
+  subjectId: learningSubject.id,
+  title: "Systems Path",
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const learningModule = {
+  courseId: learningCourse.id,
+  createdAt: "2026-07-20T00:00:00Z",
+  description: null,
+  id: "eeeeeeee-5555-4555-8555-555555555555",
+  position: 0,
+  title: "CPU Basics",
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const learningLesson = {
+  content: null,
+  createdAt: "2026-07-20T00:00:00Z",
+  estimatedMinutes: 25,
+  id: "eeeeeeee-6666-4666-8666-666666666666",
+  moduleId: learningModule.id,
+  position: 0,
+  status: "active",
+  title: "Hazards",
+  topicId: learningTopic.id,
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const studySession = {
+  courseId: null,
+  createdAt: "2026-07-20T00:00:00Z",
+  durationMinutes: null,
+  endedAt: null,
+  id: "eeeeeeee-7777-4777-8777-777777777777",
+  lessonId: null,
+  mode: "quick_review",
+  notes: "Review hazards.",
+  startedAt: "2026-07-20T00:00:00Z",
+  subjectId: null,
+  topicId: learningTopic.id,
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const learningQuiz = {
+  createdAt: "2026-07-20T00:00:00Z",
+  id: "eeeeeeee-8888-4888-8888-888888888888",
+  lessonId: null,
+  status: "active",
+  title: "Pipeline hazards",
+  topicId: learningTopic.id,
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const learningQuestion = {
+  choices: [],
+  correctAnswer: null,
+  createdAt: "2026-07-20T00:00:00Z",
+  difficulty: 3,
+  explanation: null,
+  id: "eeeeeeee-9999-4999-8999-999999999999",
+  position: 0,
+  prompt: "What is a data hazard?",
+  questionType: "free_text",
+  quizId: learningQuiz.id,
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const learningAttempt = {
+  accuracy: 0.8,
+  confidence: 5,
+  createdAt: "2026-07-20T00:00:00Z",
+  feedback: null,
+  hintsUsed: 1,
+  id: "aaaaaaaa-1111-4111-8111-111111111111",
+  maxScore: 10,
+  questionId: learningQuestion.id,
+  quizId: learningQuiz.id,
+  score: 8,
+  status: "completed",
+  submittedAnswer: null,
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const learningFlashcard = {
+  back: "A dependency between pipeline stages.",
+  createdAt: "2026-07-20T00:00:00Z",
+  front: "Data hazard",
+  id: "aaaaaaaa-2222-4222-8222-222222222222",
+  status: "active",
+  topicId: learningTopic.id,
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const flashcardReview = {
+  confidence: 4,
+  createdAt: "2026-07-20T00:00:00Z",
+  flashcardId: learningFlashcard.id,
+  id: "aaaaaaaa-3333-4333-8333-333333333333",
+  nextReviewAt: "2026-07-27T00:00:00Z",
+  rating: "good",
+  reviewedAt: "2026-07-20T00:00:00Z",
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const learningGoal = {
+  createdAt: "2026-07-20T00:00:00Z",
+  description: null,
+  id: "aaaaaaaa-4444-4444-8444-444444444444",
+  status: "active",
+  subjectId: null,
+  targetDate: "2026-08-01",
+  title: "Master hazards",
+  topicId: learningTopic.id,
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const studyRoadmap = {
+  createdAt: "2026-07-20T00:00:00Z",
+  description: null,
+  id: "aaaaaaaa-5555-4555-8555-555555555555",
+  status: "active",
+  steps: [{ label: "Review selected topic", topicId: learningTopic.id }],
+  subjectId: null,
+  title: "CPU path",
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
 const aiProvider = {
   capabilities: ["chat", "streaming_chat", "embeddings"],
   configured: true,
@@ -1048,6 +1215,272 @@ describe("createAetheriumApiClient", () => {
         headers: {
           Accept: "application/json"
         }
+      }
+    );
+  });
+
+  it("uses learning and mastery endpoints", async () => {
+    const fetcher = vi.fn<typeof fetch>((input) => {
+      const url = requestUrl(input);
+      if (
+        url ===
+        "http://localhost:8000/api/v1/learning/subjects?includeArchived=true&limit=5&offset=0"
+      ) {
+        return Promise.resolve(
+          jsonResponse({ items: [learningSubject], limit: 5, offset: 0, total: 1 })
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/learning/subjects") {
+        return Promise.resolve(jsonResponse(learningSubject, 201));
+      }
+      if (
+        url ===
+        `http://localhost:8000/api/v1/learning/topics?includeArchived=true&limit=5&offset=0&subjectId=${learningSubject.id}`
+      ) {
+        return Promise.resolve(
+          jsonResponse({ items: [learningTopic], limit: 5, offset: 0, total: 1 })
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/learning/topics") {
+        return Promise.resolve(jsonResponse(learningTopic, 201));
+      }
+      if (
+        url === `http://localhost:8000/api/v1/learning/topics/${learningTopic.id}/prerequisites`
+      ) {
+        return Promise.resolve(
+          jsonResponse({
+            createdAt: "2026-07-20T00:00:00Z",
+            id: "aaaaaaaa-6666-4666-8666-666666666666",
+            relationType: "requires",
+            sourceTopicId: learningTopic.id,
+            targetTopicId: learningTopic.id,
+            updatedAt: "2026-07-20T00:00:00Z"
+          })
+        );
+      }
+      if (url === `http://localhost:8000/api/v1/learning/topics/${learningTopic.id}/mastery`) {
+        return Promise.resolve(jsonResponse(masteryRecord));
+      }
+      if (url === "http://localhost:8000/api/v1/learning/resources?limit=5&offset=0") {
+        return Promise.resolve(jsonResponse({ items: [], limit: 5, offset: 0, total: 0 }));
+      }
+      if (url === "http://localhost:8000/api/v1/learning/resources") {
+        return Promise.resolve(
+          jsonResponse(
+            {
+              createdAt: "2026-07-20T00:00:00Z",
+              fileId: null,
+              id: "aaaaaaaa-7777-4777-8777-777777777777",
+              notes: null,
+              resourceType: "note",
+              subjectId: learningSubject.id,
+              title: "Hazard notes",
+              topicId: learningTopic.id,
+              updatedAt: "2026-07-20T00:00:00Z",
+              url: null
+            },
+            201
+          )
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/learning/courses?limit=5&offset=0") {
+        return Promise.resolve(
+          jsonResponse({ items: [learningCourse], limit: 5, offset: 0, total: 1 })
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/learning/courses") {
+        return Promise.resolve(jsonResponse(learningCourse, 201));
+      }
+      if (url === `http://localhost:8000/api/v1/learning/courses/${learningCourse.id}/modules`) {
+        return Promise.resolve(jsonResponse(learningModule, 201));
+      }
+      if (url === `http://localhost:8000/api/v1/learning/modules/${learningModule.id}/lessons`) {
+        return Promise.resolve(jsonResponse(learningLesson, 201));
+      }
+      if (url === `http://localhost:8000/api/v1/learning/lessons/${learningLesson.id}/complete`) {
+        return Promise.resolve(jsonResponse({ ...learningLesson, status: "completed" }));
+      }
+      if (url === "http://localhost:8000/api/v1/learning/study-sessions?limit=5&offset=0") {
+        return Promise.resolve(
+          jsonResponse({ items: [studySession], limit: 5, offset: 0, total: 1 })
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/learning/study-sessions") {
+        return Promise.resolve(jsonResponse(studySession, 201));
+      }
+      if (url === `http://localhost:8000/api/v1/learning/study-sessions/${studySession.id}/end`) {
+        return Promise.resolve(
+          jsonResponse({ ...studySession, durationMinutes: 25, endedAt: "2026-07-20T00:25:00Z" })
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/learning/quizzes?limit=5&offset=0") {
+        return Promise.resolve(
+          jsonResponse({ items: [learningQuiz], limit: 5, offset: 0, total: 1 })
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/learning/quizzes") {
+        return Promise.resolve(jsonResponse(learningQuiz, 201));
+      }
+      if (url === `http://localhost:8000/api/v1/learning/quizzes/${learningQuiz.id}/questions`) {
+        return Promise.resolve(jsonResponse(learningQuestion, 201));
+      }
+      if (url === `http://localhost:8000/api/v1/learning/quizzes/${learningQuiz.id}/attempts`) {
+        return Promise.resolve(jsonResponse(learningAttempt, 201));
+      }
+      if (url === "http://localhost:8000/api/v1/learning/flashcards?limit=5&offset=0") {
+        return Promise.resolve(
+          jsonResponse({ items: [learningFlashcard], limit: 5, offset: 0, total: 1 })
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/learning/flashcards") {
+        return Promise.resolve(jsonResponse(learningFlashcard, 201));
+      }
+      if (
+        url === `http://localhost:8000/api/v1/learning/flashcards/${learningFlashcard.id}/reviews`
+      ) {
+        return Promise.resolve(jsonResponse(flashcardReview, 201));
+      }
+      if (url === "http://localhost:8000/api/v1/learning/goals?limit=5&offset=0") {
+        return Promise.resolve(
+          jsonResponse({ items: [learningGoal], limit: 5, offset: 0, total: 1 })
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/learning/goals") {
+        return Promise.resolve(jsonResponse(learningGoal, 201));
+      }
+      if (url === "http://localhost:8000/api/v1/learning/roadmaps?limit=5&offset=0") {
+        return Promise.resolve(
+          jsonResponse({ items: [studyRoadmap], limit: 5, offset: 0, total: 1 })
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/learning/roadmaps") {
+        return Promise.resolve(jsonResponse(studyRoadmap, 201));
+      }
+      return Promise.resolve(jsonResponse({ items: [] }));
+    });
+    const client = createAetheriumApiClient({ baseUrl: "http://localhost:8000", fetcher });
+
+    await expect(
+      client.learning.listSubjects({ includeArchived: true, limit: 5, offset: 0 })
+    ).resolves.toMatchObject({ total: 1 });
+    await expect(
+      client.learning.createSubject({ name: "Computer Architecture" })
+    ).resolves.toMatchObject({ name: "Computer Architecture" });
+    await expect(
+      client.learning.listTopics({
+        includeArchived: true,
+        limit: 5,
+        offset: 0,
+        subjectId: learningSubject.id
+      })
+    ).resolves.toMatchObject({ total: 1 });
+    await expect(
+      client.learning.createTopic({ name: "Pipelining", subjectId: learningSubject.id })
+    ).resolves.toMatchObject({ subjectId: learningSubject.id });
+    await expect(
+      client.learning.addPrerequisite(learningTopic.id, { prerequisiteTopicId: learningTopic.id })
+    ).resolves.toMatchObject({ relationType: "requires" });
+    await expect(client.learning.getMastery(learningTopic.id)).resolves.toMatchObject({
+      masteryScore: 0.56
+    });
+    await expect(client.learning.listResources({ limit: 5, offset: 0 })).resolves.toMatchObject({
+      total: 0
+    });
+    await expect(
+      client.learning.createResource({
+        resourceType: "note",
+        subjectId: learningSubject.id,
+        title: "Hazard notes",
+        topicId: learningTopic.id
+      })
+    ).resolves.toMatchObject({ resourceType: "note" });
+    await expect(client.learning.listCourses({ limit: 5, offset: 0 })).resolves.toMatchObject({
+      total: 1
+    });
+    await expect(
+      client.learning.createCourse({ subjectId: learningSubject.id, title: "Systems Path" })
+    ).resolves.toMatchObject({ title: "Systems Path" });
+    await expect(
+      client.learning.createModule(learningCourse.id, { position: 0, title: "CPU Basics" })
+    ).resolves.toMatchObject({ courseId: learningCourse.id });
+    await expect(
+      client.learning.createLesson(learningModule.id, {
+        position: 0,
+        title: "Hazards",
+        topicId: learningTopic.id
+      })
+    ).resolves.toMatchObject({ moduleId: learningModule.id });
+    await expect(client.learning.completeLesson(learningLesson.id)).resolves.toMatchObject({
+      status: "completed"
+    });
+    await expect(client.learning.listSessions({ limit: 5, offset: 0 })).resolves.toMatchObject({
+      total: 1
+    });
+    await expect(
+      client.learning.createSession({ mode: "quick_review", topicId: learningTopic.id })
+    ).resolves.toMatchObject({ mode: "quick_review" });
+    await expect(client.learning.endSession(studySession.id, {})).resolves.toMatchObject({
+      durationMinutes: 25
+    });
+    await expect(client.learning.listQuizzes({ limit: 5, offset: 0 })).resolves.toMatchObject({
+      total: 1
+    });
+    await expect(
+      client.learning.createQuiz({ title: "Pipeline hazards", topicId: learningTopic.id })
+    ).resolves.toMatchObject({ title: "Pipeline hazards" });
+    await expect(
+      client.learning.addQuestion(learningQuiz.id, {
+        prompt: "What is a data hazard?",
+        questionType: "free_text"
+      })
+    ).resolves.toMatchObject({ prompt: "What is a data hazard?" });
+    await expect(
+      client.learning.submitAttempt(learningQuiz.id, {
+        confidence: 5,
+        hintsUsed: 1,
+        maxScore: 10,
+        questionId: learningQuestion.id,
+        score: 8
+      })
+    ).resolves.toMatchObject({ accuracy: 0.8 });
+    await expect(client.learning.listFlashcards({ limit: 5, offset: 0 })).resolves.toMatchObject({
+      total: 1
+    });
+    await expect(
+      client.learning.createFlashcard({
+        back: "A dependency between pipeline stages.",
+        front: "Data hazard",
+        topicId: learningTopic.id
+      })
+    ).resolves.toMatchObject({ front: "Data hazard" });
+    await expect(
+      client.learning.reviewFlashcard(learningFlashcard.id, { confidence: 4, rating: "good" })
+    ).resolves.toMatchObject({ rating: "good" });
+    await expect(client.learning.listGoals({ limit: 5, offset: 0 })).resolves.toMatchObject({
+      total: 1
+    });
+    await expect(
+      client.learning.createGoal({
+        targetDate: "2026-08-01",
+        title: "Master hazards",
+        topicId: learningTopic.id
+      })
+    ).resolves.toMatchObject({ title: "Master hazards" });
+    await expect(client.learning.listRoadmaps({ limit: 5, offset: 0 })).resolves.toMatchObject({
+      total: 1
+    });
+    await expect(
+      client.learning.createRoadmap({
+        steps: [{ label: "Review selected topic", topicId: learningTopic.id }],
+        title: "CPU path"
+      })
+    ).resolves.toMatchObject({ title: "CPU path" });
+
+    expect(fetcher).toHaveBeenCalledWith(
+      "http://localhost:8000/api/v1/learning/subjects?includeArchived=true&limit=5&offset=0",
+      {
+        credentials: "include",
+        headers: { Accept: "application/json" }
       }
     );
   });

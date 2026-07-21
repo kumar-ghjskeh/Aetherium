@@ -41,6 +41,10 @@ Backend:
 - Habit backend tests for creation, validation failures, pagination, logging, summary metrics,
   idempotent domain events, audit logs, check-ins, weekly reviews, archive behavior, search
   integration, unauthenticated access, cross-user isolation, and database uniqueness.
+- Learning backend tests for subjects, topics, prerequisites, mastery records, course/module/lesson
+  completion events, quiz attempts, flashcard reviews, study sessions, learning goals, roadmaps,
+  validation failures, search integration, unauthenticated access, cross-user isolation, and
+  database uniqueness.
 - Alembic migration smoke validation against PostgreSQL in CI.
 - Ruff formatting and linting.
 - mypy type checking.
@@ -67,6 +71,9 @@ Frontend and shared packages:
 - API-client contract tests for mentor, permission, conversation, message, memory, export,
   edit/resend, regeneration, and stop-generation endpoints.
 - API-client contract tests for habit, log, summary, daily check-in, and weekly review endpoints.
+- API-client contract tests for learning subjects, topics, prerequisites, resources, courses,
+  modules, lessons, study sessions, quizzes, questions, attempts, flashcards, reviews, mastery
+  records, goals, and roadmaps.
 - Next.js build validation.
 - React Testing Library coverage for the Library page, including loading, empty, error, upload,
   favorite, tag, delete, processing failure, and retry states.
@@ -76,6 +83,9 @@ Frontend and shared packages:
   and document-QA consent error handling.
 - React Testing Library coverage for the Habits page, including loading, empty, error, creation
   validation, creation submission, logging, daily check-in, and weekly review states.
+- React Testing Library coverage for the Learning page, including loading, empty, error, subject and
+  topic creation validation, mastery display, quiz attempts, study sessions, goals, roadmaps, and
+  flashcard reviews.
 
 ## Future Backend Tests
 

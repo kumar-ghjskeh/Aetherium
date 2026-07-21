@@ -1,5 +1,5 @@
-import { SectionPage } from "../../../features/app-shell/section-page";
+import { LearningPage } from "../../../features/learning/learning-page";
 
-export default function LearningPage(): React.ReactElement {
-  return <SectionPage section="learning" />;
+export default function LearningPageRoute(): React.ReactElement {
+  return <LearningPage />;
 }

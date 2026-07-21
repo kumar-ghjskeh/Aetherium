@@ -20,6 +20,7 @@ import { AuthProvider } from "../auth/auth-provider";
 import {
   createUnusedFilesClient,
   createUnusedHabitsClient,
+  createUnusedLearningClient,
   createUnusedMentorsClient
 } from "../../test/api-client";
 import { AppDashboard } from "./app-dashboard";
@@ -200,6 +201,7 @@ function createClient(
       live: vi.fn(() => Promise.resolve(health)),
       ready: vi.fn(() => Promise.resolve(health))
     },
+    learning: createUnusedLearningClient(),
     mentors: { ...createUnusedMentorsClient(), ...(overrides.mentors ?? {}) },
     notifications: {
       list: vi.fn(() => Promise.resolve(notificationPage)),

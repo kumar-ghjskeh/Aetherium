@@ -89,11 +89,37 @@ Current routes:
 - `POST /api/v1/habits/{habit_id}/archive`
 - `GET /api/v1/habits/{habit_id}/logs`
 - `POST /api/v1/habits/{habit_id}/logs`
+- `GET /api/v1/learning/subjects`
+- `POST /api/v1/learning/subjects`
+- `GET /api/v1/learning/topics`
+- `POST /api/v1/learning/topics`
+- `POST /api/v1/learning/topics/{topic_id}/prerequisites`
+- `GET /api/v1/learning/topics/{topic_id}/mastery`
+- `GET /api/v1/learning/resources`
+- `POST /api/v1/learning/resources`
+- `GET /api/v1/learning/courses`
+- `POST /api/v1/learning/courses`
+- `POST /api/v1/learning/courses/{course_id}/modules`
+- `POST /api/v1/learning/modules/{module_id}/lessons`
+- `POST /api/v1/learning/lessons/{lesson_id}/complete`
+- `GET /api/v1/learning/study-sessions`
+- `POST /api/v1/learning/study-sessions`
+- `PATCH /api/v1/learning/study-sessions/{session_id}/end`
+- `GET /api/v1/learning/quizzes`
+- `POST /api/v1/learning/quizzes`
+- `POST /api/v1/learning/quizzes/{quiz_id}/questions`
+- `POST /api/v1/learning/quizzes/{quiz_id}/attempts`
+- `GET /api/v1/learning/flashcards`
+- `POST /api/v1/learning/flashcards`
+- `POST /api/v1/learning/flashcards/{flashcard_id}/reviews`
+- `GET /api/v1/learning/goals`
+- `POST /api/v1/learning/goals`
+- `GET /api/v1/learning/roadmaps`
+- `POST /api/v1/learning/roadmaps`
 
 Planned route groups:
 
 - `/api/v1/users`
-- `/api/v1/learning`
 - `/api/v1/goals`
 - `/api/v1/tasks`
 - `/api/v1/projects`
@@ -316,6 +342,45 @@ for the authenticated user.
 
 `GET/POST /api/v1/habits/weekly-reviews` lists and saves owner-scoped weekly review notes. Submitted
 dates are normalized to the week start.
+
+## Learning Routes
+
+`GET/POST /api/v1/learning/subjects` lists and creates owner-scoped subjects with normalized-name
+uniqueness.
+
+`GET/POST /api/v1/learning/topics` lists and creates owner-scoped topics, optionally scoped to an
+owned subject.
+
+`POST /api/v1/learning/topics/{topic_id}/prerequisites` creates an owner-scoped prerequisite
+relation between two owned topics.
+
+`GET /api/v1/learning/topics/{topic_id}/mastery` returns the current transparent mastery record for
+an owned topic, creating an initial zero-score record when needed.
+
+`GET/POST /api/v1/learning/resources` lists and creates owner-scoped learning resources. File-linked
+resources must reference an owned file.
+
+`GET/POST /api/v1/learning/courses`, `POST /api/v1/learning/courses/{course_id}/modules`, and
+`POST /api/v1/learning/modules/{module_id}/lessons` manage owner-scoped course structure.
+
+`POST /api/v1/learning/lessons/{lesson_id}/complete` marks an owned lesson complete, emits an
+idempotent `lesson.completed` event, writes a sanitized audit log, and updates topic mastery when
+the lesson is topic-linked.
+
+`GET/POST /api/v1/learning/study-sessions` and
+`PATCH /api/v1/learning/study-sessions/{session_id}/end` record study history, confidence, and notes
+without increasing mastery from elapsed time alone.
+
+`GET/POST /api/v1/learning/quizzes`, `POST /api/v1/learning/quizzes/{quiz_id}/questions`, and
+`POST /api/v1/learning/quizzes/{quiz_id}/attempts` manage quizzes, questions, and completed
+attempts. Attempts emit idempotent `quiz.completed` events and update mastery from answer accuracy,
+confidence, and hint signals.
+
+`GET/POST /api/v1/learning/flashcards` and `POST /api/v1/learning/flashcards/{flashcard_id}/reviews`
+manage flashcards and reviews. Reviews update mastery when the flashcard is topic-linked.
+
+`GET/POST /api/v1/learning/goals` and `GET/POST /api/v1/learning/roadmaps` manage non-visual
+learning goals and study roadmaps for later analytics, reminders, and AI-assisted planning.
 
 ## Generated Client
 

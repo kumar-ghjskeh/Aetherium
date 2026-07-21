@@ -14,12 +14,14 @@ from app.domain.file_ingestion import ChunkStatus
 from app.domain.file_vault import FileDeletionStatus
 from app.domain.foundation import WorldLocationId
 from app.domain.habits import HabitStatus
+from app.domain.learning import LearningRecordStatus
 from app.domain.mentors import ConversationStatus
 from app.domain.search import SearchEntityType, SearchMatchReason, SearchMode, SearchSort
 from app.models.auth import User
 from app.models.file_ingestion import FileChunk
 from app.models.file_vault import Collection, FileRecord, Tag
 from app.models.habits import Habit
+from app.models.learning import Topic
 from app.models.mentors import Conversation
 from app.models.search import RecentSearch
 from app.services.foundation import PageResult
@@ -31,6 +33,7 @@ IMPLEMENTED_ENTITY_TYPES = (
     SearchEntityType.TAG,
     SearchEntityType.AI_CONVERSATION,
     SearchEntityType.HABIT,
+    SearchEntityType.LEARNING_TOPIC,
 )
 MAX_SNIPPET_LENGTH = 180
 
@@ -110,6 +113,10 @@ class SearchService:
             habit_items, habit_total = await self._search_habits(user, query, fetch_limit)
             candidates.extend(habit_items)
             total += habit_total
+        if SearchEntityType.LEARNING_TOPIC in target_types:
+            topic_items, topic_total = await self._search_learning_topics(user, query, fetch_limit)
+            candidates.extend(topic_items)
+            total += topic_total
 
         ordered = _sort_results(candidates, sort)
         items = ordered[pagination.offset : pagination.offset + pagination.limit]
@@ -465,6 +472,57 @@ class SearchService:
         total = await self._count(select(func.count(Habit.id)).where(*predicates))
         return items, total
 
+    async def _search_learning_topics(
+        self,
+        user: User,
+        query: str,
+        limit: int,
+    ) -> tuple[list[SearchResultItem], int]:
+        predicates = [
+            Topic.owner_user_id == user.id,
+            Topic.status == LearningRecordStatus.ACTIVE.value,
+        ]
+        if self._is_postgres:
+            vector = func.to_tsvector(
+                "english",
+                func.concat(
+                    func.coalesce(Topic.name, ""),
+                    " ",
+                    func.coalesce(Topic.description, ""),
+                ),
+            )
+            ts_query = func.plainto_tsquery("english", query)
+            predicates.append(vector.op("@@")(ts_query))
+            score_expression = func.ts_rank_cd(vector, ts_query).label("score")
+            result = await self.db.execute(
+                select(Topic, score_expression)
+                .where(*predicates)
+                .order_by(score_expression.desc(), Topic.updated_at.desc())
+                .limit(limit)
+            )
+            rows = result.all()
+            items = [
+                self._learning_topic_result(topic, query=query, score=float(score or 0.0))
+                for topic, score in rows
+            ]
+        else:
+            predicates.append(
+                or_(_contains(Topic.name, query), _contains(Topic.description, query))
+            )
+            result = await self.db.execute(
+                select(Topic).where(*predicates).order_by(Topic.updated_at.desc()).limit(limit)
+            )
+            items = [
+                self._learning_topic_result(
+                    topic,
+                    query=query,
+                    score=_metadata_score(topic.name, query),
+                )
+                for topic in result.scalars().all()
+            ]
+        total = await self._count(select(func.count(Topic.id)).where(*predicates))
+        return items, total
+
     def _file_result(self, file: FileRecord, *, query: str, score: float) -> SearchResultItem:
         return SearchResultItem(
             id=f"file:{file.id}",
@@ -579,6 +637,27 @@ class SearchService:
             world_location_id=WorldLocationId.HABIT_GARDEN.value,
             source=None,
             created_at=habit.created_at,
+        )
+
+    def _learning_topic_result(
+        self,
+        topic: Topic,
+        *,
+        query: str,
+        score: float,
+    ) -> SearchResultItem:
+        return SearchResultItem(
+            id=f"learning_topic:{topic.id}",
+            entity_type=SearchEntityType.LEARNING_TOPIC,
+            entity_id=topic.id,
+            title=topic.name,
+            snippet=_snippet(topic.description or "Learning topic", query),
+            match_reason=SearchMatchReason.LEARNING_TOPIC_METADATA,
+            score=max(score, _metadata_score(topic.name, query)),
+            open_url=f"/app/learning?topic={topic.id}",
+            world_location_id=WorldLocationId.RESEARCH_LABORATORY.value,
+            source=None,
+            created_at=topic.created_at,
         )
 
     @property

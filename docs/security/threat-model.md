@@ -40,6 +40,7 @@
 | Prompt injection from retrieved files     | Source-bounded document-QA prompts, no automatic mutation tools, and citation validation.     |
 | Fabricated citations                      | Return citations only for retrieved owner-scoped chunks and no-evidence responses when empty. |
 | Habit privacy leakage                     | Owner-scoped habit tables, not-found cross-user behavior, and no external sharing by default. |
+| Learning privacy leakage                  | Owner-scoped learning tables, not-found cross-user behavior, and no AI sharing by default.    |
 | Insecure code execution                   | Use mock code runner first; require isolated sandbox before real execution.                   |
 | Secret leakage                            | Keep secrets out of source and logs.                                                          |
 | Cross-tenant data access                  | Include tenant/owner scoping in schema and data-access tests.                                 |
@@ -119,6 +120,16 @@
 - Mood and energy check-in fields are optional personal context fields and are not positioned as
   diagnosis or treatment data.
 - Active habit metadata is searchable only inside the authenticated user's own search scope.
+- Learning subjects, topics, resources, courses, lessons, study sessions, quizzes, questions,
+  attempts, flashcards, goals, roadmaps, and mastery records are scoped by `owner_user_id`.
+- Learning services treat cross-user identifiers as `not_found` and preserve owner scope through
+  prerequisites, course/module/lesson creation, quiz attempts, flashcard reviews, goals, and
+  roadmaps.
+- Lesson completion and quiz attempts write idempotent domain events and sanitized audit logs
+  without storing secrets, cookies, raw session tokens, or provider credentials.
+- Mastery records explain the stored signals behind the score and do not claim diagnostic accuracy.
+- Active learning-topic metadata is searchable only inside the authenticated user's own search
+  scope.
 - CI runs independence checks, formatting, linting, type checks, tests, build, and migration smoke
   validation.
 

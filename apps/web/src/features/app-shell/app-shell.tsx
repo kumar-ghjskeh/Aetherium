@@ -471,7 +471,7 @@ function CommandPalette({
           <input
             id="command-palette-search"
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search files, chunks, collections, tags, and habits"
+            placeholder="Search files, chunks, collections, tags, habits, and topics"
             ref={searchInputRef}
             type="search"
             value={query}

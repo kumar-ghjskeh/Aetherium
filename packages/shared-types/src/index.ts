@@ -406,7 +406,8 @@ export type SearchMatchReason =
   | "collection_metadata"
   | "tag_metadata"
   | "ai_conversation"
-  | "habit_metadata";
+  | "habit_metadata"
+  | "learning_topic_metadata";
 
 export interface SearchRequest {
   query: string;
@@ -647,6 +648,409 @@ export interface WeeklyReviewPage {
   total: number;
   limit: number;
   offset: number;
+}
+
+export type LearningRecordStatus = "active" | "archived";
+
+export type CourseStatus = "draft" | "active" | "archived";
+
+export type LessonStatus = "draft" | "active" | "completed";
+
+export type LearningResourceType = "document" | "link" | "note" | "video" | "file";
+
+export type StudySessionMode =
+  | "guided_course"
+  | "free_exploration"
+  | "document_based"
+  | "project_based"
+  | "exam_preparation"
+  | "coding_practice"
+  | "quick_review";
+
+export type QuizStatus = "draft" | "active" | "archived";
+
+export type QuestionType = "multiple_choice" | "free_text" | "code";
+
+export type FlashcardStatus = "active" | "archived";
+
+export type FlashcardReviewRating = "again" | "hard" | "good" | "easy";
+
+export type LearningGoalStatus = "active" | "completed" | "archived";
+
+export type StudyRoadmapStatus = "active" | "completed" | "archived";
+
+export interface Subject {
+  id: string;
+  name: string;
+  description: string | null;
+  status: LearningRecordStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SubjectPage {
+  items: Subject[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface SubjectCreateRequest {
+  name: string;
+  description?: string | null | undefined;
+}
+
+export interface Topic {
+  id: string;
+  subjectId: string | null;
+  name: string;
+  description: string | null;
+  status: LearningRecordStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TopicPage {
+  items: Topic[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface TopicListQuery extends PaginationQuery {
+  includeArchived?: boolean;
+  subjectId?: string;
+}
+
+export interface TopicCreateRequest {
+  name: string;
+  description?: string | null | undefined;
+  subjectId?: string | null | undefined;
+}
+
+export interface TopicRelation {
+  id: string;
+  sourceTopicId: string;
+  targetTopicId: string;
+  relationType: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TopicRelationCreateRequest {
+  prerequisiteTopicId: string;
+}
+
+export interface LearningResource {
+  id: string;
+  subjectId: string | null;
+  topicId: string | null;
+  fileId: string | null;
+  title: string;
+  resourceType: LearningResourceType;
+  url: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LearningResourcePage {
+  items: LearningResource[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface LearningResourceListQuery extends PaginationQuery {
+  topicId?: string;
+}
+
+export interface LearningResourceCreateRequest {
+  title: string;
+  resourceType: LearningResourceType;
+  subjectId?: string | null | undefined;
+  topicId?: string | null | undefined;
+  fileId?: string | null | undefined;
+  url?: string | null | undefined;
+  notes?: string | null | undefined;
+}
+
+export interface Course {
+  id: string;
+  subjectId: string | null;
+  title: string;
+  description: string | null;
+  status: CourseStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CoursePage {
+  items: Course[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface CourseCreateRequest {
+  title: string;
+  description?: string | null | undefined;
+  subjectId?: string | null | undefined;
+}
+
+export interface CourseModule {
+  id: string;
+  courseId: string;
+  title: string;
+  description: string | null;
+  position: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CourseModuleCreateRequest {
+  title: string;
+  description?: string | null | undefined;
+  position?: number | undefined;
+}
+
+export interface Lesson {
+  id: string;
+  moduleId: string;
+  topicId: string | null;
+  title: string;
+  content: string | null;
+  status: LessonStatus;
+  position: number;
+  estimatedMinutes: number | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LessonCreateRequest {
+  title: string;
+  content?: string | null | undefined;
+  topicId?: string | null | undefined;
+  position?: number | undefined;
+  estimatedMinutes?: number | null | undefined;
+}
+
+export interface StudySession {
+  id: string;
+  subjectId: string | null;
+  topicId: string | null;
+  courseId: string | null;
+  lessonId: string | null;
+  mode: StudySessionMode;
+  startedAt: string;
+  endedAt: string | null;
+  durationMinutes: number | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface StudySessionPage {
+  items: StudySession[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface StudySessionCreateRequest {
+  mode: StudySessionMode;
+  subjectId?: string | null | undefined;
+  topicId?: string | null | undefined;
+  courseId?: string | null | undefined;
+  lessonId?: string | null | undefined;
+  startedAt?: string | undefined;
+  notes?: string | null | undefined;
+}
+
+export interface StudySessionEndRequest {
+  endedAt?: string | undefined;
+  notes?: string | null | undefined;
+}
+
+export interface Quiz {
+  id: string;
+  topicId: string | null;
+  lessonId: string | null;
+  title: string;
+  status: QuizStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface QuizPage {
+  items: Quiz[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface QuizCreateRequest {
+  title: string;
+  topicId?: string | null | undefined;
+  lessonId?: string | null | undefined;
+}
+
+export interface Question {
+  id: string;
+  quizId: string;
+  questionType: QuestionType;
+  prompt: string;
+  choices: string[];
+  correctAnswer: string | null;
+  explanation: string | null;
+  position: number;
+  difficulty: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface QuestionCreateRequest {
+  questionType?: QuestionType | undefined;
+  prompt: string;
+  choices?: string[] | undefined;
+  correctAnswer?: string | null | undefined;
+  explanation?: string | null | undefined;
+  position?: number | undefined;
+  difficulty?: number | undefined;
+}
+
+export interface Attempt {
+  id: string;
+  quizId: string;
+  questionId: string | null;
+  score: number;
+  maxScore: number;
+  accuracy: number;
+  confidence: number | null;
+  hintsUsed: number;
+  status: string;
+  submittedAnswer: string | null;
+  feedback: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AttemptCreateRequest {
+  questionId?: string | null | undefined;
+  score: number;
+  maxScore: number;
+  confidence?: number | null | undefined;
+  hintsUsed?: number | undefined;
+  submittedAnswer?: string | null | undefined;
+  feedback?: string | null | undefined;
+}
+
+export interface Flashcard {
+  id: string;
+  topicId: string | null;
+  front: string;
+  back: string;
+  status: FlashcardStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface FlashcardPage {
+  items: Flashcard[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface FlashcardCreateRequest {
+  topicId?: string | null | undefined;
+  front: string;
+  back: string;
+}
+
+export interface FlashcardReview {
+  id: string;
+  flashcardId: string;
+  rating: FlashcardReviewRating;
+  confidence: number | null;
+  reviewedAt: string;
+  nextReviewAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface FlashcardReviewCreateRequest {
+  rating: FlashcardReviewRating;
+  confidence?: number | null | undefined;
+  reviewedAt?: string | undefined;
+}
+
+export interface MasteryRecord {
+  id: string;
+  topicId: string;
+  masteryScore: number;
+  quizAccuracy: number;
+  successfulRecallScore: number;
+  exerciseScore: number;
+  confidenceScore: number;
+  reviewRecencyScore: number;
+  hintsPenalty: number;
+  projectEvidenceScore: number;
+  calculation: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LearningGoal {
+  id: string;
+  subjectId: string | null;
+  topicId: string | null;
+  title: string;
+  description: string | null;
+  targetDate: string | null;
+  status: LearningGoalStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LearningGoalPage {
+  items: LearningGoal[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface LearningGoalCreateRequest {
+  title: string;
+  description?: string | null | undefined;
+  subjectId?: string | null | undefined;
+  topicId?: string | null | undefined;
+  targetDate?: string | null | undefined;
+}
+
+export interface StudyRoadmap {
+  id: string;
+  subjectId: string | null;
+  title: string;
+  description: string | null;
+  steps: Record<string, unknown>[];
+  status: StudyRoadmapStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface StudyRoadmapPage {
+  items: StudyRoadmap[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface StudyRoadmapCreateRequest {
+  title: string;
+  description?: string | null | undefined;
+  subjectId?: string | null | undefined;
+  steps?: Record<string, unknown>[] | undefined;
 }
 
 export type AIFeature =

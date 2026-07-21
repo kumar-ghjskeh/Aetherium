@@ -48,6 +48,9 @@ Current approved slice:
 - Habit tracking with owner-scoped habits, schedules, targets, logs, streaks, daily check-ins,
   weekly reviews, summary metrics, non-visual Habit Garden progress signals, global search, and the
   Command Mode Habits UI.
+- Learning and mastery engine with owner-scoped subjects, topics, prerequisites, courses, modules,
+  lessons, study sessions, quizzes, questions, attempts, flashcards, reviews, mastery records,
+  learning goals, study roadmaps, global search, and the Command Mode Learning UI.
 
 Later Phase 1 slices:
 
@@ -56,13 +59,15 @@ Later Phase 1 slices:
 
 ## Phase 2 - Learning System
 
+Status: implemented as the non-visual Phase 10 learning-engine vertical slice.
+
 - Subjects and topics.
 - Courses, modules, lessons.
 - Quizzes and flashcards.
 - Study sessions.
 - Transparent mastery heuristic.
-- Research Laboratory.
-- Knowledge Observatory prototype.
+- Research Laboratory and Knowledge Observatory remain future UI/world presentations over the same
+  owner-scoped data.
 
 ## Phase 3 - AI Mentor Expansion
 

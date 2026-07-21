@@ -27,7 +27,7 @@ User
 The current implemented slices provide the infrastructure shell, standalone authentication
 foundation, user-owned foundation, protected Command Mode shell, Personal Vault storage, background
 file ingestion, global search, provider-neutral AI gateway, AI mentor conversations, citation-backed
-document Q&A, and habit tracking:
+document Q&A, habit tracking, and the learning and mastery engine:
 
 - `apps/api`: FastAPI app, database settings, Alembic, health endpoints.
 - `apps/web`: Next.js App Router scaffold, web health route, auth UI, and protected `/app` Command
@@ -35,7 +35,7 @@ document Q&A, and habit tracking:
 - `packages/shared-types`: TypeScript contracts shared by frontend packages.
 - `packages/validation`: Zod schemas that validate API contract payloads.
 - `packages/api-client`: Typed API client for health, auth, user-owned foundation, Personal Vault,
-  search, AI gateway, document Q&A, mentor conversation, and habit APIs.
+  search, AI gateway, document Q&A, mentor conversation, habit, and learning APIs.
 - Identity domain: Aetherium-owned `users` and `sessions` tables, Argon2id password hashing,
   server-side session revocation, and product-specific cookies.
 - User-owned foundation: preferences, non-visual world profile state, domain events, notifications,
@@ -64,6 +64,10 @@ document Q&A, and habit tracking:
 - Habits: owner-scoped habits, schedules, targets, logs, streak metrics, daily check-ins, weekly
   reviews, idempotent `habit.logged` domain events, audit logs, search results, and a Command Mode
   Habits UI. The Habit Garden is represented only as non-visual progress data in this slice.
+- Learning: owner-scoped subjects, topics, prerequisites, courses, modules, lessons, study sessions,
+  quizzes, questions, attempts, flashcards, reviews, mastery records, learning goals, study
+  roadmaps, idempotent lesson and quiz domain events, search results, and a Command Mode Learning
+  UI. Research Laboratory and Knowledge Observatory visuals are deferred.
 
 ## Frontend Boundaries
 
@@ -80,7 +84,6 @@ Backend domains will be added incrementally:
 - Global semantic search and knowledge extraction on top of the current Personal Vault, ingestion,
   search, and AI gateway records.
 - Mentor tools that can reuse citation-backed retrieval after explicit user approval.
-- Learning.
 - Goals, tasks, and projects.
 - Achievements and domain events.
 - Analytics, notifications, audit, and security.
@@ -114,6 +117,9 @@ plus reusable dependencies.
   messages, memory settings, exports, edit/resend, regeneration, and stop-generation behavior.
 - Habit routes are under `/api/v1/habits` and expose habits, logs, summaries, daily check-ins, and
   weekly reviews.
+- Learning routes are under `/api/v1/learning` and expose subjects, topics, prerequisites,
+  resources, courses, modules, lessons, study sessions, quizzes, questions, attempts, flashcards,
+  reviews, mastery records, learning goals, and study roadmaps.
 
 ## Configuration
 

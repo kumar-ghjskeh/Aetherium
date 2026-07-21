@@ -37,12 +37,15 @@ Implemented foundation slices:
   owner-scoped ready-chunk retrieval, validated source citations, and an AI Hall document panel.
 - Habit tracking with owner-scoped habits, schedules, targets, logs, streaks, daily check-ins,
   weekly reviews, summary metrics, Command Mode Habits UI, domain events, and audit logs.
+- Learning and mastery engine with owner-scoped subjects, topics, prerequisites, courses, lessons,
+  study sessions, quizzes, flashcards, goals, roadmaps, transparent mastery records, learning-topic
+  search, and Command Mode Learning UI.
 
 Still out of scope unless explicitly requested:
 
 - OAuth, social login, email delivery, password reset, MFA, and magic links.
 - 3D world scenes, React Three Fiber, player controls, map travel, or world progression.
-- Learning, projects, achievements, analytics, or visual world progression.
+- Projects, achievements, analytics, coding workspace, knowledge graph, or visual world progression.
 
 ## Product Independence
 

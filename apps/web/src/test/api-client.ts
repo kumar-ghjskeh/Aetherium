@@ -76,3 +76,37 @@ export function createUnusedHabitsClient(): AetheriumApiClient["habits"] {
     upsertWeeklyReview: vi.fn(reject)
   };
 }
+
+export function createUnusedLearningClient(): AetheriumApiClient["learning"] {
+  const reject = () => Promise.reject(new Error("Unexpected learning call"));
+
+  return {
+    addPrerequisite: vi.fn(reject),
+    addQuestion: vi.fn(reject),
+    completeLesson: vi.fn(reject),
+    createCourse: vi.fn(reject),
+    createFlashcard: vi.fn(reject),
+    createGoal: vi.fn(reject),
+    createLesson: vi.fn(reject),
+    createModule: vi.fn(reject),
+    createQuiz: vi.fn(reject),
+    createResource: vi.fn(reject),
+    createRoadmap: vi.fn(reject),
+    createSession: vi.fn(reject),
+    createSubject: vi.fn(reject),
+    createTopic: vi.fn(reject),
+    endSession: vi.fn(reject),
+    getMastery: vi.fn(reject),
+    listCourses: vi.fn(reject),
+    listFlashcards: vi.fn(reject),
+    listGoals: vi.fn(reject),
+    listQuizzes: vi.fn(reject),
+    listResources: vi.fn(reject),
+    listRoadmaps: vi.fn(reject),
+    listSessions: vi.fn(reject),
+    listSubjects: vi.fn(reject),
+    listTopics: vi.fn(reject),
+    reviewFlashcard: vi.fn(reject),
+    submitAttempt: vi.fn(reject)
+  };
+}
