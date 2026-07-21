@@ -9,6 +9,10 @@ rate limits, cost tracking, and source attribution rules.
 
 No AI provider integration is implemented in the current slice.
 
+Keyword search over owner-scoped files, extracted chunks, collections, and tags is implemented under
+`/api/v1/search`. Semantic ranking, embeddings, reranking, AI answer generation, and citations are
+not implemented yet.
+
 ## Required Capabilities
 
 Future adapters must support:
@@ -33,7 +37,7 @@ Initial adapter targets:
 
 ## Retrieval
 
-The first retrieval implementation should use PostgreSQL:
+The first AI retrieval implementation should build on PostgreSQL:
 
 - Full-text search.
 - pgvector embeddings.

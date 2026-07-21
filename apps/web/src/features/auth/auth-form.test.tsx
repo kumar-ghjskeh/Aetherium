@@ -161,6 +161,20 @@ function createClient(overrides: Partial<AetheriumApiClient["auth"]>): Aetherium
       list: vi.fn(() => Promise.resolve(emptyNotificationPage)),
       markRead: vi.fn(() => Promise.resolve(notification))
     },
+    search: {
+      recent: vi.fn(() => Promise.resolve({ items: [], limit: 20, offset: 0, total: 0 })),
+      run: vi.fn(() =>
+        Promise.resolve({
+          items: [],
+          limit: 20,
+          mode: "hybrid" as const,
+          offset: 0,
+          query: "",
+          semanticEnabled: false,
+          total: 0
+        })
+      )
+    },
     settings: {
       getPreferences: vi.fn(() => Promise.resolve(preferences)),
       updatePreferences: vi.fn(() => Promise.resolve(preferences))

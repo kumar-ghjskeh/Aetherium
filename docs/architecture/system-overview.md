@@ -25,8 +25,8 @@ User
 ## Current Scaffold
 
 The current implemented slices provide the infrastructure shell, standalone authentication
-foundation, user-owned foundation, protected Command Mode shell, Personal Vault storage, and
-background file ingestion:
+foundation, user-owned foundation, protected Command Mode shell, Personal Vault storage, background
+file ingestion, and global search:
 
 - `apps/api`: FastAPI app, database settings, Alembic, health endpoints.
 - `apps/web`: Next.js App Router scaffold, web health route, auth UI, and protected `/app` Command
@@ -47,6 +47,9 @@ background file ingestion:
 - File ingestion: durable processing jobs, a standalone worker process, text extraction, chunk
   storage, failure records, retry APIs, and Library retry controls. Chunks are prepared for later
   search and retrieval but are not yet a user-facing search feature.
+- Search: owner-scoped global search over files, extracted chunks, collections, and tags with recent
+  search persistence and Command Palette integration. Semantic/vector ranking remains disabled until
+  the AI gateway and embedding phases.
 
 ## Frontend Boundaries
 
@@ -60,7 +63,8 @@ Three.js, React Three Fiber, scene assets, or player/camera controls until the v
 Backend domains will be added incrementally:
 
 - Additional world configuration and user world state beyond the current non-visual profile.
-- Search and knowledge extraction on top of the current Personal Vault and ingestion records.
+- Semantic retrieval and knowledge extraction on top of the current Personal Vault, ingestion, and
+  search records.
 - AI conversations and mentors.
 - Learning.
 - Habits, goals, tasks, and projects.
@@ -88,6 +92,8 @@ plus reusable dependencies.
   object-storage URLs.
 - File ingestion routes are under `/api/v1/files` and expose owner-scoped processing jobs, retries,
   and extracted chunks.
+- Search routes are under `/api/v1/search` and expose owner-scoped query results plus recent
+  searches.
 - Streaming AI responses will use server-sent events or another explicit streaming response later.
 
 ## Configuration

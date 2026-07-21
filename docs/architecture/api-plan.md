@@ -45,11 +45,12 @@ Current routes:
 - `GET /api/v1/files/{file_id}/processing-jobs`
 - `POST /api/v1/files/{file_id}/processing-jobs`
 - `GET /api/v1/files/{file_id}/chunks`
+- `POST /api/v1/search`
+- `GET /api/v1/search/recent`
 
 Planned route groups:
 
 - `/api/v1/users`
-- `/api/v1/search`
 - `/api/v1/ai`
 - `/api/v1/mentors`
 - `/api/v1/learning`
@@ -170,6 +171,16 @@ job when it has retry attempts remaining.
 
 `GET /api/v1/files/{file_id}/chunks` returns extracted chunks for an owned active file. This is a
 low-level owner-scoped data API for future search and retrieval work, not a global search endpoint.
+
+## Search Routes
+
+`POST /api/v1/search` searches the authenticated user's implemented Aetherium data and records a
+recent search. Current result producers cover file metadata, file chunks, collections, and tags. The
+response includes snippets, match reasons, open URLs, and future world-location identifiers.
+`semanticEnabled` is `false` until embeddings and AI consent controls are implemented.
+
+`GET /api/v1/search/recent` lists only the authenticated user's recent searches with bounded
+pagination.
 
 ## Generated Client
 

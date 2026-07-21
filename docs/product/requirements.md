@@ -57,15 +57,17 @@ Implemented Phase 1 foundation slices:
   favorites, deletion state, and a real Library UI.
 - Background file ingestion for uploaded files, including durable processing jobs, worker-based text
   extraction, chunk storage, visible failure state, and retry controls.
+- Global search for implemented data, including files, extracted chunks, collections, tags, recent
+  searches, and Command Palette integration.
 
-3D functionality, AI, user-facing search, semantic retrieval, citation-backed Q&A, and habits are
-intentionally deferred.
+3D functionality, AI, semantic retrieval, citation-backed Q&A, and habits are intentionally
+deferred.
 
 ## Non-Goals For Current Slice
 
 - No OAuth, social login, email delivery, password reset, MFA, or magic links.
 - No 3D scene or world interaction.
-- No user-facing extracted-text search, semantic embeddings, or citation-backed file Q&A.
+- No semantic embeddings or citation-backed file Q&A.
 - No AI provider calls.
 - No habit, task, project, or learning domain behavior.
 - No claims that user-facing product workflows are complete.
@@ -90,3 +92,5 @@ intentionally deferred.
 - Uploaded files are queued for background processing; the worker can extract supported content into
   owner-scoped chunks, record failures, and expose retry state without sending content to an AI
   provider.
+- A signed-in user can search their own file metadata, extracted chunks, collections, and tags from
+  Command Mode without seeing another user's records.

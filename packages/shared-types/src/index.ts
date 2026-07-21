@@ -382,3 +382,79 @@ export interface FileChunkPage {
   limit: number;
   offset: number;
 }
+
+export type SearchEntityType =
+  | "file"
+  | "file_chunk"
+  | "collection"
+  | "tag"
+  | "note"
+  | "ai_conversation"
+  | "learning_topic"
+  | "project"
+  | "task"
+  | "habit"
+  | "achievement";
+
+export type SearchMode = "keyword" | "hybrid";
+
+export type SearchSort = "relevance" | "recent";
+
+export type SearchMatchReason =
+  "file_metadata" | "file_content" | "collection_metadata" | "tag_metadata";
+
+export interface SearchRequest {
+  query: string;
+  entityTypes?: SearchEntityType[] | undefined;
+  mode?: SearchMode | undefined;
+  sort?: SearchSort | undefined;
+  limit?: number | undefined;
+  offset?: number | undefined;
+}
+
+export interface SearchResultSource {
+  fileId: string | null;
+  chunkId: string | null;
+  pageNumber: number | null;
+  sectionLabel: string | null;
+}
+
+export interface SearchResult {
+  id: string;
+  entityType: SearchEntityType;
+  entityId: string;
+  title: string;
+  snippet: string;
+  matchReason: SearchMatchReason;
+  score: number;
+  openUrl: string;
+  worldLocationId: string | null;
+  source: SearchResultSource | null;
+  createdAt: string;
+}
+
+export interface SearchResponse {
+  query: string;
+  mode: SearchMode;
+  semanticEnabled: boolean;
+  items: SearchResult[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface RecentSearch {
+  id: string;
+  query: string;
+  entityTypes: SearchEntityType[];
+  filters: Record<string, unknown>;
+  resultCount: number;
+  createdAt: string;
+}
+
+export interface RecentSearchPage {
+  items: RecentSearch[];
+  total: number;
+  limit: number;
+  offset: number;
+}

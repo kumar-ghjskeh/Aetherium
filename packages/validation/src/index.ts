@@ -435,6 +435,87 @@ export const fileChunkPageSchema = z.object({
   total: z.number().int().min(0)
 });
 
+export const searchEntityTypeSchema = z.enum([
+  "file",
+  "file_chunk",
+  "collection",
+  "tag",
+  "note",
+  "ai_conversation",
+  "learning_topic",
+  "project",
+  "task",
+  "habit",
+  "achievement"
+]);
+
+export const searchModeSchema = z.enum(["keyword", "hybrid"]);
+
+export const searchSortSchema = z.enum(["relevance", "recent"]);
+
+export const searchMatchReasonSchema = z.enum([
+  "file_metadata",
+  "file_content",
+  "collection_metadata",
+  "tag_metadata"
+]);
+
+export const searchRequestSchema = z.object({
+  entityTypes: z.array(searchEntityTypeSchema).optional(),
+  limit: z.number().int().min(1).max(50).optional(),
+  mode: searchModeSchema.optional(),
+  offset: z.number().int().min(0).max(1000).optional(),
+  query: z.string().trim().min(1).max(240),
+  sort: searchSortSchema.optional()
+});
+
+export const searchResultSourceSchema = z.object({
+  chunkId: z.string().uuid().nullable(),
+  fileId: z.string().uuid().nullable(),
+  pageNumber: z.number().int().nullable(),
+  sectionLabel: z.string().nullable()
+});
+
+export const searchResultSchema = z.object({
+  createdAt: z.string().min(1),
+  entityId: z.string().uuid(),
+  entityType: searchEntityTypeSchema,
+  id: z.string().min(1),
+  matchReason: searchMatchReasonSchema,
+  openUrl: z.string().min(1),
+  score: z.number(),
+  snippet: z.string(),
+  source: searchResultSourceSchema.nullable(),
+  title: z.string().min(1),
+  worldLocationId: z.string().min(1).nullable()
+});
+
+export const searchResponseSchema = z.object({
+  items: z.array(searchResultSchema),
+  limit: z.number().int().min(1),
+  mode: searchModeSchema,
+  offset: z.number().int().min(0),
+  query: z.string(),
+  semanticEnabled: z.boolean(),
+  total: z.number().int().min(0)
+});
+
+export const recentSearchSchema = z.object({
+  createdAt: z.string().min(1),
+  entityTypes: z.array(searchEntityTypeSchema),
+  filters: z.record(z.unknown()),
+  id: z.string().uuid(),
+  query: z.string().min(1),
+  resultCount: z.number().int().min(0)
+});
+
+export const recentSearchPageSchema = z.object({
+  items: z.array(recentSearchSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
 export type HealthCheckResponseInput = z.input<typeof healthCheckResponseSchema>;
 export type HealthCheckResponseOutput = z.output<typeof healthCheckResponseSchema>;
 export type RegisterRequestInput = z.input<typeof registerRequestSchema>;

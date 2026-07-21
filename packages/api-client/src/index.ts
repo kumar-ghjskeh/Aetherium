@@ -25,7 +25,10 @@ import type {
   ProcessingJobPage,
   ProcessingJob,
   PublicUser,
+  RecentSearchPage,
   RegisterRequest,
+  SearchRequest,
+  SearchResponse,
   TagPage,
   UploadCompleteRequest,
   UploadInitiateRequest,
@@ -55,6 +58,8 @@ import {
   processingJobPageSchema,
   processingJobSchema,
   publicUserSchema,
+  recentSearchPageSchema,
+  searchResponseSchema,
   uploadResponseSchema,
   userPreferencesSchema,
   vaultFileSchema,
@@ -115,6 +120,10 @@ export interface AetheriumApiClient {
   notifications: {
     list: (query?: NotificationListQuery) => Promise<NotificationPage>;
     markRead: (notificationId: string) => Promise<Notification>;
+  };
+  search: {
+    recent: (query?: PaginationQuery) => Promise<RecentSearchPage>;
+    run: (payload: SearchRequest) => Promise<SearchResponse>;
   };
   settings: {
     getPreferences: () => Promise<UserPreferences>;
@@ -515,6 +524,23 @@ export function createAetheriumApiClient(options: AetheriumApiClientOptions): Ae
           { method: "POST" }
         );
         return notificationSchema.parse(response);
+      }
+    },
+    search: {
+      recent: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/search/recent${paginationQuery(query)}`
+        );
+        return recentSearchPageSchema.parse(response);
+      },
+      run: async (payload) => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/search", {
+          body: JSON.stringify(payload),
+          method: "POST"
+        });
+        return searchResponseSchema.parse(response);
       }
     },
     settings: {

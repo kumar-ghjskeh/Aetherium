@@ -75,6 +75,25 @@ const fileChunk = {
   updatedAt: "2026-07-20T00:00:00Z"
 };
 
+const searchResult = {
+  createdAt: "2026-07-20T00:00:00Z",
+  entityId: fileChunk.id,
+  entityType: "file_chunk",
+  id: `file_chunk:${fileChunk.id}`,
+  matchReason: "file_content",
+  openUrl: `/app/library?file=${vaultFile.id}&chunk=${fileChunk.id}`,
+  score: 0.9,
+  snippet: "Alpha systems notes.",
+  source: {
+    chunkId: fileChunk.id,
+    fileId: vaultFile.id,
+    pageNumber: null,
+    sectionLabel: "document"
+  },
+  title: "Lecture notes content",
+  worldLocationId: "library"
+};
+
 describe("createAetheriumApiClient", () => {
   it("fetches and validates API liveness", async () => {
     const fetcher = vi.fn<typeof fetch>(() =>
@@ -543,6 +562,68 @@ describe("createAetheriumApiClient", () => {
         }
       }
     );
+  });
+
+  it("runs global search and lists recent searches", async () => {
+    const fetcher = vi.fn<typeof fetch>((input) => {
+      const url = requestUrl(input);
+      if (url.endsWith("/api/v1/search/recent?limit=5&offset=0")) {
+        return Promise.resolve(
+          jsonResponse({
+            items: [
+              {
+                createdAt: "2026-07-20T00:00:00Z",
+                entityTypes: ["file", "file_chunk"],
+                filters: { mode: "hybrid", sort: "relevance" },
+                id: "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
+                query: "alpha",
+                resultCount: 1
+              }
+            ],
+            limit: 5,
+            offset: 0,
+            total: 1
+          })
+        );
+      }
+      return Promise.resolve(
+        jsonResponse({
+          items: [searchResult],
+          limit: 10,
+          mode: "hybrid",
+          offset: 0,
+          query: "alpha",
+          semanticEnabled: false,
+          total: 1
+        })
+      );
+    });
+    const client = createAetheriumApiClient({ baseUrl: "http://localhost:8000", fetcher });
+
+    await expect(
+      client.search.run({
+        entityTypes: ["file", "file_chunk"],
+        limit: 10,
+        query: "alpha"
+      })
+    ).resolves.toMatchObject({ total: 1 });
+    await expect(client.search.recent({ limit: 5, offset: 0 })).resolves.toMatchObject({
+      total: 1
+    });
+
+    expect(fetcher).toHaveBeenNthCalledWith(1, "http://localhost:8000/api/v1/search", {
+      body: JSON.stringify({
+        entityTypes: ["file", "file_chunk"],
+        limit: 10,
+        query: "alpha"
+      }),
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      method: "POST"
+    });
   });
 
   it("posts registration payloads with credentials", async () => {

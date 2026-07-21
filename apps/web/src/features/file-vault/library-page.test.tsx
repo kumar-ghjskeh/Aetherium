@@ -115,6 +115,7 @@ function createClient(overrides: Partial<AetheriumApiClient["files"]> = {}): Aet
     },
     health: { live: vi.fn(reject), ready: vi.fn(reject) },
     notifications: { list: vi.fn(reject), markRead: vi.fn(reject) },
+    search: { recent: vi.fn(reject), run: vi.fn(reject) },
     settings: { getPreferences: vi.fn(reject), updatePreferences: vi.fn(reject) },
     world: { getProfile: vi.fn(reject), updateProfile: vi.fn(reject), visit: vi.fn(reject) }
   };

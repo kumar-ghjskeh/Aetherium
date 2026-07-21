@@ -14,6 +14,8 @@ Back up these Aetherium-owned resources independently:
   tags, favorites, and deletion state.
 - File-ingestion records in PostgreSQL, including processing jobs, extraction results, chunks,
   embedding job placeholders, and processing failures.
+- Search records in PostgreSQL, including recent-search metadata and PostgreSQL full-text search
+  indexes.
 - Object-storage buckets with uploaded originals, generated derivatives, future avatars, and future
   exports.
 - Redis only for durable queues or future state that cannot be safely reconstructed.
@@ -70,3 +72,8 @@ The `0005_file_ingestion` migration introduces processing jobs, extraction resul
 embedding job placeholders, and processing failures. Restores must keep chunk rows aligned with the
 restored `files` records. If object storage was only partially restored, failed or stale processing
 jobs should be retried after object integrity checks rather than deleting extracted chunks blindly.
+
+The `0006_hybrid_search` migration introduces recent-search records and PostgreSQL full-text search
+indexes over file metadata, file chunks, collections, and tags. Recent-search rows are user-owned
+metadata and should be restored with the main database. Full-text expression indexes may be rebuilt
+after restore if needed; they do not replace the underlying user-owned records.

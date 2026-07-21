@@ -6,8 +6,8 @@ interface backed by an optional cinematic world presentation layer.
 This repository currently contains the Phase 0 documentation baseline and early non-3D vertical
 slices: the infrastructure scaffold, standalone password authentication with server-side sessions,
 the user-owned foundation, the protected Command Mode application shell, and Personal Vault file
-storage with background ingestion. It does not yet implement visual 3D world navigation, user-facing
-search, semantic retrieval, AI chat, habits, or learning features.
+storage with background ingestion and global search. It does not yet implement visual 3D world
+navigation, semantic retrieval, AI chat, habits, or learning features.
 
 Aetherium is a standalone product. It uses its own repository, database, Redis namespace,
 object-storage buckets, environment variables, Docker resources, CI workflow, and future
@@ -33,6 +33,8 @@ authentication/session system. See `docs/architecture/product-independence.md` a
   download URLs, collections, tags, favorites, soft deletion, permanent deletion, and a Library UI.
 - Background file ingestion with durable processing jobs, a standalone `aetherium-worker`, text
   extraction, chunk storage, failure visibility, retry APIs, and Library retry controls.
+- Global search under `/api/v1/search` over files, extracted chunks, collections, and tags, with
+  recent searches and Command Palette integration.
 - Non-visual `/app/world` route that clearly marks visual World Mode as future work.
 - Docker Compose development infrastructure for Aetherium-isolated PostgreSQL, Redis, MinIO, API,
   worker, and web services.
@@ -179,6 +181,11 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
 - File processing jobs: `GET/POST http://localhost:8000/api/v1/files/{id}/processing-jobs`
 - File chunks: `GET http://localhost:8000/api/v1/files/{id}/chunks`
 
+## Search Endpoints
+
+- Run search: `POST http://localhost:8000/api/v1/search`
+- Recent searches: `GET http://localhost:8000/api/v1/search/recent`
+
 ## Local Resource Names
 
 - Compose project: `aetherium`
@@ -201,8 +208,8 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
 - Docker is scaffolded but not required for unit tests.
 - API readiness requires PostgreSQL.
 - Email verification, password reset, OAuth, MFA, and magic links are not implemented yet.
-- Personal Vault ingestion extracts text and stores chunks, but user-facing search, semantic
-  embeddings, AI retrieval, and citations are not implemented yet.
+- Personal Vault ingestion extracts text and stores chunks, and global search can find those chunks.
+  Semantic embeddings, AI retrieval, and citations are not implemented yet.
 - Embedding jobs are recorded as skipped by default until the AI gateway and semantic search slices
   provide real provider adapters and consent controls.
 - No AI provider, habit workflow, learning domain, project workspace, real analytics, or visual 3D

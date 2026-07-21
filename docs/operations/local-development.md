@@ -52,6 +52,10 @@ defaults to local web origins.
 bucket. File chunks are stored in PostgreSQL; embeddings are skipped by default until the later AI
 gateway and semantic-search phases.
 
+Command Palette search uses the local PostgreSQL database only. It can search the signed-in user's
+file metadata, extracted chunks, collections, and tags after ingestion has produced chunks. Recent
+searches are stored as Aetherium-owned user metadata in PostgreSQL.
+
 ## Authentication Defaults
 
 Local development uses:

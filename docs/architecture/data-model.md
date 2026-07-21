@@ -21,6 +21,8 @@ Current migrations:
   collections, tags, favorites, and deletion state.
 - `0005_file_ingestion`: creates durable file-processing jobs, extraction results, chunks, embedding
   job placeholders, and processing failures.
+- `0006_hybrid_search`: creates owner-scoped recent searches and PostgreSQL full-text expression
+  indexes for implemented search targets.
 
 ### `users`
 
@@ -210,6 +212,28 @@ provider adapters and user consent controls.
 
 Failure rows support user-visible processing state and audit/debug workflows without storing raw
 document bodies.
+
+## Search Schema
+
+### `recent_searches`
+
+- UUID primary key.
+- `owner_user_id` foreign key to `users.id`.
+- Query text and normalized query.
+- JSON array of requested entity types.
+- JSON filters.
+- Result count.
+- Timestamps.
+
+Recent searches are user-owned product data. They do not grant access to results; every search query
+still filters by current owner.
+
+PostgreSQL deployments also include full-text expression indexes over:
+
+- File display name, original file name, and file kind.
+- File chunk `search_text`.
+- Collection name and description.
+- Tag name.
 
 ## Planned Later Tables
 

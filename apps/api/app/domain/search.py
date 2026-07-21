@@ -1,0 +1,32 @@
+from enum import StrEnum
+
+
+class SearchEntityType(StrEnum):
+    FILE = "file"
+    FILE_CHUNK = "file_chunk"
+    COLLECTION = "collection"
+    TAG = "tag"
+    NOTE = "note"
+    AI_CONVERSATION = "ai_conversation"
+    LEARNING_TOPIC = "learning_topic"
+    PROJECT = "project"
+    TASK = "task"
+    HABIT = "habit"
+    ACHIEVEMENT = "achievement"
+
+
+class SearchSort(StrEnum):
+    RELEVANCE = "relevance"
+    RECENT = "recent"
+
+
+class SearchMode(StrEnum):
+    KEYWORD = "keyword"
+    HYBRID = "hybrid"
+
+
+class SearchMatchReason(StrEnum):
+    FILE_METADATA = "file_metadata"
+    FILE_CONTENT = "file_content"
+    COLLECTION_METADATA = "collection_metadata"
+    TAG_METADATA = "tag_metadata"

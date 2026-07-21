@@ -23,6 +23,7 @@ from app.models.foundation import (
     UserPreferences,
     WorldProfile,
 )
+from app.models.search import RecentSearch
 
 __all__ = [
     "AuditLog",
@@ -40,6 +41,7 @@ __all__ = [
     "Notification",
     "ProcessingFailure",
     "ProcessingJob",
+    "RecentSearch",
     "Tag",
     "UploadRecord",
     "User",

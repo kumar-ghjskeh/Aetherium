@@ -14,6 +14,7 @@ Production must provide Aetherium-owned or Aetherium-dedicated resources for:
 - API runtime.
 - Web runtime.
 - Background workers, including file-ingestion workers.
+- PostgreSQL full-text search indexes and future Aetherium-owned embedding storage.
 - AI-provider credentials and model configuration.
 - Session signing, encryption, and future token secrets.
 - Logging, monitoring, alerting, backup, and restore configuration.
@@ -60,6 +61,8 @@ Before deploying a new environment, verify:
 - `AETHERIUM_FILE_INGESTION_QUEUE_NAME` starts with `aetherium:`.
 - Embedding generation remains disabled unless the AI gateway, semantic search, and consent controls
   are deployed for that environment.
+- Global search uses only Aetherium-owned PostgreSQL records and must not federate into another
+  product index or API.
 - File-parser dependencies and worker resource limits are reviewed before processing untrusted
   production documents at scale.
 - Session cookie name includes `aetherium` and is not generic.

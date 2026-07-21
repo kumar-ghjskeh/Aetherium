@@ -35,10 +35,11 @@ Current approved slice:
   tags, favorites, deletion state, and a Library UI.
 - Async file processing with durable jobs, worker processing, extraction results, chunks, failure
   visibility, retries, and owner-scoped chunk/job APIs.
+- Global search over files, extracted chunks, collections, and tags with recent searches and Command
+  Palette integration.
 
 Later Phase 1 slices:
 
-- Search.
 - One general AI mentor with citations.
 - One daily habit and habit logging.
 - User profile beyond the current `/auth/me` public profile.

@@ -4,6 +4,8 @@ import type { AetheriumApiClient } from "@aetherium/api-client";
 import type {
   Notification,
   NotificationPage,
+  RecentSearch,
+  SearchResult,
   UserPreferences,
   UserPreferencesUpdate,
   WorldProfile
@@ -325,7 +327,15 @@ export function AppShell({
         </div>
 
         {isPaletteOpen ? (
-          <CommandPalette onClose={() => setIsPaletteOpen(false)} onRunCommand={runCommand} />
+          <CommandPalette
+            client={apiClient}
+            onClose={() => setIsPaletteOpen(false)}
+            onOpenResult={(target) => {
+              setIsPaletteOpen(false);
+              router.push(target);
+            }}
+            onRunCommand={runCommand}
+          />
         ) : null}
       </div>
     </ShellDataContext.Provider>
@@ -372,17 +382,72 @@ function NotificationsPanel({
 }
 
 function CommandPalette({
+  client,
   onClose,
+  onOpenResult,
   onRunCommand
 }: Readonly<{
+  client: AetheriumApiClient;
   onClose: () => void;
+  onOpenResult: (target: string) => void;
   onRunCommand: (actionId: string) => void;
 }>): React.ReactElement {
-  const firstActionRef = React.useRef<HTMLButtonElement | null>(null);
+  const searchInputRef = React.useRef<HTMLInputElement | null>(null);
+  const [query, setQuery] = React.useState("");
+  const [recentSearches, setRecentSearches] = React.useState<RecentSearch[]>([]);
+  const [results, setResults] = React.useState<SearchResult[]>([]);
+  const [searchStatus, setSearchStatus] = React.useState<"idle" | "loading" | "ready" | "error">(
+    "idle"
+  );
+  const [searchError, setSearchError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    firstActionRef.current?.focus();
-  }, []);
+    searchInputRef.current?.focus();
+    let isActive = true;
+    async function loadRecentSearches(): Promise<void> {
+      try {
+        const recent = await client.search.recent({ limit: 5, offset: 0 });
+        if (isActive) {
+          setRecentSearches(recent.items);
+        }
+      } catch {
+        if (isActive) {
+          setRecentSearches([]);
+        }
+      }
+    }
+
+    void loadRecentSearches();
+    return () => {
+      isActive = false;
+    };
+  }, [client]);
+
+  async function handleSearch(event: React.FormEvent<HTMLFormElement>): Promise<void> {
+    event.preventDefault();
+    const trimmedQuery = query.trim();
+    if (!trimmedQuery) {
+      setResults([]);
+      setSearchStatus("idle");
+      setSearchError(null);
+      return;
+    }
+
+    setSearchStatus("loading");
+    setSearchError(null);
+    try {
+      const response = await client.search.run({
+        limit: 8,
+        mode: "hybrid",
+        query: trimmedQuery
+      });
+      setResults(response.items);
+      setSearchStatus("ready");
+    } catch (error) {
+      setSearchError(friendlyDataError(error));
+      setSearchStatus("error");
+    }
+  }
 
   return (
     <div className="palette-backdrop" role="presentation" onMouseDown={onClose}>
@@ -399,15 +464,69 @@ function CommandPalette({
             X
           </button>
         </header>
+        <form className="palette-search-form" onSubmit={(event) => void handleSearch(event)}>
+          <label className="sr-only" htmlFor="command-palette-search">
+            Search Aetherium
+          </label>
+          <input
+            id="command-palette-search"
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search files, chunks, collections, and tags"
+            ref={searchInputRef}
+            type="search"
+            value={query}
+          />
+          <button className="secondary-action" disabled={searchStatus === "loading"} type="submit">
+            Search
+          </button>
+        </form>
+        {searchStatus === "loading" ? <p className="empty-note">Searching...</p> : null}
+        {searchStatus === "error" ? (
+          <section className="inline-alert" role="alert">
+            {searchError ?? "Search is unavailable."}
+          </section>
+        ) : null}
+        {searchStatus === "ready" && results.length === 0 ? (
+          <p className="empty-note">No matching Aetherium records.</p>
+        ) : null}
+        {results.length > 0 ? (
+          <div className="palette-list" aria-label="Search results">
+            {results.map((result) => (
+              <button
+                className="palette-action"
+                key={result.id}
+                onClick={() => onOpenResult(result.openUrl)}
+                type="button"
+              >
+                <span>{result.title}</span>
+                <small>{result.snippet}</small>
+              </button>
+            ))}
+          </div>
+        ) : null}
+        {query.trim() === "" && recentSearches.length > 0 ? (
+          <div className="palette-list" aria-label="Recent searches">
+            {recentSearches.map((recent) => (
+              <button
+                className="palette-action"
+                key={recent.id}
+                onClick={() => setQuery(recent.query)}
+                type="button"
+              >
+                <span>{recent.query}</span>
+                <small>{recent.resultCount} previous results</small>
+              </button>
+            ))}
+          </div>
+        ) : null}
         <div className="palette-list">
-          {commandActions.map((action, index) => (
+          {commandActions.map((action) => (
             <button
               aria-disabled={!action.available}
               className="palette-action"
               disabled={!action.available}
               key={action.id}
               onClick={() => onRunCommand(action.id)}
-              ref={index === 0 ? firstActionRef : undefined}
               type="button"
             >
               <span>{action.label}</span>

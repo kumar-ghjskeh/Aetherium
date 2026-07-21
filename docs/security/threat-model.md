@@ -74,6 +74,10 @@
   AI providers in this slice.
 - Processing retries are owner-scoped and limited by configured attempts.
 - Embedding jobs are skipped by default until provider adapters and consent controls exist.
+- Global search is owner-scoped across files, chunks, collections, tags, and recent searches.
+- Search snippets are plain text and must not be rendered as trusted HTML.
+- Recent searches store only the authenticated user's query, filters, and result count; they do not
+  grant access to results.
 - CI runs independence checks, formatting, linting, type checks, tests, build, and migration smoke
   validation.
 
@@ -89,5 +93,7 @@
 - Actual malware scanning service and quarantine workflow.
 - Background extraction sandboxing and resource limits for PDFs, DOCX, images, and source files.
 - Malware-scanning execution before or during ingestion.
+- Semantic-search consent controls and prompt-injection review before file chunks are used for AI
+  answers.
 - Account deletion and data export.
 - Authorization tests for every critical user-owned endpoint.

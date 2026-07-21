@@ -156,6 +156,7 @@ function createClient(
     auth: Partial<AetheriumApiClient["auth"]>;
     files: Partial<AetheriumApiClient["files"]>;
     notifications: Partial<AetheriumApiClient["notifications"]>;
+    search: Partial<AetheriumApiClient["search"]>;
     settings: Partial<AetheriumApiClient["settings"]>;
     world: Partial<AetheriumApiClient["world"]>;
   }> = {}
@@ -184,6 +185,21 @@ function createClient(
       list: vi.fn(() => Promise.resolve(notificationPage)),
       markRead: vi.fn(() => Promise.resolve(readNotification)),
       ...overrides.notifications
+    },
+    search: {
+      recent: vi.fn(() => Promise.resolve({ items: [], limit: 20, offset: 0, total: 0 })),
+      run: vi.fn(() =>
+        Promise.resolve({
+          items: [],
+          limit: 20,
+          mode: "hybrid" as const,
+          offset: 0,
+          query: "",
+          semanticEnabled: false,
+          total: 0
+        })
+      ),
+      ...overrides.search
     },
     settings: {
       getPreferences: vi.fn(() => Promise.resolve(preferences)),
@@ -262,12 +278,65 @@ describe("Command Mode shell", () => {
     expect(screen.queryByRole("dialog", { name: "Command palette" })).not.toBeInTheDocument();
   });
 
+  it("runs global search from the command palette and opens results", async () => {
+    const client = createClient({
+      search: {
+        run: vi.fn(() =>
+          Promise.resolve({
+            items: [
+              {
+                createdAt: "2026-07-20T00:00:00Z",
+                entityId: "77777777-7777-4777-8777-777777777777",
+                entityType: "file_chunk" as const,
+                id: "file_chunk:77777777-7777-4777-8777-777777777777",
+                matchReason: "file_content" as const,
+                openUrl:
+                  "/app/library?file=11111111-1111-4111-8111-111111111111&chunk=77777777-7777-4777-8777-777777777777",
+                score: 0.9,
+                snippet: "Alpha systems notes.",
+                source: {
+                  chunkId: "77777777-7777-4777-8777-777777777777",
+                  fileId: "11111111-1111-4111-8111-111111111111",
+                  pageNumber: null,
+                  sectionLabel: "document"
+                },
+                title: "Alpha Notes content",
+                worldLocationId: "library"
+              }
+            ],
+            limit: 8,
+            mode: "hybrid" as const,
+            offset: 0,
+            query: "alpha",
+            semanticEnabled: false,
+            total: 1
+          })
+        )
+      }
+    });
+    renderShell(client);
+
+    await screen.findByRole("heading", { name: "Overview" });
+    await userEvent.keyboard("{Control>}k{/Control}");
+    await userEvent.type(screen.getByLabelText("Search Aetherium"), "alpha");
+    await userEvent.click(screen.getByRole("button", { name: "Search" }));
+
+    await waitFor(() =>
+      expect(client.search.run).toHaveBeenCalledWith({ limit: 8, mode: "hybrid", query: "alpha" })
+    );
+    await userEvent.click(await screen.findByRole("button", { name: /Alpha Notes content/i }));
+
+    expect(push).toHaveBeenCalledWith(
+      "/app/library?file=11111111-1111-4111-8111-111111111111&chunk=77777777-7777-4777-8777-777777777777"
+    );
+  });
+
   it("marks notifications as read from the notification panel", async () => {
     const client = createClient();
     renderShell(client);
 
     await screen.findByRole("heading", { name: "Overview" });
-    await userEvent.click(screen.getByRole("button", { name: "Notifications, 1 unread" }));
+    await userEvent.click(await screen.findByRole("button", { name: "Notifications, 1 unread" }));
     expect(screen.getByText("1 unread")).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole("button", { name: /Command Mode ready/i }));
