@@ -27,7 +27,7 @@ User
 The current implemented slices provide the infrastructure shell, standalone authentication
 foundation, user-owned foundation, protected Command Mode shell, Personal Vault storage, background
 file ingestion, global search, provider-neutral AI gateway, AI mentor conversations, citation-backed
-document Q&A, habit tracking, and the learning and mastery engine:
+document Q&A, habit tracking, the learning and mastery engine, and the Project Dock foundation:
 
 - `apps/api`: FastAPI app, database settings, Alembic, health endpoints.
 - `apps/web`: Next.js App Router scaffold, web health route, auth UI, and protected `/app` Command
@@ -35,7 +35,7 @@ document Q&A, habit tracking, and the learning and mastery engine:
 - `packages/shared-types`: TypeScript contracts shared by frontend packages.
 - `packages/validation`: Zod schemas that validate API contract payloads.
 - `packages/api-client`: Typed API client for health, auth, user-owned foundation, Personal Vault,
-  search, AI gateway, document Q&A, mentor conversation, habit, and learning APIs.
+  search, AI gateway, document Q&A, mentor conversation, habit, learning, and project APIs.
 - Identity domain: Aetherium-owned `users` and `sessions` tables, Argon2id password hashing,
   server-side session revocation, and product-specific cookies.
 - User-owned foundation: preferences, non-visual world profile state, domain events, notifications,
@@ -48,9 +48,9 @@ document Q&A, habit tracking, and the learning and mastery engine:
 - File ingestion: durable processing jobs, a standalone worker process, text extraction, chunk
   storage, failure records, retry APIs, and Library retry controls.
 - Search: owner-scoped global search over files, extracted chunks, collections, tags, AI
-  conversation titles, and active habits with recent search persistence and Command Palette
-  integration. Semantic/vector ranking remains disabled until a later retrieval slice wires
-  embedding jobs to the AI gateway with consent.
+  conversation titles, active habits, learning topics, projects, and project tasks with recent
+  search persistence and Command Palette integration. Semantic/vector ranking remains disabled until
+  a later retrieval slice wires embedding jobs to the AI gateway with consent.
 - AI gateway: provider metadata, owner-scoped consent policies, feature model configurations, chat
   completions, streaming responses, embeddings, metadata-only usage records, rate limits, retries,
   and fallback.
@@ -68,6 +68,9 @@ document Q&A, habit tracking, and the learning and mastery engine:
   quizzes, questions, attempts, flashcards, reviews, mastery records, learning goals, study
   roadmaps, idempotent lesson and quiz domain events, search results, and a Command Mode Learning
   UI. Research Laboratory and Knowledge Observatory visuals are deferred.
+- Project Dock: owner-scoped projects, milestones, project tasks, notes, links, file links, topic
+  links, technologies, blockers, project activity, idempotent completion events, search results, and
+  a Command Mode Projects UI. Coding workspace and project AI mutation tools are deferred.
 
 ## Frontend Boundaries
 
@@ -84,7 +87,7 @@ Backend domains will be added incrementally:
 - Global semantic search and knowledge extraction on top of the current Personal Vault, ingestion,
   search, and AI gateway records.
 - Mentor tools that can reuse citation-backed retrieval after explicit user approval.
-- Goals, tasks, and projects.
+- Goals and global tasks beyond project-scoped tasks.
 - Achievements and domain events.
 - Analytics, notifications, audit, and security.
 
@@ -120,6 +123,8 @@ plus reusable dependencies.
 - Learning routes are under `/api/v1/learning` and expose subjects, topics, prerequisites,
   resources, courses, modules, lessons, study sessions, quizzes, questions, attempts, flashcards,
   reviews, mastery records, learning goals, and study roadmaps.
+- Project routes are under `/api/v1/projects` and expose projects, milestones, project tasks, notes,
+  links, file links, topic links, technologies, blockers, and activity history.
 
 ## Configuration
 

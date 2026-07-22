@@ -7,9 +7,9 @@ This repository currently contains the Phase 0 documentation baseline and early 
 slices: the infrastructure scaffold, standalone password authentication with server-side sessions,
 the user-owned foundation, the protected Command Mode application shell, and Personal Vault file
 storage with background ingestion, global search, the provider-neutral AI gateway, AI mentor
-conversations, citation-backed document Q&A, habit tracking, and the learning and mastery engine. It
-does not yet implement visual 3D world navigation, projects, analytics, achievements, or coding
-workspace features.
+conversations, citation-backed document Q&A, habit tracking, the learning and mastery engine, and
+the Project Dock foundation. It does not yet implement visual 3D world navigation, analytics,
+achievements, or coding workspace features.
 
 Aetherium is a standalone product. It uses its own repository, database, Redis namespace,
 object-storage buckets, environment variables, Docker resources, CI workflow, and future
@@ -36,7 +36,8 @@ authentication/session system. See `docs/architecture/product-independence.md` a
 - Background file ingestion with durable processing jobs, a standalone `aetherium-worker`, text
   extraction, chunk storage, failure visibility, retry APIs, and Library retry controls.
 - Global search under `/api/v1/search` over files, extracted chunks, collections, tags, AI
-  conversations, and habits, with recent searches and Command Palette integration.
+  conversations, habits, learning topics, projects, and project tasks, with recent searches and
+  Command Palette integration.
 - Provider-neutral AI gateway under `/api/v1/ai` with provider metadata, owner-scoped consent
   policies, feature model configuration, chat completions, streaming responses, embeddings, usage
   records, rate limits, retries, and fallback. External provider calls are disabled unless both the
@@ -55,6 +56,9 @@ authentication/session system. See `docs/architecture/product-independence.md` a
   modules, lessons, study sessions, quizzes, questions, attempts, flashcards, reviews, transparent
   mastery records, learning goals, study roadmaps, global search integration, and a Command Mode
   Learning UI.
+- Project Dock under `/api/v1/projects` with owner-scoped projects, milestones, project tasks,
+  notes, links, file links, topic links, technologies, blockers, activity history, project
+  completion events, global search integration, and a Command Mode Projects UI.
 - Non-visual `/app/world` route that clearly marks visual World Mode as future work.
 - Docker Compose development infrastructure for Aetherium-isolated PostgreSQL, Redis, MinIO, API,
   worker, and web services.
@@ -237,6 +241,24 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
 - Learning goals: `GET/POST http://localhost:8000/api/v1/learning/goals`
 - Study roadmaps: `GET/POST http://localhost:8000/api/v1/learning/roadmaps`
 
+## Project Endpoints
+
+- Projects: `GET/POST http://localhost:8000/api/v1/projects`
+- Project detail: `GET/PATCH http://localhost:8000/api/v1/projects/{id}`
+- Archive project: `POST http://localhost:8000/api/v1/projects/{id}/archive`
+- Milestones: `POST http://localhost:8000/api/v1/projects/{id}/milestones`
+- Update milestone: `PATCH http://localhost:8000/api/v1/projects/milestones/{milestone_id}`
+- Tasks: `POST http://localhost:8000/api/v1/projects/{id}/tasks`
+- Update task: `PATCH http://localhost:8000/api/v1/projects/tasks/{task_id}`
+- Notes: `POST http://localhost:8000/api/v1/projects/{id}/notes`
+- Links: `POST http://localhost:8000/api/v1/projects/{id}/links`
+- File links: `POST http://localhost:8000/api/v1/projects/{id}/files`
+- Topic links: `POST http://localhost:8000/api/v1/projects/{id}/topics`
+- Technologies: `POST http://localhost:8000/api/v1/projects/{id}/technologies`
+- Blockers: `POST http://localhost:8000/api/v1/projects/{id}/blockers`
+- Update blocker: `PATCH http://localhost:8000/api/v1/projects/blockers/{blocker_id}`
+- Activity: `GET http://localhost:8000/api/v1/projects/{id}/activity`
+
 ## AI Gateway Endpoints
 
 - Providers: `GET http://localhost:8000/api/v1/ai/providers`
@@ -292,8 +314,8 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
   document Q&A can answer against them with citations when explicit file-content consent is enabled.
 - File-ingestion embedding jobs are still recorded as skipped by default until semantic search wires
   the AI gateway into the worker with explicit consent.
-- AI mentors are persistent and gateway-backed. Project workspace, real analytics, achievements,
-  coding workspace, and visual 3D scenes do not exist yet.
+- AI mentors are persistent and gateway-backed. Real analytics, achievements, coding workspace, and
+  visual 3D scenes do not exist yet.
 - Learning mastery is a transparent heuristic from stored quiz, review, exercise, confidence, hint,
   recency, and future project-evidence signals. It is not a scientific learning diagnosis.
 - Habit reminders and external notifications are deferred to the notification/review workflow slice.

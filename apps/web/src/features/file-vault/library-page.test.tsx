@@ -16,7 +16,8 @@ import {
   createUnusedFilesClient,
   createUnusedHabitsClient,
   createUnusedLearningClient,
-  createUnusedMentorsClient
+  createUnusedMentorsClient,
+  createUnusedProjectsClient
 } from "../../test/api-client";
 import { LibraryPage } from "./library-page";
 
@@ -135,6 +136,7 @@ function createClient(overrides: Partial<AetheriumApiClient["files"]> = {}): Aet
     learning: createUnusedLearningClient(),
     mentors: createUnusedMentorsClient(),
     notifications: { list: vi.fn(reject), markRead: vi.fn(reject) },
+    projects: createUnusedProjectsClient(),
     search: { recent: vi.fn(reject), run: vi.fn(reject) },
     settings: { getPreferences: vi.fn(reject), updatePreferences: vi.fn(reject) },
     world: { getProfile: vi.fn(reject), updateProfile: vi.fn(reject), visit: vi.fn(reject) }

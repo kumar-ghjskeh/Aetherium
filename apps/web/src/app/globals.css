@@ -885,6 +885,11 @@ kbd {
 .vault-filter-row input:focus,
 .vault-organize-row input:focus,
 .vault-organize-row select:focus,
+.project-form input:focus,
+.project-form select:focus,
+.project-form textarea:focus,
+.project-inline-form input:focus,
+.project-inline-form select:focus,
 .learning-form input:focus,
 .learning-form select:focus,
 .learning-form textarea:focus,
@@ -1229,6 +1234,195 @@ kbd {
   height: 100%;
 }
 
+.project-grid,
+.project-detail-layout {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 0.82fr) minmax(320px, 1fr);
+}
+
+.project-detail-layout {
+  align-items: start;
+  grid-template-columns: minmax(0, 1fr) 360px;
+}
+
+.project-metrics {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.project-panel-header {
+  align-items: start;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.project-toggle {
+  align-items: center;
+  border: 1px solid var(--panel-border);
+  color: var(--muted);
+  display: inline-flex;
+  font-size: 0.86rem;
+  font-weight: 800;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 10px;
+}
+
+.project-toggle input {
+  height: 18px;
+  width: 18px;
+}
+
+.project-form,
+.project-inline-form,
+.project-side-panels,
+.project-list,
+.project-section-grid,
+.project-mini-list {
+  display: grid;
+  gap: 12px;
+}
+
+.project-form {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.project-inline-form {
+  align-items: end;
+  grid-template-columns: minmax(0, 1fr) minmax(140px, 0.55fr) auto;
+}
+
+.project-form label,
+.project-inline-form label {
+  color: var(--muted);
+  display: grid;
+  font-size: 0.86rem;
+  font-weight: 800;
+  gap: 8px;
+}
+
+.project-form input,
+.project-form select,
+.project-form textarea,
+.project-inline-form input,
+.project-inline-form select {
+  background: #0d1113;
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  min-height: 42px;
+  padding: 0 10px;
+  width: 100%;
+}
+
+.project-form textarea {
+  min-height: 86px;
+  padding: 10px;
+  resize: vertical;
+}
+
+.project-form .wide-field,
+.project-form .primary-action,
+.project-form .secondary-action,
+.project-inline-form .secondary-action {
+  grid-column: 1 / -1;
+}
+
+.project-row {
+  background: #111719;
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  cursor: pointer;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 72px;
+  padding: 12px;
+  text-align: left;
+  width: 100%;
+}
+
+.project-row[aria-pressed="true"] {
+  border-color: var(--accent);
+}
+
+.project-row span,
+.project-mini-list span {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.project-row strong,
+.project-mini-list strong {
+  overflow-wrap: anywhere;
+}
+
+.project-row small,
+.project-mini-list small {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.project-row em,
+.project-mini-list em {
+  color: var(--accent-strong);
+  font-style: normal;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.project-progress-track {
+  background: #0d1113;
+  border: 1px solid var(--panel-border);
+  height: 18px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.project-progress-track span {
+  background: linear-gradient(90deg, var(--accent), #c7cf7b, var(--accent-strong));
+  display: block;
+  height: 100%;
+}
+
+.project-actions,
+.project-mini-list li {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.project-section-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.project-section-grid article {
+  border-top: 1px solid var(--panel-border);
+  display: grid;
+  gap: 12px;
+  padding-top: 14px;
+}
+
+.project-section-grid h3 {
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.project-mini-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.project-mini-list li {
+  background: #111719;
+  border: 1px solid var(--panel-border);
+  padding: 10px;
+}
+
 .ai-hall-grid,
 .ai-chat-layout {
   display: grid;
@@ -1487,6 +1681,7 @@ kbd {
 
 .mentor-row:focus,
 .topic-row:focus,
+.project-row:focus,
 .conversation-row:focus,
 .permission-grid input:focus {
   outline: 2px solid var(--accent);
@@ -1525,9 +1720,13 @@ kbd {
   .ai-hall-grid,
   .ai-chat-layout,
   .learning-grid,
+  .project-grid,
+  .project-detail-layout,
+  .project-section-grid,
   .habit-grid,
   .habit-metrics,
   .learning-metrics,
+  .project-metrics,
   .document-qa-form,
   .vault-grid,
   .vault-metrics {
@@ -1561,6 +1760,11 @@ kbd {
   .ai-chat-layout,
   .learning-grid,
   .learning-form,
+  .project-grid,
+  .project-detail-layout,
+  .project-form,
+  .project-inline-form,
+  .project-section-grid,
   .habit-grid,
   .habit-create-form,
   .habit-detail-grid,

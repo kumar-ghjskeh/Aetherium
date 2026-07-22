@@ -35,8 +35,8 @@ Current approved slice:
   tags, favorites, deletion state, and a Library UI.
 - Async file processing with durable jobs, worker processing, extraction results, chunks, failure
   visibility, retries, and owner-scoped chunk/job APIs.
-- Global search over files, extracted chunks, collections, and tags with recent searches and Command
-  Palette integration.
+- Global search over files, extracted chunks, collections, tags, AI conversations, habits, learning
+  topics, projects, and project tasks with recent searches and Command Palette integration.
 - Provider-neutral AI gateway foundation with consent policies, model configurations, usage records,
   deterministic test/local adapter, external provider adapter boundaries, rate limits, retries, and
   fallback support.
@@ -51,6 +51,9 @@ Current approved slice:
 - Learning and mastery engine with owner-scoped subjects, topics, prerequisites, courses, modules,
   lessons, study sessions, quizzes, questions, attempts, flashcards, reviews, mastery records,
   learning goals, study roadmaps, global search, and the Command Mode Learning UI.
+- Project Dock foundation with owner-scoped projects, milestones, project tasks, notes, links, file
+  links, topic links, technologies, blockers, activity history, completion events, global search,
+  and the Command Mode Projects UI.
 
 Later Phase 1 slices:
 
@@ -81,9 +84,16 @@ Status: implemented as the non-visual Phase 10 learning-engine vertical slice.
 
 ## Phase 4 - Projects And Coding
 
-- Project Workshop.
+Project status: implemented as the non-visual Phase 11 Project Dock foundation.
+
+- Project Workshop records.
 - Milestones and project tasks.
 - Git links.
+- Project notes, resources, technologies, blockers, and activity history.
+- Project-specific AI context remains future explicit-consent behavior.
+
+Coding status: future.
+
 - Code editor.
 - Mock code runner moving toward a sandboxed provider.
 - Programming Tower.

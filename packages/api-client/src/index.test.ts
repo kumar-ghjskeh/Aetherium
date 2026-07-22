@@ -351,6 +351,124 @@ const studyRoadmap = {
   updatedAt: "2026-07-20T00:00:00Z"
 };
 
+const project = {
+  archivedAt: null,
+  completedAt: null,
+  createdAt: "2026-07-20T00:00:00Z",
+  description: "Build a small compiler study tool.",
+  id: "bbbbbbbb-1111-4111-8111-111111111111",
+  name: "Compiler Lab",
+  objective: "Ship a parser prototype.",
+  repositoryUrl: "https://github.com/example/compiler-lab",
+  startedOn: "2026-07-20",
+  status: "active",
+  targetDate: "2026-08-15",
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const projectMilestone = {
+  completedAt: null,
+  createdAt: "2026-07-20T00:00:00Z",
+  description: null,
+  dueDate: "2026-07-30",
+  id: "bbbbbbbb-2222-4222-8222-222222222222",
+  position: 0,
+  projectId: project.id,
+  status: "planned",
+  title: "Parser milestone",
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const projectTask = {
+  completedAt: null,
+  createdAt: "2026-07-20T00:00:00Z",
+  description: null,
+  dueDate: "2026-07-22",
+  id: "bbbbbbbb-3333-4333-8333-333333333333",
+  milestoneId: projectMilestone.id,
+  priority: "high",
+  projectId: project.id,
+  status: "todo",
+  title: "Tokenize input",
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const projectNote = {
+  body: "Use a recursive descent parser first.",
+  createdAt: "2026-07-20T00:00:00Z",
+  id: "bbbbbbbb-4444-4444-8444-444444444444",
+  projectId: project.id,
+  title: "Implementation note",
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const projectLink = {
+  createdAt: "2026-07-20T00:00:00Z",
+  id: "bbbbbbbb-5555-4555-8555-555555555555",
+  projectId: project.id,
+  title: "Repo",
+  updatedAt: "2026-07-20T00:00:00Z",
+  url: "https://github.com/example/compiler-lab"
+};
+
+const projectFileLink = {
+  createdAt: "2026-07-20T00:00:00Z",
+  description: "Design notes",
+  fileId: vaultFile.id,
+  id: "bbbbbbbb-6666-4666-8666-666666666666",
+  projectId: project.id,
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const projectTopicLink = {
+  createdAt: "2026-07-20T00:00:00Z",
+  id: "bbbbbbbb-7777-4777-8777-777777777777",
+  projectId: project.id,
+  topicId: learningTopic.id,
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const projectTechnology = {
+  createdAt: "2026-07-20T00:00:00Z",
+  id: "bbbbbbbb-8888-4888-8888-888888888888",
+  name: "TypeScript",
+  projectId: project.id,
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const projectBlocker = {
+  createdAt: "2026-07-20T00:00:00Z",
+  description: "Need parser error strategy.",
+  id: "bbbbbbbb-9999-4999-8999-999999999999",
+  projectId: project.id,
+  resolvedAt: null,
+  status: "open",
+  title: "Error handling",
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const projectActivity = {
+  activityType: "project.created",
+  createdAt: "2026-07-20T00:00:00Z",
+  description: "Project created.",
+  id: "cccccccc-1111-4111-8111-111111111111",
+  metadata: { projectId: project.id },
+  projectId: project.id
+};
+
+const projectDetail = {
+  ...project,
+  blockers: [projectBlocker],
+  files: [projectFileLink],
+  links: [projectLink],
+  milestones: [projectMilestone],
+  notes: [projectNote],
+  recentActivity: [projectActivity],
+  tasks: [projectTask],
+  technologies: [projectTechnology],
+  topics: [projectTopicLink]
+};
+
 const aiProvider = {
   capabilities: ["chat", "streaming_chat", "embeddings"],
   configured: true,
@@ -1478,6 +1596,153 @@ describe("createAetheriumApiClient", () => {
 
     expect(fetcher).toHaveBeenCalledWith(
       "http://localhost:8000/api/v1/learning/subjects?includeArchived=true&limit=5&offset=0",
+      {
+        credentials: "include",
+        headers: { Accept: "application/json" }
+      }
+    );
+  });
+
+  it("uses Project Dock endpoints", async () => {
+    const fetcher = vi.fn<typeof fetch>((input, init) => {
+      const url = requestUrl(input);
+      if (url === "http://localhost:8000/api/v1/projects?includeArchived=true&limit=5&offset=0") {
+        return Promise.resolve(jsonResponse({ items: [project], limit: 5, offset: 0, total: 1 }));
+      }
+      if (url === "http://localhost:8000/api/v1/projects") {
+        return Promise.resolve(jsonResponse(project, 201));
+      }
+      if (url === `http://localhost:8000/api/v1/projects/${project.id}`) {
+        if (init?.method === "PATCH") {
+          return Promise.resolve(jsonResponse({ ...project, status: "completed" }));
+        }
+        return Promise.resolve(jsonResponse(projectDetail));
+      }
+      if (url === `http://localhost:8000/api/v1/projects/${project.id}/archive`) {
+        return Promise.resolve(jsonResponse({ ...project, archivedAt: "2026-07-20T00:30:00Z" }));
+      }
+      if (url === `http://localhost:8000/api/v1/projects/${project.id}/milestones`) {
+        return Promise.resolve(jsonResponse(projectMilestone, 201));
+      }
+      if (url === `http://localhost:8000/api/v1/projects/milestones/${projectMilestone.id}`) {
+        return Promise.resolve(jsonResponse({ ...projectMilestone, status: "active" }));
+      }
+      if (url === `http://localhost:8000/api/v1/projects/${project.id}/tasks`) {
+        return Promise.resolve(jsonResponse(projectTask, 201));
+      }
+      if (url === `http://localhost:8000/api/v1/projects/tasks/${projectTask.id}`) {
+        return Promise.resolve(jsonResponse({ ...projectTask, status: "done" }));
+      }
+      if (url === `http://localhost:8000/api/v1/projects/${project.id}/notes`) {
+        return Promise.resolve(jsonResponse(projectNote, 201));
+      }
+      if (url === `http://localhost:8000/api/v1/projects/${project.id}/links`) {
+        return Promise.resolve(jsonResponse(projectLink, 201));
+      }
+      if (url === `http://localhost:8000/api/v1/projects/${project.id}/files`) {
+        return Promise.resolve(jsonResponse(projectFileLink, 201));
+      }
+      if (url === `http://localhost:8000/api/v1/projects/${project.id}/topics`) {
+        return Promise.resolve(jsonResponse(projectTopicLink, 201));
+      }
+      if (url === `http://localhost:8000/api/v1/projects/${project.id}/technologies`) {
+        return Promise.resolve(jsonResponse(projectTechnology, 201));
+      }
+      if (url === `http://localhost:8000/api/v1/projects/${project.id}/blockers`) {
+        return Promise.resolve(jsonResponse(projectBlocker, 201));
+      }
+      if (url === `http://localhost:8000/api/v1/projects/blockers/${projectBlocker.id}`) {
+        return Promise.resolve(
+          jsonResponse({
+            ...projectBlocker,
+            resolvedAt: "2026-07-20T00:35:00Z",
+            status: "resolved"
+          })
+        );
+      }
+      if (url === `http://localhost:8000/api/v1/projects/${project.id}/activity?limit=5&offset=0`) {
+        return Promise.resolve(
+          jsonResponse({ items: [projectActivity], limit: 5, offset: 0, total: 1 })
+        );
+      }
+      return Promise.resolve(jsonResponse({ items: [] }));
+    });
+    const client = createAetheriumApiClient({ baseUrl: "http://localhost:8000", fetcher });
+
+    await expect(
+      client.projects.list({ includeArchived: true, limit: 5, offset: 0 })
+    ).resolves.toMatchObject({ total: 1 });
+    await expect(
+      client.projects.create({
+        name: "Compiler Lab",
+        objective: "Ship a parser prototype.",
+        repositoryUrl: "https://github.com/example/compiler-lab"
+      })
+    ).resolves.toMatchObject({ name: "Compiler Lab" });
+    await expect(client.projects.get(project.id)).resolves.toMatchObject({
+      tasks: [{ title: "Tokenize input" }]
+    });
+    await expect(
+      client.projects.update(project.id, { status: "completed" })
+    ).resolves.toMatchObject({ status: "completed" });
+    await expect(
+      client.projects.createMilestone(project.id, {
+        dueDate: "2026-07-30",
+        title: "Parser milestone"
+      })
+    ).resolves.toMatchObject({ projectId: project.id });
+    await expect(
+      client.projects.updateMilestone(projectMilestone.id, { status: "active" })
+    ).resolves.toMatchObject({ status: "active" });
+    await expect(
+      client.projects.createTask(project.id, {
+        milestoneId: projectMilestone.id,
+        priority: "high",
+        title: "Tokenize input"
+      })
+    ).resolves.toMatchObject({ priority: "high" });
+    await expect(
+      client.projects.updateTask(projectTask.id, { status: "done" })
+    ).resolves.toMatchObject({ status: "done" });
+    await expect(
+      client.projects.createNote(project.id, {
+        body: "Use a recursive descent parser first.",
+        title: "Implementation note"
+      })
+    ).resolves.toMatchObject({ title: "Implementation note" });
+    await expect(
+      client.projects.createLink(project.id, {
+        title: "Repo",
+        url: "https://github.com/example/compiler-lab"
+      })
+    ).resolves.toMatchObject({ title: "Repo" });
+    await expect(
+      client.projects.attachFile(project.id, { description: "Design notes", fileId: vaultFile.id })
+    ).resolves.toMatchObject({ fileId: vaultFile.id });
+    await expect(
+      client.projects.linkTopic(project.id, { topicId: learningTopic.id })
+    ).resolves.toMatchObject({ topicId: learningTopic.id });
+    await expect(
+      client.projects.addTechnology(project.id, { name: "TypeScript" })
+    ).resolves.toMatchObject({ name: "TypeScript" });
+    await expect(
+      client.projects.createBlocker(project.id, {
+        description: "Need parser error strategy.",
+        title: "Error handling"
+      })
+    ).resolves.toMatchObject({ status: "open" });
+    await expect(
+      client.projects.updateBlocker(projectBlocker.id, { status: "resolved" })
+    ).resolves.toMatchObject({ status: "resolved" });
+    await expect(
+      client.projects.listActivity(project.id, { limit: 5, offset: 0 })
+    ).resolves.toMatchObject({ total: 1 });
+    await expect(client.projects.archive(project.id)).resolves.toMatchObject({
+      archivedAt: "2026-07-20T00:30:00Z"
+    });
+
+    expect(fetcher).toHaveBeenCalledWith(
+      "http://localhost:8000/api/v1/projects?includeArchived=true&limit=5&offset=0",
       {
         credentials: "include",
         headers: { Accept: "application/json" }

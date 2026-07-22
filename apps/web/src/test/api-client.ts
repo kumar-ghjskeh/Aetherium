@@ -110,3 +110,27 @@ export function createUnusedLearningClient(): AetheriumApiClient["learning"] {
     submitAttempt: vi.fn(reject)
   };
 }
+
+export function createUnusedProjectsClient(): AetheriumApiClient["projects"] {
+  const reject = () => Promise.reject(new Error("Unexpected project call"));
+
+  return {
+    addTechnology: vi.fn(reject),
+    archive: vi.fn(reject),
+    attachFile: vi.fn(reject),
+    create: vi.fn(reject),
+    createBlocker: vi.fn(reject),
+    createLink: vi.fn(reject),
+    createMilestone: vi.fn(reject),
+    createNote: vi.fn(reject),
+    createTask: vi.fn(reject),
+    get: vi.fn(reject),
+    linkTopic: vi.fn(reject),
+    list: vi.fn(reject),
+    listActivity: vi.fn(reject),
+    update: vi.fn(reject),
+    updateBlocker: vi.fn(reject),
+    updateMilestone: vi.fn(reject),
+    updateTask: vi.fn(reject)
+  };
+}

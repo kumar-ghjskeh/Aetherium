@@ -460,7 +460,9 @@ export const searchMatchReasonSchema = z.enum([
   "tag_metadata",
   "ai_conversation",
   "habit_metadata",
-  "learning_topic_metadata"
+  "learning_topic_metadata",
+  "project_metadata",
+  "project_task_metadata"
 ]);
 
 export const searchRequestSchema = z.object({
@@ -1115,6 +1117,249 @@ export const studyRoadmapPageSchema = z.object({
   limit: z.number().int().min(1),
   offset: z.number().int().min(0),
   total: z.number().int().min(0)
+});
+
+export const projectStatusSchema = z.enum(["active", "paused", "completed", "archived"]);
+
+export const projectMilestoneStatusSchema = z.enum(["planned", "active", "completed", "blocked"]);
+
+export const projectTaskStatusSchema = z.enum(["todo", "in_progress", "done", "blocked"]);
+
+export const projectPrioritySchema = z.enum(["low", "medium", "high"]);
+
+export const projectBlockerStatusSchema = z.enum(["open", "resolved"]);
+
+export const projectActivityTypeSchema = z.enum([
+  "project.created",
+  "project.updated",
+  "project.archived",
+  "project.completed",
+  "project.milestone_created",
+  "project.task_created",
+  "project.task_updated",
+  "project.note_created",
+  "project.link_created",
+  "project.file_attached",
+  "project.topic_linked",
+  "project.technology_added",
+  "project.blocker_created",
+  "project.blocker_updated"
+]);
+
+export const projectCreateRequestSchema = z.object({
+  description: z.string().max(4000).nullable().optional(),
+  name: z.string().trim().min(1).max(200),
+  objective: z.string().max(4000).nullable().optional(),
+  repositoryUrl: z.string().url().nullable().optional(),
+  startedOn: z.string().min(1).nullable().optional(),
+  targetDate: z.string().min(1).nullable().optional()
+});
+
+export const projectUpdateRequestSchema = z.object({
+  description: z.string().max(4000).nullable().optional(),
+  name: z.string().trim().min(1).max(200).optional(),
+  objective: z.string().max(4000).nullable().optional(),
+  repositoryUrl: z.string().url().nullable().optional(),
+  startedOn: z.string().min(1).nullable().optional(),
+  status: projectStatusSchema.optional(),
+  targetDate: z.string().min(1).nullable().optional()
+});
+
+export const projectSchema = z.object({
+  archivedAt: z.string().min(1).nullable(),
+  completedAt: z.string().min(1).nullable(),
+  createdAt: z.string().min(1),
+  description: z.string().nullable(),
+  id: z.string().uuid(),
+  name: z.string().min(1),
+  objective: z.string().nullable(),
+  repositoryUrl: z.string().nullable(),
+  startedOn: z.string().min(1).nullable(),
+  status: projectStatusSchema,
+  targetDate: z.string().min(1).nullable(),
+  updatedAt: z.string().min(1)
+});
+
+export const projectPageSchema = z.object({
+  items: z.array(projectSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const projectMilestoneCreateRequestSchema = z.object({
+  description: z.string().max(4000).nullable().optional(),
+  dueDate: z.string().min(1).nullable().optional(),
+  position: z.number().int().min(0).optional(),
+  title: z.string().trim().min(1).max(200)
+});
+
+export const projectMilestoneUpdateRequestSchema = z.object({
+  description: z.string().max(4000).nullable().optional(),
+  dueDate: z.string().min(1).nullable().optional(),
+  position: z.number().int().min(0).optional(),
+  status: projectMilestoneStatusSchema.optional(),
+  title: z.string().trim().min(1).max(200).optional()
+});
+
+export const projectMilestoneSchema = z.object({
+  completedAt: z.string().min(1).nullable(),
+  createdAt: z.string().min(1),
+  description: z.string().nullable(),
+  dueDate: z.string().min(1).nullable(),
+  id: z.string().uuid(),
+  position: z.number().int().min(0),
+  projectId: z.string().uuid(),
+  status: projectMilestoneStatusSchema,
+  title: z.string().min(1),
+  updatedAt: z.string().min(1)
+});
+
+export const projectTaskCreateRequestSchema = z.object({
+  description: z.string().max(4000).nullable().optional(),
+  dueDate: z.string().min(1).nullable().optional(),
+  milestoneId: z.string().uuid().nullable().optional(),
+  priority: projectPrioritySchema.optional(),
+  title: z.string().trim().min(1).max(200)
+});
+
+export const projectTaskUpdateRequestSchema = z.object({
+  description: z.string().max(4000).nullable().optional(),
+  dueDate: z.string().min(1).nullable().optional(),
+  milestoneId: z.string().uuid().nullable().optional(),
+  priority: projectPrioritySchema.optional(),
+  status: projectTaskStatusSchema.optional(),
+  title: z.string().trim().min(1).max(200).optional()
+});
+
+export const projectTaskSchema = z.object({
+  completedAt: z.string().min(1).nullable(),
+  createdAt: z.string().min(1),
+  description: z.string().nullable(),
+  dueDate: z.string().min(1).nullable(),
+  id: z.string().uuid(),
+  milestoneId: z.string().uuid().nullable(),
+  priority: projectPrioritySchema,
+  projectId: z.string().uuid(),
+  status: projectTaskStatusSchema,
+  title: z.string().min(1),
+  updatedAt: z.string().min(1)
+});
+
+export const projectNoteCreateRequestSchema = z.object({
+  body: z.string().trim().min(1).max(20000),
+  title: z.string().trim().min(1).max(200)
+});
+
+export const projectNoteSchema = z.object({
+  body: z.string().min(1),
+  createdAt: z.string().min(1),
+  id: z.string().uuid(),
+  projectId: z.string().uuid(),
+  title: z.string().min(1),
+  updatedAt: z.string().min(1)
+});
+
+export const projectLinkCreateRequestSchema = z.object({
+  title: z.string().trim().min(1).max(200),
+  url: z.string().url()
+});
+
+export const projectLinkSchema = z.object({
+  createdAt: z.string().min(1),
+  id: z.string().uuid(),
+  projectId: z.string().uuid(),
+  title: z.string().min(1),
+  updatedAt: z.string().min(1),
+  url: z.string().min(1)
+});
+
+export const projectFileCreateRequestSchema = z.object({
+  description: z.string().max(1000).nullable().optional(),
+  fileId: z.string().uuid()
+});
+
+export const projectFileLinkSchema = z.object({
+  createdAt: z.string().min(1),
+  description: z.string().nullable(),
+  fileId: z.string().uuid(),
+  id: z.string().uuid(),
+  projectId: z.string().uuid(),
+  updatedAt: z.string().min(1)
+});
+
+export const projectTopicCreateRequestSchema = z.object({
+  topicId: z.string().uuid()
+});
+
+export const projectTopicLinkSchema = z.object({
+  createdAt: z.string().min(1),
+  id: z.string().uuid(),
+  projectId: z.string().uuid(),
+  topicId: z.string().uuid(),
+  updatedAt: z.string().min(1)
+});
+
+export const projectTechnologyCreateRequestSchema = z.object({
+  name: z.string().trim().min(1).max(120)
+});
+
+export const projectTechnologySchema = z.object({
+  createdAt: z.string().min(1),
+  id: z.string().uuid(),
+  name: z.string().min(1),
+  projectId: z.string().uuid(),
+  updatedAt: z.string().min(1)
+});
+
+export const projectBlockerCreateRequestSchema = z.object({
+  description: z.string().max(4000).nullable().optional(),
+  title: z.string().trim().min(1).max(200)
+});
+
+export const projectBlockerUpdateRequestSchema = z.object({
+  description: z.string().max(4000).nullable().optional(),
+  status: projectBlockerStatusSchema.optional(),
+  title: z.string().trim().min(1).max(200).optional()
+});
+
+export const projectBlockerSchema = z.object({
+  createdAt: z.string().min(1),
+  description: z.string().nullable(),
+  id: z.string().uuid(),
+  projectId: z.string().uuid(),
+  resolvedAt: z.string().min(1).nullable(),
+  status: projectBlockerStatusSchema,
+  title: z.string().min(1),
+  updatedAt: z.string().min(1)
+});
+
+export const projectActivitySchema = z.object({
+  activityType: projectActivityTypeSchema,
+  createdAt: z.string().min(1),
+  description: z.string().min(1),
+  id: z.string().uuid(),
+  metadata: z.record(z.unknown()),
+  projectId: z.string().uuid()
+});
+
+export const projectActivityPageSchema = z.object({
+  items: z.array(projectActivitySchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const projectDetailSchema = projectSchema.extend({
+  blockers: z.array(projectBlockerSchema),
+  files: z.array(projectFileLinkSchema),
+  links: z.array(projectLinkSchema),
+  milestones: z.array(projectMilestoneSchema),
+  notes: z.array(projectNoteSchema),
+  recentActivity: z.array(projectActivitySchema),
+  tasks: z.array(projectTaskSchema),
+  technologies: z.array(projectTechnologySchema),
+  topics: z.array(projectTopicLinkSchema)
 });
 
 export const aiFeatureSchema = z.enum([

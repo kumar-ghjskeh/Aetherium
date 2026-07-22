@@ -407,7 +407,9 @@ export type SearchMatchReason =
   | "tag_metadata"
   | "ai_conversation"
   | "habit_metadata"
-  | "learning_topic_metadata";
+  | "learning_topic_metadata"
+  | "project_metadata"
+  | "project_task_metadata";
 
 export interface SearchRequest {
   query: string;
@@ -1051,6 +1053,248 @@ export interface StudyRoadmapCreateRequest {
   description?: string | null | undefined;
   subjectId?: string | null | undefined;
   steps?: Record<string, unknown>[] | undefined;
+}
+
+export type ProjectStatus = "active" | "paused" | "completed" | "archived";
+
+export type ProjectMilestoneStatus = "planned" | "active" | "completed" | "blocked";
+
+export type ProjectTaskStatus = "todo" | "in_progress" | "done" | "blocked";
+
+export type ProjectPriority = "low" | "medium" | "high";
+
+export type ProjectBlockerStatus = "open" | "resolved";
+
+export type ProjectActivityType =
+  | "project.created"
+  | "project.updated"
+  | "project.archived"
+  | "project.completed"
+  | "project.milestone_created"
+  | "project.task_created"
+  | "project.task_updated"
+  | "project.note_created"
+  | "project.link_created"
+  | "project.file_attached"
+  | "project.topic_linked"
+  | "project.technology_added"
+  | "project.blocker_created"
+  | "project.blocker_updated";
+
+export interface Project {
+  id: string;
+  name: string;
+  description: string | null;
+  objective: string | null;
+  repositoryUrl: string | null;
+  status: ProjectStatus;
+  startedOn: string | null;
+  targetDate: string | null;
+  archivedAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProjectPage {
+  items: Project[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface ProjectCreateRequest {
+  name: string;
+  description?: string | null | undefined;
+  objective?: string | null | undefined;
+  repositoryUrl?: string | null | undefined;
+  startedOn?: string | null | undefined;
+  targetDate?: string | null | undefined;
+}
+
+export interface ProjectUpdateRequest {
+  name?: string | undefined;
+  description?: string | null | undefined;
+  objective?: string | null | undefined;
+  repositoryUrl?: string | null | undefined;
+  status?: ProjectStatus | undefined;
+  startedOn?: string | null | undefined;
+  targetDate?: string | null | undefined;
+}
+
+export interface ProjectMilestone {
+  id: string;
+  projectId: string;
+  title: string;
+  description: string | null;
+  status: ProjectMilestoneStatus;
+  dueDate: string | null;
+  position: number;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProjectMilestoneCreateRequest {
+  title: string;
+  description?: string | null | undefined;
+  dueDate?: string | null | undefined;
+  position?: number | undefined;
+}
+
+export interface ProjectMilestoneUpdateRequest {
+  title?: string | undefined;
+  description?: string | null | undefined;
+  status?: ProjectMilestoneStatus | undefined;
+  dueDate?: string | null | undefined;
+  position?: number | undefined;
+}
+
+export interface ProjectTask {
+  id: string;
+  projectId: string;
+  milestoneId: string | null;
+  title: string;
+  description: string | null;
+  status: ProjectTaskStatus;
+  priority: ProjectPriority;
+  dueDate: string | null;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProjectTaskCreateRequest {
+  title: string;
+  description?: string | null | undefined;
+  milestoneId?: string | null | undefined;
+  priority?: ProjectPriority | undefined;
+  dueDate?: string | null | undefined;
+}
+
+export interface ProjectTaskUpdateRequest {
+  title?: string | undefined;
+  description?: string | null | undefined;
+  milestoneId?: string | null | undefined;
+  status?: ProjectTaskStatus | undefined;
+  priority?: ProjectPriority | undefined;
+  dueDate?: string | null | undefined;
+}
+
+export interface ProjectNote {
+  id: string;
+  projectId: string;
+  title: string;
+  body: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProjectNoteCreateRequest {
+  title: string;
+  body: string;
+}
+
+export interface ProjectLink {
+  id: string;
+  projectId: string;
+  title: string;
+  url: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProjectLinkCreateRequest {
+  title: string;
+  url: string;
+}
+
+export interface ProjectFileLink {
+  id: string;
+  projectId: string;
+  fileId: string;
+  description: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProjectFileCreateRequest {
+  fileId: string;
+  description?: string | null | undefined;
+}
+
+export interface ProjectTopicLink {
+  id: string;
+  projectId: string;
+  topicId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProjectTopicCreateRequest {
+  topicId: string;
+}
+
+export interface ProjectTechnology {
+  id: string;
+  projectId: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProjectTechnologyCreateRequest {
+  name: string;
+}
+
+export interface ProjectBlocker {
+  id: string;
+  projectId: string;
+  title: string;
+  description: string | null;
+  status: ProjectBlockerStatus;
+  resolvedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProjectBlockerCreateRequest {
+  title: string;
+  description?: string | null | undefined;
+}
+
+export interface ProjectBlockerUpdateRequest {
+  title?: string | undefined;
+  description?: string | null | undefined;
+  status?: ProjectBlockerStatus | undefined;
+}
+
+export interface ProjectActivity {
+  id: string;
+  projectId: string;
+  activityType: ProjectActivityType;
+  description: string;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+}
+
+export interface ProjectActivityPage {
+  items: ProjectActivity[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface ProjectDetail extends Project {
+  milestones: ProjectMilestone[];
+  tasks: ProjectTask[];
+  notes: ProjectNote[];
+  links: ProjectLink[];
+  files: ProjectFileLink[];
+  topics: ProjectTopicLink[];
+  technologies: ProjectTechnology[];
+  blockers: ProjectBlocker[];
+  recentActivity: ProjectActivity[];
 }
 
 export type AIFeature =

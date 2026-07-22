@@ -32,6 +32,8 @@ Current migrations:
 - `0010_learning_engine`: creates owner-scoped subjects, topics, topic relations, learning
   resources, courses, modules, lessons, study sessions, quizzes, questions, attempts, flashcards,
   flashcard reviews, mastery records, learning goals, and study roadmaps.
+- `0011_project_dock`: creates owner-scoped projects, milestones, project tasks, notes, links, file
+  links, topic links, technologies, blockers, and project activity.
 
 ### `users`
 
@@ -516,10 +518,40 @@ owner scope, and cross-user identifiers return not-found style responses.
 - Study roadmaps store owner, title, description, JSON step list, status, and timestamps.
 - These records are non-visual foundations for later reminders, analytics, and AI-assisted planning.
 
+### `projects`
+
+- UUID primary key and `owner_user_id`.
+- Name, description, objective, optional repository URL, status, start/target dates, archived and
+  completed timestamps, and timestamps.
+- Owner/name uniqueness prevents duplicate active project names per user.
+- PostgreSQL deployments include a full-text expression index over name, objective, and description.
+
+### `project_milestones` and `project_tasks`
+
+- Milestones store owner, project, title, description, status, due date, position, completion
+  timestamp, and timestamps.
+- Project tasks store owner, project, optional milestone, title, description, status, priority, due
+  date, completion timestamp, and timestamps.
+- Task and milestone ownership is enforced through both direct owner fields and parent-project
+  service checks.
+- PostgreSQL deployments include a project-task full-text expression index.
+
+### Project Context Tables
+
+- `project_notes` store owner, project, title, body, and timestamps.
+- `project_links` store owner, project, title, URL, and timestamps.
+- `project_files` links an owned project to an owned Personal Vault file with optional description.
+- `project_topics` links an owned project to an owned learning topic.
+- `project_technologies` stores unique owner/project technology names.
+- `project_blockers` stores owner, project, title, description, open/resolved status, resolved
+  timestamp, and timestamps.
+- `project_activity` stores append-only owner/project activity entries with typed activity,
+  description, sanitized metadata JSON, and creation timestamp.
+
 ## Planned Later Tables
 
 Later schema slices will cover:
 
 - `world_locations`, `user_world_state`.
-- `goals`, `milestones`, `tasks`, `projects`, `project_files`.
+- `goals`, global tasks, and goal milestones.
 - `achievements`, `achievement_rules`, `user_achievements`.

@@ -25,8 +25,8 @@ Implemented foundation slices:
   collections, tags, favorites, deletion state, and Library UI.
 - Background file ingestion with durable processing jobs, a standalone worker process, extraction
   results, chunks, failure records, retry APIs, and visible Library retry state.
-- Global search over files, extracted chunks, collections, tags, AI conversations, and habits, with
-  recent searches and Command Palette integration.
+- Global search over files, extracted chunks, collections, tags, AI conversations, habits, learning
+  topics, projects, and project tasks, with recent searches and Command Palette integration.
 - Provider-neutral AI gateway foundation with consent policies, model configuration, usage records,
   deterministic test/local adapter, OpenAI-compatible, Anthropic-compatible, and Ollama-compatible
   adapter boundaries, rate limits, retries, and fallback support.
@@ -40,12 +40,15 @@ Implemented foundation slices:
 - Learning and mastery engine with owner-scoped subjects, topics, prerequisites, courses, lessons,
   study sessions, quizzes, flashcards, goals, roadmaps, transparent mastery records, learning-topic
   search, and Command Mode Learning UI.
+- Project Dock foundation with owner-scoped projects, milestones, project tasks, notes, links, file
+  links, topic links, technologies, blockers, activity history, project completion events, project
+  search, and Command Mode Projects UI.
 
 Still out of scope unless explicitly requested:
 
 - OAuth, social login, email delivery, password reset, MFA, and magic links.
 - 3D world scenes, React Three Fiber, player controls, map travel, or world progression.
-- Projects, achievements, analytics, coding workspace, knowledge graph, or visual world progression.
+- Achievements, analytics, coding workspace, knowledge graph, or visual world progression.
 
 ## Product Independence
 

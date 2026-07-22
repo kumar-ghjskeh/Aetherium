@@ -1,5 +1,5 @@
-import { SectionPage } from "../../../features/app-shell/section-page";
+import { ProjectsPage } from "../../../features/projects/projects-page";
 
-export default function ProjectsPage(): React.ReactElement {
-  return <SectionPage section="projects" />;
+export default function ProjectsRoute() {
+  return <ProjectsPage />;
 }

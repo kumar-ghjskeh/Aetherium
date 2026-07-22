@@ -59,6 +59,18 @@ from app.models.mentors import (
     Message,
     MessageSource,
 )
+from app.models.projects import (
+    Project,
+    ProjectActivity,
+    ProjectBlocker,
+    ProjectFile,
+    ProjectLink,
+    ProjectMilestone,
+    ProjectNote,
+    ProjectTask,
+    ProjectTechnology,
+    ProjectTopic,
+)
 from app.models.search import RecentSearch
 
 __all__ = [
@@ -101,6 +113,16 @@ __all__ = [
     "Notification",
     "ProcessingFailure",
     "ProcessingJob",
+    "Project",
+    "ProjectActivity",
+    "ProjectBlocker",
+    "ProjectFile",
+    "ProjectLink",
+    "ProjectMilestone",
+    "ProjectNote",
+    "ProjectTask",
+    "ProjectTechnology",
+    "ProjectTopic",
     "Question",
     "Quiz",
     "RecentSearch",

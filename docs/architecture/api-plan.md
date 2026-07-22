@@ -116,13 +116,29 @@ Current routes:
 - `POST /api/v1/learning/goals`
 - `GET /api/v1/learning/roadmaps`
 - `POST /api/v1/learning/roadmaps`
+- `GET /api/v1/projects`
+- `POST /api/v1/projects`
+- `GET /api/v1/projects/{project_id}`
+- `PATCH /api/v1/projects/{project_id}`
+- `POST /api/v1/projects/{project_id}/archive`
+- `POST /api/v1/projects/{project_id}/milestones`
+- `PATCH /api/v1/projects/milestones/{milestone_id}`
+- `POST /api/v1/projects/{project_id}/tasks`
+- `PATCH /api/v1/projects/tasks/{task_id}`
+- `POST /api/v1/projects/{project_id}/notes`
+- `POST /api/v1/projects/{project_id}/links`
+- `POST /api/v1/projects/{project_id}/files`
+- `POST /api/v1/projects/{project_id}/topics`
+- `POST /api/v1/projects/{project_id}/technologies`
+- `POST /api/v1/projects/{project_id}/blockers`
+- `PATCH /api/v1/projects/blockers/{blocker_id}`
+- `GET /api/v1/projects/{project_id}/activity`
 
 Planned route groups:
 
 - `/api/v1/users`
 - `/api/v1/goals`
 - `/api/v1/tasks`
-- `/api/v1/projects`
 - `/api/v1/achievements`
 - `/api/v1/analytics`
 
@@ -381,6 +397,35 @@ manage flashcards and reviews. Reviews update mastery when the flashcard is topi
 
 `GET/POST /api/v1/learning/goals` and `GET/POST /api/v1/learning/roadmaps` manage non-visual
 learning goals and study roadmaps for later analytics, reminders, and AI-assisted planning.
+
+## Project Routes
+
+`GET/POST /api/v1/projects` lists and creates owner-scoped projects. Listing is paginated and can
+include archived projects only when explicitly requested.
+
+`GET/PATCH /api/v1/projects/{project_id}` returns project detail with child records or updates
+project metadata and status. Completing a project emits an idempotent `project.completed` domain
+event.
+
+`POST /api/v1/projects/{project_id}/archive` archives an owned project without deleting its history.
+
+`POST /api/v1/projects/{project_id}/milestones` and
+`PATCH /api/v1/projects/milestones/{milestone_id}` manage owner-scoped milestones.
+
+`POST /api/v1/projects/{project_id}/tasks` and `PATCH /api/v1/projects/tasks/{task_id}` manage
+owner-scoped project tasks.
+
+`POST /api/v1/projects/{project_id}/notes`, `POST /api/v1/projects/{project_id}/links`, and
+`POST /api/v1/projects/{project_id}/technologies` attach explicit project context.
+
+`POST /api/v1/projects/{project_id}/files` links only owned active Personal Vault files.
+
+`POST /api/v1/projects/{project_id}/topics` links only owned active learning topics.
+
+`POST /api/v1/projects/{project_id}/blockers` and `PATCH /api/v1/projects/blockers/{blocker_id}`
+track open and resolved project blockers.
+
+`GET /api/v1/projects/{project_id}/activity` returns paginated owner-scoped project activity.
 
 ## Generated Client
 

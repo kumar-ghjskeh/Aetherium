@@ -16,6 +16,7 @@ from app.domain.foundation import WorldLocationId
 from app.domain.habits import HabitStatus
 from app.domain.learning import LearningRecordStatus
 from app.domain.mentors import ConversationStatus
+from app.domain.projects import ProjectStatus
 from app.domain.search import SearchEntityType, SearchMatchReason, SearchMode, SearchSort
 from app.models.auth import User
 from app.models.file_ingestion import FileChunk
@@ -23,6 +24,7 @@ from app.models.file_vault import Collection, FileRecord, Tag
 from app.models.habits import Habit
 from app.models.learning import Topic
 from app.models.mentors import Conversation
+from app.models.projects import Project, ProjectTask
 from app.models.search import RecentSearch
 from app.services.foundation import PageResult
 
@@ -34,6 +36,8 @@ IMPLEMENTED_ENTITY_TYPES = (
     SearchEntityType.AI_CONVERSATION,
     SearchEntityType.HABIT,
     SearchEntityType.LEARNING_TOPIC,
+    SearchEntityType.PROJECT,
+    SearchEntityType.TASK,
 )
 MAX_SNIPPET_LENGTH = 180
 
@@ -117,6 +121,14 @@ class SearchService:
             topic_items, topic_total = await self._search_learning_topics(user, query, fetch_limit)
             candidates.extend(topic_items)
             total += topic_total
+        if SearchEntityType.PROJECT in target_types:
+            project_items, project_total = await self._search_projects(user, query, fetch_limit)
+            candidates.extend(project_items)
+            total += project_total
+        if SearchEntityType.TASK in target_types:
+            task_items, task_total = await self._search_project_tasks(user, query, fetch_limit)
+            candidates.extend(task_items)
+            total += task_total
 
         ordered = _sort_results(candidates, sort)
         items = ordered[pagination.offset : pagination.offset + pagination.limit]
@@ -523,6 +535,126 @@ class SearchService:
         total = await self._count(select(func.count(Topic.id)).where(*predicates))
         return items, total
 
+    async def _search_projects(
+        self,
+        user: User,
+        query: str,
+        limit: int,
+    ) -> tuple[list[SearchResultItem], int]:
+        predicates = [
+            Project.owner_user_id == user.id,
+            Project.status != ProjectStatus.ARCHIVED.value,
+        ]
+        if self._is_postgres:
+            vector = func.to_tsvector(
+                "english",
+                func.concat(
+                    func.coalesce(Project.name, ""),
+                    " ",
+                    func.coalesce(Project.objective, ""),
+                    " ",
+                    func.coalesce(Project.description, ""),
+                    " ",
+                    func.coalesce(Project.repository_url, ""),
+                ),
+            )
+            ts_query = func.plainto_tsquery("english", query)
+            predicates.append(vector.op("@@")(ts_query))
+            score_expression = func.ts_rank_cd(vector, ts_query).label("score")
+            result = await self.db.execute(
+                select(Project, score_expression)
+                .where(*predicates)
+                .order_by(score_expression.desc(), Project.updated_at.desc())
+                .limit(limit)
+            )
+            rows = result.all()
+            items = [
+                self._project_result(project, query=query, score=float(score or 0.0))
+                for project, score in rows
+            ]
+        else:
+            predicates.append(
+                or_(
+                    _contains(Project.name, query),
+                    _contains(Project.objective, query),
+                    _contains(Project.description, query),
+                    _contains(Project.repository_url, query),
+                )
+            )
+            result = await self.db.execute(
+                select(Project).where(*predicates).order_by(Project.updated_at.desc()).limit(limit)
+            )
+            items = [
+                self._project_result(
+                    project,
+                    query=query,
+                    score=_metadata_score(project.name, query),
+                )
+                for project in result.scalars().all()
+            ]
+        total = await self._count(select(func.count(Project.id)).where(*predicates))
+        return items, total
+
+    async def _search_project_tasks(
+        self,
+        user: User,
+        query: str,
+        limit: int,
+    ) -> tuple[list[SearchResultItem], int]:
+        predicates = [
+            ProjectTask.owner_user_id == user.id,
+            Project.id == ProjectTask.project_id,
+            Project.owner_user_id == user.id,
+            Project.status != ProjectStatus.ARCHIVED.value,
+        ]
+        if self._is_postgres:
+            vector = func.to_tsvector(
+                "english",
+                func.concat(
+                    func.coalesce(ProjectTask.title, ""),
+                    " ",
+                    func.coalesce(ProjectTask.description, ""),
+                ),
+            )
+            ts_query = func.plainto_tsquery("english", query)
+            predicates.append(vector.op("@@")(ts_query))
+            score_expression = func.ts_rank_cd(vector, ts_query).label("score")
+            result = await self.db.execute(
+                select(ProjectTask, Project, score_expression)
+                .where(*predicates)
+                .order_by(score_expression.desc(), ProjectTask.updated_at.desc())
+                .limit(limit)
+            )
+            rows = result.all()
+            items = [
+                self._project_task_result(task, project, query=query, score=float(score or 0.0))
+                for task, project, score in rows
+            ]
+        else:
+            predicates.append(
+                or_(_contains(ProjectTask.title, query), _contains(ProjectTask.description, query))
+            )
+            result = await self.db.execute(
+                select(ProjectTask, Project)
+                .where(*predicates)
+                .order_by(ProjectTask.updated_at.desc())
+                .limit(limit)
+            )
+            rows = result.all()
+            items = [
+                self._project_task_result(
+                    task,
+                    project,
+                    query=query,
+                    score=_metadata_score(task.title, query),
+                )
+                for task, project in rows
+            ]
+        total = await self._count(
+            select(func.count(ProjectTask.id)).select_from(ProjectTask, Project).where(*predicates)
+        )
+        return items, total
+
     def _file_result(self, file: FileRecord, *, query: str, score: float) -> SearchResultItem:
         return SearchResultItem(
             id=f"file:{file.id}",
@@ -658,6 +790,43 @@ class SearchService:
             world_location_id=WorldLocationId.RESEARCH_LABORATORY.value,
             source=None,
             created_at=topic.created_at,
+        )
+
+    def _project_result(self, project: Project, *, query: str, score: float) -> SearchResultItem:
+        return SearchResultItem(
+            id=f"project:{project.id}",
+            entity_type=SearchEntityType.PROJECT,
+            entity_id=project.id,
+            title=project.name,
+            snippet=_snippet(project.objective or project.description or "Project", query),
+            match_reason=SearchMatchReason.PROJECT_METADATA,
+            score=max(score, _metadata_score(project.name, query)),
+            open_url=f"/app/projects?project={project.id}",
+            world_location_id=WorldLocationId.PROJECT_WORKSHOP.value,
+            source=None,
+            created_at=project.created_at,
+        )
+
+    def _project_task_result(
+        self,
+        task: ProjectTask,
+        project: Project,
+        *,
+        query: str,
+        score: float,
+    ) -> SearchResultItem:
+        return SearchResultItem(
+            id=f"task:{task.id}",
+            entity_type=SearchEntityType.TASK,
+            entity_id=task.id,
+            title=task.title,
+            snippet=_snippet(task.description or f"Task in {project.name}", query),
+            match_reason=SearchMatchReason.PROJECT_TASK_METADATA,
+            score=max(score, _metadata_score(task.title, query)),
+            open_url=f"/app/projects?project={project.id}&task={task.id}",
+            world_location_id=WorldLocationId.PROJECT_WORKSHOP.value,
+            source=None,
+            created_at=task.created_at,
         )
 
     @property

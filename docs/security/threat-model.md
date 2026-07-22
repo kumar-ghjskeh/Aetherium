@@ -41,6 +41,7 @@
 | Fabricated citations                      | Return citations only for retrieved owner-scoped chunks and no-evidence responses when empty. |
 | Habit privacy leakage                     | Owner-scoped habit tables, not-found cross-user behavior, and no external sharing by default. |
 | Learning privacy leakage                  | Owner-scoped learning tables, not-found cross-user behavior, and no AI sharing by default.    |
+| Project privacy leakage                   | Owner-scoped project tables, not-found cross-user behavior, and no AI sharing by default.     |
 | Insecure code execution                   | Use mock code runner first; require isolated sandbox before real execution.                   |
 | Secret leakage                            | Keep secrets out of source and logs.                                                          |
 | Cross-tenant data access                  | Include tenant/owner scoping in schema and data-access tests.                                 |
@@ -79,7 +80,9 @@
 - Processing retries are owner-scoped and limited by configured attempts.
 - Embedding jobs are skipped by default until a semantic-search slice wires them to the AI gateway
   with explicit consent controls.
-- Global search is owner-scoped across files, chunks, collections, tags, and recent searches.
+- Global search is owner-scoped across files, chunks, collections, tags, AI conversation titles,
+  habit metadata, learning topic metadata, project metadata, project task metadata, and recent
+  searches.
 - Search snippets are plain text and must not be rendered as trusted HTML.
 - Recent searches store only the authenticated user's query, filters, and result count; they do not
   grant access to results.
@@ -130,6 +133,17 @@
 - Mastery records explain the stored signals behind the score and do not claim diagnostic accuracy.
 - Active learning-topic metadata is searchable only inside the authenticated user's own search
   scope.
+- Project records, milestones, tasks, notes, links, file links, topic links, technologies, blockers,
+  and activity rows are scoped by `owner_user_id`.
+- Project services treat cross-user project and child identifiers as `not_found` and validate owned
+  active files and topics before creating project links.
+- Project completion writes an idempotent `project.completed` domain event and sanitized audit logs.
+- Project activity metadata is sanitized and must not include secrets, cookies, raw session tokens,
+  provider credentials, or private file bodies.
+- Active project and project-task metadata is searchable only inside the authenticated user's own
+  search scope.
+- Project-specific AI assistance is not a mutation tool in this slice; future AI actions must use
+  explicit consent and user approval before sending or changing project data.
 - CI runs independence checks, formatting, linting, type checks, tests, build, and migration smoke
   validation.
 

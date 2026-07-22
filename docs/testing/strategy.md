@@ -45,6 +45,10 @@ Backend:
   completion events, quiz attempts, flashcard reviews, study sessions, learning goals, roadmaps,
   validation failures, search integration, unauthenticated access, cross-user isolation, and
   database uniqueness.
+- Project backend tests for project creation, pagination, milestones, tasks, notes, links, owned
+  file links, owned topic links, technologies, blockers, activity history, completion events, audit
+  logs, search integration, validation failures, unauthenticated access, cross-user isolation, and
+  database uniqueness.
 - Alembic migration smoke validation against PostgreSQL in CI.
 - Ruff formatting and linting.
 - mypy type checking.
@@ -74,6 +78,8 @@ Frontend and shared packages:
 - API-client contract tests for learning subjects, topics, prerequisites, resources, courses,
   modules, lessons, study sessions, quizzes, questions, attempts, flashcards, reviews, mastery
   records, goals, and roadmaps.
+- API-client contract tests for Project Dock projects, milestones, project tasks, notes, links, file
+  links, topic links, technologies, blockers, and activity.
 - Next.js build validation.
 - React Testing Library coverage for the Library page, including loading, empty, error, upload,
   favorite, tag, delete, processing failure, and retry states.
@@ -86,6 +92,9 @@ Frontend and shared packages:
 - React Testing Library coverage for the Learning page, including loading, empty, error, subject and
   topic creation validation, mastery display, quiz attempts, study sessions, goals, roadmaps, and
   flashcard reviews.
+- React Testing Library coverage for the Projects page, including loading, empty, error, creation
+  validation, project creation, status changes, task completion, notes, technologies, blockers, and
+  activity-backed selected project state.
 
 ## Future Backend Tests
 

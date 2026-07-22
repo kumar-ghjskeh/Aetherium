@@ -88,6 +88,31 @@ import type {
   MasteryRecord,
   ProcessingJobPage,
   ProcessingJob,
+  Project,
+  ProjectActivityPage,
+  ProjectBlocker,
+  ProjectBlockerCreateRequest,
+  ProjectBlockerUpdateRequest,
+  ProjectCreateRequest,
+  ProjectDetail,
+  ProjectFileCreateRequest,
+  ProjectFileLink,
+  ProjectLink,
+  ProjectLinkCreateRequest,
+  ProjectMilestone,
+  ProjectMilestoneCreateRequest,
+  ProjectMilestoneUpdateRequest,
+  ProjectNote,
+  ProjectNoteCreateRequest,
+  ProjectPage,
+  ProjectTask,
+  ProjectTaskCreateRequest,
+  ProjectTaskUpdateRequest,
+  ProjectTechnology,
+  ProjectTechnologyCreateRequest,
+  ProjectTopicCreateRequest,
+  ProjectTopicLink,
+  ProjectUpdateRequest,
   PublicUser,
   Question,
   QuestionCreateRequest,
@@ -183,6 +208,18 @@ import {
   masteryRecordSchema,
   processingJobPageSchema,
   processingJobSchema,
+  projectActivityPageSchema,
+  projectBlockerSchema,
+  projectDetailSchema,
+  projectFileLinkSchema,
+  projectLinkSchema,
+  projectMilestoneSchema,
+  projectNoteSchema,
+  projectPageSchema,
+  projectSchema,
+  projectTaskSchema,
+  projectTechnologySchema,
+  projectTopicLinkSchema,
   publicUserSchema,
   questionSchema,
   quizPageSchema,
@@ -320,6 +357,40 @@ export interface AetheriumApiClient {
       payload: FlashcardReviewCreateRequest
     ) => Promise<FlashcardReview>;
     submitAttempt: (quizId: string, payload: AttemptCreateRequest) => Promise<Attempt>;
+  };
+  projects: {
+    addTechnology: (
+      projectId: string,
+      payload: ProjectTechnologyCreateRequest
+    ) => Promise<ProjectTechnology>;
+    archive: (projectId: string) => Promise<Project>;
+    attachFile: (projectId: string, payload: ProjectFileCreateRequest) => Promise<ProjectFileLink>;
+    create: (payload: ProjectCreateRequest) => Promise<Project>;
+    createBlocker: (
+      projectId: string,
+      payload: ProjectBlockerCreateRequest
+    ) => Promise<ProjectBlocker>;
+    createLink: (projectId: string, payload: ProjectLinkCreateRequest) => Promise<ProjectLink>;
+    createMilestone: (
+      projectId: string,
+      payload: ProjectMilestoneCreateRequest
+    ) => Promise<ProjectMilestone>;
+    createTask: (projectId: string, payload: ProjectTaskCreateRequest) => Promise<ProjectTask>;
+    get: (projectId: string) => Promise<ProjectDetail>;
+    linkTopic: (projectId: string, payload: ProjectTopicCreateRequest) => Promise<ProjectTopicLink>;
+    list: (query?: PaginationQuery & { includeArchived?: boolean }) => Promise<ProjectPage>;
+    listActivity: (projectId: string, query?: PaginationQuery) => Promise<ProjectActivityPage>;
+    createNote: (projectId: string, payload: ProjectNoteCreateRequest) => Promise<ProjectNote>;
+    update: (projectId: string, payload: ProjectUpdateRequest) => Promise<Project>;
+    updateBlocker: (
+      blockerId: string,
+      payload: ProjectBlockerUpdateRequest
+    ) => Promise<ProjectBlocker>;
+    updateMilestone: (
+      milestoneId: string,
+      payload: ProjectMilestoneUpdateRequest
+    ) => Promise<ProjectMilestone>;
+    updateTask: (taskId: string, payload: ProjectTaskUpdateRequest) => Promise<ProjectTask>;
   };
   health: {
     live: () => Promise<HealthCheckResponse>;
@@ -512,6 +583,14 @@ function learningResourceListQuery(query?: LearningResourceListQuery): string {
     ["limit", query?.limit],
     ["offset", query?.offset],
     ["topicId", query?.topicId]
+  ]);
+}
+
+function projectListQuery(query?: PaginationQuery & { includeArchived?: boolean }): string {
+  return queryString([
+    ["includeArchived", query?.includeArchived],
+    ["limit", query?.limit],
+    ["offset", query?.offset]
   ]);
 }
 
@@ -1246,6 +1325,192 @@ export function createAetheriumApiClient(options: AetheriumApiClientOptions): Ae
           }
         );
         return attemptSchema.parse(response);
+      }
+    },
+    projects: {
+      addTechnology: async (projectId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/projects/${projectId}/technologies`,
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return projectTechnologySchema.parse(response);
+      },
+      archive: async (projectId) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/projects/${projectId}/archive`,
+          { method: "POST" }
+        );
+        return projectSchema.parse(response);
+      },
+      attachFile: async (projectId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/projects/${projectId}/files`,
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return projectFileLinkSchema.parse(response);
+      },
+      create: async (payload) => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/projects", {
+          body: JSON.stringify(payload),
+          method: "POST"
+        });
+        return projectSchema.parse(response);
+      },
+      createBlocker: async (projectId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/projects/${projectId}/blockers`,
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return projectBlockerSchema.parse(response);
+      },
+      createLink: async (projectId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/projects/${projectId}/links`,
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return projectLinkSchema.parse(response);
+      },
+      createMilestone: async (projectId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/projects/${projectId}/milestones`,
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return projectMilestoneSchema.parse(response);
+      },
+      createNote: async (projectId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/projects/${projectId}/notes`,
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return projectNoteSchema.parse(response);
+      },
+      createTask: async (projectId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/projects/${projectId}/tasks`,
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return projectTaskSchema.parse(response);
+      },
+      get: async (projectId) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/projects/${projectId}`
+        );
+        return projectDetailSchema.parse(response);
+      },
+      linkTopic: async (projectId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/projects/${projectId}/topics`,
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return projectTopicLinkSchema.parse(response);
+      },
+      list: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/projects${projectListQuery(query)}`
+        );
+        return projectPageSchema.parse(response);
+      },
+      listActivity: async (projectId, query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/projects/${projectId}/activity${paginationQuery(query)}`
+        );
+        return projectActivityPageSchema.parse(response);
+      },
+      update: async (projectId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/projects/${projectId}`,
+          {
+            body: JSON.stringify(payload),
+            method: "PATCH"
+          }
+        );
+        return projectSchema.parse(response);
+      },
+      updateBlocker: async (blockerId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/projects/blockers/${blockerId}`,
+          {
+            body: JSON.stringify(payload),
+            method: "PATCH"
+          }
+        );
+        return projectBlockerSchema.parse(response);
+      },
+      updateMilestone: async (milestoneId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/projects/milestones/${milestoneId}`,
+          {
+            body: JSON.stringify(payload),
+            method: "PATCH"
+          }
+        );
+        return projectMilestoneSchema.parse(response);
+      },
+      updateTask: async (taskId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/projects/tasks/${taskId}`,
+          {
+            body: JSON.stringify(payload),
+            method: "PATCH"
+          }
+        );
+        return projectTaskSchema.parse(response);
       }
     },
     health: {
