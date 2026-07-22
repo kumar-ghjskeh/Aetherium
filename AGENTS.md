@@ -52,12 +52,15 @@ Implemented foundation slices:
   vault-image references, profile links, favorite projects/resources, certificates, privacy
   controls, data-export request records, account deletion request records, and Command Mode Settings
   UI.
+- Coding workspace foundation with owner-scoped snippets, exercises, attempts, AI explain/review
+  requests, Monaco editor UI, project/file linking, and an unavailable code-runner contract that
+  does not execute arbitrary code.
 
 Still out of scope unless explicitly requested:
 
 - OAuth, social login, email delivery, password reset, MFA, and magic links.
 - 3D world scenes, React Three Fiber, player controls, map travel, or world progression.
-- Coding workspace, knowledge graph, or visual world progression.
+- Knowledge graph or visual world progression.
 
 ## Product Independence
 

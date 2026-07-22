@@ -40,6 +40,8 @@ Current migrations:
 - `0013_profile_settings`: creates personal profile metadata, profile links, favorite profile
   projects/resources, certificates, privacy settings, data-export requests, and account deletion
   request records.
+- `0014_coding_workspace`: creates owner-scoped coding snippets, coding exercises, exercise
+  attempts, and coding assistant request records.
 
 Progress analytics add no new tables in Phase 12. The analytics service is a read-only aggregation
 layer over existing owner-scoped tables.
@@ -712,10 +714,54 @@ progress and unlock state is owner-scoped.
   identifier, source, unlock timestamp, and timestamps.
 - Unique owner/location constraint prevents duplicate future world unlock records.
 
+## Coding Workspace Schema
+
+All coding workspace tables include `owner_user_id`. Service methods validate owned project, file,
+topic, exercise, and snippet references before writes. Cross-user identifiers return not-found style
+responses.
+
+### `code_snippets`
+
+- UUID primary key and `owner_user_id`.
+- Title, language, content, notes, active/archive status, and archive timestamp.
+- Optional owned project reference and optional owned Personal Vault file reference.
+- Timestamps and owner/status indexes for bounded lists.
+
+Snippets are stored product data. They are not executed by the API, worker, database, or web
+containers.
+
+### `coding_exercises`
+
+- UUID primary key and `owner_user_id`.
+- Title, language, prompt, starter code, optional solution notes, difficulty, and active/archive
+  status.
+- Optional owned learning topic and project references.
+- Timestamps and owner/status/topic/project indexes.
+
+### `coding_exercise_attempts`
+
+- UUID primary key and `owner_user_id`.
+- Owned exercise reference.
+- Optional owned snippet reference.
+- Submitted code, optional notes, optional feedback, submitted/reviewed status, and timestamps.
+
+Attempts record a user's submitted answer. They do not imply that code was compiled or executed.
+
+### `code_assistant_requests`
+
+- UUID primary key and `owner_user_id`.
+- Optional snippet and project references.
+- Optional AI usage record reference.
+- Assistant kind, language, prompt, bounded code excerpt, response, status, provider/model metadata,
+  and bounded error fields.
+
+Assistant request rows store user-owned coding assistance history. AI usage records remain
+metadata-only and do not duplicate raw prompts or code excerpts.
+
 ## Planned Later Tables
 
 Later schema slices will cover:
 
 - `world_locations`, `user_world_state`.
 - `goals`, global tasks, and goal milestones.
-- Coding workspace and knowledge graph foundation tables.
+- Knowledge graph foundation tables.

@@ -1633,6 +1633,174 @@ export const projectDetailSchema = projectSchema.extend({
   topics: z.array(projectTopicLinkSchema)
 });
 
+export const codingLanguageSchema = z.enum([
+  "python",
+  "javascript",
+  "typescript",
+  "sql",
+  "cpp",
+  "systemverilog",
+  "text"
+]);
+
+export const codeSnippetStatusSchema = z.enum(["active", "archived"]);
+
+export const codingExerciseDifficultySchema = z.enum(["intro", "practice", "challenge"]);
+
+export const codingExerciseStatusSchema = z.enum(["active", "archived"]);
+
+export const codingAttemptStatusSchema = z.enum(["submitted", "reviewed"]);
+
+export const codeAssistantKindSchema = z.enum(["explain", "review"]);
+
+export const codeAssistantStatusSchema = z.enum(["complete", "failed"]);
+
+export const codeRunnerAvailabilitySchema = z.enum(["unavailable"]);
+
+export const codeSnippetSchema = z.object({
+  archivedAt: z.string().min(1).nullable(),
+  content: z.string(),
+  createdAt: z.string().min(1),
+  fileId: z.string().uuid().nullable(),
+  id: z.string().uuid(),
+  language: codingLanguageSchema,
+  notes: z.string().nullable(),
+  projectId: z.string().uuid().nullable(),
+  status: codeSnippetStatusSchema,
+  title: z.string().min(1),
+  updatedAt: z.string().min(1)
+});
+
+export const codeSnippetPageSchema = z.object({
+  items: z.array(codeSnippetSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const codeSnippetCreateRequestSchema = z.object({
+  content: z.string().min(1).max(120000),
+  fileId: z.string().uuid().nullable().optional(),
+  language: codingLanguageSchema.optional(),
+  notes: z.string().max(8000).nullable().optional(),
+  projectId: z.string().uuid().nullable().optional(),
+  title: z.string().trim().min(1, "Snippet title is required.").max(200)
+});
+
+export const codeSnippetUpdateRequestSchema = z
+  .object({
+    content: z.string().min(1).max(120000).optional(),
+    fileId: z.string().uuid().nullable().optional(),
+    language: codingLanguageSchema.optional(),
+    notes: z.string().max(8000).nullable().optional(),
+    projectId: z.string().uuid().nullable().optional(),
+    title: z.string().trim().min(1, "Snippet title is required.").max(200).optional()
+  })
+  .refine((value) => Object.keys(value).length > 0, {
+    message: "At least one snippet field is required."
+  });
+
+export const codingExerciseSchema = z.object({
+  createdAt: z.string().min(1),
+  difficulty: codingExerciseDifficultySchema,
+  id: z.string().uuid(),
+  language: codingLanguageSchema,
+  projectId: z.string().uuid().nullable(),
+  prompt: z.string().min(1),
+  solutionNotes: z.string().nullable(),
+  starterCode: z.string(),
+  status: codingExerciseStatusSchema,
+  title: z.string().min(1),
+  topicId: z.string().uuid().nullable(),
+  updatedAt: z.string().min(1)
+});
+
+export const codingExercisePageSchema = z.object({
+  items: z.array(codingExerciseSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const codingExerciseCreateRequestSchema = z.object({
+  difficulty: codingExerciseDifficultySchema.optional(),
+  language: codingLanguageSchema.optional(),
+  projectId: z.string().uuid().nullable().optional(),
+  prompt: z.string().trim().min(1, "Exercise prompt is required.").max(12000),
+  solutionNotes: z.string().max(12000).nullable().optional(),
+  starterCode: z.string().max(120000).optional(),
+  title: z.string().trim().min(1, "Exercise title is required.").max(200),
+  topicId: z.string().uuid().nullable().optional()
+});
+
+export const codingAttemptSchema = z.object({
+  createdAt: z.string().min(1),
+  exerciseId: z.string().uuid(),
+  feedback: z.string().nullable(),
+  id: z.string().uuid(),
+  notes: z.string().nullable(),
+  snippetId: z.string().uuid().nullable(),
+  status: codingAttemptStatusSchema,
+  submittedCode: z.string().min(1),
+  updatedAt: z.string().min(1)
+});
+
+export const codingAttemptCreateRequestSchema = z.object({
+  notes: z.string().max(8000).nullable().optional(),
+  snippetId: z.string().uuid().nullable().optional(),
+  submittedCode: z.string().min(1).max(120000)
+});
+
+export const codeAssistantRequestSchema = z.object({
+  aiUsageRecordId: z.string().uuid().nullable(),
+  codeExcerpt: z.string(),
+  createdAt: z.string().min(1),
+  errorCode: z.string().nullable(),
+  errorMessage: z.string().nullable(),
+  id: z.string().uuid(),
+  kind: codeAssistantKindSchema,
+  language: codingLanguageSchema,
+  modelName: z.string().nullable(),
+  projectId: z.string().uuid().nullable(),
+  prompt: z.string().nullable(),
+  providerName: z.string().nullable(),
+  response: z.string(),
+  snippetId: z.string().uuid().nullable(),
+  status: codeAssistantStatusSchema,
+  updatedAt: z.string().min(1)
+});
+
+export const codeAssistantRequestPageSchema = z.object({
+  items: z.array(codeAssistantRequestSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const codeAssistantCreateRequestSchema = z
+  .object({
+    code: z.string().min(1).max(120000).nullable().optional(),
+    includeProjectContext: z.boolean().optional(),
+    language: codingLanguageSchema.optional(),
+    modelName: z.string().max(120).optional(),
+    projectId: z.string().uuid().nullable().optional(),
+    prompt: z.string().max(4000).nullable().optional(),
+    providerName: z.string().max(80).optional(),
+    snippetId: z.string().uuid().nullable().optional()
+  })
+  .refine((value) => Boolean(value.code || value.snippetId), {
+    message: "Provide code or a saved snippet."
+  });
+
+export const codeRunnerStatusSchema = z.object({
+  availability: codeRunnerAvailabilitySchema,
+  executionAvailable: z.boolean(),
+  providerName: z.string().min(1),
+  reason: z.string().min(1),
+  securityRequirements: z.array(z.string().min(1)),
+  supportedLanguages: z.array(codingLanguageSchema)
+});
+
 export const analyticsPeriodSchema = z.enum(["week", "month", "quarter", "year"]);
 
 export const analyticsMetricKeySchema = z.enum([

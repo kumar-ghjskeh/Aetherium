@@ -1,5 +1,5 @@
-import { SectionPage } from "../../../features/app-shell/section-page";
+import { CodingWorkspacePage } from "../../../features/coding/coding-workspace-page";
 
 export default function CodingPage(): React.ReactElement {
-  return <SectionPage section="coding" />;
+  return <CodingWorkspacePage />;
 }

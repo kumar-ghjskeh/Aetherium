@@ -9,6 +9,25 @@ export function createUnusedAnalyticsClient(): AetheriumApiClient["analytics"] {
   };
 }
 
+export function createUnusedCodingClient(): AetheriumApiClient["coding"] {
+  const reject = () => Promise.reject(new Error("Unexpected coding call"));
+
+  return {
+    archiveSnippet: vi.fn(reject),
+    createAttempt: vi.fn(reject),
+    createExercise: vi.fn(reject),
+    createSnippet: vi.fn(reject),
+    explain: vi.fn(reject),
+    getRunnerStatus: vi.fn(reject),
+    getSnippet: vi.fn(reject),
+    listAssistantRequests: vi.fn(reject),
+    listExercises: vi.fn(reject),
+    listSnippets: vi.fn(reject),
+    review: vi.fn(reject),
+    updateSnippet: vi.fn(reject)
+  };
+}
+
 export function createUnusedAchievementsClient(): AetheriumApiClient["achievements"] {
   const reject = () => Promise.reject(new Error("Unexpected achievement call"));
 

@@ -28,7 +28,8 @@ The current implemented slices provide the infrastructure shell, standalone auth
 foundation, user-owned foundation, protected Command Mode shell, Personal Vault storage, background
 file ingestion, global search, provider-neutral AI gateway, AI mentor conversations, citation-backed
 document Q&A, habit tracking, the learning and mastery engine, the Project Dock foundation, and
-progress analytics, the achievement progression foundation, and personal profile/privacy settings:
+progress analytics, the achievement progression foundation, personal profile/privacy settings, and
+the Coding workspace foundation:
 
 - `apps/api`: FastAPI app, database settings, Alembic, health endpoints.
 - `apps/web`: Next.js App Router scaffold, web health route, auth UI, and protected `/app` Command
@@ -36,8 +37,8 @@ progress analytics, the achievement progression foundation, and personal profile
 - `packages/shared-types`: TypeScript contracts shared by frontend packages.
 - `packages/validation`: Zod schemas that validate API contract payloads.
 - `packages/api-client`: Typed API client for health, auth, user-owned foundation, Personal Vault,
-  search, AI gateway, document Q&A, mentor conversation, habit, learning, project, and analytics
-  APIs, plus achievements and personal profile settings.
+  search, AI gateway, document Q&A, mentor conversation, habit, learning, project, analytics,
+  achievements, personal profile settings, and coding APIs.
 - Identity domain: Aetherium-owned `users` and `sessions` tables, Argon2id password hashing,
   server-side session revocation, and product-specific cookies.
 - User-owned foundation: preferences, non-visual world profile state, domain events, notifications,
@@ -72,7 +73,7 @@ progress analytics, the achievement progression foundation, and personal profile
   UI. Research Laboratory and Knowledge Observatory visuals are deferred.
 - Project Dock: owner-scoped projects, milestones, project tasks, notes, links, file links, topic
   links, technologies, blockers, project activity, idempotent completion events, search results, and
-  a Command Mode Projects UI. Coding workspace and project AI mutation tools are deferred.
+  a Command Mode Projects UI. Project AI mutation tools are deferred.
 - Progress analytics: read-only owner-scoped summaries and trend buckets derived from stored
   learning, habit, file, AI usage, and project rows. Metrics that do not have implemented source
   events are marked unavailable instead of being invented.
@@ -82,6 +83,9 @@ progress analytics, the achievement progression foundation, and personal profile
 - Profile and settings: owner-scoped profile metadata, avatar preset or owned vault-image
   references, profile links, favorite projects/resources, certificates, privacy controls,
   data-export request records, account deletion request records, and Command Mode Settings UI.
+- Coding workspace: owner-scoped snippets, exercises, submitted attempts, AI explain/review
+  requests, Monaco editor UI, project/file linking, and an unavailable code-runner provider that
+  prevents arbitrary user code from executing in the API, worker, database, or web containers.
 
 ## Frontend Boundaries
 
@@ -98,6 +102,7 @@ Backend domains will be added incrementally:
 - Global semantic search and knowledge extraction on top of the current Personal Vault, ingestion,
   search, and AI gateway records.
 - Mentor tools that can reuse citation-backed retrieval after explicit user approval.
+- Future sandboxed code execution as a separate isolated service behind the `CodeRunner` interface.
 - Goals and global tasks beyond project-scoped tasks.
 - Notification workflows, audit expansion, and security hardening.
 
@@ -142,6 +147,8 @@ plus reusable dependencies.
 - Personal profile and privacy routes are under `/api/v1/users` and expose profile metadata, profile
   links, favorites, certificates, privacy settings, and metadata-only export/deletion request
   records.
+- Coding routes are under `/api/v1/coding` and expose snippets, exercises, submitted attempts, AI
+  explain/review requests, and code-runner status without executing code.
 
 ## Configuration
 

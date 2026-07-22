@@ -8,6 +8,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   createUnusedAchievementsClient,
   createUnusedAnalyticsClient,
+  createUnusedCodingClient,
   createUnusedFilesClient,
   createUnusedHabitsClient,
   createUnusedLearningClient,
@@ -165,6 +166,7 @@ function createClient(overrides: Partial<AetheriumApiClient["projects"]> = {}): 
       me: vi.fn(reject),
       register: vi.fn(reject)
     },
+    coding: createUnusedCodingClient(),
     domainEvents: { create: vi.fn(reject), list: vi.fn(reject) },
     files: createUnusedFilesClient(),
     habits: createUnusedHabitsClient(),

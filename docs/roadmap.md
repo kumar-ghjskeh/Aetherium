@@ -64,6 +64,9 @@ Current approved slice:
   vault-image references, profile links, favorite projects/resources, certificates, privacy
   controls, data-export request records, account deletion request records, and the Command Mode
   Settings UI.
+- Coding workspace foundation with owner-scoped snippets, exercises, submitted attempts, AI
+  explain/review requests, Monaco editor UI, project/file linking, and an unavailable code-runner
+  contract that prevents arbitrary execution in Aetherium service containers.
 
 Later Phase 1 slices:
 
@@ -101,12 +104,13 @@ Project status: implemented as the non-visual Phase 11 Project Dock foundation.
 - Project notes, resources, technologies, blockers, and activity history.
 - Project-specific AI context remains future explicit-consent behavior.
 
-Coding status: future.
+Coding status: implemented as the non-visual Phase 15 Coding workspace foundation.
 
 - Code editor.
-- Mock code runner moving toward a sandboxed provider.
-- Programming Tower.
-- Coding challenges.
+- Saved snippets, project/file linking, exercises, and submitted attempts.
+- AI code explanation and review through the provider-neutral AI gateway.
+- CodeRunner abstraction with an unavailable provider until a separately isolated sandbox exists.
+- Programming Tower remains a future World Mode presentation over these records.
 
 ## Phase 5 - World Progression
 

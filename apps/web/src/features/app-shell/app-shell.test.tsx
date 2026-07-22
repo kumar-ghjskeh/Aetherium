@@ -20,6 +20,7 @@ import { AuthProvider } from "../auth/auth-provider";
 import {
   createUnusedAchievementsClient,
   createUnusedAnalyticsClient,
+  createUnusedCodingClient,
   createUnusedFilesClient,
   createUnusedHabitsClient,
   createUnusedLearningClient,
@@ -199,6 +200,7 @@ function createClient(
       register: vi.fn(() => Promise.resolve({ user })),
       ...overrides.auth
     },
+    coding: createUnusedCodingClient(),
     domainEvents: {
       create: vi.fn(() => Promise.resolve(domainEvent)),
       list: vi.fn(() => Promise.resolve(emptyDomainEventPage))

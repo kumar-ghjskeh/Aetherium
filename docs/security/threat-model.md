@@ -10,6 +10,7 @@
 - Habit, goal, project, and learning records.
 - Personal profile metadata, privacy settings, certificates, favorite resources, data-export
   requests, and account deletion request records.
+- Code snippets, coding exercises, submitted attempts, and coding assistant requests.
 - Search indexes and embeddings.
 - Object storage credentials.
 - AI provider credentials.
@@ -50,6 +51,7 @@
 | Unsafe data deletion                      | Deletion requests are metadata-only until a reviewed execution workflow exists.               |
 | Export leakage                            | Export requests are owner-scoped records; generation/download is deferred to a hardened flow. |
 | Insecure code execution                   | Use mock code runner first; require isolated sandbox before real execution.                   |
+| Code sent to AI without consent           | Route coding assistant through feature consent and avoid automatic project context.           |
 | Secret leakage                            | Keep secrets out of source and logs.                                                          |
 | Cross-tenant data access                  | Include tenant/owner scoping in schema and data-access tests.                                 |
 | Sensitive audit-log data                  | Sanitize audit metadata before persistence and avoid raw secrets or tokens.                   |
@@ -179,6 +181,16 @@
 - Profile, privacy, export, and deletion request audit logs use sanitized metadata and do not store
   passwords, raw session tokens, cookies, private file bodies, provider credentials, or full
   prompts.
+- Coding snippets, exercises, attempts, and assistant requests are scoped by `owner_user_id`.
+- Coding services validate owned project, file, topic, exercise, and snippet references before
+  writes.
+- The Phase 15 code runner is intentionally unavailable. Aetherium does not execute arbitrary user
+  code inside the FastAPI service, worker service, PostgreSQL container, or web container.
+- Coding assistant explain/review routes use the provider-neutral AI gateway and the
+  `coding_assistant` feature. Project context is included only when explicitly requested and allowed
+  by AI consent.
+- Coding audit logs store action metadata such as language, lengths, and entity IDs; they do not
+  store raw code, provider credentials, cookies, session tokens, or secrets.
 - CI runs independence checks, formatting, linting, type checks, tests, build, and migration smoke
   validation.
 
@@ -201,3 +213,5 @@
   irreversible deletion review.
 - Data-export generation, encryption, expiration, and download authorization.
 - Authorization tests for every critical user-owned endpoint.
+- Production-grade sandboxed code execution before any real runner is enabled, including CPU,
+  memory, timeout, network, filesystem, output, language, dependency, and secret-isolation controls.

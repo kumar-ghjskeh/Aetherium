@@ -157,6 +157,18 @@ Current routes:
 - `GET /api/v1/achievements`
 - `GET /api/v1/achievements/summary`
 - `POST /api/v1/achievements/process`
+- `GET /api/v1/coding/snippets`
+- `POST /api/v1/coding/snippets`
+- `GET /api/v1/coding/snippets/{snippet_id}`
+- `PATCH /api/v1/coding/snippets/{snippet_id}`
+- `POST /api/v1/coding/snippets/{snippet_id}/archive`
+- `GET /api/v1/coding/exercises`
+- `POST /api/v1/coding/exercises`
+- `POST /api/v1/coding/exercises/{exercise_id}/attempts`
+- `GET /api/v1/coding/assistant/requests`
+- `POST /api/v1/coding/assistant/explain`
+- `POST /api/v1/coding/assistant/review`
+- `GET /api/v1/coding/runner/status`
 
 Planned route groups:
 
@@ -509,6 +521,36 @@ points, recent unlocks, and non-visual world-unlock identifiers.
 `POST /api/v1/achievements/process` consumes the authenticated user's unprocessed domain events
 against active achievement rules. Processed event/rule pairs are recorded idempotently so retries do
 not double-count or double-award achievements.
+
+## Coding Workspace Routes
+
+`GET/POST /api/v1/coding/snippets` lists and creates owner-scoped saved code snippets with bounded
+pagination. Snippets may optionally link to an owned active project or Personal Vault file.
+
+`GET/PATCH /api/v1/coding/snippets/{snippet_id}` reads and updates only the authenticated user's
+snippet. Cross-user IDs return `not_found`.
+
+`POST /api/v1/coding/snippets/{snippet_id}/archive` archives an owned snippet without deleting
+associated attempts or assistant-request history.
+
+`GET/POST /api/v1/coding/exercises` lists and creates owner-scoped coding exercises. Exercises may
+link to an owned learning topic or project. This route stores prompts and starter code only; it does
+not run code.
+
+`POST /api/v1/coding/exercises/{exercise_id}/attempts` records a submitted answer for an owned
+exercise and optional owned snippet. Attempts are submission records, not execution results.
+
+`GET /api/v1/coding/assistant/requests` lists metadata and responses for the authenticated user's
+coding assistant requests.
+
+`POST /api/v1/coding/assistant/explain` and `POST /api/v1/coding/assistant/review` send bounded code
+context to the provider-neutral AI gateway for the `coding_assistant` feature. Project context is
+included only when the payload requests it and AI project-data consent allows it. Usage records stay
+metadata-only.
+
+`GET /api/v1/coding/runner/status` returns the current code-runner capability. The Phase 15 provider
+is intentionally `unavailable`; Aetherium does not execute arbitrary code in the API, worker,
+database, or web containers.
 
 ## Generated Client
 

@@ -22,6 +22,7 @@ import { ProtectedCommandMode } from "../command/protected-command-mode";
 import {
   createUnusedAchievementsClient,
   createUnusedAnalyticsClient,
+  createUnusedCodingClient,
   createUnusedFilesClient,
   createUnusedHabitsClient,
   createUnusedLearningClient,
@@ -171,6 +172,7 @@ function createClient(overrides: Partial<AetheriumApiClient["auth"]>): Aetherium
       register: vi.fn(() => Promise.resolve({ user })),
       ...overrides
     },
+    coding: createUnusedCodingClient(),
     domainEvents: {
       create: vi.fn(() => Promise.resolve(domainEvent)),
       list: vi.fn(() => Promise.resolve(emptyDomainEventPage))

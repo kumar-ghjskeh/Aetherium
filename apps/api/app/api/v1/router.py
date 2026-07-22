@@ -6,6 +6,7 @@ from app.api.v1 import (
     analytics,
     audit_logs,
     auth,
+    coding,
     domain_events,
     files,
     habits,
@@ -35,6 +36,7 @@ api_router.include_router(habits.router, prefix="/habits", tags=["habits"])
 api_router.include_router(learning.router, prefix="/learning", tags=["learning"])
 api_router.include_router(projects.router, prefix="/projects", tags=["projects"])
 api_router.include_router(analytics.router, prefix="/analytics", tags=["analytics"])
+api_router.include_router(coding.router, prefix="/coding", tags=["coding"])
 api_router.include_router(search.router, prefix="/search", tags=["search"])
 api_router.include_router(ai.router, prefix="/ai", tags=["ai"])
 api_router.include_router(mentors.router, prefix="/mentors", tags=["mentors"])

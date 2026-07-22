@@ -25,6 +25,14 @@ import type {
   Certificate,
   CertificateCreateRequest,
   CertificatePage,
+  CodeAssistantCreateRequest,
+  CodeAssistantRequest,
+  CodeAssistantRequestPage,
+  CodeRunnerStatus,
+  CodeSnippet,
+  CodeSnippetCreateRequest,
+  CodeSnippetPage,
+  CodeSnippetUpdateRequest,
   Collection,
   CollectionCreateRequest,
   CollectionItemRequest,
@@ -91,6 +99,11 @@ import type {
   CourseModule,
   CourseModuleCreateRequest,
   CoursePage,
+  CodingAttempt,
+  CodingAttemptCreateRequest,
+  CodingExercise,
+  CodingExerciseCreateRequest,
+  CodingExercisePage,
   Flashcard,
   FlashcardCreateRequest,
   FlashcardPage,
@@ -201,6 +214,11 @@ import {
   authResponseSchema,
   certificatePageSchema,
   certificateSchema,
+  codeAssistantRequestPageSchema,
+  codeAssistantRequestSchema,
+  codeRunnerStatusSchema,
+  codeSnippetPageSchema,
+  codeSnippetSchema,
   collectionPageSchema,
   collectionSchema,
   conversationExportSchema,
@@ -231,6 +249,9 @@ import {
   courseModuleSchema,
   coursePageSchema,
   courseSchema,
+  codingAttemptSchema,
+  codingExercisePageSchema,
+  codingExerciseSchema,
   flashcardPageSchema,
   flashcardReviewSchema,
   flashcardSchema,
@@ -329,6 +350,27 @@ export interface AetheriumApiClient {
     logout: () => Promise<void>;
     me: () => Promise<PublicUser>;
     register: (payload: RegisterRequest) => Promise<AuthResponse>;
+  };
+  coding: {
+    archiveSnippet: (snippetId: string) => Promise<CodeSnippet>;
+    createAttempt: (
+      exerciseId: string,
+      payload: CodingAttemptCreateRequest
+    ) => Promise<CodingAttempt>;
+    createExercise: (payload: CodingExerciseCreateRequest) => Promise<CodingExercise>;
+    createSnippet: (payload: CodeSnippetCreateRequest) => Promise<CodeSnippet>;
+    explain: (payload: CodeAssistantCreateRequest) => Promise<CodeAssistantRequest>;
+    getRunnerStatus: () => Promise<CodeRunnerStatus>;
+    getSnippet: (snippetId: string) => Promise<CodeSnippet>;
+    listAssistantRequests: (query?: PaginationQuery) => Promise<CodeAssistantRequestPage>;
+    listExercises: (
+      query?: PaginationQuery & { includeArchived?: boolean }
+    ) => Promise<CodingExercisePage>;
+    listSnippets: (
+      query?: PaginationQuery & { includeArchived?: boolean }
+    ) => Promise<CodeSnippetPage>;
+    review: (payload: CodeAssistantCreateRequest) => Promise<CodeAssistantRequest>;
+    updateSnippet: (snippetId: string, payload: CodeSnippetUpdateRequest) => Promise<CodeSnippet>;
   };
   domainEvents: {
     create: (payload: DomainEventCreateRequest) => Promise<DomainEvent>;
@@ -685,6 +727,16 @@ function projectListQuery(query?: PaginationQuery & { includeArchived?: boolean 
   ]);
 }
 
+function includeArchivedPaginationQuery(
+  query?: PaginationQuery & { includeArchived?: boolean }
+): string {
+  return queryString([
+    ["includeArchived", query?.includeArchived],
+    ["limit", query?.limit],
+    ["offset", query?.offset]
+  ]);
+}
+
 async function parseErrorResponse(response: Response): Promise<ApiErrorBody> {
   try {
     const payload: unknown = await response.json();
@@ -892,6 +944,119 @@ export function createAetheriumApiClient(options: AetheriumApiClientOptions): Ae
           method: "POST"
         });
         return authResponseSchema.parse(response);
+      }
+    },
+    coding: {
+      archiveSnippet: async (snippetId) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/coding/snippets/${snippetId}/archive`,
+          { method: "POST" }
+        );
+        return codeSnippetSchema.parse(response);
+      },
+      createAttempt: async (exerciseId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/coding/exercises/${exerciseId}/attempts`,
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return codingAttemptSchema.parse(response);
+      },
+      createExercise: async (payload) => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/coding/exercises", {
+          body: JSON.stringify(payload),
+          method: "POST"
+        });
+        return codingExerciseSchema.parse(response);
+      },
+      createSnippet: async (payload) => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/coding/snippets", {
+          body: JSON.stringify(payload),
+          method: "POST"
+        });
+        return codeSnippetSchema.parse(response);
+      },
+      explain: async (payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          "/api/v1/coding/assistant/explain",
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return codeAssistantRequestSchema.parse(response);
+      },
+      getRunnerStatus: async () => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          "/api/v1/coding/runner/status"
+        );
+        return codeRunnerStatusSchema.parse(response);
+      },
+      getSnippet: async (snippetId) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/coding/snippets/${snippetId}`
+        );
+        return codeSnippetSchema.parse(response);
+      },
+      listAssistantRequests: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/coding/assistant/requests${paginationQuery(query)}`
+        );
+        return codeAssistantRequestPageSchema.parse(response);
+      },
+      listExercises: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/coding/exercises${includeArchivedPaginationQuery(query)}`
+        );
+        return codingExercisePageSchema.parse(response);
+      },
+      listSnippets: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/coding/snippets${includeArchivedPaginationQuery(query)}`
+        );
+        return codeSnippetPageSchema.parse(response);
+      },
+      review: async (payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          "/api/v1/coding/assistant/review",
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return codeAssistantRequestSchema.parse(response);
+      },
+      updateSnippet: async (snippetId, payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/coding/snippets/${snippetId}`,
+          {
+            body: JSON.stringify(payload),
+            method: "PATCH"
+          }
+        );
+        return codeSnippetSchema.parse(response);
       }
     },
     domainEvents: {

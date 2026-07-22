@@ -1513,6 +1513,154 @@ export interface ProjectDetail extends Project {
   recentActivity: ProjectActivity[];
 }
 
+export type CodingLanguage =
+  "python" | "javascript" | "typescript" | "sql" | "cpp" | "systemverilog" | "text";
+
+export type CodeSnippetStatus = "active" | "archived";
+
+export type CodingExerciseDifficulty = "intro" | "practice" | "challenge";
+
+export type CodingExerciseStatus = "active" | "archived";
+
+export type CodingAttemptStatus = "submitted" | "reviewed";
+
+export type CodeAssistantKind = "explain" | "review";
+
+export type CodeAssistantStatus = "complete" | "failed";
+
+export type CodeRunnerAvailability = "unavailable";
+
+export interface CodeSnippet {
+  id: string;
+  title: string;
+  language: CodingLanguage;
+  content: string;
+  notes: string | null;
+  status: CodeSnippetStatus;
+  projectId: string | null;
+  fileId: string | null;
+  archivedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CodeSnippetPage {
+  items: CodeSnippet[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface CodeSnippetCreateRequest {
+  title: string;
+  language?: CodingLanguage | undefined;
+  content: string;
+  notes?: string | null | undefined;
+  projectId?: string | null | undefined;
+  fileId?: string | null | undefined;
+}
+
+export type CodeSnippetUpdateRequest = ExactOptionalUpdate<
+  Pick<CodeSnippet, "content" | "fileId" | "language" | "notes" | "projectId" | "title">
+>;
+
+export interface CodingExercise {
+  id: string;
+  title: string;
+  language: CodingLanguage;
+  prompt: string;
+  starterCode: string;
+  solutionNotes: string | null;
+  difficulty: CodingExerciseDifficulty;
+  status: CodingExerciseStatus;
+  topicId: string | null;
+  projectId: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CodingExercisePage {
+  items: CodingExercise[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface CodingExerciseCreateRequest {
+  title: string;
+  language?: CodingLanguage | undefined;
+  prompt: string;
+  starterCode?: string | undefined;
+  solutionNotes?: string | null | undefined;
+  difficulty?: CodingExerciseDifficulty | undefined;
+  topicId?: string | null | undefined;
+  projectId?: string | null | undefined;
+}
+
+export interface CodingAttemptCreateRequest {
+  submittedCode: string;
+  snippetId?: string | null | undefined;
+  notes?: string | null | undefined;
+}
+
+export interface CodingAttempt {
+  id: string;
+  exerciseId: string;
+  snippetId: string | null;
+  submittedCode: string;
+  notes: string | null;
+  feedback: string | null;
+  status: CodingAttemptStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CodeAssistantCreateRequest {
+  code?: string | null | undefined;
+  language?: CodingLanguage | undefined;
+  prompt?: string | null | undefined;
+  snippetId?: string | null | undefined;
+  projectId?: string | null | undefined;
+  includeProjectContext?: boolean | undefined;
+  providerName?: string | undefined;
+  modelName?: string | undefined;
+}
+
+export interface CodeAssistantRequest {
+  id: string;
+  snippetId: string | null;
+  projectId: string | null;
+  aiUsageRecordId: string | null;
+  kind: CodeAssistantKind;
+  language: CodingLanguage;
+  prompt: string | null;
+  codeExcerpt: string;
+  response: string;
+  status: CodeAssistantStatus;
+  providerName: string | null;
+  modelName: string | null;
+  errorCode: string | null;
+  errorMessage: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CodeAssistantRequestPage {
+  items: CodeAssistantRequest[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface CodeRunnerStatus {
+  availability: CodeRunnerAvailability;
+  executionAvailable: boolean;
+  providerName: string;
+  reason: string;
+  supportedLanguages: CodingLanguage[];
+  securityRequirements: string[];
+}
+
 export type AnalyticsPeriod = "week" | "month" | "quarter" | "year";
 
 export type AnalyticsMetricKey =

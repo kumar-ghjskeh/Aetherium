@@ -469,6 +469,75 @@ const projectDetail = {
   topics: [projectTopicLink]
 };
 
+const codeSnippet = {
+  archivedAt: null,
+  content: "const symbolTable = new Map<string, number>();",
+  createdAt: "2026-07-20T00:00:00Z",
+  fileId: null,
+  id: "c1111111-1111-4111-8111-111111111111",
+  language: "typescript",
+  notes: "Assembler parser notes.",
+  projectId: project.id,
+  status: "active",
+  title: "Symbol table",
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const codingExercise = {
+  createdAt: "2026-07-20T00:00:00Z",
+  difficulty: "practice",
+  id: "c2222222-2222-4222-8222-222222222222",
+  language: "typescript",
+  projectId: project.id,
+  prompt: "Write a label parser.",
+  solutionNotes: null,
+  starterCode: "function parseLabel(line: string) { return line; }",
+  status: "active",
+  title: "Parse labels",
+  topicId: null,
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const codingAttempt = {
+  createdAt: "2026-07-20T00:00:00Z",
+  exerciseId: codingExercise.id,
+  feedback: null,
+  id: "c3333333-3333-4333-8333-333333333333",
+  notes: null,
+  snippetId: codeSnippet.id,
+  status: "submitted",
+  submittedCode: codeSnippet.content,
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const codeAssistantRequest = {
+  aiUsageRecordId: "c4444444-4444-4444-8444-444444444444",
+  codeExcerpt: codeSnippet.content,
+  createdAt: "2026-07-20T00:00:00Z",
+  errorCode: null,
+  errorMessage: null,
+  id: "c5555555-5555-4555-8555-555555555555",
+  kind: "explain",
+  language: "typescript",
+  modelName: "aetherium-deterministic-chat",
+  projectId: project.id,
+  prompt: "Explain this snippet.",
+  providerName: "aetherium_deterministic",
+  response: "Deterministic coding response.",
+  snippetId: codeSnippet.id,
+  status: "complete",
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const codeRunnerStatus = {
+  availability: "unavailable",
+  executionAvailable: false,
+  providerName: "none",
+  reason: "Code execution is unavailable in this foundation slice.",
+  securityRequirements: ["cpu_limit", "no_aetherium_secrets"],
+  supportedLanguages: ["typescript", "python", "sql"]
+};
+
 const analyticsSummary = {
   generatedAt: "2026-07-20T00:00:00Z",
   metrics: [
@@ -1934,6 +2003,120 @@ describe("createAetheriumApiClient", () => {
 
     expect(fetcher).toHaveBeenCalledWith(
       "http://localhost:8000/api/v1/projects?includeArchived=true&limit=5&offset=0",
+      {
+        credentials: "include",
+        headers: { Accept: "application/json" }
+      }
+    );
+  });
+
+  it("uses Coding workspace endpoints", async () => {
+    const fetcher = vi.fn<typeof fetch>((input, init) => {
+      const url = requestUrl(input);
+      if (
+        url === "http://localhost:8000/api/v1/coding/snippets?includeArchived=true&limit=5&offset=0"
+      ) {
+        return Promise.resolve(
+          jsonResponse({ items: [codeSnippet], limit: 5, offset: 0, total: 1 })
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/coding/snippets") {
+        return Promise.resolve(jsonResponse(codeSnippet, 201));
+      }
+      if (url === `http://localhost:8000/api/v1/coding/snippets/${codeSnippet.id}`) {
+        if (init?.method === "PATCH") {
+          return Promise.resolve(jsonResponse({ ...codeSnippet, title: "Updated symbol table" }));
+        }
+        return Promise.resolve(jsonResponse(codeSnippet));
+      }
+      if (url === `http://localhost:8000/api/v1/coding/snippets/${codeSnippet.id}/archive`) {
+        return Promise.resolve(
+          jsonResponse({ ...codeSnippet, archivedAt: "2026-07-20T00:30:00Z", status: "archived" })
+        );
+      }
+      if (
+        url ===
+        "http://localhost:8000/api/v1/coding/exercises?includeArchived=true&limit=5&offset=0"
+      ) {
+        return Promise.resolve(
+          jsonResponse({ items: [codingExercise], limit: 5, offset: 0, total: 1 })
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/coding/exercises") {
+        return Promise.resolve(jsonResponse(codingExercise, 201));
+      }
+      if (url === `http://localhost:8000/api/v1/coding/exercises/${codingExercise.id}/attempts`) {
+        return Promise.resolve(jsonResponse(codingAttempt, 201));
+      }
+      if (url === "http://localhost:8000/api/v1/coding/assistant/requests?limit=5&offset=0") {
+        return Promise.resolve(
+          jsonResponse({ items: [codeAssistantRequest], limit: 5, offset: 0, total: 1 })
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/coding/assistant/explain") {
+        return Promise.resolve(jsonResponse(codeAssistantRequest));
+      }
+      if (url === "http://localhost:8000/api/v1/coding/assistant/review") {
+        return Promise.resolve(jsonResponse({ ...codeAssistantRequest, kind: "review" }));
+      }
+      if (url === "http://localhost:8000/api/v1/coding/runner/status") {
+        return Promise.resolve(jsonResponse(codeRunnerStatus));
+      }
+      return Promise.resolve(jsonResponse({ error: { code: "not_found", message: url } }, 404));
+    });
+    const client = createAetheriumApiClient({ baseUrl: "http://localhost:8000", fetcher });
+
+    await expect(
+      client.coding.listSnippets({ includeArchived: true, limit: 5, offset: 0 })
+    ).resolves.toMatchObject({ total: 1 });
+    await expect(
+      client.coding.createSnippet({
+        content: codeSnippet.content,
+        language: "typescript",
+        projectId: project.id,
+        title: "Symbol table"
+      })
+    ).resolves.toMatchObject({ title: "Symbol table" });
+    await expect(client.coding.getSnippet(codeSnippet.id)).resolves.toMatchObject({
+      language: "typescript"
+    });
+    await expect(
+      client.coding.updateSnippet(codeSnippet.id, { title: "Updated symbol table" })
+    ).resolves.toMatchObject({ title: "Updated symbol table" });
+    await expect(client.coding.archiveSnippet(codeSnippet.id)).resolves.toMatchObject({
+      status: "archived"
+    });
+    await expect(
+      client.coding.listExercises({ includeArchived: true, limit: 5, offset: 0 })
+    ).resolves.toMatchObject({ total: 1 });
+    await expect(
+      client.coding.createExercise({
+        language: "typescript",
+        prompt: "Write a label parser.",
+        title: "Parse labels"
+      })
+    ).resolves.toMatchObject({ title: "Parse labels" });
+    await expect(
+      client.coding.createAttempt(codingExercise.id, {
+        snippetId: codeSnippet.id,
+        submittedCode: codeSnippet.content
+      })
+    ).resolves.toMatchObject({ status: "submitted" });
+    await expect(
+      client.coding.listAssistantRequests({ limit: 5, offset: 0 })
+    ).resolves.toMatchObject({ total: 1 });
+    await expect(
+      client.coding.explain({ prompt: "Explain this snippet.", snippetId: codeSnippet.id })
+    ).resolves.toMatchObject({ kind: "explain" });
+    await expect(
+      client.coding.review({ code: "SELECT * FROM files", language: "sql" })
+    ).resolves.toMatchObject({ kind: "review" });
+    await expect(client.coding.getRunnerStatus()).resolves.toMatchObject({
+      executionAvailable: false
+    });
+
+    expect(fetcher).toHaveBeenCalledWith(
+      "http://localhost:8000/api/v1/coding/snippets?includeArchived=true&limit=5&offset=0",
       {
         credentials: "include",
         headers: { Accept: "application/json" }

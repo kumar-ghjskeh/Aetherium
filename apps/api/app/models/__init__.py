@@ -9,6 +9,12 @@ from app.models.achievements import (
 )
 from app.models.ai import AIConsentPolicy, AIModelConfiguration, AIUsageRecord
 from app.models.auth import AuthSession, User
+from app.models.coding import (
+    CodeAssistantRequest,
+    CodeSnippet,
+    CodingExercise,
+    CodingExerciseAttempt,
+)
 from app.models.file_ingestion import (
     EmbeddingJob,
     ExtractionResult,
@@ -105,10 +111,14 @@ __all__ = [
     "Attempt",
     "AuthSession",
     "Certificate",
+    "CodeAssistantRequest",
+    "CodeSnippet",
     "Collection",
     "CollectionItem",
     "Conversation",
     "ConversationMemorySettings",
+    "CodingExercise",
+    "CodingExerciseAttempt",
     "Course",
     "CourseModule",
     "DailyCheckIn",

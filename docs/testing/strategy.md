@@ -58,6 +58,10 @@ Backend:
   profile links, favorite projects/resources, certificates, privacy preference synchronization,
   data-export request idempotency, account deletion confirmation, unauthenticated access, cross-user
   isolation, and database constraints.
+- Coding backend tests for snippet lifecycle, project/file/topic ownership checks, exercise and
+  attempt submission, AI explain/review requests, unavailable runner status, audit-log sanitization,
+  unauthenticated access, cross-user isolation, validation failures, pagination, and database
+  constraints.
 - Alembic migration smoke validation against PostgreSQL in CI.
 - Ruff formatting and linting.
 - mypy type checking.
@@ -93,6 +97,8 @@ Frontend and shared packages:
 - API-client contract tests for achievement list, summary, and event-processing endpoints.
 - API-client contract tests for personal profile, profile links, favorite projects/resources,
   certificates, privacy settings, data-export requests, and account deletion request endpoints.
+- API-client contract tests for Coding workspace snippets, exercises, attempts, assistant requests,
+  and runner status.
 - Next.js build validation.
 - React Testing Library coverage for the Library page, including loading, empty, error, upload,
   favorite, tag, delete, processing failure, and retry states.
@@ -116,6 +122,9 @@ Frontend and shared packages:
 - React Testing Library coverage for the Settings page, including loading, empty and error states,
   profile validation, privacy updates, profile record creation, data-export requests, and exact
   account deletion confirmation handling.
+- React Testing Library coverage for the Coding workspace page, including loading, empty and error
+  states, snippet validation, save/update/archive flows, AI explain/review requests, exercise
+  creation, attempt submission, and unavailable runner messaging.
 
 ## Future Backend Tests
 

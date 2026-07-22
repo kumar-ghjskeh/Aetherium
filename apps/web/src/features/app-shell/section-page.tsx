@@ -28,7 +28,7 @@ const sections = {
     title: "Analytics"
   },
   coding: {
-    body: "The coding workspace foundation is planned for a later non-3D phase.",
+    body: "The Coding workspace uses the dedicated editor route for snippets, exercises, and AI review.",
     label: "Practice",
     title: "Coding"
   },

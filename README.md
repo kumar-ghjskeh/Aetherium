@@ -9,8 +9,8 @@ the user-owned foundation, the protected Command Mode application shell, and Per
 storage with background ingestion, global search, the provider-neutral AI gateway, AI mentor
 conversations, citation-backed document Q&A, habit tracking, the learning and mastery engine, and
 the Project Dock foundation, progress analytics, the achievement progression foundation, and
-personal profile/privacy settings. It does not yet implement visual 3D world navigation or coding
-workspace features.
+personal profile/privacy settings, and the Coding workspace foundation. It does not yet implement
+visual 3D world navigation.
 
 Aetherium is a standalone product. It uses its own repository, database, Redis namespace,
 object-storage buckets, environment variables, Docker resources, CI workflow, and future
@@ -69,6 +69,10 @@ authentication/session system. See `docs/architecture/product-independence.md` a
   preset or owned vault-image references, profile links, favorite projects/resources, certificates,
   privacy controls, AI memory and analytics preferences, data-export request records, account
   deletion request records, and a Command Mode Settings UI.
+- Coding workspace under `/api/v1/coding` with owner-scoped snippets, coding exercises, submitted
+  attempts, AI explain/review requests through the provider-neutral gateway, a Monaco-backed Command
+  Mode editor, and an explicit unavailable code-runner contract. Aetherium does not execute
+  arbitrary user code inside the API, worker, database, or web containers.
 - Non-visual `/app/world` route that clearly marks visual World Mode as future work.
 - Docker Compose development infrastructure for Aetherium-isolated PostgreSQL, Redis, MinIO, API,
   worker, and web services.
@@ -286,6 +290,18 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
 - Update blocker: `PATCH http://localhost:8000/api/v1/projects/blockers/{blocker_id}`
 - Activity: `GET http://localhost:8000/api/v1/projects/{id}/activity`
 
+## Coding Workspace Endpoints
+
+- Snippets: `GET/POST http://localhost:8000/api/v1/coding/snippets`
+- Snippet detail: `GET/PATCH http://localhost:8000/api/v1/coding/snippets/{id}`
+- Archive snippet: `POST http://localhost:8000/api/v1/coding/snippets/{id}/archive`
+- Exercises: `GET/POST http://localhost:8000/api/v1/coding/exercises`
+- Exercise attempts: `POST http://localhost:8000/api/v1/coding/exercises/{id}/attempts`
+- Assistant requests: `GET http://localhost:8000/api/v1/coding/assistant/requests`
+- Explain code: `POST http://localhost:8000/api/v1/coding/assistant/explain`
+- Review code: `POST http://localhost:8000/api/v1/coding/assistant/review`
+- Runner status: `GET http://localhost:8000/api/v1/coding/runner/status`
+
 ## Analytics Endpoints
 
 - Summary: `GET http://localhost:8000/api/v1/analytics/summary?period=month`
@@ -351,8 +367,11 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
   document Q&A can answer against them with citations when explicit file-content consent is enabled.
 - File-ingestion embedding jobs are still recorded as skipped by default until semantic search wires
   the AI gateway into the worker with explicit consent.
-- AI mentors are persistent and gateway-backed. Coding workspace and visual 3D scenes do not exist
-  yet.
+- AI mentors and the Coding workspace are persistent and gateway-backed. Visual 3D scenes do not
+  exist yet.
+- The Coding workspace can save snippets, exercises, attempts, and AI explain/review records. Code
+  execution is deliberately unavailable until a separate isolated sandbox provider is implemented
+  and validated.
 - Progress analytics are read-only aggregations from existing stored data. Unsupported metrics such
   as files opened and coding sessions are marked unavailable instead of being fabricated.
 - Achievements are non-visual progression records. Future world unlocks are stored as identifiers

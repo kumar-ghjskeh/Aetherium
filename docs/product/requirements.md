@@ -83,15 +83,17 @@ Implemented Phase 1 foundation slices:
   references, profile links, favorite projects/resources, certificates, AI memory and analytics
   controls, data-export request records, account deletion request records, and Command Mode Settings
   UI.
+- Coding workspace foundation with saved snippets, exercises, submitted attempts, AI code
+  explanation/review, project/file linking, and an explicit no-execution code-runner status.
 
-Visual 3D world rendering, coding workspace, knowledge graph, external notification delivery, actual
-export generation, and account deletion execution are intentionally deferred.
+Visual 3D world rendering, knowledge graph, external notification delivery, actual export
+generation, account deletion execution, and sandboxed code execution are intentionally deferred.
 
 ## Non-Goals For Current Slice
 
 - No OAuth, social login, email delivery, password reset, MFA, or magic links.
 - No 3D scene or world interaction.
-- No coding workspace or arbitrary code execution.
+- No arbitrary code execution.
 - No knowledge graph implementation.
 - No external notification delivery.
 - No destructive account deletion execution.
@@ -122,3 +124,5 @@ export generation, and account deletion execution are intentionally deferred.
 - A signed-in user can use mentor conversations, document Q&A with explicit file-content consent,
   habit tracking, learning records, projects, analytics, achievements, and profile/privacy settings
   without exposing another user's data.
+- A signed-in user can save coding snippets, create coding exercises, submit attempts, and request
+  AI code explanation or review without executing arbitrary code in Aetherium service containers.

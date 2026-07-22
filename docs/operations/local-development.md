@@ -67,6 +67,11 @@ not require new environment variables. Data-export and account deletion endpoint
 owner-scoped workflow requests only in local development; they do not generate archives or delete
 account data.
 
+The Coding workspace runs inside the existing web and API services. It can save snippets, exercises,
+attempts, and AI explain/review requests. The local code-runner provider is intentionally
+unavailable, so no arbitrary code is executed in `aetherium-api`, `aetherium-worker`,
+`aetherium-postgres`, or `aetherium-web`.
+
 ## Authentication Defaults
 
 Local development uses:
