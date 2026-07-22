@@ -49,6 +49,8 @@ Backend:
   file links, owned topic links, technologies, blockers, activity history, completion events, audit
   logs, search integration, validation failures, unauthenticated access, cross-user isolation, and
   database uniqueness.
+- Analytics backend tests for owner-scoped summary metrics, unavailable unsupported signals,
+  authentication, invalid period validation, and cross-user isolation.
 - Alembic migration smoke validation against PostgreSQL in CI.
 - Ruff formatting and linting.
 - mypy type checking.
@@ -80,6 +82,7 @@ Frontend and shared packages:
   records, goals, and roadmaps.
 - API-client contract tests for Project Dock projects, milestones, project tasks, notes, links, file
   links, topic links, technologies, blockers, and activity.
+- API-client contract tests for analytics summary responses and period query serialization.
 - Next.js build validation.
 - React Testing Library coverage for the Library page, including loading, empty, error, upload,
   favorite, tag, delete, processing failure, and retry states.
@@ -95,6 +98,8 @@ Frontend and shared packages:
 - React Testing Library coverage for the Projects page, including loading, empty, error, creation
   validation, project creation, status changes, task completion, notes, technologies, blockers, and
   activity-backed selected project state.
+- React Testing Library coverage for the Analytics page, including loading, empty, error, period
+  changes, real summary rendering, unavailable metrics, and accessible trend tables.
 
 ## Future Backend Tests
 

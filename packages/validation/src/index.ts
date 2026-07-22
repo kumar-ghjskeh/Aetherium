@@ -1362,6 +1362,53 @@ export const projectDetailSchema = projectSchema.extend({
   topics: z.array(projectTopicLinkSchema)
 });
 
+export const analyticsPeriodSchema = z.enum(["week", "month", "quarter", "year"]);
+
+export const analyticsMetricKeySchema = z.enum([
+  "study_minutes",
+  "lessons_completed",
+  "quiz_accuracy",
+  "topic_mastery",
+  "habit_completions",
+  "habit_completion_rate",
+  "project_progress",
+  "files_processed",
+  "files_opened",
+  "ai_requests",
+  "ai_tokens",
+  "coding_sessions"
+]);
+
+export const analyticsMetricSchema = z.object({
+  available: z.boolean(),
+  explanation: z.string().min(1),
+  key: analyticsMetricKeySchema,
+  label: z.string().min(1),
+  unit: z.string().min(1),
+  value: z.number().nullable()
+});
+
+export const analyticsTrendBucketSchema = z.object({
+  aiRequests: z.number().int().min(0),
+  filesProcessed: z.number().int().min(0),
+  habitCompletions: z.number().int().min(0),
+  label: z.string().min(1),
+  lessonsCompleted: z.number().int().min(0),
+  periodEnd: z.string().min(1),
+  periodStart: z.string().min(1),
+  projectsCompleted: z.number().int().min(0),
+  studyMinutes: z.number().int().min(0)
+});
+
+export const analyticsSummarySchema = z.object({
+  generatedAt: z.string().min(1),
+  metrics: z.array(analyticsMetricSchema),
+  period: analyticsPeriodSchema,
+  periodEnd: z.string().min(1),
+  periodStart: z.string().min(1),
+  trendBuckets: z.array(analyticsTrendBucketSchema)
+});
+
 export const aiFeatureSchema = z.enum([
   "general_chat",
   "embeddings",

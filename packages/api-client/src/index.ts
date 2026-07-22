@@ -12,6 +12,8 @@ import type {
   AIProviderPage,
   AIUsageQuery,
   AIUsageRecordPage,
+  AnalyticsPeriod,
+  AnalyticsSummary,
   AuditLogPage,
   AuthResponse,
   Collection,
@@ -163,6 +165,7 @@ import {
   aiModelConfigurationSchema,
   aiProviderPageSchema,
   aiUsageRecordPageSchema,
+  analyticsSummarySchema,
   apiErrorBodySchema,
   auditLogPageSchema,
   authResponseSchema,
@@ -267,6 +270,9 @@ export interface AetheriumApiClient {
       feature: AIFeature,
       payload: AIModelConfigurationUpdate
     ) => Promise<AIModelConfigurationPage["items"][number]>;
+  };
+  analytics: {
+    summary: (query?: { period?: AnalyticsPeriod }) => Promise<AnalyticsSummary>;
   };
   auditLogs: {
     list: (query?: { limit?: number; offset?: number }) => Promise<AuditLogPage>;
@@ -522,6 +528,10 @@ function aiUsageQuery(query?: AIUsageQuery): string {
   ]);
 }
 
+function analyticsQuery(query?: { period?: AnalyticsPeriod }): string {
+  return queryString([["period", query?.period]]);
+}
+
 function mentorListQuery(query?: { includeArchived?: boolean }): string {
   return queryString([["includeArchived", query?.includeArchived]]);
 }
@@ -727,6 +737,16 @@ export function createAetheriumApiClient(options: AetheriumApiClientOptions): Ae
           }
         );
         return aiModelConfigurationSchema.parse(response);
+      }
+    },
+    analytics: {
+      summary: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/analytics/summary${analyticsQuery(query)}`
+        );
+        return analyticsSummarySchema.parse(response);
       }
     },
     auditLogs: {

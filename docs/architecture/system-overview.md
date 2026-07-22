@@ -27,7 +27,8 @@ User
 The current implemented slices provide the infrastructure shell, standalone authentication
 foundation, user-owned foundation, protected Command Mode shell, Personal Vault storage, background
 file ingestion, global search, provider-neutral AI gateway, AI mentor conversations, citation-backed
-document Q&A, habit tracking, the learning and mastery engine, and the Project Dock foundation:
+document Q&A, habit tracking, the learning and mastery engine, the Project Dock foundation, and
+progress analytics:
 
 - `apps/api`: FastAPI app, database settings, Alembic, health endpoints.
 - `apps/web`: Next.js App Router scaffold, web health route, auth UI, and protected `/app` Command
@@ -35,7 +36,8 @@ document Q&A, habit tracking, the learning and mastery engine, and the Project D
 - `packages/shared-types`: TypeScript contracts shared by frontend packages.
 - `packages/validation`: Zod schemas that validate API contract payloads.
 - `packages/api-client`: Typed API client for health, auth, user-owned foundation, Personal Vault,
-  search, AI gateway, document Q&A, mentor conversation, habit, learning, and project APIs.
+  search, AI gateway, document Q&A, mentor conversation, habit, learning, project, and analytics
+  APIs.
 - Identity domain: Aetherium-owned `users` and `sessions` tables, Argon2id password hashing,
   server-side session revocation, and product-specific cookies.
 - User-owned foundation: preferences, non-visual world profile state, domain events, notifications,
@@ -71,6 +73,9 @@ document Q&A, habit tracking, the learning and mastery engine, and the Project D
 - Project Dock: owner-scoped projects, milestones, project tasks, notes, links, file links, topic
   links, technologies, blockers, project activity, idempotent completion events, search results, and
   a Command Mode Projects UI. Coding workspace and project AI mutation tools are deferred.
+- Progress analytics: read-only owner-scoped summaries and trend buckets derived from stored
+  learning, habit, file, AI usage, and project rows. Metrics that do not have implemented source
+  events are marked unavailable instead of being invented.
 
 ## Frontend Boundaries
 
@@ -89,7 +94,7 @@ Backend domains will be added incrementally:
 - Mentor tools that can reuse citation-backed retrieval after explicit user approval.
 - Goals and global tasks beyond project-scoped tasks.
 - Achievements and domain events.
-- Analytics, notifications, audit, and security.
+- Achievements, notification workflows, audit expansion, and security hardening.
 
 Route handlers must remain thin as domains are added. Business rules should live in services or
 domain modules where separation improves testing and clarity.
@@ -125,6 +130,8 @@ plus reusable dependencies.
   reviews, mastery records, learning goals, and study roadmaps.
 - Project routes are under `/api/v1/projects` and expose projects, milestones, project tasks, notes,
   links, file links, topic links, technologies, blockers, and activity history.
+- Analytics routes are under `/api/v1/analytics` and expose read-only summary metrics and trend
+  buckets.
 
 ## Configuration
 

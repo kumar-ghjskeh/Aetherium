@@ -20,6 +20,7 @@ import { AuthForm } from "./auth-form";
 import { AuthProvider, useAuth } from "./auth-provider";
 import { ProtectedCommandMode } from "../command/protected-command-mode";
 import {
+  createUnusedAnalyticsClient,
   createUnusedFilesClient,
   createUnusedHabitsClient,
   createUnusedLearningClient,
@@ -156,6 +157,7 @@ function createClient(overrides: Partial<AetheriumApiClient["auth"]>): Aetherium
       updateConsent: vi.fn(() => Promise.reject(new Error("unused"))),
       updateModelConfig: vi.fn(() => Promise.reject(new Error("unused")))
     },
+    analytics: createUnusedAnalyticsClient(),
     auditLogs: {
       list: vi.fn(() => Promise.resolve(emptyAuditLogPage))
     },

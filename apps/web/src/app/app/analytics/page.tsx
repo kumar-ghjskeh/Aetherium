@@ -1,5 +1,5 @@
-import { SectionPage } from "../../../features/app-shell/section-page";
+import { AnalyticsPage } from "../../../features/analytics/analytics-page";
 
-export default function AnalyticsPage(): React.ReactElement {
-  return <SectionPage section="analytics" />;
+export default function AnalyticsRoute() {
+  return <AnalyticsPage />;
 }

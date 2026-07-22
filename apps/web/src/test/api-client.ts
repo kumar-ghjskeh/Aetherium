@@ -1,6 +1,14 @@
 import type { AetheriumApiClient } from "@aetherium/api-client";
 import { vi } from "vitest";
 
+export function createUnusedAnalyticsClient(): AetheriumApiClient["analytics"] {
+  const reject = () => Promise.reject(new Error("Unexpected analytics call"));
+
+  return {
+    summary: vi.fn(reject)
+  };
+}
+
 export function createUnusedFilesClient(): AetheriumApiClient["files"] {
   const reject = () => Promise.reject(new Error("Unexpected file vault call"));
 

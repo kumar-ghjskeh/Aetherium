@@ -133,6 +133,7 @@ Current routes:
 - `POST /api/v1/projects/{project_id}/blockers`
 - `PATCH /api/v1/projects/blockers/{blocker_id}`
 - `GET /api/v1/projects/{project_id}/activity`
+- `GET /api/v1/analytics/summary`
 
 Planned route groups:
 
@@ -140,7 +141,6 @@ Planned route groups:
 - `/api/v1/goals`
 - `/api/v1/tasks`
 - `/api/v1/achievements`
-- `/api/v1/analytics`
 
 ## Authentication Routes
 
@@ -426,6 +426,14 @@ owner-scoped project tasks.
 track open and resolved project blockers.
 
 `GET /api/v1/projects/{project_id}/activity` returns paginated owner-scoped project activity.
+
+## Analytics Routes
+
+`GET /api/v1/analytics/summary` returns read-only owner-scoped progress analytics for `week`,
+`month`, `quarter`, or `year`. Metrics are derived from stored study sessions, completed lessons,
+quiz attempts, mastery records, habit logs, processed files, AI usage records, and project tasks.
+Signals that are not implemented yet, such as file-open tracking or coding sessions, are returned
+with `available: false` rather than fabricated zero values.
 
 ## Generated Client
 

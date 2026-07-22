@@ -6,6 +6,7 @@ import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
+  createUnusedAnalyticsClient,
   createUnusedFilesClient,
   createUnusedHabitsClient,
   createUnusedLearningClient,
@@ -153,6 +154,7 @@ function createClient(overrides: Partial<AetheriumApiClient["projects"]> = {}): 
       updateConsent: vi.fn(reject),
       updateModelConfig: vi.fn(reject)
     },
+    analytics: createUnusedAnalyticsClient(),
     auditLogs: { list: vi.fn(reject) },
     auth: {
       login: vi.fn(reject),

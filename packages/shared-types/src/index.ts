@@ -1297,6 +1297,52 @@ export interface ProjectDetail extends Project {
   recentActivity: ProjectActivity[];
 }
 
+export type AnalyticsPeriod = "week" | "month" | "quarter" | "year";
+
+export type AnalyticsMetricKey =
+  | "study_minutes"
+  | "lessons_completed"
+  | "quiz_accuracy"
+  | "topic_mastery"
+  | "habit_completions"
+  | "habit_completion_rate"
+  | "project_progress"
+  | "files_processed"
+  | "files_opened"
+  | "ai_requests"
+  | "ai_tokens"
+  | "coding_sessions";
+
+export interface AnalyticsMetric {
+  key: AnalyticsMetricKey;
+  label: string;
+  value: number | null;
+  unit: string;
+  available: boolean;
+  explanation: string;
+}
+
+export interface AnalyticsTrendBucket {
+  periodStart: string;
+  periodEnd: string;
+  label: string;
+  studyMinutes: number;
+  lessonsCompleted: number;
+  habitCompletions: number;
+  filesProcessed: number;
+  aiRequests: number;
+  projectsCompleted: number;
+}
+
+export interface AnalyticsSummary {
+  generatedAt: string;
+  period: AnalyticsPeriod;
+  periodStart: string;
+  periodEnd: string;
+  metrics: AnalyticsMetric[];
+  trendBuckets: AnalyticsTrendBucket[];
+}
+
 export type AIFeature =
   | "general_chat"
   | "embeddings"

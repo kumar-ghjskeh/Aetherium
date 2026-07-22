@@ -42,6 +42,7 @@
 | Habit privacy leakage                     | Owner-scoped habit tables, not-found cross-user behavior, and no external sharing by default. |
 | Learning privacy leakage                  | Owner-scoped learning tables, not-found cross-user behavior, and no AI sharing by default.    |
 | Project privacy leakage                   | Owner-scoped project tables, not-found cross-user behavior, and no AI sharing by default.     |
+| Analytics inference leakage               | Owner-scoped aggregation queries and unavailable flags instead of invented unsupported data.  |
 | Insecure code execution                   | Use mock code runner first; require isolated sandbox before real execution.                   |
 | Secret leakage                            | Keep secrets out of source and logs.                                                          |
 | Cross-tenant data access                  | Include tenant/owner scoping in schema and data-access tests.                                 |
@@ -144,6 +145,12 @@
   search scope.
 - Project-specific AI assistance is not a mutation tool in this slice; future AI actions must use
   explicit consent and user approval before sending or changing project data.
+- Progress analytics require authentication and aggregate only the authenticated user's existing
+  owner-scoped learning, habit, file, AI usage, and project records.
+- Analytics responses mark unsupported signals as unavailable and do not create or display
+  fabricated product activity.
+- Analytics output is read-only and does not expose raw file bodies, raw prompts, provider secrets,
+  cookies, session tokens, or object-storage keys.
 - CI runs independence checks, formatting, linting, type checks, tests, build, and migration smoke
   validation.
 

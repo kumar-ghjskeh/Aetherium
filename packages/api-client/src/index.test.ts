@@ -469,6 +469,44 @@ const projectDetail = {
   topics: [projectTopicLink]
 };
 
+const analyticsSummary = {
+  generatedAt: "2026-07-20T00:00:00Z",
+  metrics: [
+    {
+      available: true,
+      explanation: "Sum of completed study-session duration minutes.",
+      key: "study_minutes",
+      label: "Study time",
+      unit: "minutes",
+      value: 45
+    },
+    {
+      available: false,
+      explanation: "Coding workspace session records do not exist yet.",
+      key: "coding_sessions",
+      label: "Coding sessions",
+      unit: "sessions",
+      value: null
+    }
+  ],
+  period: "month",
+  periodEnd: "2026-07-20",
+  periodStart: "2026-06-21",
+  trendBuckets: [
+    {
+      aiRequests: 1,
+      filesProcessed: 1,
+      habitCompletions: 1,
+      label: "Jul 14 - Jul 20",
+      lessonsCompleted: 1,
+      periodEnd: "2026-07-20",
+      periodStart: "2026-07-14",
+      projectsCompleted: 1,
+      studyMinutes: 45
+    }
+  ]
+};
+
 const aiProvider = {
   capabilities: ["chat", "streaming_chat", "embeddings"],
   configured: true,
@@ -1743,6 +1781,24 @@ describe("createAetheriumApiClient", () => {
 
     expect(fetcher).toHaveBeenCalledWith(
       "http://localhost:8000/api/v1/projects?includeArchived=true&limit=5&offset=0",
+      {
+        credentials: "include",
+        headers: { Accept: "application/json" }
+      }
+    );
+  });
+
+  it("fetches progress analytics summaries", async () => {
+    const fetcher = vi.fn<typeof fetch>(() => Promise.resolve(jsonResponse(analyticsSummary)));
+    const client = createAetheriumApiClient({ baseUrl: "http://localhost:8000", fetcher });
+
+    const result = await client.analytics.summary({ period: "month" });
+
+    expect(result.period).toBe("month");
+    expect(result.metrics[0]).toMatchObject({ key: "study_minutes", value: 45 });
+
+    expect(fetcher).toHaveBeenCalledWith(
+      "http://localhost:8000/api/v1/analytics/summary?period=month",
       {
         credentials: "include",
         headers: { Accept: "application/json" }

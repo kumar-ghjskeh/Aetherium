@@ -54,6 +54,9 @@ Current approved slice:
 - Project Dock foundation with owner-scoped projects, milestones, project tasks, notes, links, file
   links, topic links, technologies, blockers, activity history, completion events, global search,
   and the Command Mode Projects UI.
+- Progress analytics with owner-scoped summary metrics, weekly/monthly/quarterly/yearly trend
+  buckets, accessible Command Mode charts, unavailable metric flags for unsupported signals, and no
+  fabricated activity.
 
 Later Phase 1 slices:
 

@@ -35,6 +35,9 @@ Current migrations:
 - `0011_project_dock`: creates owner-scoped projects, milestones, project tasks, notes, links, file
   links, topic links, technologies, blockers, and project activity.
 
+Progress analytics add no new tables in Phase 12. The analytics service is a read-only aggregation
+layer over existing owner-scoped tables.
+
 ### `users`
 
 - `id` UUID primary key.
@@ -547,6 +550,23 @@ owner scope, and cross-user identifiers return not-found style responses.
   timestamp, and timestamps.
 - `project_activity` stores append-only owner/project activity entries with typed activity,
   description, sanitized metadata JSON, and creation timestamp.
+
+## Analytics Read Model
+
+Progress analytics are computed on demand from existing user-owned records:
+
+- Study minutes from completed `study_sessions`.
+- Lesson completions from completed `lessons`.
+- Quiz accuracy from completed `attempts`.
+- Topic mastery from `mastery_records`.
+- Habit completions and completion rate from `habit_logs`.
+- Processed files from ready `files`.
+- AI requests and tokens from successful `ai_usage_records`.
+- Project progress from owned project tasks and completed projects.
+
+Unsupported signals such as file-open events and coding sessions are represented as unavailable
+metric rows until source events exist. The analytics layer must not create synthetic activity or
+infer cross-user data.
 
 ## Planned Later Tables
 
