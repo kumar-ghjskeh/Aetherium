@@ -8,8 +8,8 @@ slices: the infrastructure scaffold, standalone password authentication with ser
 the user-owned foundation, the protected Command Mode application shell, and Personal Vault file
 storage with background ingestion, global search, the provider-neutral AI gateway, AI mentor
 conversations, citation-backed document Q&A, habit tracking, the learning and mastery engine, and
-the Project Dock foundation, and progress analytics. It does not yet implement visual 3D world
-navigation, achievements, or coding workspace features.
+the Project Dock foundation, progress analytics, and the achievement progression foundation. It does
+not yet implement visual 3D world navigation or coding workspace features.
 
 Aetherium is a standalone product. It uses its own repository, database, Redis namespace,
 object-storage buckets, environment variables, Docker resources, CI workflow, and future
@@ -61,6 +61,9 @@ authentication/session system. See `docs/architecture/product-independence.md` a
   completion events, global search integration, and a Command Mode Projects UI.
 - Progress analytics under `/api/v1/analytics` with owner-scoped summary metrics, trend buckets,
   available/unavailable metric flags, accessible Command Mode charts, and no synthetic activity.
+- Achievements under `/api/v1/achievements` with seeded non-visual achievement definitions,
+  idempotent domain-event processing, progress counters, user achievements, reward definitions,
+  future world-unlock records, global search integration, and a Command Mode Achievements UI.
 - Non-visual `/app/world` route that clearly marks visual World Mode as future work.
 - Docker Compose development infrastructure for Aetherium-isolated PostgreSQL, Redis, MinIO, API,
   worker, and web services.
@@ -265,6 +268,12 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
 
 - Summary: `GET http://localhost:8000/api/v1/analytics/summary?period=month`
 
+## Achievement Endpoints
+
+- Achievements: `GET http://localhost:8000/api/v1/achievements`
+- Summary: `GET http://localhost:8000/api/v1/achievements/summary`
+- Process events: `POST http://localhost:8000/api/v1/achievements/process`
+
 ## AI Gateway Endpoints
 
 - Providers: `GET http://localhost:8000/api/v1/ai/providers`
@@ -320,10 +329,12 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
   document Q&A can answer against them with citations when explicit file-content consent is enabled.
 - File-ingestion embedding jobs are still recorded as skipped by default until semantic search wires
   the AI gateway into the worker with explicit consent.
-- AI mentors are persistent and gateway-backed. Achievements, coding workspace, and visual 3D scenes
-  do not exist yet.
+- AI mentors are persistent and gateway-backed. Coding workspace and visual 3D scenes do not exist
+  yet.
 - Progress analytics are read-only aggregations from existing stored data. Unsupported metrics such
   as files opened and coding sessions are marked unavailable instead of being fabricated.
+- Achievements are non-visual progression records. Future world unlocks are stored as identifiers
+  only; no scene, asset, or 3D reward is rendered.
 - Learning mastery is a transparent heuristic from stored quiz, review, exercise, confidence, hint,
   recency, and future project-evidence signals. It is not a scientific learning diagnosis.
 - Habit reminders and external notifications are deferred to the notification/review workflow slice.

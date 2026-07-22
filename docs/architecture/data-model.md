@@ -34,6 +34,9 @@ Current migrations:
   flashcard reviews, mastery records, learning goals, and study roadmaps.
 - `0011_project_dock`: creates owner-scoped projects, milestones, project tasks, notes, links, file
   links, topic links, technologies, blockers, and project activity.
+- `0012_achievement_engine`: creates achievement definitions, achievement rules, reward definitions,
+  user achievements, progress counters, processed event/rule rows, and non-visual world unlock
+  records.
 
 Progress analytics add no new tables in Phase 12. The analytics service is a read-only aggregation
 layer over existing owner-scoped tables.
@@ -568,10 +571,60 @@ Unsupported signals such as file-open events and coding sessions are represented
 metric rows until source events exist. The analytics layer must not create synthetic activity or
 infer cross-user data.
 
+## Achievement Progression Schema
+
+Achievement definitions and rules are global Aetherium-owned configuration rows. User-specific
+progress and unlock state is owner-scoped.
+
+### `achievement_definitions`
+
+- UUID primary key.
+- Unique slug, title, description, category, rarity, points, active flag, and timestamps.
+
+### `achievement_rules`
+
+- UUID primary key.
+- Achievement definition reference.
+- Domain-event type, counter key, positive threshold count, payload filters, active flag, and
+  timestamps.
+
+### `reward_definitions`
+
+- UUID primary key.
+- Achievement definition reference.
+- Reward type, title, description, metadata JSON, and timestamps.
+- World rewards store future identifiers only; they do not render scenes or unlock core data.
+
+### `user_achievements`
+
+- UUID primary key.
+- `owner_user_id`, achievement definition reference, optional source domain event, progress count,
+  target count, unlock timestamp, and timestamps.
+- Unique owner/definition constraint prevents duplicate unique awards.
+
+### `achievement_progress_counters`
+
+- UUID primary key.
+- `owner_user_id`, achievement rule reference, counter key, count, optional last event, and
+  timestamps.
+- Unique owner/rule constraint stores durable event-derived progress.
+
+### `achievement_processed_events`
+
+- UUID primary key.
+- `owner_user_id`, domain event reference, achievement rule reference, and timestamps.
+- Unique owner/event/rule constraint makes achievement processing idempotent.
+
+### `world_unlock_records`
+
+- UUID primary key.
+- `owner_user_id`, achievement definition reference, reward definition reference, future location
+  identifier, source, unlock timestamp, and timestamps.
+- Unique owner/location constraint prevents duplicate future world unlock records.
+
 ## Planned Later Tables
 
 Later schema slices will cover:
 
 - `world_locations`, `user_world_state`.
 - `goals`, global tasks, and goal milestones.
-- `achievements`, `achievement_rules`, `user_achievements`.

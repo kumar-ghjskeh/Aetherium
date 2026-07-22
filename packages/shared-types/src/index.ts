@@ -409,7 +409,8 @@ export type SearchMatchReason =
   | "habit_metadata"
   | "learning_topic_metadata"
   | "project_metadata"
-  | "project_task_metadata";
+  | "project_task_metadata"
+  | "achievement_metadata";
 
 export interface SearchRequest {
   query: string;
@@ -1341,6 +1342,69 @@ export interface AnalyticsSummary {
   periodEnd: string;
   metrics: AnalyticsMetric[];
   trendBuckets: AnalyticsTrendBucket[];
+}
+
+export type AchievementCategory = "files" | "habits" | "learning" | "projects" | "coding";
+
+export type AchievementRarity = "common" | "focused" | "milestone";
+
+export type AchievementRewardType = "badge" | "world_unlock";
+
+export interface AchievementRewardDefinition {
+  id: string;
+  rewardType: AchievementRewardType;
+  title: string;
+  description: string;
+  metadata: Record<string, unknown>;
+}
+
+export interface WorldUnlockRecord {
+  id: string;
+  achievementDefinitionId: string;
+  rewardDefinitionId: string;
+  locationId: string;
+  unlockSource: string;
+  unlockedAt: string;
+}
+
+export interface AchievementProgress {
+  definitionId: string;
+  slug: string;
+  title: string;
+  description: string;
+  category: AchievementCategory;
+  rarity: AchievementRarity;
+  points: number;
+  progressCount: number;
+  targetCount: number;
+  unlockedAt: string | null;
+  rewards: AchievementRewardDefinition[];
+  worldUnlocks: WorldUnlockRecord[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AchievementPage {
+  items: AchievementProgress[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface AchievementSummary {
+  totalAchievements: number;
+  unlockedCount: number;
+  lockedCount: number;
+  totalPoints: number;
+  unlockedPoints: number;
+  recentUnlocks: AchievementProgress[];
+  worldUnlocks: WorldUnlockRecord[];
+}
+
+export interface AchievementProcessResponse {
+  processedEventCount: number;
+  newUnlockCount: number;
+  unlocked: AchievementProgress[];
 }
 
 export type AIFeature =

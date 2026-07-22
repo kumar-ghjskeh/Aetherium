@@ -462,7 +462,8 @@ export const searchMatchReasonSchema = z.enum([
   "habit_metadata",
   "learning_topic_metadata",
   "project_metadata",
-  "project_task_metadata"
+  "project_task_metadata",
+  "achievement_metadata"
 ]);
 
 export const searchRequestSchema = z.object({
@@ -1407,6 +1408,75 @@ export const analyticsSummarySchema = z.object({
   periodEnd: z.string().min(1),
   periodStart: z.string().min(1),
   trendBuckets: z.array(analyticsTrendBucketSchema)
+});
+
+export const achievementCategorySchema = z.enum([
+  "files",
+  "habits",
+  "learning",
+  "projects",
+  "coding"
+]);
+
+export const achievementRaritySchema = z.enum(["common", "focused", "milestone"]);
+
+export const achievementRewardTypeSchema = z.enum(["badge", "world_unlock"]);
+
+export const achievementRewardDefinitionSchema = z.object({
+  description: z.string().min(1),
+  id: z.string().uuid(),
+  metadata: z.record(z.unknown()),
+  rewardType: achievementRewardTypeSchema,
+  title: z.string().min(1)
+});
+
+export const worldUnlockRecordSchema = z.object({
+  achievementDefinitionId: z.string().uuid(),
+  id: z.string().uuid(),
+  locationId: z.string().min(1),
+  rewardDefinitionId: z.string().uuid(),
+  unlockedAt: z.string().min(1),
+  unlockSource: z.string().min(1)
+});
+
+export const achievementProgressSchema = z.object({
+  category: achievementCategorySchema,
+  createdAt: z.string().min(1),
+  definitionId: z.string().uuid(),
+  description: z.string().min(1),
+  points: z.number().int().min(0),
+  progressCount: z.number().int().min(0),
+  rarity: achievementRaritySchema,
+  rewards: z.array(achievementRewardDefinitionSchema),
+  slug: z.string().min(1),
+  targetCount: z.number().int().min(1),
+  title: z.string().min(1),
+  unlockedAt: z.string().min(1).nullable(),
+  updatedAt: z.string().min(1),
+  worldUnlocks: z.array(worldUnlockRecordSchema)
+});
+
+export const achievementPageSchema = z.object({
+  items: z.array(achievementProgressSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const achievementSummarySchema = z.object({
+  lockedCount: z.number().int().min(0),
+  recentUnlocks: z.array(achievementProgressSchema),
+  totalAchievements: z.number().int().min(0),
+  totalPoints: z.number().int().min(0),
+  unlockedCount: z.number().int().min(0),
+  unlockedPoints: z.number().int().min(0),
+  worldUnlocks: z.array(worldUnlockRecordSchema)
+});
+
+export const achievementProcessResponseSchema = z.object({
+  newUnlockCount: z.number().int().min(0),
+  processedEventCount: z.number().int().min(0),
+  unlocked: z.array(achievementProgressSchema)
 });
 
 export const aiFeatureSchema = z.enum([

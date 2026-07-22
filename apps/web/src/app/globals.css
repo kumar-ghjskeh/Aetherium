@@ -1445,6 +1445,69 @@ kbd {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+.achievement-summary {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.achievement-toolbar {
+  align-items: start;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.achievement-list {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.achievement-row {
+  align-items: center;
+  border: 1px solid var(--panel-border);
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1.5fr) minmax(180px, 0.75fr);
+  padding: 1rem;
+}
+
+.achievement-row h3 {
+  font-size: 1rem;
+  margin: 0.5rem 0 0.25rem;
+}
+
+.achievement-row p {
+  color: var(--muted);
+  margin: 0;
+}
+
+.achievement-progress {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.achievement-progress > span {
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.achievement-progress small {
+  color: var(--muted);
+}
+
+.achievement-progress-track {
+  background: #0d1113;
+  border: 1px solid var(--panel-border);
+  height: 0.65rem;
+  overflow: hidden;
+}
+
+.achievement-progress-track span {
+  background: #3f7d6f;
+  display: block;
+  height: 100%;
+}
+
 .metric-panel-muted {
   opacity: 0.72;
 }
@@ -1826,11 +1889,13 @@ kbd {
   .project-detail-layout,
   .project-section-grid,
   .analytics-grid,
+  .achievement-row,
   .habit-grid,
   .habit-metrics,
   .learning-metrics,
   .project-metrics,
   .analytics-metrics,
+  .achievement-summary,
   .document-qa-form,
   .vault-grid,
   .vault-metrics {
@@ -1871,6 +1936,8 @@ kbd {
   .project-section-grid,
   .analytics-grid,
   .analytics-metrics,
+  .achievement-row,
+  .achievement-summary,
   .habit-grid,
   .habit-create-form,
   .habit-detail-grid,
@@ -1884,6 +1951,10 @@ kbd {
   .vault-filter-row,
   .vault-metrics {
     grid-template-columns: 1fr;
+  }
+
+  .achievement-toolbar {
+    flex-direction: column;
   }
 
   .app-content {

@@ -16,11 +16,11 @@ Implemented targets:
 - Learning topic metadata.
 - Active project metadata.
 - Active project task metadata.
+- Achievement definitions and the authenticated user's unlock status.
 
 Reserved future targets:
 
 - Notes.
-- Achievements.
 
 Reserved targets do not return fake results before their tables exist.
 
@@ -28,8 +28,9 @@ Reserved targets do not return fake results before their tables exist.
 
 PostgreSQL deployments use full-text search functions and GIN expression indexes over file metadata,
 chunk `search_text`, collection metadata, tag names, conversation titles, habit metadata, learning
-topic metadata, project metadata, and project task metadata. SQLite-backed tests use a deterministic
-case-insensitive fallback.
+topic metadata, project metadata, and project task metadata. Achievement search currently uses the
+deterministic metadata fallback because achievement definitions are seeded application
+configuration. SQLite-backed tests use the same deterministic case-insensitive fallback.
 
 Search results are merged in the service layer and sorted by relevance or recency. Result pages are
 bounded by request limits, and the API enforces owner scope in every target query.

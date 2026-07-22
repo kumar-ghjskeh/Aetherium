@@ -26,6 +26,7 @@ from app.models.learning import Topic
 from app.models.mentors import Conversation
 from app.models.projects import Project, ProjectTask
 from app.models.search import RecentSearch
+from app.services.achievements import AchievementProgressItem, AchievementService
 from app.services.foundation import PageResult
 
 IMPLEMENTED_ENTITY_TYPES = (
@@ -38,6 +39,7 @@ IMPLEMENTED_ENTITY_TYPES = (
     SearchEntityType.LEARNING_TOPIC,
     SearchEntityType.PROJECT,
     SearchEntityType.TASK,
+    SearchEntityType.ACHIEVEMENT,
 )
 MAX_SNIPPET_LENGTH = 180
 
@@ -129,6 +131,12 @@ class SearchService:
             task_items, task_total = await self._search_project_tasks(user, query, fetch_limit)
             candidates.extend(task_items)
             total += task_total
+        if SearchEntityType.ACHIEVEMENT in target_types:
+            achievement_items, achievement_total = await self._search_achievements(
+                user, query, fetch_limit
+            )
+            candidates.extend(achievement_items)
+            total += achievement_total
 
         ordered = _sort_results(candidates, sort)
         items = ordered[pagination.offset : pagination.offset + pagination.limit]
@@ -655,6 +663,23 @@ class SearchService:
         )
         return items, total
 
+    async def _search_achievements(
+        self,
+        user: User,
+        query: str,
+        limit: int,
+    ) -> tuple[list[SearchResultItem], int]:
+        achievement_service = AchievementService(self.db)
+        achievement_items, total = await achievement_service.search_achievements(
+            user, query=query, limit=limit
+        )
+        return [
+            self._achievement_result(
+                item, query=query, score=_metadata_score(item.definition.title, query)
+            )
+            for item in achievement_items
+        ], total
+
     def _file_result(self, file: FileRecord, *, query: str, score: float) -> SearchResultItem:
         return SearchResultItem(
             id=f"file:{file.id}",
@@ -827,6 +852,28 @@ class SearchService:
             world_location_id=WorldLocationId.PROJECT_WORKSHOP.value,
             source=None,
             created_at=task.created_at,
+        )
+
+    def _achievement_result(
+        self,
+        item: AchievementProgressItem,
+        *,
+        query: str,
+        score: float,
+    ) -> SearchResultItem:
+        status = "Unlocked" if item.unlocked_at is not None else "Locked"
+        return SearchResultItem(
+            id=f"achievement:{item.definition.id}",
+            entity_type=SearchEntityType.ACHIEVEMENT,
+            entity_id=item.definition.id,
+            title=item.definition.title,
+            snippet=_snippet(f"{status} achievement: {item.definition.description}", query),
+            match_reason=SearchMatchReason.ACHIEVEMENT_METADATA,
+            score=max(score, _metadata_score(item.definition.description, query)),
+            open_url=f"/app/achievements?achievement={item.definition.slug}",
+            world_location_id=WorldLocationId.ACHIEVEMENT_HALL.value,
+            source=None,
+            created_at=item.unlocked_at or item.definition.created_at,
         )
 
     @property

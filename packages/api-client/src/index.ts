@@ -1,4 +1,7 @@
 import type {
+  AchievementPage,
+  AchievementProcessResponse,
+  AchievementSummary,
   ApiErrorBody,
   AIChatCompletionRequest,
   AIChatCompletionResponse,
@@ -157,6 +160,9 @@ import type {
   WeeklyReviewUpsert
 } from "@aetherium/shared-types";
 import {
+  achievementPageSchema,
+  achievementProcessResponseSchema,
+  achievementSummarySchema,
   aiChatCompletionResponseSchema,
   aiConsentPolicyPageSchema,
   aiConsentPolicySchema,
@@ -253,6 +259,11 @@ export interface AetheriumApiClientOptions {
 }
 
 export interface AetheriumApiClient {
+  achievements: {
+    list: (query?: PaginationQuery & { unlockedOnly?: boolean }) => Promise<AchievementPage>;
+    process: () => Promise<AchievementProcessResponse>;
+    summary: () => Promise<AchievementSummary>;
+  };
   ai: {
     answerDocumentQuestion: (payload: DocumentQARequest) => Promise<DocumentQAResponse>;
     completeChat: (payload: AIChatCompletionRequest) => Promise<AIChatCompletionResponse>;
@@ -532,6 +543,14 @@ function analyticsQuery(query?: { period?: AnalyticsPeriod }): string {
   return queryString([["period", query?.period]]);
 }
 
+function achievementListQuery(query?: PaginationQuery & { unlockedOnly?: boolean }): string {
+  return queryString([
+    ["limit", query?.limit],
+    ["offset", query?.offset],
+    ["unlockedOnly", query?.unlockedOnly]
+  ]);
+}
+
 function mentorListQuery(query?: { includeArchived?: boolean }): string {
   return queryString([["includeArchived", query?.includeArchived]]);
 }
@@ -649,6 +668,35 @@ export function createAetheriumApiClient(options: AetheriumApiClientOptions): Ae
   const fetcher = options.fetcher ?? fetch;
 
   return {
+    achievements: {
+      list: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/achievements${achievementListQuery(query)}`
+        );
+        return achievementPageSchema.parse(response);
+      },
+      process: async () => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          "/api/v1/achievements/process",
+          {
+            method: "POST"
+          }
+        );
+        return achievementProcessResponseSchema.parse(response);
+      },
+      summary: async () => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          "/api/v1/achievements/summary"
+        );
+        return achievementSummarySchema.parse(response);
+      }
+    },
     ai: {
       answerDocumentQuestion: async (payload) => {
         const response = await requestJson(fetcher, options.baseUrl, "/api/v1/ai/document-qa", {

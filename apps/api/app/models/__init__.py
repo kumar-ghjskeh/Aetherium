@@ -1,3 +1,12 @@
+from app.models.achievements import (
+    AchievementDefinition,
+    AchievementProcessedEvent,
+    AchievementProgressCounter,
+    AchievementRule,
+    RewardDefinition,
+    UserAchievement,
+    WorldUnlockRecord,
+)
 from app.models.ai import AIConsentPolicy, AIModelConfiguration, AIUsageRecord
 from app.models.auth import AuthSession, User
 from app.models.file_ingestion import (
@@ -74,6 +83,10 @@ from app.models.projects import (
 from app.models.search import RecentSearch
 
 __all__ = [
+    "AchievementDefinition",
+    "AchievementProcessedEvent",
+    "AchievementProgressCounter",
+    "AchievementRule",
     "AuditLog",
     "AIConsentPolicy",
     "AIModelConfiguration",
@@ -126,6 +139,7 @@ __all__ = [
     "Question",
     "Quiz",
     "RecentSearch",
+    "RewardDefinition",
     "StudyRoadmap",
     "StudySession",
     "Subject",
@@ -134,7 +148,9 @@ __all__ = [
     "TopicRelation",
     "UploadRecord",
     "User",
+    "UserAchievement",
     "UserPreferences",
     "WeeklyReview",
+    "WorldUnlockRecord",
     "WorldProfile",
 ]

@@ -9,6 +9,16 @@ export function createUnusedAnalyticsClient(): AetheriumApiClient["analytics"] {
   };
 }
 
+export function createUnusedAchievementsClient(): AetheriumApiClient["achievements"] {
+  const reject = () => Promise.reject(new Error("Unexpected achievement call"));
+
+  return {
+    list: vi.fn(reject),
+    process: vi.fn(reject),
+    summary: vi.fn(reject)
+  };
+}
+
 export function createUnusedFilesClient(): AetheriumApiClient["files"] {
   const reject = () => Promise.reject(new Error("Unexpected file vault call"));
 

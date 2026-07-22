@@ -13,6 +13,7 @@ import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
+  createUnusedAchievementsClient,
   createUnusedAnalyticsClient,
   createUnusedFilesClient,
   createUnusedHabitsClient,
@@ -182,6 +183,7 @@ function createClient(
       updateModelConfig: vi.fn(reject),
       ...aiOverrides
     },
+    achievements: createUnusedAchievementsClient(),
     analytics: createUnusedAnalyticsClient(),
     auditLogs: { list: vi.fn(reject) },
     auth: {

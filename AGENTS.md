@@ -45,12 +45,15 @@ Implemented foundation slices:
   search, and Command Mode Projects UI.
 - Progress analytics with owner-scoped summary metrics, period trends, real-data-only empty states,
   unavailable metric flags, and Command Mode Analytics UI.
+- Achievements and progression foundation with seeded definitions, idempotent domain-event rules,
+  progress counters, user achievements, reward definitions, future world-unlock records, search
+  integration, and Command Mode Achievements UI.
 
 Still out of scope unless explicitly requested:
 
 - OAuth, social login, email delivery, password reset, MFA, and magic links.
 - 3D world scenes, React Three Fiber, player controls, map travel, or world progression.
-- Achievements, coding workspace, knowledge graph, or visual world progression.
+- Coding workspace, knowledge graph, or visual world progression.
 
 ## Product Independence
 

@@ -57,6 +57,9 @@ Current approved slice:
 - Progress analytics with owner-scoped summary metrics, weekly/monthly/quarterly/yearly trend
   buckets, accessible Command Mode charts, unavailable metric flags for unsupported signals, and no
   fabricated activity.
+- Achievement progression foundation with seeded definitions, idempotent domain-event processing,
+  user achievements, progress counters, reward definitions, future world-unlock records, global
+  search, and the Command Mode Achievements UI.
 
 Later Phase 1 slices:
 
@@ -104,9 +107,9 @@ Coding status: future.
 
 ## Phase 5 - World Progression
 
-- Domain event processing.
-- Achievements.
-- World unlocks.
+- Domain event processing: implemented for non-visual achievements.
+- Achievements: implemented as non-visual progression records.
+- World unlocks: implemented as future identifier records only.
 - Building evolution.
 - Achievement Hall.
 - Personal Home customization.

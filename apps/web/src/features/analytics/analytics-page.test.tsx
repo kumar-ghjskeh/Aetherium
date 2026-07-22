@@ -6,6 +6,7 @@ import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
+  createUnusedAchievementsClient,
   createUnusedAnalyticsClient,
   createUnusedFilesClient,
   createUnusedHabitsClient,
@@ -99,6 +100,7 @@ function createClient(
       updateConsent: vi.fn(reject),
       updateModelConfig: vi.fn(reject)
     },
+    achievements: createUnusedAchievementsClient(),
     analytics: {
       ...createUnusedAnalyticsClient(),
       summary: vi.fn(() => Promise.resolve(summary)),

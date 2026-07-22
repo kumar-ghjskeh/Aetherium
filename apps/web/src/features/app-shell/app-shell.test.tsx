@@ -18,6 +18,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { AuthProvider } from "../auth/auth-provider";
 import {
+  createUnusedAchievementsClient,
   createUnusedAnalyticsClient,
   createUnusedFilesClient,
   createUnusedHabitsClient,
@@ -184,6 +185,7 @@ function createClient(
       updateConsent: vi.fn(() => Promise.reject(new Error("unused"))),
       updateModelConfig: vi.fn(() => Promise.reject(new Error("unused")))
     },
+    achievements: createUnusedAchievementsClient(),
     analytics: createUnusedAnalyticsClient(),
     auditLogs: {
       list: vi.fn(() => Promise.resolve(emptyAuditLogPage))

@@ -24,6 +24,11 @@ The current non-visual foundation stores world profile data only:
 This data is available through `/api/v1/world/profile` and `/api/v1/world/visit`. It is a future
 World Mode contract, not a rendered scene.
 
+The achievement engine also writes `world_unlock_records` as future destination identifiers such as
+`achievement_hall:first_file_display`. These are non-visual progression records for the later World
+Mode phase. They must not be treated as rendered scenes, assets, character state, or access gates to
+the user's data.
+
 ## Future Runtime Layers
 
 - Next.js route boundary for World Mode.

@@ -51,6 +51,9 @@ Backend:
   database uniqueness.
 - Analytics backend tests for owner-scoped summary metrics, unavailable unsupported signals,
   authentication, invalid period validation, and cross-user isolation.
+- Achievement backend tests for default definition seeding, idempotent event processing, threshold
+  progression, search integration, notifications, unauthenticated access, cross-user isolation, and
+  database uniqueness.
 - Alembic migration smoke validation against PostgreSQL in CI.
 - Ruff formatting and linting.
 - mypy type checking.
@@ -83,6 +86,7 @@ Frontend and shared packages:
 - API-client contract tests for Project Dock projects, milestones, project tasks, notes, links, file
   links, topic links, technologies, blockers, and activity.
 - API-client contract tests for analytics summary responses and period query serialization.
+- API-client contract tests for achievement list, summary, and event-processing endpoints.
 - Next.js build validation.
 - React Testing Library coverage for the Library page, including loading, empty, error, upload,
   favorite, tag, delete, processing failure, and retry states.
@@ -100,6 +104,9 @@ Frontend and shared packages:
   activity-backed selected project state.
 - React Testing Library coverage for the Analytics page, including loading, empty, error, period
   changes, real summary rendering, unavailable metrics, and accessible trend tables.
+- React Testing Library coverage for the Achievements page, including loading, summary/list
+  rendering, filtering, event-processing refreshes, error states, progress bars, and world-unlock
+  tables.
 
 ## Future Backend Tests
 

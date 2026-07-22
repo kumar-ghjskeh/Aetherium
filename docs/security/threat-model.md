@@ -43,6 +43,7 @@
 | Learning privacy leakage                  | Owner-scoped learning tables, not-found cross-user behavior, and no AI sharing by default.    |
 | Project privacy leakage                   | Owner-scoped project tables, not-found cross-user behavior, and no AI sharing by default.     |
 | Analytics inference leakage               | Owner-scoped aggregation queries and unavailable flags instead of invented unsupported data.  |
+| Achievement replay or double awards       | Unique processed event/rule rows and unique owner/achievement constraints.                    |
 | Insecure code execution                   | Use mock code runner first; require isolated sandbox before real execution.                   |
 | Secret leakage                            | Keep secrets out of source and logs.                                                          |
 | Cross-tenant data access                  | Include tenant/owner scoping in schema and data-access tests.                                 |
@@ -151,6 +152,12 @@
   fabricated product activity.
 - Analytics output is read-only and does not expose raw file bodies, raw prompts, provider secrets,
   cookies, session tokens, or object-storage keys.
+- Achievement processing consumes only the authenticated user's domain events and records processed
+  owner/event/rule pairs to prevent replay double-counting.
+- User achievements, progress counters, and world-unlock records include owner scope and never grant
+  access to core private data.
+- Future world unlocks are stored as identifiers only; no 3D assets, scene state, or visual rewards
+  are loaded in this slice.
 - CI runs independence checks, formatting, linting, type checks, tests, build, and migration smoke
   validation.
 

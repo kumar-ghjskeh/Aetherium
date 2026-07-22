@@ -134,13 +134,15 @@ Current routes:
 - `PATCH /api/v1/projects/blockers/{blocker_id}`
 - `GET /api/v1/projects/{project_id}/activity`
 - `GET /api/v1/analytics/summary`
+- `GET /api/v1/achievements`
+- `GET /api/v1/achievements/summary`
+- `POST /api/v1/achievements/process`
 
 Planned route groups:
 
 - `/api/v1/users`
 - `/api/v1/goals`
 - `/api/v1/tasks`
-- `/api/v1/achievements`
 
 ## Authentication Routes
 
@@ -434,6 +436,18 @@ track open and resolved project blockers.
 quiz attempts, mastery records, habit logs, processed files, AI usage records, and project tasks.
 Signals that are not implemented yet, such as file-open tracking or coding sessions, are returned
 with `available: false` rather than fabricated zero values.
+
+## Achievement Routes
+
+`GET /api/v1/achievements` lists seeded achievement definitions with the authenticated user's
+progress counts, target counts, unlock status, reward metadata, and future world-unlock records.
+
+`GET /api/v1/achievements/summary` returns total/unlocked/locked achievement counts, descriptive
+points, recent unlocks, and non-visual world-unlock identifiers.
+
+`POST /api/v1/achievements/process` consumes the authenticated user's unprocessed domain events
+against active achievement rules. Processed event/rule pairs are recorded idempotently so retries do
+not double-count or double-award achievements.
 
 ## Generated Client
 

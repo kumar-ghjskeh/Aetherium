@@ -507,6 +507,63 @@ const analyticsSummary = {
   ]
 };
 
+const achievementProgress = {
+  category: "files",
+  createdAt: "2026-07-20T00:00:00Z",
+  definitionId: "dddddddd-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+  description: "Upload your first Personal Vault file.",
+  points: 10,
+  progressCount: 1,
+  rarity: "common",
+  rewards: [
+    {
+      description: "Permanent achievement marker in the non-visual progression record.",
+      id: "dddddddd-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+      metadata: { slug: "first-file" },
+      rewardType: "badge",
+      title: "First File badge"
+    }
+  ],
+  slug: "first-file",
+  targetCount: 1,
+  title: "First File",
+  unlockedAt: "2026-07-20T00:05:00Z",
+  updatedAt: "2026-07-20T00:00:00Z",
+  worldUnlocks: [
+    {
+      achievementDefinitionId: "dddddddd-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      id: "dddddddd-cccc-4ccc-8ccc-cccccccccccc",
+      locationId: "achievement_hall:first_file_display",
+      rewardDefinitionId: "dddddddd-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+      unlockedAt: "2026-07-20T00:05:00Z",
+      unlockSource: "achievement"
+    }
+  ]
+};
+
+const achievementPage = {
+  items: [achievementProgress],
+  limit: 5,
+  offset: 0,
+  total: 1
+};
+
+const achievementSummary = {
+  lockedCount: 6,
+  recentUnlocks: [achievementProgress],
+  totalAchievements: 7,
+  totalPoints: 225,
+  unlockedCount: 1,
+  unlockedPoints: 10,
+  worldUnlocks: achievementProgress.worldUnlocks
+};
+
+const achievementProcess = {
+  newUnlockCount: 1,
+  processedEventCount: 1,
+  unlocked: [achievementProgress]
+};
+
 const aiProvider = {
   capabilities: ["chat", "streaming_chat", "embeddings"],
   configured: true,
@@ -1804,6 +1861,41 @@ describe("createAetheriumApiClient", () => {
         headers: { Accept: "application/json" }
       }
     );
+  });
+
+  it("uses achievement progression endpoints", async () => {
+    const fetcher = vi.fn<typeof fetch>((input) => {
+      const url = requestUrl(input);
+      if (url.endsWith("/api/v1/achievements?limit=5&offset=0&unlockedOnly=true")) {
+        return Promise.resolve(jsonResponse(achievementPage));
+      }
+      if (url.endsWith("/api/v1/achievements/summary")) {
+        return Promise.resolve(jsonResponse(achievementSummary));
+      }
+      if (url.endsWith("/api/v1/achievements/process")) {
+        return Promise.resolve(jsonResponse(achievementProcess));
+      }
+      return Promise.resolve(jsonResponse({ error: { code: "not_found", message: url } }, 404));
+    });
+    const client = createAetheriumApiClient({ baseUrl: "http://localhost:8000", fetcher });
+
+    await expect(
+      client.achievements.list({ limit: 5, offset: 0, unlockedOnly: true })
+    ).resolves.toMatchObject({ total: 1 });
+    await expect(client.achievements.summary()).resolves.toMatchObject({
+      unlockedCount: 1,
+      unlockedPoints: 10
+    });
+    await expect(client.achievements.process()).resolves.toMatchObject({
+      newUnlockCount: 1,
+      processedEventCount: 1
+    });
+
+    expect(fetcher).toHaveBeenCalledWith("http://localhost:8000/api/v1/achievements/process", {
+      credentials: "include",
+      headers: { Accept: "application/json" },
+      method: "POST"
+    });
   });
 
   it("uses provider-neutral AI gateway endpoints", async () => {
