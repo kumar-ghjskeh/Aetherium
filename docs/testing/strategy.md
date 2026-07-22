@@ -54,6 +54,10 @@ Backend:
 - Achievement backend tests for default definition seeding, idempotent event processing, threshold
   progression, search integration, notifications, unauthenticated access, cross-user isolation, and
   database uniqueness.
+- Profile/settings backend tests for profile defaults and updates, avatar ownership validation,
+  profile links, favorite projects/resources, certificates, privacy preference synchronization,
+  data-export request idempotency, account deletion confirmation, unauthenticated access, cross-user
+  isolation, and database constraints.
 - Alembic migration smoke validation against PostgreSQL in CI.
 - Ruff formatting and linting.
 - mypy type checking.
@@ -87,6 +91,8 @@ Frontend and shared packages:
   links, topic links, technologies, blockers, and activity.
 - API-client contract tests for analytics summary responses and period query serialization.
 - API-client contract tests for achievement list, summary, and event-processing endpoints.
+- API-client contract tests for personal profile, profile links, favorite projects/resources,
+  certificates, privacy settings, data-export requests, and account deletion request endpoints.
 - Next.js build validation.
 - React Testing Library coverage for the Library page, including loading, empty, error, upload,
   favorite, tag, delete, processing failure, and retry states.
@@ -107,6 +113,9 @@ Frontend and shared packages:
 - React Testing Library coverage for the Achievements page, including loading, summary/list
   rendering, filtering, event-processing refreshes, error states, progress bars, and world-unlock
   tables.
+- React Testing Library coverage for the Settings page, including loading, empty and error states,
+  profile validation, privacy updates, profile record creation, data-export requests, and exact
+  account deletion confirmation handling.
 
 ## Future Backend Tests
 

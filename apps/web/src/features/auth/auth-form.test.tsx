@@ -26,7 +26,8 @@ import {
   createUnusedHabitsClient,
   createUnusedLearningClient,
   createUnusedMentorsClient,
-  createUnusedProjectsClient
+  createUnusedProjectsClient,
+  createUnusedUsersClient
 } from "../../test/api-client";
 
 const push = vi.fn();
@@ -205,6 +206,7 @@ function createClient(overrides: Partial<AetheriumApiClient["auth"]>): Aetherium
       getPreferences: vi.fn(() => Promise.resolve(preferences)),
       updatePreferences: vi.fn(() => Promise.resolve(preferences))
     },
+    users: createUnusedUsersClient(),
     world: {
       getProfile: vi.fn(() => Promise.resolve(worldProfile)),
       updateProfile: vi.fn(() => Promise.resolve(worldProfile)),

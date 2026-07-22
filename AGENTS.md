@@ -48,6 +48,10 @@ Implemented foundation slices:
 - Achievements and progression foundation with seeded definitions, idempotent domain-event rules,
   progress counters, user achievements, reward definitions, future world-unlock records, search
   integration, and Command Mode Achievements UI.
+- Personal profile and settings with owner-scoped profile metadata, avatar preset or owned
+  vault-image references, profile links, favorite projects/resources, certificates, privacy
+  controls, data-export request records, account deletion request records, and Command Mode Settings
+  UI.
 
 Still out of scope unless explicitly requested:
 

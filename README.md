@@ -8,8 +8,9 @@ slices: the infrastructure scaffold, standalone password authentication with ser
 the user-owned foundation, the protected Command Mode application shell, and Personal Vault file
 storage with background ingestion, global search, the provider-neutral AI gateway, AI mentor
 conversations, citation-backed document Q&A, habit tracking, the learning and mastery engine, and
-the Project Dock foundation, progress analytics, and the achievement progression foundation. It does
-not yet implement visual 3D world navigation or coding workspace features.
+the Project Dock foundation, progress analytics, the achievement progression foundation, and
+personal profile/privacy settings. It does not yet implement visual 3D world navigation or coding
+workspace features.
 
 Aetherium is a standalone product. It uses its own repository, database, Redis namespace,
 object-storage buckets, environment variables, Docker resources, CI workflow, and future
@@ -64,6 +65,10 @@ authentication/session system. See `docs/architecture/product-independence.md` a
 - Achievements under `/api/v1/achievements` with seeded non-visual achievement definitions,
   idempotent domain-event processing, progress counters, user achievements, reward definitions,
   future world-unlock records, global search integration, and a Command Mode Achievements UI.
+- Personal profile and settings under `/api/v1/users` with owner-scoped profile metadata, avatar
+  preset or owned vault-image references, profile links, favorite projects/resources, certificates,
+  privacy controls, AI memory and analytics preferences, data-export request records, account
+  deletion request records, and a Command Mode Settings UI.
 - Non-visual `/app/world` route that clearly marks visual World Mode as future work.
 - Docker Compose development infrastructure for Aetherium-isolated PostgreSQL, Redis, MinIO, API,
   worker, and web services.
@@ -188,6 +193,23 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
 - Notifications: `GET http://localhost:8000/api/v1/notifications`
 - Mark notification read: `POST http://localhost:8000/api/v1/notifications/{id}/read`
 - Audit logs: `GET http://localhost:8000/api/v1/audit-logs`
+
+## Personal Profile And Settings Endpoints
+
+- Profile: `GET/PATCH http://localhost:8000/api/v1/users/profile`
+- Profile links: `GET/POST http://localhost:8000/api/v1/users/profile/links`
+- Delete profile link: `DELETE http://localhost:8000/api/v1/users/profile/links/{id}`
+- Favorite projects: `GET/POST http://localhost:8000/api/v1/users/profile/favorite-projects`
+- Remove favorite project:
+  `DELETE http://localhost:8000/api/v1/users/profile/favorite-projects/{project_id}`
+- Favorite resources: `GET/POST http://localhost:8000/api/v1/users/profile/favorite-resources`
+- Remove favorite resource:
+  `DELETE http://localhost:8000/api/v1/users/profile/favorite-resources/{id}`
+- Certificates: `GET/POST http://localhost:8000/api/v1/users/profile/certificates`
+- Delete certificate: `DELETE http://localhost:8000/api/v1/users/profile/certificates/{id}`
+- Privacy settings: `GET/PATCH http://localhost:8000/api/v1/users/privacy`
+- Data-export requests: `GET/POST http://localhost:8000/api/v1/users/data-export-requests`
+- Account deletion requests: `GET/POST http://localhost:8000/api/v1/users/account-deletion-requests`
 
 ## Personal Vault Endpoints
 
@@ -335,6 +357,9 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
   as files opened and coding sessions are marked unavailable instead of being fabricated.
 - Achievements are non-visual progression records. Future world unlocks are stored as identifiers
   only; no scene, asset, or 3D reward is rendered.
+- Profile and privacy settings are functional metadata records. Data-export and account deletion
+  request endpoints record owner-scoped workflow requests only; export generation and destructive
+  deletion execution are not active yet.
 - Learning mastery is a transparent heuristic from stored quiz, review, exercise, confidence, hint,
   recency, and future project-evidence signals. It is not a scientific learning diagnosis.
 - Habit reminders and external notifications are deferred to the notification/review workflow slice.

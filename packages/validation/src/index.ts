@@ -132,6 +132,276 @@ export const userPreferencesUpdateSchema = z
     message: "At least one preference field is required."
   });
 
+export const avatarKindSchema = z.enum(["preset", "vault_file"]);
+
+export const profileLinkTypeSchema = z.enum([
+  "resume",
+  "portfolio",
+  "website",
+  "github",
+  "linkedin",
+  "other"
+]);
+
+export const profileVisibilitySchema = z.enum(["private", "unlisted"]);
+
+export const favoriteResourceTypeSchema = z.enum(["file", "learning_resource", "external_link"]);
+
+export const dataRequestStatusSchema = z.enum([
+  "requested",
+  "processing",
+  "ready",
+  "canceled",
+  "failed"
+]);
+
+export const accountDeletionRequestStatusSchema = z.enum(["requested", "canceled", "completed"]);
+
+const optionalHttpUrlSchema = z
+  .string()
+  .trim()
+  .max(500)
+  .refine((value) => value === "" || value.startsWith("http://") || value.startsWith("https://"), {
+    message: "URL must start with http:// or https://."
+  })
+  .transform((value) => (value === "" ? null : value));
+
+export const userProfileSchema = z.object({
+  avatarFileId: z.string().uuid().nullable(),
+  avatarKind: avatarKindSchema,
+  avatarPreset: z.string().nullable(),
+  bio: z.string().nullable(),
+  createdAt: z.string().min(1),
+  displayName: z.string().min(1),
+  email: z.string().email(),
+  headline: z.string().nullable(),
+  id: z.string().uuid(),
+  isEmailVerified: z.boolean(),
+  location: z.string().nullable(),
+  updatedAt: z.string().min(1),
+  userId: z.string().uuid(),
+  websiteUrl: z.string().nullable()
+});
+
+export const userProfileUpdateSchema = z
+  .object({
+    avatarFileId: z.string().uuid().nullable().optional(),
+    avatarPreset: z.enum(["aurora", "atlas", "ember", "lumen", "sol"]).nullable().optional(),
+    bio: z.string().max(4000).nullable().optional(),
+    displayName: z.string().trim().min(1, "Display name is required.").max(120).optional(),
+    headline: z.string().trim().max(160).nullable().optional(),
+    location: z.string().trim().max(120).nullable().optional(),
+    websiteUrl: optionalHttpUrlSchema.nullable().optional()
+  })
+  .refine((value) => Object.keys(value).length > 0, {
+    message: "At least one profile field is required."
+  })
+  .refine((value) => !(value.avatarPreset !== undefined && value.avatarFileId !== undefined), {
+    message: "Use either an avatar preset or avatar file in one update."
+  });
+
+export const profileLinkSchema = z.object({
+  createdAt: z.string().min(1),
+  id: z.string().uuid(),
+  linkType: profileLinkTypeSchema,
+  title: z.string().min(1),
+  updatedAt: z.string().min(1),
+  url: z.string().min(1)
+});
+
+export const profileLinkCreateRequestSchema = z.object({
+  linkType: profileLinkTypeSchema,
+  title: z.string().trim().min(1, "Link title is required.").max(120),
+  url: z
+    .string()
+    .trim()
+    .min(1, "Link URL is required.")
+    .max(500)
+    .refine((value) => value.startsWith("http://") || value.startsWith("https://"), {
+      message: "URL must start with http:// or https://."
+    })
+});
+
+export const profileLinkPageSchema = z.object({
+  items: z.array(profileLinkSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const favoriteProjectSchema = z.object({
+  createdAt: z.string().min(1),
+  id: z.string().uuid(),
+  projectId: z.string().uuid(),
+  updatedAt: z.string().min(1)
+});
+
+export const favoriteProjectCreateRequestSchema = z.object({
+  projectId: z.string().uuid()
+});
+
+export const favoriteProjectPageSchema = z.object({
+  items: z.array(favoriteProjectSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const favoriteResourceSchema = z.object({
+  createdAt: z.string().min(1),
+  fileId: z.string().uuid().nullable(),
+  id: z.string().uuid(),
+  learningResourceId: z.string().uuid().nullable(),
+  notes: z.string().nullable(),
+  resourceType: favoriteResourceTypeSchema,
+  title: z.string().min(1),
+  updatedAt: z.string().min(1),
+  url: z.string().nullable()
+});
+
+export const favoriteResourceCreateRequestSchema = z
+  .object({
+    fileId: z.string().uuid().nullable().optional(),
+    learningResourceId: z.string().uuid().nullable().optional(),
+    notes: z.string().max(2000).nullable().optional(),
+    resourceType: favoriteResourceTypeSchema,
+    title: z.string().trim().max(160).nullable().optional(),
+    url: optionalHttpUrlSchema.nullable().optional()
+  })
+  .refine((value) => value.resourceType !== "file" || Boolean(value.fileId), {
+    message: "File favorites require a file ID."
+  })
+  .refine(
+    (value) => value.resourceType !== "learning_resource" || Boolean(value.learningResourceId),
+    { message: "Learning-resource favorites require a learning resource ID." }
+  )
+  .refine((value) => value.resourceType !== "external_link" || Boolean(value.title && value.url), {
+    message: "External favorites require a title and URL."
+  });
+
+export const favoriteResourcePageSchema = z.object({
+  items: z.array(favoriteResourceSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const certificateSchema = z.object({
+  createdAt: z.string().min(1),
+  credentialUrl: z.string().nullable(),
+  expiresOn: z.string().nullable(),
+  fileId: z.string().uuid().nullable(),
+  id: z.string().uuid(),
+  issuedOn: z.string().nullable(),
+  issuer: z.string().nullable(),
+  notes: z.string().nullable(),
+  title: z.string().min(1),
+  updatedAt: z.string().min(1)
+});
+
+export const certificateCreateRequestSchema = z
+  .object({
+    credentialUrl: optionalHttpUrlSchema.nullable().optional(),
+    expiresOn: z.string().nullable().optional(),
+    fileId: z.string().uuid().nullable().optional(),
+    issuedOn: z.string().nullable().optional(),
+    issuer: z.string().trim().max(160).nullable().optional(),
+    notes: z.string().max(2000).nullable().optional(),
+    title: z.string().trim().min(1, "Certificate title is required.").max(160)
+  })
+  .refine(
+    (value) =>
+      !value.issuedOn ||
+      !value.expiresOn ||
+      new Date(value.expiresOn).getTime() >= new Date(value.issuedOn).getTime(),
+    { message: "Expiration date cannot be before issue date." }
+  );
+
+export const certificatePageSchema = z.object({
+  items: z.array(certificateSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const privacySettingsSchema = z.object({
+  aiMemoryEnabled: z.boolean(),
+  allowProfileInAiContext: z.boolean(),
+  allowProfileSearchIndexing: z.boolean(),
+  createdAt: z.string().min(1),
+  id: z.string().uuid(),
+  includeProfileInExports: z.boolean(),
+  productAnalyticsEnabled: z.boolean(),
+  profileVisibility: profileVisibilitySchema,
+  showEmailOnProfile: z.boolean(),
+  updatedAt: z.string().min(1)
+});
+
+export const privacySettingsUpdateSchema = z
+  .object({
+    aiMemoryEnabled: z.boolean().optional(),
+    allowProfileInAiContext: z.boolean().optional(),
+    allowProfileSearchIndexing: z.boolean().optional(),
+    includeProfileInExports: z.boolean().optional(),
+    productAnalyticsEnabled: z.boolean().optional(),
+    profileVisibility: profileVisibilitySchema.optional(),
+    showEmailOnProfile: z.boolean().optional()
+  })
+  .refine((value) => Object.keys(value).length > 0, {
+    message: "At least one privacy field is required."
+  });
+
+export const dataExportRequestSchema = z.object({
+  completedAt: z.string().min(1).nullable(),
+  createdAt: z.string().min(1),
+  downloadUrl: z.string().nullable(),
+  expiresAt: z.string().min(1).nullable(),
+  id: z.string().uuid(),
+  includedCategories: z.array(z.string().min(1)),
+  note: z.string().nullable(),
+  requestedAt: z.string().min(1),
+  status: dataRequestStatusSchema,
+  updatedAt: z.string().min(1)
+});
+
+export const dataExportRequestCreateSchema = z.object({
+  idempotencyKey: z.string().min(8).max(160),
+  includedCategories: z.array(z.string().min(1)).optional(),
+  note: z.string().max(2000).nullable().optional()
+});
+
+export const dataExportRequestPageSchema = z.object({
+  items: z.array(dataExportRequestSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const accountDeletionRequestSchema = z.object({
+  canceledAt: z.string().min(1).nullable(),
+  createdAt: z.string().min(1),
+  id: z.string().uuid(),
+  metadata: z.record(z.unknown()),
+  reason: z.string().nullable(),
+  requestedAt: z.string().min(1),
+  scheduledDeletionAt: z.string().min(1).nullable(),
+  status: accountDeletionRequestStatusSchema,
+  updatedAt: z.string().min(1)
+});
+
+export const accountDeletionRequestCreateSchema = z.object({
+  confirmation: z.literal("DELETE MY AETHERIUM ACCOUNT"),
+  idempotencyKey: z.string().min(8).max(160),
+  reason: z.string().max(2000).nullable().optional()
+});
+
+export const accountDeletionRequestPageSchema = z.object({
+  items: z.array(accountDeletionRequestSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
 export const worldProfileSchema = z.object({
   createdAt: z.string().min(1),
   currentLocationId: z.string().min(1),

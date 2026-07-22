@@ -119,6 +119,14 @@ Production deployments must use separate Aetherium-owned buckets for private ori
 assets, and user avatars. CI must use isolated Aetherium-prefixed bucket names if storage checks are
 enabled.
 
+## Profile And Privacy Settings
+
+Personal profile, privacy, certificate, favorite, data-export request, and account deletion request
+features do not introduce new runtime secrets. They use Aetherium's existing database, session,
+object-storage, and AI-consent configuration. Future export generation or deletion execution
+workflows must add only Aetherium-prefixed environment variables and must not reuse another
+product's storage, signing, encryption, queue, or notification credentials.
+
 ## AI Providers
 
 The default AI provider is disabled unless `AETHERIUM_AI_PROVIDER_DEFAULT` is set. Local tests may

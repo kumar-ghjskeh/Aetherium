@@ -152,3 +152,30 @@ export function createUnusedProjectsClient(): AetheriumApiClient["projects"] {
     updateTask: vi.fn(reject)
   };
 }
+
+export function createUnusedUsersClient(): AetheriumApiClient["users"] {
+  const reject = () => Promise.reject(new Error("Unexpected user profile call"));
+
+  return {
+    createAccountDeletionRequest: vi.fn(reject),
+    createCertificate: vi.fn(reject),
+    createDataExportRequest: vi.fn(reject),
+    createFavoriteResource: vi.fn(reject),
+    createLink: vi.fn(reject),
+    deleteCertificate: vi.fn(reject),
+    deleteLink: vi.fn(reject),
+    getPrivacy: vi.fn(reject),
+    getProfile: vi.fn(reject),
+    listAccountDeletionRequests: vi.fn(reject),
+    listCertificates: vi.fn(reject),
+    listDataExportRequests: vi.fn(reject),
+    listFavoriteProjects: vi.fn(reject),
+    listFavoriteResources: vi.fn(reject),
+    listLinks: vi.fn(reject),
+    removeFavoriteProject: vi.fn(reject),
+    removeFavoriteResource: vi.fn(reject),
+    setFavoriteProject: vi.fn(reject),
+    updatePrivacy: vi.fn(reject),
+    updateProfile: vi.fn(reject)
+  };
+}

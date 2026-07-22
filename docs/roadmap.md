@@ -60,10 +60,13 @@ Current approved slice:
 - Achievement progression foundation with seeded definitions, idempotent domain-event processing,
   user achievements, progress counters, reward definitions, future world-unlock records, global
   search, and the Command Mode Achievements UI.
+- Personal profile and settings with owner-scoped profile metadata, avatar preset or owned
+  vault-image references, profile links, favorite projects/resources, certificates, privacy
+  controls, data-export request records, account deletion request records, and the Command Mode
+  Settings UI.
 
 Later Phase 1 slices:
 
-- User profile beyond the current `/auth/me` public profile.
 - Non-visual world data expansion only until the visual 3D phase is explicitly started.
 
 ## Phase 2 - Learning System
@@ -112,7 +115,7 @@ Coding status: future.
 - World unlocks: implemented as future identifier records only.
 - Building evolution.
 - Achievement Hall.
-- Personal Home customization.
+- Personal Home customization. Profile metadata exists as a non-visual foundation.
 
 ## Phase 6 - Production Hardening
 
@@ -122,4 +125,4 @@ Coding status: future.
 - Performance optimization.
 - Backup and recovery testing.
 - Monitoring and deployment pipelines.
-- Account deletion, data export, and privacy controls.
+- Account deletion and data export execution workflows. Privacy controls and request records exist.

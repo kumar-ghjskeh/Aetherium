@@ -28,7 +28,7 @@ The current implemented slices provide the infrastructure shell, standalone auth
 foundation, user-owned foundation, protected Command Mode shell, Personal Vault storage, background
 file ingestion, global search, provider-neutral AI gateway, AI mentor conversations, citation-backed
 document Q&A, habit tracking, the learning and mastery engine, the Project Dock foundation, and
-progress analytics, and the achievement progression foundation:
+progress analytics, the achievement progression foundation, and personal profile/privacy settings:
 
 - `apps/api`: FastAPI app, database settings, Alembic, health endpoints.
 - `apps/web`: Next.js App Router scaffold, web health route, auth UI, and protected `/app` Command
@@ -37,7 +37,7 @@ progress analytics, and the achievement progression foundation:
 - `packages/validation`: Zod schemas that validate API contract payloads.
 - `packages/api-client`: Typed API client for health, auth, user-owned foundation, Personal Vault,
   search, AI gateway, document Q&A, mentor conversation, habit, learning, project, and analytics
-  APIs, plus achievements.
+  APIs, plus achievements and personal profile settings.
 - Identity domain: Aetherium-owned `users` and `sessions` tables, Argon2id password hashing,
   server-side session revocation, and product-specific cookies.
 - User-owned foundation: preferences, non-visual world profile state, domain events, notifications,
@@ -79,6 +79,9 @@ progress analytics, and the achievement progression foundation:
 - Achievements: seeded non-visual definitions, idempotent rules over domain events, owner-scoped
   progress counters, user achievements, reward definitions, future world-unlock records, search
   results, and Command Mode Achievements UI. Visual Achievement Hall rewards are deferred.
+- Profile and settings: owner-scoped profile metadata, avatar preset or owned vault-image
+  references, profile links, favorite projects/resources, certificates, privacy controls,
+  data-export request records, account deletion request records, and Command Mode Settings UI.
 
 ## Frontend Boundaries
 
@@ -136,6 +139,9 @@ plus reusable dependencies.
   buckets.
 - Achievement routes are under `/api/v1/achievements` and expose progress lists, summaries, and
   explicit event processing.
+- Personal profile and privacy routes are under `/api/v1/users` and expose profile metadata, profile
+  links, favorites, certificates, privacy settings, and metadata-only export/deletion request
+  records.
 
 ## Configuration
 

@@ -564,6 +564,102 @@ const achievementProcess = {
   unlocked: [achievementProgress]
 };
 
+const userProfile = {
+  avatarFileId: null,
+  avatarKind: "preset",
+  avatarPreset: "lumen",
+  bio: "Learning systems and software.",
+  createdAt: "2026-07-20T00:00:00Z",
+  displayName: "Sai Kumar",
+  email: "sai@example.com",
+  headline: "Systems learner",
+  id: "abababab-1111-4111-8111-111111111111",
+  isEmailVerified: false,
+  location: "United States",
+  updatedAt: "2026-07-20T00:00:00Z",
+  userId: "11111111-1111-4111-8111-111111111111",
+  websiteUrl: "https://example.com"
+};
+
+const profileLink = {
+  createdAt: "2026-07-20T00:00:00Z",
+  id: "abababab-2222-4222-8222-222222222222",
+  linkType: "portfolio",
+  title: "Portfolio",
+  updatedAt: "2026-07-20T00:00:00Z",
+  url: "https://example.com"
+};
+
+const favoriteProject = {
+  createdAt: "2026-07-20T00:00:00Z",
+  id: "abababab-3333-4333-8333-333333333333",
+  projectId: "aaaaaaaa-1111-4111-8111-111111111111",
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const favoriteResource = {
+  createdAt: "2026-07-20T00:00:00Z",
+  fileId: null,
+  id: "abababab-4444-4444-8444-444444444444",
+  learningResourceId: null,
+  notes: "Reference link.",
+  resourceType: "external_link",
+  title: "Resume",
+  updatedAt: "2026-07-20T00:00:00Z",
+  url: "https://example.com/resume"
+};
+
+const certificate = {
+  createdAt: "2026-07-20T00:00:00Z",
+  credentialUrl: "https://example.com/cert",
+  expiresOn: null,
+  fileId: null,
+  id: "abababab-5555-4555-8555-555555555555",
+  issuedOn: "2026-07-20",
+  issuer: "Aetherium Institute",
+  notes: null,
+  title: "Systems Foundations",
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const privacySettings = {
+  aiMemoryEnabled: false,
+  allowProfileInAiContext: false,
+  allowProfileSearchIndexing: false,
+  createdAt: "2026-07-20T00:00:00Z",
+  id: "abababab-6666-4666-8666-666666666666",
+  includeProfileInExports: true,
+  productAnalyticsEnabled: false,
+  profileVisibility: "private",
+  showEmailOnProfile: false,
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const dataExportRequest = {
+  completedAt: null,
+  createdAt: "2026-07-20T00:00:00Z",
+  downloadUrl: null,
+  expiresAt: null,
+  id: "abababab-7777-4777-8777-777777777777",
+  includedCategories: ["profile", "settings"],
+  note: "Need a copy.",
+  requestedAt: "2026-07-20T00:00:00Z",
+  status: "requested",
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const accountDeletionRequest = {
+  canceledAt: null,
+  createdAt: "2026-07-20T00:00:00Z",
+  id: "abababab-8888-4888-8888-888888888888",
+  metadata: { execution: "manual_future_workflow" },
+  reason: "Testing",
+  requestedAt: "2026-07-20T00:00:00Z",
+  scheduledDeletionAt: null,
+  status: "requested",
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
 const aiProvider = {
   capabilities: ["chat", "streaming_chat", "embeddings"],
   configured: true,
@@ -1895,6 +1991,172 @@ describe("createAetheriumApiClient", () => {
       credentials: "include",
       headers: { Accept: "application/json" },
       method: "POST"
+    });
+  });
+
+  it("uses personal profile and settings endpoints", async () => {
+    const fetcher = vi.fn<typeof fetch>((input, init) => {
+      const url = requestUrl(input);
+      if (url === "http://localhost:8000/api/v1/users/profile") {
+        if (init?.method === "PATCH") {
+          return Promise.resolve(jsonResponse({ ...userProfile, displayName: "Sai Updated" }));
+        }
+        return Promise.resolve(jsonResponse(userProfile));
+      }
+      if (url === "http://localhost:8000/api/v1/users/profile/links?limit=5&offset=0") {
+        return Promise.resolve(
+          jsonResponse({ items: [profileLink], limit: 5, offset: 0, total: 1 })
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/users/profile/links") {
+        return Promise.resolve(jsonResponse(profileLink, 201));
+      }
+      if (url === `http://localhost:8000/api/v1/users/profile/links/${profileLink.id}`) {
+        return Promise.resolve(new Response(null, { status: 204 }));
+      }
+      if (url === "http://localhost:8000/api/v1/users/profile/favorite-projects?limit=5&offset=0") {
+        return Promise.resolve(
+          jsonResponse({ items: [favoriteProject], limit: 5, offset: 0, total: 1 })
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/users/profile/favorite-projects") {
+        return Promise.resolve(jsonResponse(favoriteProject, 201));
+      }
+      if (
+        url ===
+        `http://localhost:8000/api/v1/users/profile/favorite-projects/${favoriteProject.projectId}`
+      ) {
+        return Promise.resolve(new Response(null, { status: 204 }));
+      }
+      if (
+        url === "http://localhost:8000/api/v1/users/profile/favorite-resources?limit=5&offset=0"
+      ) {
+        return Promise.resolve(
+          jsonResponse({ items: [favoriteResource], limit: 5, offset: 0, total: 1 })
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/users/profile/favorite-resources") {
+        return Promise.resolve(jsonResponse(favoriteResource, 201));
+      }
+      if (
+        url ===
+        `http://localhost:8000/api/v1/users/profile/favorite-resources/${favoriteResource.id}`
+      ) {
+        return Promise.resolve(new Response(null, { status: 204 }));
+      }
+      if (url === "http://localhost:8000/api/v1/users/profile/certificates?limit=5&offset=0") {
+        return Promise.resolve(
+          jsonResponse({ items: [certificate], limit: 5, offset: 0, total: 1 })
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/users/profile/certificates") {
+        return Promise.resolve(jsonResponse(certificate, 201));
+      }
+      if (url === `http://localhost:8000/api/v1/users/profile/certificates/${certificate.id}`) {
+        return Promise.resolve(new Response(null, { status: 204 }));
+      }
+      if (url === "http://localhost:8000/api/v1/users/privacy") {
+        if (init?.method === "PATCH") {
+          return Promise.resolve(
+            jsonResponse({ ...privacySettings, allowProfileInAiContext: true })
+          );
+        }
+        return Promise.resolve(jsonResponse(privacySettings));
+      }
+      if (url === "http://localhost:8000/api/v1/users/data-export-requests?limit=5&offset=0") {
+        return Promise.resolve(
+          jsonResponse({ items: [dataExportRequest], limit: 5, offset: 0, total: 1 })
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/users/data-export-requests") {
+        return Promise.resolve(jsonResponse(dataExportRequest, 201));
+      }
+      if (url === "http://localhost:8000/api/v1/users/account-deletion-requests?limit=5&offset=0") {
+        return Promise.resolve(
+          jsonResponse({ items: [accountDeletionRequest], limit: 5, offset: 0, total: 1 })
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/users/account-deletion-requests") {
+        return Promise.resolve(jsonResponse(accountDeletionRequest, 201));
+      }
+      return Promise.resolve(jsonResponse({ error: { code: "not_found", message: url } }, 404));
+    });
+    const client = createAetheriumApiClient({ baseUrl: "http://localhost:8000", fetcher });
+
+    await expect(client.users.getProfile()).resolves.toMatchObject({ displayName: "Sai Kumar" });
+    await expect(client.users.updateProfile({ displayName: "Sai Updated" })).resolves.toMatchObject(
+      {
+        displayName: "Sai Updated"
+      }
+    );
+    await expect(client.users.listLinks({ limit: 5, offset: 0 })).resolves.toMatchObject({
+      total: 1
+    });
+    await expect(
+      client.users.createLink({
+        linkType: "portfolio",
+        title: "Portfolio",
+        url: "https://example.com"
+      })
+    ).resolves.toMatchObject({ linkType: "portfolio" });
+    await expect(client.users.deleteLink(profileLink.id)).resolves.toBeUndefined();
+    await expect(client.users.listFavoriteProjects({ limit: 5, offset: 0 })).resolves.toMatchObject(
+      {
+        total: 1
+      }
+    );
+    await expect(
+      client.users.setFavoriteProject({ projectId: favoriteProject.projectId })
+    ).resolves.toMatchObject({ projectId: favoriteProject.projectId });
+    await expect(
+      client.users.removeFavoriteProject(favoriteProject.projectId)
+    ).resolves.toBeUndefined();
+    await expect(
+      client.users.listFavoriteResources({ limit: 5, offset: 0 })
+    ).resolves.toMatchObject({ total: 1 });
+    await expect(
+      client.users.createFavoriteResource({
+        resourceType: "external_link",
+        title: "Resume",
+        url: "https://example.com/resume"
+      })
+    ).resolves.toMatchObject({ resourceType: "external_link" });
+    await expect(client.users.removeFavoriteResource(favoriteResource.id)).resolves.toBeUndefined();
+    await expect(client.users.listCertificates({ limit: 5, offset: 0 })).resolves.toMatchObject({
+      total: 1
+    });
+    await expect(
+      client.users.createCertificate({ title: "Systems Foundations" })
+    ).resolves.toMatchObject({ title: "Systems Foundations" });
+    await expect(client.users.deleteCertificate(certificate.id)).resolves.toBeUndefined();
+    await expect(client.users.getPrivacy()).resolves.toMatchObject({
+      profileVisibility: "private"
+    });
+    await expect(
+      client.users.updatePrivacy({ allowProfileInAiContext: true })
+    ).resolves.toMatchObject({ allowProfileInAiContext: true });
+    await expect(
+      client.users.listDataExportRequests({ limit: 5, offset: 0 })
+    ).resolves.toMatchObject({ total: 1 });
+    await expect(
+      client.users.createDataExportRequest({
+        idempotencyKey: "export-profile-1",
+        includedCategories: ["profile"]
+      })
+    ).resolves.toMatchObject({ status: "requested" });
+    await expect(
+      client.users.listAccountDeletionRequests({ limit: 5, offset: 0 })
+    ).resolves.toMatchObject({ total: 1 });
+    await expect(
+      client.users.createAccountDeletionRequest({
+        confirmation: "DELETE MY AETHERIUM ACCOUNT",
+        idempotencyKey: "delete-account-1"
+      })
+    ).resolves.toMatchObject({ status: "requested" });
+
+    expect(fetcher).toHaveBeenCalledWith("http://localhost:8000/api/v1/users/privacy", {
+      credentials: "include",
+      headers: { Accept: "application/json" }
     });
   });
 

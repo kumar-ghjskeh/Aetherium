@@ -57,24 +57,45 @@ Implemented Phase 1 foundation slices:
   favorites, deletion state, and a real Library UI.
 - Background file ingestion for uploaded files, including durable processing jobs, worker-based text
   extraction, chunk storage, visible failure state, and retry controls.
-- Global search for implemented data, including files, extracted chunks, collections, tags, recent
-  searches, and Command Palette integration.
+- Global search for implemented data, including files, extracted chunks, collections, tags, AI
+  conversations, habits, learning topics, projects, project tasks, recent searches, and Command
+  Palette integration.
 - Provider-neutral AI gateway foundation for consent policies, model configuration, chat
   completions, streaming responses, embeddings, usage metadata, rate limits, retries, and fallback.
   External provider calls are disabled unless environment configuration and user consent both allow
   them.
+- AI mentors and conversations with fictional default mentors, custom mentors, owner-scoped
+  messages, memory controls, exports, edit/resend, regeneration, and AI Hall UI.
+- Citation-backed document Q&A with explicit file-content consent, owner-scoped retrieval, validated
+  source citations, and no-evidence responses when uploaded content cannot support an answer.
+- Habit tracking with schedules, targets, logs, streaks, daily check-ins, weekly reviews, summaries,
+  search integration, and Command Mode Habits UI.
+- Learning and mastery engine with subjects, topics, prerequisites, courses, lessons, study
+  sessions, quizzes, flashcards, transparent mastery records, learning goals, roadmaps, search
+  integration, and Command Mode Learning UI.
+- Project Dock foundation with projects, milestones, project tasks, notes, links, file/topic links,
+  technologies, blockers, activity history, search integration, and Command Mode Projects UI.
+- Progress analytics based only on stored user-owned records, with unsupported metrics marked
+  unavailable instead of fabricated.
+- Achievement progression foundation with seeded non-visual achievements, idempotent event
+  processing, progress counters, future world-unlock records, and Command Mode Achievements UI.
+- Personal profile and privacy settings with profile metadata, avatar presets or owned vault-image
+  references, profile links, favorite projects/resources, certificates, AI memory and analytics
+  controls, data-export request records, account deletion request records, and Command Mode Settings
+  UI.
 
-3D functionality, mentor conversations, semantic retrieval, citation-backed Q&A, and habits are
-intentionally deferred.
+Visual 3D world rendering, coding workspace, knowledge graph, external notification delivery, actual
+export generation, and account deletion execution are intentionally deferred.
 
 ## Non-Goals For Current Slice
 
 - No OAuth, social login, email delivery, password reset, MFA, or magic links.
 - No 3D scene or world interaction.
-- No semantic embeddings or citation-backed file Q&A.
-- No user-facing mentor conversation workflow or document Q&A.
-- No habit, task, project, or learning domain behavior.
-- No claims that user-facing product workflows are complete.
+- No coding workspace or arbitrary code execution.
+- No knowledge graph implementation.
+- No external notification delivery.
+- No destructive account deletion execution.
+- No generated data-export archives or public profile publishing.
 - No visual World Mode implementation.
 
 ## Success Criteria For Current Slice
@@ -98,3 +119,6 @@ intentionally deferred.
   provider.
 - A signed-in user can search their own file metadata, extracted chunks, collections, and tags from
   Command Mode without seeing another user's records.
+- A signed-in user can use mentor conversations, document Q&A with explicit file-content consent,
+  habit tracking, learning records, projects, analytics, achievements, and profile/privacy settings
+  without exposing another user's data.

@@ -62,6 +62,11 @@ external network calls. To test an external provider locally, set
 `AETHERIUM_AI_EXTERNAL_CALLS_ENABLED=true`, provide only Aetherium-specific provider credentials,
 and grant feature-level consent through the API.
 
+Personal profile and privacy settings use the existing Aetherium auth/session configuration and do
+not require new environment variables. Data-export and account deletion endpoints record
+owner-scoped workflow requests only in local development; they do not generate archives or delete
+account data.
+
 ## Authentication Defaults
 
 Local development uses:

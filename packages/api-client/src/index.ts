@@ -3,6 +3,9 @@ import type {
   AchievementProcessResponse,
   AchievementSummary,
   ApiErrorBody,
+  AccountDeletionRequest,
+  AccountDeletionRequestCreateRequest,
+  AccountDeletionRequestPage,
   AIChatCompletionRequest,
   AIChatCompletionResponse,
   AIConsentPolicyPage,
@@ -19,6 +22,9 @@ import type {
   AnalyticsSummary,
   AuditLogPage,
   AuthResponse,
+  Certificate,
+  CertificateCreateRequest,
+  CertificatePage,
   Collection,
   CollectionCreateRequest,
   CollectionItemRequest,
@@ -30,6 +36,9 @@ import type {
   ConversationMemorySettingsUpdate,
   ConversationPage,
   ConversationUpdateRequest,
+  DataExportRequest,
+  DataExportRequestCreateRequest,
+  DataExportRequestPage,
   DocumentQARequest,
   DocumentQAResponse,
   DownloadUrlResponse,
@@ -42,6 +51,12 @@ import type {
   FilePage,
   FileTagCreateRequest,
   FileUpdateRequest,
+  FavoriteProject,
+  FavoriteProjectCreateRequest,
+  FavoriteProjectPage,
+  FavoriteResource,
+  FavoriteResourceCreateRequest,
+  FavoriteResourcePage,
   DailyCheckIn,
   DailyCheckInUpsert,
   Habit,
@@ -119,6 +134,11 @@ import type {
   ProjectTopicLink,
   ProjectUpdateRequest,
   PublicUser,
+  PrivacySettings,
+  PrivacySettingsUpdate,
+  ProfileLink,
+  ProfileLinkCreateRequest,
+  ProfileLinkPage,
   Question,
   QuestionCreateRequest,
   Quiz,
@@ -151,6 +171,8 @@ import type {
   UploadResponse,
   UserPreferences,
   UserPreferencesUpdate,
+  UserProfile,
+  UserProfileUpdate,
   VaultFile,
   WorldProfile,
   WorldProfileUpdate,
@@ -163,6 +185,8 @@ import {
   achievementPageSchema,
   achievementProcessResponseSchema,
   achievementSummarySchema,
+  accountDeletionRequestPageSchema,
+  accountDeletionRequestSchema,
   aiChatCompletionResponseSchema,
   aiConsentPolicyPageSchema,
   aiConsentPolicySchema,
@@ -175,16 +199,24 @@ import {
   apiErrorBodySchema,
   auditLogPageSchema,
   authResponseSchema,
+  certificatePageSchema,
+  certificateSchema,
   collectionPageSchema,
   collectionSchema,
   conversationExportSchema,
   conversationMemorySettingsSchema,
   conversationPageSchema,
   conversationSchema,
+  dataExportRequestPageSchema,
+  dataExportRequestSchema,
   documentQAResponseSchema,
   downloadUrlResponseSchema,
   domainEventPageSchema,
   domainEventSchema,
+  favoriteProjectPageSchema,
+  favoriteProjectSchema,
+  favoriteResourcePageSchema,
+  favoriteResourceSchema,
   fileChunkPageSchema,
   filePageSchema,
   tagPageSchema,
@@ -217,6 +249,9 @@ import {
   masteryRecordSchema,
   processingJobPageSchema,
   processingJobSchema,
+  privacySettingsSchema,
+  profileLinkPageSchema,
+  profileLinkSchema,
   projectActivityPageSchema,
   projectBlockerSchema,
   projectDetailSchema,
@@ -247,6 +282,7 @@ import {
   topicRelationSchema,
   topicSchema,
   userPreferencesSchema,
+  userProfileSchema,
   vaultFileSchema,
   weeklyReviewPageSchema,
   weeklyReviewSchema,
@@ -464,6 +500,32 @@ export interface AetheriumApiClient {
   settings: {
     getPreferences: () => Promise<UserPreferences>;
     updatePreferences: (payload: UserPreferencesUpdate) => Promise<UserPreferences>;
+  };
+  users: {
+    createAccountDeletionRequest: (
+      payload: AccountDeletionRequestCreateRequest
+    ) => Promise<AccountDeletionRequest>;
+    createCertificate: (payload: CertificateCreateRequest) => Promise<Certificate>;
+    createDataExportRequest: (
+      payload: DataExportRequestCreateRequest
+    ) => Promise<DataExportRequest>;
+    createFavoriteResource: (payload: FavoriteResourceCreateRequest) => Promise<FavoriteResource>;
+    createLink: (payload: ProfileLinkCreateRequest) => Promise<ProfileLink>;
+    deleteCertificate: (certificateId: string) => Promise<void>;
+    deleteLink: (linkId: string) => Promise<void>;
+    getPrivacy: () => Promise<PrivacySettings>;
+    getProfile: () => Promise<UserProfile>;
+    listAccountDeletionRequests: (query?: PaginationQuery) => Promise<AccountDeletionRequestPage>;
+    listCertificates: (query?: PaginationQuery) => Promise<CertificatePage>;
+    listDataExportRequests: (query?: PaginationQuery) => Promise<DataExportRequestPage>;
+    listFavoriteProjects: (query?: PaginationQuery) => Promise<FavoriteProjectPage>;
+    listFavoriteResources: (query?: PaginationQuery) => Promise<FavoriteResourcePage>;
+    listLinks: (query?: PaginationQuery) => Promise<ProfileLinkPage>;
+    removeFavoriteProject: (projectId: string) => Promise<void>;
+    removeFavoriteResource: (favoriteId: string) => Promise<void>;
+    setFavoriteProject: (payload: FavoriteProjectCreateRequest) => Promise<FavoriteProject>;
+    updatePrivacy: (payload: PrivacySettingsUpdate) => Promise<PrivacySettings>;
+    updateProfile: (payload: UserProfileUpdate) => Promise<UserProfile>;
   };
   world: {
     getProfile: () => Promise<WorldProfile>;
@@ -1836,6 +1898,179 @@ export function createAetheriumApiClient(options: AetheriumApiClientOptions): Ae
           }
         );
         return userPreferencesSchema.parse(response);
+      }
+    },
+    users: {
+      createAccountDeletionRequest: async (payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          "/api/v1/users/account-deletion-requests",
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return accountDeletionRequestSchema.parse(response);
+      },
+      createCertificate: async (payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          "/api/v1/users/profile/certificates",
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return certificateSchema.parse(response);
+      },
+      createDataExportRequest: async (payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          "/api/v1/users/data-export-requests",
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return dataExportRequestSchema.parse(response);
+      },
+      createFavoriteResource: async (payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          "/api/v1/users/profile/favorite-resources",
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return favoriteResourceSchema.parse(response);
+      },
+      createLink: async (payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          "/api/v1/users/profile/links",
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return profileLinkSchema.parse(response);
+      },
+      deleteCertificate: async (certificateId) => {
+        await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/users/profile/certificates/${certificateId}`,
+          { method: "DELETE" }
+        );
+      },
+      deleteLink: async (linkId) => {
+        await requestJson(fetcher, options.baseUrl, `/api/v1/users/profile/links/${linkId}`, {
+          method: "DELETE"
+        });
+      },
+      getPrivacy: async () => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/users/privacy");
+        return privacySettingsSchema.parse(response);
+      },
+      getProfile: async () => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/users/profile");
+        return userProfileSchema.parse(response);
+      },
+      listAccountDeletionRequests: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/users/account-deletion-requests${paginationQuery(query)}`
+        );
+        return accountDeletionRequestPageSchema.parse(response);
+      },
+      listCertificates: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/users/profile/certificates${paginationQuery(query)}`
+        );
+        return certificatePageSchema.parse(response);
+      },
+      listDataExportRequests: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/users/data-export-requests${paginationQuery(query)}`
+        );
+        return dataExportRequestPageSchema.parse(response);
+      },
+      listFavoriteProjects: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/users/profile/favorite-projects${paginationQuery(query)}`
+        );
+        return favoriteProjectPageSchema.parse(response);
+      },
+      listFavoriteResources: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/users/profile/favorite-resources${paginationQuery(query)}`
+        );
+        return favoriteResourcePageSchema.parse(response);
+      },
+      listLinks: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/users/profile/links${paginationQuery(query)}`
+        );
+        return profileLinkPageSchema.parse(response);
+      },
+      removeFavoriteProject: async (projectId) => {
+        await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/users/profile/favorite-projects/${projectId}`,
+          { method: "DELETE" }
+        );
+      },
+      removeFavoriteResource: async (favoriteId) => {
+        await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/users/profile/favorite-resources/${favoriteId}`,
+          { method: "DELETE" }
+        );
+      },
+      setFavoriteProject: async (payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          "/api/v1/users/profile/favorite-projects",
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return favoriteProjectSchema.parse(response);
+      },
+      updatePrivacy: async (payload) => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/users/privacy", {
+          body: JSON.stringify(payload),
+          method: "PATCH"
+        });
+        return privacySettingsSchema.parse(response);
+      },
+      updateProfile: async (payload) => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/users/profile", {
+          body: JSON.stringify(payload),
+          method: "PATCH"
+        });
+        return userProfileSchema.parse(response);
       }
     },
     world: {

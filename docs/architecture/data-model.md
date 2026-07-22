@@ -37,6 +37,9 @@ Current migrations:
 - `0012_achievement_engine`: creates achievement definitions, achievement rules, reward definitions,
   user achievements, progress counters, processed event/rule rows, and non-visual world unlock
   records.
+- `0013_profile_settings`: creates personal profile metadata, profile links, favorite profile
+  projects/resources, certificates, privacy settings, data-export requests, and account deletion
+  request records.
 
 Progress analytics add no new tables in Phase 12. The analytics service is a read-only aggregation
 layer over existing owner-scoped tables.
@@ -126,6 +129,93 @@ No 3D scenes, assets, movement, or rendering state are stored in this table.
 
 Audit metadata must not contain passwords, raw session tokens, cookies, secrets, API keys, or full
 sensitive request bodies.
+
+## Personal Profile And Settings Schema
+
+All profile and settings tables include `owner_user_id`, except profile responses that also include
+public fields from the authenticated `users` row. Cross-user identifiers return not-found style
+responses.
+
+### `user_profiles`
+
+- UUID primary key.
+- Unique `owner_user_id` foreign key to `users.id`.
+- Optional headline, bio, location, and website URL.
+- Avatar kind constrained to preset or vault-file reference.
+- Optional avatar preset name.
+- Optional `avatar_file_id` reference to an owned active image in `files`.
+- Timestamps.
+
+Display name remains on `users` so authentication and profile responses share one source of truth.
+
+### `profile_links`
+
+- UUID primary key.
+- `owner_user_id` foreign key to `users.id`.
+- Link type, title, and HTTP(S) URL.
+- Unique owner/type/URL constraint.
+- Owner/type index and timestamps.
+
+### `profile_favorite_projects`
+
+- UUID primary key.
+- `owner_user_id` and `project_id`.
+- Unique owner/project constraint.
+- Timestamps.
+
+Favorite projects are presentation metadata. They do not change project ownership or access.
+
+### `profile_favorite_resources`
+
+- UUID primary key.
+- `owner_user_id`.
+- Resource type constrained to file, learning resource, or external link.
+- Optional owned file reference.
+- Optional owned learning-resource reference.
+- Title, optional URL, optional notes, and timestamps.
+
+File and learning-resource references must be owned by the authenticated user before a favorite is
+created.
+
+### `certificates`
+
+- UUID primary key.
+- `owner_user_id`.
+- Title, optional issuer, issue/expiration dates, credential URL, optional owned file reference,
+  notes, and timestamps.
+
+Certificates store metadata only. They do not imply verification by Aetherium.
+
+### `privacy_settings`
+
+- UUID primary key.
+- Unique `owner_user_id`.
+- Profile visibility, show-email flag, AI-profile-context flag, profile search-indexing flag, and
+  include-profile-in-exports flag.
+- Timestamps.
+
+Global AI memory and product analytics preferences continue to live in `user_preferences`; the
+privacy API updates those fields there rather than duplicating them.
+
+### `data_export_requests`
+
+- UUID primary key.
+- `owner_user_id`.
+- Idempotency key unique per owner.
+- Status, requested/completed timestamps, optional download URL, optional expiration, included
+  categories, optional note, and timestamps.
+
+Phase 14 records export requests and notifications only. Actual export generation is future work.
+
+### `account_deletion_requests`
+
+- UUID primary key.
+- `owner_user_id`.
+- Idempotency key unique per owner.
+- Status, requested/scheduled/canceled timestamps, optional reason, bounded metadata JSON, and
+  timestamps.
+
+Phase 14 records account deletion requests only. No destructive deletion runs in this slice.
 
 ## Personal Vault Schema
 
@@ -628,3 +718,4 @@ Later schema slices will cover:
 
 - `world_locations`, `user_world_state`.
 - `goals`, global tasks, and goal milestones.
+- Coding workspace and knowledge graph foundation tables.

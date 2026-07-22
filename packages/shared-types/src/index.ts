@@ -99,6 +99,221 @@ export type UserPreferencesUpdate = Partial<
   >
 >;
 
+type ExactOptionalUpdate<T> = {
+  [K in keyof T]?: T[K] | undefined;
+};
+
+export type AvatarKind = "preset" | "vault_file";
+
+export type ProfileLinkType = "resume" | "portfolio" | "website" | "github" | "linkedin" | "other";
+
+export type ProfileVisibility = "private" | "unlisted";
+
+export type FavoriteResourceType = "file" | "learning_resource" | "external_link";
+
+export type DataRequestStatus = "requested" | "processing" | "ready" | "canceled" | "failed";
+
+export type AccountDeletionRequestStatus = "requested" | "canceled" | "completed";
+
+export interface UserProfile {
+  id: string;
+  userId: string;
+  email: string;
+  displayName: string;
+  isEmailVerified: boolean;
+  headline: string | null;
+  bio: string | null;
+  location: string | null;
+  websiteUrl: string | null;
+  avatarKind: AvatarKind;
+  avatarPreset: string | null;
+  avatarFileId: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type UserProfileUpdate = ExactOptionalUpdate<
+  Pick<
+    UserProfile,
+    "avatarFileId" | "avatarPreset" | "bio" | "displayName" | "headline" | "location" | "websiteUrl"
+  >
+>;
+
+export interface ProfileLink {
+  id: string;
+  linkType: ProfileLinkType;
+  title: string;
+  url: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProfileLinkCreateRequest {
+  linkType: ProfileLinkType;
+  title: string;
+  url: string;
+}
+
+export interface ProfileLinkPage {
+  items: ProfileLink[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface FavoriteProject {
+  id: string;
+  projectId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface FavoriteProjectCreateRequest {
+  projectId: string;
+}
+
+export interface FavoriteProjectPage {
+  items: FavoriteProject[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface FavoriteResource {
+  id: string;
+  resourceType: FavoriteResourceType;
+  fileId: string | null;
+  learningResourceId: string | null;
+  title: string;
+  url: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface FavoriteResourceCreateRequest {
+  resourceType: FavoriteResourceType;
+  fileId?: string | null | undefined;
+  learningResourceId?: string | null | undefined;
+  title?: string | null | undefined;
+  url?: string | null | undefined;
+  notes?: string | null | undefined;
+}
+
+export interface FavoriteResourcePage {
+  items: FavoriteResource[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface Certificate {
+  id: string;
+  title: string;
+  issuer: string | null;
+  issuedOn: string | null;
+  expiresOn: string | null;
+  credentialUrl: string | null;
+  fileId: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CertificateCreateRequest {
+  title: string;
+  issuer?: string | null | undefined;
+  issuedOn?: string | null | undefined;
+  expiresOn?: string | null | undefined;
+  credentialUrl?: string | null | undefined;
+  fileId?: string | null | undefined;
+  notes?: string | null | undefined;
+}
+
+export interface CertificatePage {
+  items: Certificate[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface PrivacySettings {
+  id: string;
+  profileVisibility: ProfileVisibility;
+  showEmailOnProfile: boolean;
+  allowProfileInAiContext: boolean;
+  allowProfileSearchIndexing: boolean;
+  includeProfileInExports: boolean;
+  aiMemoryEnabled: boolean;
+  productAnalyticsEnabled: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type PrivacySettingsUpdate = ExactOptionalUpdate<
+  Pick<
+    PrivacySettings,
+    | "aiMemoryEnabled"
+    | "allowProfileInAiContext"
+    | "allowProfileSearchIndexing"
+    | "includeProfileInExports"
+    | "productAnalyticsEnabled"
+    | "profileVisibility"
+    | "showEmailOnProfile"
+  >
+>;
+
+export interface DataExportRequest {
+  id: string;
+  status: DataRequestStatus;
+  requestedAt: string;
+  completedAt: string | null;
+  downloadUrl: string | null;
+  expiresAt: string | null;
+  includedCategories: string[];
+  note: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DataExportRequestCreateRequest {
+  idempotencyKey: string;
+  includedCategories?: string[] | undefined;
+  note?: string | null | undefined;
+}
+
+export interface DataExportRequestPage {
+  items: DataExportRequest[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface AccountDeletionRequest {
+  id: string;
+  status: AccountDeletionRequestStatus;
+  requestedAt: string;
+  scheduledDeletionAt: string | null;
+  canceledAt: string | null;
+  reason: string | null;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AccountDeletionRequestCreateRequest {
+  idempotencyKey: string;
+  confirmation: string;
+  reason?: string | null | undefined;
+}
+
+export interface AccountDeletionRequestPage {
+  items: AccountDeletionRequest[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
 export interface WorldProfile {
   id: string;
   currentLocationId: string;

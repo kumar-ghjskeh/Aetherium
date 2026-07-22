@@ -12,6 +12,26 @@ Current routes:
 - `POST /api/v1/auth/login`
 - `POST /api/v1/auth/logout`
 - `GET /api/v1/auth/me`
+- `GET /api/v1/users/profile`
+- `PATCH /api/v1/users/profile`
+- `GET /api/v1/users/profile/links`
+- `POST /api/v1/users/profile/links`
+- `DELETE /api/v1/users/profile/links/{link_id}`
+- `GET /api/v1/users/profile/favorite-projects`
+- `POST /api/v1/users/profile/favorite-projects`
+- `DELETE /api/v1/users/profile/favorite-projects/{project_id}`
+- `GET /api/v1/users/profile/favorite-resources`
+- `POST /api/v1/users/profile/favorite-resources`
+- `DELETE /api/v1/users/profile/favorite-resources/{favorite_id}`
+- `GET /api/v1/users/profile/certificates`
+- `POST /api/v1/users/profile/certificates`
+- `DELETE /api/v1/users/profile/certificates/{certificate_id}`
+- `GET /api/v1/users/privacy`
+- `PATCH /api/v1/users/privacy`
+- `GET /api/v1/users/data-export-requests`
+- `POST /api/v1/users/data-export-requests`
+- `GET /api/v1/users/account-deletion-requests`
+- `POST /api/v1/users/account-deletion-requests`
 - `GET /api/v1/settings/preferences`
 - `PATCH /api/v1/settings/preferences`
 - `GET /api/v1/world/profile`
@@ -140,7 +160,6 @@ Current routes:
 
 Planned route groups:
 
-- `/api/v1/users`
 - `/api/v1/goals`
 - `/api/v1/tasks`
 
@@ -155,6 +174,46 @@ failures use the same non-revealing error for nonexistent accounts and incorrect
 `POST /api/v1/auth/logout` revokes the current session when present and clears the cookie.
 
 `GET /api/v1/auth/me` returns the authenticated user's public profile or an unauthenticated error.
+
+## Personal Profile And Settings Routes
+
+`GET/PATCH /api/v1/users/profile` reads and updates owner-scoped profile metadata. Display-name
+updates also update the authenticated `users` row so `/auth/me` stays consistent. Avatar updates
+either select a preset or reference an owned active image file from the Personal Vault.
+
+`GET/POST /api/v1/users/profile/links` lists and creates owner-scoped profile links. Duplicate
+owner/type/URL combinations are rejected, and URLs must use `http://` or `https://`.
+
+`DELETE /api/v1/users/profile/links/{link_id}` deletes only the authenticated user's profile link.
+Cross-user IDs return `not_found`.
+
+`GET/POST /api/v1/users/profile/favorite-projects` lists and creates favorite project records.
+Favorites must reference projects owned by the authenticated user.
+
+`DELETE /api/v1/users/profile/favorite-projects/{project_id}` removes only the authenticated user's
+favorite-project row.
+
+`GET/POST /api/v1/users/profile/favorite-resources` lists and creates favorite file, learning
+resource, or external-link records. File and learning-resource favorites must reference owned
+records; external links require a title and HTTP(S) URL.
+
+`DELETE /api/v1/users/profile/favorite-resources/{favorite_id}` removes only the authenticated
+user's favorite-resource row.
+
+`GET/POST /api/v1/users/profile/certificates` lists and creates owner-scoped certificate metadata.
+Certificate file attachments must reference owned vault files.
+
+`DELETE /api/v1/users/profile/certificates/{certificate_id}` deletes only the authenticated user's
+certificate metadata.
+
+`GET/PATCH /api/v1/users/privacy` reads and updates profile privacy controls. Global AI memory and
+product analytics flags are routed through `user_preferences` so settings have one source of truth.
+
+`GET/POST /api/v1/users/data-export-requests` records idempotent owner-scoped export requests. This
+slice records the request and notification only; export generation is future work.
+
+`GET/POST /api/v1/users/account-deletion-requests` records idempotent owner-scoped deletion requests
+after the exact confirmation phrase is submitted. This slice does not delete data.
 
 ## Error Shape
 
@@ -176,6 +235,8 @@ Validation errors may include field-level messages under `error.fields`.
 Important mutation endpoints will accept an idempotency key, especially:
 
 - File upload finalization.
+- Data-export request recording.
+- Account deletion request recording.
 - Habit logging.
 - Task creation from AI suggestions.
 - Goal or milestone changes.

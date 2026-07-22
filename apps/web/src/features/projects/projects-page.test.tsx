@@ -12,7 +12,8 @@ import {
   createUnusedHabitsClient,
   createUnusedLearningClient,
   createUnusedMentorsClient,
-  createUnusedProjectsClient
+  createUnusedProjectsClient,
+  createUnusedUsersClient
 } from "../../test/api-client";
 import { ProjectsPage } from "./projects-page";
 
@@ -217,6 +218,7 @@ function createClient(overrides: Partial<AetheriumApiClient["projects"]> = {}): 
     },
     search: { recent: vi.fn(reject), run: vi.fn(reject) },
     settings: { getPreferences: vi.fn(reject), updatePreferences: vi.fn(reject) },
+    users: createUnusedUsersClient(),
     world: { getProfile: vi.fn(reject), updateProfile: vi.fn(reject), visit: vi.fn(reject) }
   };
 }

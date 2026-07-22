@@ -24,7 +24,8 @@ import {
   createUnusedHabitsClient,
   createUnusedLearningClient,
   createUnusedMentorsClient,
-  createUnusedProjectsClient
+  createUnusedProjectsClient,
+  createUnusedUsersClient
 } from "../../test/api-client";
 import { AppDashboard } from "./app-dashboard";
 import { AppShell } from "./app-shell";
@@ -169,6 +170,7 @@ function createClient(
     projects: Partial<AetheriumApiClient["projects"]>;
     search: Partial<AetheriumApiClient["search"]>;
     settings: Partial<AetheriumApiClient["settings"]>;
+    users: Partial<AetheriumApiClient["users"]>;
     world: Partial<AetheriumApiClient["world"]>;
   }> = {}
 ): AetheriumApiClient {
@@ -235,6 +237,7 @@ function createClient(
       updatePreferences: vi.fn((payload) => Promise.resolve({ ...preferences, ...payload })),
       ...overrides.settings
     },
+    users: { ...createUnusedUsersClient(), ...(overrides.users ?? {}) },
     world: {
       getProfile: vi.fn(() => Promise.resolve(worldProfile)),
       updateProfile: vi.fn(() => Promise.resolve(worldProfile)),

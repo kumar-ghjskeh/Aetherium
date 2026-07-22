@@ -8,6 +8,8 @@
 - Uploaded files and extracted text.
 - AI conversations and prompts.
 - Habit, goal, project, and learning records.
+- Personal profile metadata, privacy settings, certificates, favorite resources, data-export
+  requests, and account deletion request records.
 - Search indexes and embeddings.
 - Object storage credentials.
 - AI provider credentials.
@@ -44,6 +46,9 @@
 | Project privacy leakage                   | Owner-scoped project tables, not-found cross-user behavior, and no AI sharing by default.     |
 | Analytics inference leakage               | Owner-scoped aggregation queries and unavailable flags instead of invented unsupported data.  |
 | Achievement replay or double awards       | Unique processed event/rule rows and unique owner/achievement constraints.                    |
+| Profile privacy leakage                   | Owner-scoped profile tables, conservative visibility defaults, and owned file references.     |
+| Unsafe data deletion                      | Deletion requests are metadata-only until a reviewed execution workflow exists.               |
+| Export leakage                            | Export requests are owner-scoped records; generation/download is deferred to a hardened flow. |
 | Insecure code execution                   | Use mock code runner first; require isolated sandbox before real execution.                   |
 | Secret leakage                            | Keep secrets out of source and logs.                                                          |
 | Cross-tenant data access                  | Include tenant/owner scoping in schema and data-access tests.                                 |
@@ -158,6 +163,22 @@
   access to core private data.
 - Future world unlocks are stored as identifiers only; no 3D assets, scene state, or visual rewards
   are loaded in this slice.
+- Personal profile metadata, profile links, favorite projects/resources, certificates, privacy
+  settings, data-export requests, and account deletion requests are scoped by `owner_user_id`.
+- Profile avatar file references must point to active image files owned by the authenticated user.
+- Profile favorites validate owned project, file, and learning-resource references before records
+  are created.
+- Profile privacy defaults to private and does not make profiles public. The current visibility
+  options are metadata for later presentation surfaces.
+- AI memory and product analytics settings remain in `user_preferences`, and the privacy API updates
+  that single source of truth.
+- Data-export request endpoints are idempotent per owner and record notifications, but do not
+  generate downloadable archives yet.
+- Account deletion request endpoints require the exact confirmation phrase and are idempotent per
+  owner, but do not delete data in this slice.
+- Profile, privacy, export, and deletion request audit logs use sanitized metadata and do not store
+  passwords, raw session tokens, cookies, private file bodies, provider credentials, or full
+  prompts.
 - CI runs independence checks, formatting, linting, type checks, tests, build, and migration smoke
   validation.
 
@@ -176,5 +197,7 @@
 - Deeper semantic-search prompt-injection review before global semantic ranking or mentor tools use
   retrieved chunks automatically.
 - Production validation of provider-specific request mappings before broad external-provider use.
-- Account deletion and data export.
+- Account deletion execution workflow with confirmation, retention windows, backup interaction, and
+  irreversible deletion review.
+- Data-export generation, encryption, expiration, and download authorization.
 - Authorization tests for every critical user-owned endpoint.
