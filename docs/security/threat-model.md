@@ -11,6 +11,7 @@
 - Personal profile metadata, privacy settings, certificates, favorite resources, data-export
   requests, and account deletion request records.
 - Code snippets, coding exercises, submitted attempts, and coding assistant requests.
+- Notification preferences, workflow records, and monthly review notes.
 - Search indexes and embeddings.
 - Object storage credentials.
 - AI provider credentials.
@@ -50,6 +51,7 @@
 | Profile privacy leakage                   | Owner-scoped profile tables, conservative visibility defaults, and owned file references.     |
 | Unsafe data deletion                      | Deletion requests are metadata-only until a reviewed execution workflow exists.               |
 | Export leakage                            | Export requests are owner-scoped records; generation/download is deferred to a hardened flow. |
+| Notification workflow spam or leakage     | Owner-scoped generation, category preferences, idempotent records, and no external delivery.  |
 | Insecure code execution                   | Use mock code runner first; require isolated sandbox before real execution.                   |
 | Code sent to AI without consent           | Route coding assistant through feature consent and avoid automatic project context.           |
 | Secret leakage                            | Keep secrets out of source and logs.                                                          |
@@ -197,6 +199,13 @@
   private document text, authentication material, provider secrets, or full sensitive prompts.
 - Review recommendations are derived from transparent mastery and review timestamps and must not be
   presented as clinical, medical, or scientifically guaranteed outcomes.
+- Notification workflow preferences, workflow records, and monthly reviews are scoped by
+  `owner_user_id`.
+- Workflow generation derives candidates only from the authenticated user's existing Aetherium
+  records and stores idempotent owner/workflow/source rows to prevent duplicate notification spam.
+- Workflow-generated notifications are in-app only in this slice. No email, push, SMS, external
+  webhook, or third-party notification provider receives user data.
+- Bulk notification read state affects only the authenticated user's notifications.
 - CI runs independence checks, formatting, linting, type checks, tests, build, and migration smoke
   validation.
 

@@ -18,6 +18,7 @@ import {
   createUnusedKnowledgeClient,
   createUnusedLearningClient,
   createUnusedMentorsClient,
+  createUnusedNotificationsClient,
   createUnusedProjectsClient,
   createUnusedUsersClient
 } from "../../test/api-client";
@@ -134,7 +135,7 @@ function createClient(
     knowledge: createUnusedKnowledgeClient(),
     learning: createUnusedLearningClient(),
     mentors: createUnusedMentorsClient(),
-    notifications: { list: vi.fn(reject), markRead: vi.fn(reject) },
+    notifications: createUnusedNotificationsClient(),
     projects: createUnusedProjectsClient(),
     search: { recent: vi.fn(reject), run: vi.fn(reject) },
     settings: { getPreferences: vi.fn(reject), updatePreferences: vi.fn(reject) },

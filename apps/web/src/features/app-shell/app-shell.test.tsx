@@ -26,6 +26,7 @@ import {
   createUnusedKnowledgeClient,
   createUnusedLearningClient,
   createUnusedMentorsClient,
+  createUnusedNotificationsClient,
   createUnusedProjectsClient,
   createUnusedUsersClient
 } from "../../test/api-client";
@@ -130,6 +131,12 @@ const notificationPage: NotificationPage = {
   unreadCount: 1
 };
 
+const readNotificationPage: NotificationPage = {
+  ...notificationPage,
+  items: [readNotification],
+  unreadCount: 0
+};
+
 const emptyAuditLogPage: AuditLogPage = {
   items: [],
   limit: 20,
@@ -216,7 +223,9 @@ function createClient(
     learning: createUnusedLearningClient(),
     mentors: { ...createUnusedMentorsClient(), ...(overrides.mentors ?? {}) },
     notifications: {
+      ...createUnusedNotificationsClient(),
       list: vi.fn(() => Promise.resolve(notificationPage)),
+      markAllRead: vi.fn(() => Promise.resolve(readNotificationPage)),
       markRead: vi.fn(() => Promise.resolve(readNotification)),
       ...overrides.notifications
     },
@@ -380,6 +389,18 @@ describe("Command Mode shell", () => {
     expect(client.notifications.markRead).toHaveBeenCalledWith(unreadNotification.id);
     expect(await screen.findByText("0 unread")).toBeInTheDocument();
     expect(screen.getAllByText("Read").length).toBeGreaterThan(0);
+  });
+
+  it("marks all notifications as read from the notification panel", async () => {
+    const client = createClient();
+    renderShell(client);
+
+    await screen.findByRole("heading", { name: "Overview" });
+    await userEvent.click(await screen.findByRole("button", { name: "Notifications, 1 unread" }));
+    await userEvent.click(screen.getByRole("button", { name: "Mark all read" }));
+
+    expect(client.notifications.markAllRead).toHaveBeenCalledTimes(1);
+    expect(await screen.findByText("0 unread")).toBeInTheDocument();
   });
 
   it("shows a nonblocking error state when shell foundation data is unavailable", async () => {

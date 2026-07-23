@@ -70,6 +70,10 @@ Current approved slice:
 - Knowledge graph data foundation with owner-scoped nodes and relationships for topics, files,
   lessons, projects, skills, questions, and achievements, plus related-topic queries, prerequisites,
   review recommendations, and a 2D Learning page panel.
+- Notification and review workflows with owner-scoped in-app preferences, idempotent workflow
+  records, weekly/monthly review prompts, learning and habit reminders, processing and AI failure
+  notices, project deadline reminders, monthly review records, bulk read state, and Settings UI
+  controls.
 
 Later Phase 1 slices:
 
@@ -125,6 +129,16 @@ Knowledge graph status: implemented as the non-visual Phase 16 Knowledge Graph f
 - Related-topic, prerequisite, summary, and review-recommendation APIs.
 - Simple accessible 2D Command Mode Learning panel.
 - Knowledge Observatory and 3D graph presentation remain future work.
+
+Notification/review status: implemented as the non-visual Phase 17 notification workflow foundation.
+
+- Owner-scoped in-app notification preferences.
+- Idempotent workflow records generated from real Aetherium data.
+- Weekly and monthly review prompts.
+- Learning review, habit reminder, processing-failure, AI-provider-failure, and project-deadline
+  workflow candidates.
+- Monthly review records and Settings UI controls.
+- External email, push, SMS, and scheduler deployment remain future work.
 
 ## Phase 5 - World Progression
 

@@ -472,6 +472,105 @@ export const notificationPageSchema = z.object({
   unreadCount: z.number().int().min(0)
 });
 
+export const notificationWorkflowTypeSchema = z.enum([
+  "weekly_review",
+  "monthly_review",
+  "learning_review",
+  "habit_reminder",
+  "processing_failure",
+  "ai_provider_failure",
+  "project_deadline"
+]);
+
+export const notificationWorkflowStatusSchema = z.enum(["generated", "skipped"]);
+
+export const notificationPreferencesSchema = z.object({
+  aiProviderFailureEnabled: z.boolean(),
+  createdAt: z.string().min(1),
+  habitRemindersEnabled: z.boolean(),
+  id: z.string().uuid(),
+  inAppEnabled: z.boolean(),
+  learningRemindersEnabled: z.boolean(),
+  monthlyReviewEnabled: z.boolean(),
+  processingFailureEnabled: z.boolean(),
+  projectDeadlineEnabled: z.boolean(),
+  reminderHour: z.number().int().min(0).max(23),
+  updatedAt: z.string().min(1),
+  weeklyReviewEnabled: z.boolean()
+});
+
+export const notificationPreferencesUpdateSchema = z
+  .object({
+    aiProviderFailureEnabled: z.boolean().optional(),
+    habitRemindersEnabled: z.boolean().optional(),
+    inAppEnabled: z.boolean().optional(),
+    learningRemindersEnabled: z.boolean().optional(),
+    monthlyReviewEnabled: z.boolean().optional(),
+    processingFailureEnabled: z.boolean().optional(),
+    projectDeadlineEnabled: z.boolean().optional(),
+    reminderHour: z.number().int().min(0).max(23).optional(),
+    weeklyReviewEnabled: z.boolean().optional()
+  })
+  .refine((value) => Object.keys(value).length > 0, {
+    message: "At least one notification preference field is required"
+  });
+
+export const notificationWorkflowRunRequestSchema = z.object({
+  referenceDate: z.string().min(1).nullable().optional()
+});
+
+export const notificationWorkflowRecordSchema = z.object({
+  createdAt: z.string().min(1),
+  generatedAt: z.string().min(1).nullable(),
+  id: z.string().uuid(),
+  metadata: z.record(z.unknown()),
+  notificationId: z.string().uuid().nullable(),
+  scheduledFor: z.string().min(1),
+  sourceKey: z.string(),
+  status: notificationWorkflowStatusSchema,
+  updatedAt: z.string().min(1),
+  workflowType: notificationWorkflowTypeSchema
+});
+
+export const notificationWorkflowRecordPageSchema = z.object({
+  items: z.array(notificationWorkflowRecordSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const notificationWorkflowRunResponseSchema = z.object({
+  existingCount: z.number().int().min(0),
+  generatedCount: z.number().int().min(0),
+  records: z.array(notificationWorkflowRecordSchema)
+});
+
+export const monthlyReviewUpsertSchema = z.object({
+  challenges: z.string().max(4000).nullable().optional(),
+  monthStart: z.string().min(1),
+  nextSteps: z.string().max(4000).nullable().optional(),
+  wins: z.string().max(4000).nullable().optional()
+});
+
+export const monthlyReviewSchema = z.object({
+  challenges: z.string().nullable(),
+  createdAt: z.string().min(1),
+  id: z.string().uuid(),
+  metadata: z.record(z.unknown()),
+  monthStart: z.string().min(1),
+  nextSteps: z.string().nullable(),
+  period: z.literal("month"),
+  updatedAt: z.string().min(1),
+  wins: z.string().nullable()
+});
+
+export const monthlyReviewPageSchema = z.object({
+  items: z.array(monthlyReviewSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
 export const auditLogSchema = z.object({
   action: z.string().min(1),
   createdAt: z.string().min(1),

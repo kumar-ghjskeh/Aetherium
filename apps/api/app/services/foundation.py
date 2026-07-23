@@ -401,6 +401,31 @@ class UserDataService:
         notification.read_at = _ensure_aware_utc(notification.read_at)
         return notification
 
+    async def mark_all_notifications_read(self, user: User) -> int:
+        result = await self.db.execute(
+            select(Notification).where(
+                Notification.owner_user_id == user.id,
+                Notification.read_at.is_(None),
+            )
+        )
+        notifications = list(result.scalars().all())
+        if not notifications:
+            return 0
+
+        now = datetime.now(UTC)
+        for notification in notifications:
+            notification.read_at = now
+            notification.updated_at = now
+
+        await self.record_audit_log(
+            user,
+            action="notification.read_all",
+            entity_type="notification",
+            metadata={"count": len(notifications)},
+        )
+        await self.db.flush()
+        return len(notifications)
+
     async def record_audit_log(
         self,
         user: User,

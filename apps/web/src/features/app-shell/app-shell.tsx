@@ -163,6 +163,11 @@ export function AppShell({
     });
   }
 
+  async function handleAllNotificationsRead(): Promise<void> {
+    const updated = await apiClient.notifications.markAllRead();
+    setNotifications(updated);
+  }
+
   function runCommand(actionId: string): void {
     const action = commandActions.find((candidate) => candidate.id === actionId);
     if (!action || !action.available) {
@@ -304,6 +309,7 @@ export function AppShell({
             <NotificationsPanel
               isLoading={dataStatus === "loading"}
               notifications={notifications}
+              onMarkAllRead={() => void handleAllNotificationsRead()}
               onMarkRead={(notification) => void handleNotificationRead(notification)}
             />
           ) : null}
@@ -345,17 +351,28 @@ export function AppShell({
 function NotificationsPanel({
   isLoading,
   notifications,
+  onMarkAllRead,
   onMarkRead
 }: Readonly<{
   isLoading: boolean;
   notifications: NotificationPage | null;
+  onMarkAllRead: () => void;
   onMarkRead: (notification: Notification) => void;
 }>): React.ReactElement {
   return (
     <section className="notifications-panel" aria-label="Notifications">
       <header>
         <h2>Notifications</h2>
-        {notifications ? <span>{notifications.unreadCount} unread</span> : null}
+        {notifications ? (
+          <span>
+            {notifications.unreadCount} unread
+            {notifications.unreadCount > 0 ? (
+              <button onClick={onMarkAllRead} type="button">
+                Mark all read
+              </button>
+            ) : null}
+          </span>
+        ) : null}
       </header>
       {isLoading ? <p className="empty-note">Loading notifications...</p> : null}
       {!isLoading && notifications && notifications.items.length === 0 ? (

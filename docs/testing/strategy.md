@@ -62,6 +62,9 @@ Backend:
   attempt submission, AI explain/review requests, unavailable runner status, audit-log sanitization,
   unauthenticated access, cross-user isolation, validation failures, pagination, and database
   constraints.
+- Notification workflow backend tests for preference persistence, workflow idempotency, real
+  owner-scoped candidate generation, disabled-category behavior, monthly review ownership, bulk read
+  state, unauthenticated access, and database uniqueness.
 - Alembic migration smoke validation against PostgreSQL in CI.
 - Ruff formatting and linting.
 - mypy type checking.
@@ -77,7 +80,8 @@ Frontend and shared packages:
   protected Command Mode redirect, and logout state clearing.
 - React Testing Library coverage for the Command Mode shell, including authenticated API-backed
   rendering, anonymous redirect, `Ctrl/Cmd + K` command palette navigation, notification read state,
-  shell data error state, and settings persistence through the shared API client.
+  notification bulk-read state, shell data error state, and settings persistence through the shared
+  API client.
 - API-client contract tests for the user-owned foundation endpoints.
 - API-client contract tests for Personal Vault upload, file, collection, tag, favorite, and download
   methods.
@@ -101,6 +105,8 @@ Frontend and shared packages:
   and runner status.
 - API-client contract tests for Knowledge Graph nodes, relationships, sync, related-topic context,
   prerequisites, review recommendations, and summary endpoints.
+- API-client contract tests for notification preferences, workflow listing, workflow generation,
+  bulk read state, and monthly review endpoints.
 - Next.js build validation.
 - React Testing Library coverage for the Library page, including loading, empty, error, upload,
   favorite, tag, delete, processing failure, and retry states.
@@ -123,7 +129,8 @@ Frontend and shared packages:
   tables.
 - React Testing Library coverage for the Settings page, including loading, empty and error states,
   profile validation, privacy updates, profile record creation, data-export requests, and exact
-  account deletion confirmation handling.
+  account deletion confirmation handling, notification preference updates, workflow generation, and
+  monthly review persistence.
 - React Testing Library coverage for the Coding workspace page, including loading, empty and error
   states, snippet validation, save/update/archive flows, AI explain/review requests, exercise
   creation, attempt submission, and unavailable runner messaging.

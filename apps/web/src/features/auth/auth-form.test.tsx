@@ -28,6 +28,7 @@ import {
   createUnusedKnowledgeClient,
   createUnusedLearningClient,
   createUnusedMentorsClient,
+  createUnusedNotificationsClient,
   createUnusedProjectsClient,
   createUnusedUsersClient
 } from "../../test/api-client";
@@ -188,6 +189,7 @@ function createClient(overrides: Partial<AetheriumApiClient["auth"]>): Aetherium
     learning: createUnusedLearningClient(),
     mentors: createUnusedMentorsClient(),
     notifications: {
+      ...createUnusedNotificationsClient(),
       list: vi.fn(() => Promise.resolve(emptyNotificationPage)),
       markRead: vi.fn(() => Promise.resolve(notification))
     },

@@ -1222,6 +1222,147 @@ describe("createAetheriumApiClient", () => {
     });
   });
 
+  it("uses notification preference, workflow, and review endpoints", async () => {
+    const notification = {
+      actionUrl: "/app/settings",
+      body: "Review the week from 2026-07-13 to 2026-07-19.",
+      createdAt: "2026-07-20T00:00:00Z",
+      id: "55555555-5555-4555-8555-555555555555",
+      notificationType: "review",
+      readAt: null,
+      severity: "info",
+      title: "Weekly review ready"
+    };
+    const preferences = {
+      aiProviderFailureEnabled: true,
+      createdAt: "2026-07-20T00:00:00Z",
+      habitRemindersEnabled: true,
+      id: "66666666-6666-4666-8666-666666666666",
+      inAppEnabled: true,
+      learningRemindersEnabled: true,
+      monthlyReviewEnabled: true,
+      processingFailureEnabled: true,
+      projectDeadlineEnabled: true,
+      reminderHour: 9,
+      updatedAt: "2026-07-20T00:00:00Z",
+      weeklyReviewEnabled: true
+    };
+    const workflow = {
+      createdAt: "2026-07-20T00:00:00Z",
+      generatedAt: "2026-07-20T00:00:00Z",
+      id: "77777777-7777-4777-8777-777777777777",
+      metadata: { habitLogs: 1 },
+      notificationId: notification.id,
+      scheduledFor: "2026-07-20T09:00:00Z",
+      sourceKey: "weekly_review:2026-07-13",
+      status: "generated",
+      updatedAt: "2026-07-20T00:00:00Z",
+      workflowType: "weekly_review"
+    };
+    const monthlyReview = {
+      challenges: null,
+      createdAt: "2026-07-20T00:00:00Z",
+      id: "88888888-8888-4888-8888-888888888888",
+      metadata: { habitLogs: 1 },
+      monthStart: "2026-07-01",
+      nextSteps: "Continue shorter reviews.",
+      period: "month",
+      updatedAt: "2026-07-20T00:00:00Z",
+      wins: "Completed the first review."
+    };
+    const fetcher = vi.fn<typeof fetch>((input, init) => {
+      const url = requestUrl(input);
+      if (url === "http://localhost:8000/api/v1/notifications/preferences") {
+        if (init?.method === "PATCH") {
+          return Promise.resolve(jsonResponse({ ...preferences, reminderHour: 14 }));
+        }
+        return Promise.resolve(jsonResponse(preferences));
+      }
+      if (url === "http://localhost:8000/api/v1/notifications?limit=5&offset=0") {
+        return Promise.resolve(
+          jsonResponse({ items: [notification], limit: 5, offset: 0, total: 1, unreadCount: 1 })
+        );
+      }
+      if (
+        url ===
+        "http://localhost:8000/api/v1/notifications/workflows?limit=5&offset=0&workflowType=weekly_review"
+      ) {
+        return Promise.resolve(jsonResponse({ items: [workflow], limit: 5, offset: 0, total: 1 }));
+      }
+      if (url === "http://localhost:8000/api/v1/notifications/workflows/run") {
+        return Promise.resolve(
+          jsonResponse({ existingCount: 0, generatedCount: 1, records: [workflow] })
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/notifications/read-all") {
+        return Promise.resolve(
+          jsonResponse({
+            items: [{ ...notification, readAt: "2026-07-20T00:01:00Z" }],
+            limit: 20,
+            offset: 0,
+            total: 1,
+            unreadCount: 0
+          })
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/notifications/monthly-reviews?limit=5&offset=0") {
+        return Promise.resolve(
+          jsonResponse({ items: [monthlyReview], limit: 5, offset: 0, total: 1 })
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/notifications/monthly-reviews") {
+        return Promise.resolve(jsonResponse(monthlyReview));
+      }
+      return Promise.resolve(jsonResponse({ error: { code: "not_found", message: url } }, 404));
+    });
+    const client = createAetheriumApiClient({ baseUrl: "http://localhost:8000", fetcher });
+
+    await expect(client.notifications.getPreferences()).resolves.toMatchObject({
+      reminderHour: 9
+    });
+    await expect(
+      client.notifications.updatePreferences({ reminderHour: 14 })
+    ).resolves.toMatchObject({ reminderHour: 14 });
+    await expect(client.notifications.list({ limit: 5, offset: 0 })).resolves.toMatchObject({
+      unreadCount: 1
+    });
+    await expect(
+      client.notifications.listWorkflows({
+        limit: 5,
+        offset: 0,
+        workflowType: "weekly_review"
+      })
+    ).resolves.toMatchObject({ total: 1 });
+    await expect(
+      client.notifications.runWorkflows({ referenceDate: "2026-07-20" })
+    ).resolves.toMatchObject({
+      generatedCount: 1
+    });
+    await expect(client.notifications.markAllRead()).resolves.toMatchObject({ unreadCount: 0 });
+    await expect(
+      client.notifications.listMonthlyReviews({ limit: 5, offset: 0 })
+    ).resolves.toMatchObject({ total: 1 });
+    await expect(
+      client.notifications.upsertMonthlyReview({
+        monthStart: "2026-07-01",
+        wins: "Completed the first review."
+      })
+    ).resolves.toMatchObject({ monthStart: "2026-07-01" });
+
+    expect(fetcher).toHaveBeenCalledWith(
+      "http://localhost:8000/api/v1/notifications/workflows/run",
+      {
+        body: JSON.stringify({ referenceDate: "2026-07-20" }),
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        method: "POST"
+      }
+    );
+  });
+
   it("lists audit logs with pagination", async () => {
     const fetcher = vi.fn<typeof fetch>(() =>
       Promise.resolve(

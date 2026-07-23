@@ -58,10 +58,15 @@ Implemented foundation slices:
 - Knowledge graph data foundation with owner-scoped nodes and relationships for topics, files,
   lessons, projects, skills, questions, and achievements, plus prerequisites, related-topic queries,
   review recommendations, and a 2D Learning UI panel.
+- Notification and review workflows with owner-scoped in-app preferences, idempotent workflow
+  records, weekly/monthly review prompts, learning and habit reminders, processing and AI failure
+  notices, project deadline reminders, monthly review records, bulk read state, and Settings UI
+  controls.
 
 Still out of scope unless explicitly requested:
 
 - OAuth, social login, email delivery, password reset, MFA, and magic links.
+- External email, push, SMS, and deployed scheduler notification delivery.
 - 3D world scenes, React Three Fiber, player controls, map travel, or world progression.
 - Visual world progression.
 

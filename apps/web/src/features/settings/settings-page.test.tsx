@@ -5,6 +5,9 @@ import type {
   DataExportRequest,
   FavoriteProject,
   FavoriteResource,
+  MonthlyReview,
+  NotificationPreferences,
+  NotificationWorkflowRecord,
   PrivacySettings,
   ProfileLink,
   UserProfile
@@ -23,6 +26,7 @@ import {
   createUnusedKnowledgeClient,
   createUnusedLearningClient,
   createUnusedMentorsClient,
+  createUnusedNotificationsClient,
   createUnusedProjectsClient,
   createUnusedUsersClient
 } from "../../test/api-client";
@@ -127,6 +131,46 @@ const accountDeletionRequest: AccountDeletionRequest = {
   updatedAt: now
 };
 
+const notificationPreferences: NotificationPreferences = {
+  aiProviderFailureEnabled: true,
+  createdAt: now,
+  habitRemindersEnabled: true,
+  id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+  inAppEnabled: true,
+  learningRemindersEnabled: true,
+  monthlyReviewEnabled: true,
+  processingFailureEnabled: true,
+  projectDeadlineEnabled: true,
+  reminderHour: 9,
+  updatedAt: now,
+  weeklyReviewEnabled: true
+};
+
+const workflowRecord: NotificationWorkflowRecord = {
+  createdAt: now,
+  generatedAt: now,
+  id: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+  metadata: { habitLogs: 1 },
+  notificationId: "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
+  scheduledFor: now,
+  sourceKey: "weekly_review:2026-07-13",
+  status: "generated",
+  updatedAt: now,
+  workflowType: "weekly_review"
+};
+
+const monthlyReview: MonthlyReview = {
+  challenges: "One schedule collision.",
+  createdAt: now,
+  id: "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",
+  metadata: { habitLogs: 2 },
+  monthStart: "2026-07-01",
+  nextSteps: "Keep review sessions shorter.",
+  period: "month",
+  updatedAt: now,
+  wins: "Finished one strong review."
+};
+
 function page<T>(items: T[]): { items: T[]; limit: number; offset: number; total: number } {
   return {
     items,
@@ -136,7 +180,10 @@ function page<T>(items: T[]): { items: T[]; limit: number; offset: number; total
   };
 }
 
-function createClient(overrides: Partial<AetheriumApiClient["users"]> = {}): AetheriumApiClient {
+function createClient(
+  overrides: Partial<AetheriumApiClient["users"]> = {},
+  notificationOverrides: Partial<AetheriumApiClient["notifications"]> = {}
+): AetheriumApiClient {
   const reject = () => Promise.reject(new Error("Unexpected non-user call"));
 
   return {
@@ -169,7 +216,20 @@ function createClient(overrides: Partial<AetheriumApiClient["users"]> = {}): Aet
     knowledge: createUnusedKnowledgeClient(),
     learning: createUnusedLearningClient(),
     mentors: createUnusedMentorsClient(),
-    notifications: { list: vi.fn(reject), markRead: vi.fn(reject) },
+    notifications: {
+      ...createUnusedNotificationsClient(),
+      getPreferences: vi.fn(() => Promise.resolve(notificationPreferences)),
+      listMonthlyReviews: vi.fn(() => Promise.resolve(page([]))),
+      listWorkflows: vi.fn(() => Promise.resolve(page([]))),
+      runWorkflows: vi.fn(() =>
+        Promise.resolve({ existingCount: 0, generatedCount: 1, records: [workflowRecord] })
+      ),
+      updatePreferences: vi.fn((payload) =>
+        Promise.resolve({ ...notificationPreferences, ...payload })
+      ),
+      upsertMonthlyReview: vi.fn(() => Promise.resolve(monthlyReview)),
+      ...notificationOverrides
+    },
     projects: createUnusedProjectsClient(),
     search: { recent: vi.fn(reject), run: vi.fn(reject) },
     settings: { getPreferences: vi.fn(reject), updatePreferences: vi.fn(reject) },
@@ -238,6 +298,8 @@ describe("SettingsPage", () => {
     expect(screen.getByText("No export requests yet.")).toBeInTheDocument();
     expect(screen.getByText("No certificates saved.")).toBeInTheDocument();
     expect(screen.getByText("No account deletion requests recorded.")).toBeInTheDocument();
+    expect(screen.getByText("No workflow records yet.")).toBeInTheDocument();
+    expect(screen.getByText("No monthly reviews saved.")).toBeInTheDocument();
   });
 
   it("validates profile URLs before saving", async () => {
@@ -394,6 +456,57 @@ describe("SettingsPage", () => {
     expect(
       screen.getByText("Account deletion request recorded. No data was deleted.")
     ).toBeInTheDocument();
+  });
+
+  it("saves notification preferences and review workflow records", async () => {
+    const user = userEvent.setup();
+    const client = createClient();
+
+    render(<SettingsPage client={client} />);
+
+    await screen.findByDisplayValue("Aetherium Learner");
+    await user.click(screen.getByLabelText("Habit reminders"));
+    await user.clear(screen.getByLabelText("Reminder hour"));
+    await user.type(screen.getByLabelText("Reminder hour"), "14");
+    await user.click(screen.getByRole("button", { name: "Save notifications" }));
+
+    await waitFor(() => {
+      expect(client.notifications.updatePreferences).toHaveBeenCalledWith({
+        aiProviderFailureEnabled: true,
+        habitRemindersEnabled: false,
+        inAppEnabled: true,
+        learningRemindersEnabled: true,
+        monthlyReviewEnabled: true,
+        processingFailureEnabled: true,
+        projectDeadlineEnabled: true,
+        reminderHour: 14,
+        weeklyReviewEnabled: true
+      });
+    });
+    expect(await screen.findByText("Notification preferences saved.")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Run review workflow check" }));
+    expect(client.notifications.runWorkflows).toHaveBeenCalledWith({});
+    expect(
+      await screen.findByText("Generated 1 new notifications; 0 already existed.")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Weekly Review")).toBeInTheDocument();
+
+    await user.clear(screen.getByLabelText("Month"));
+    await user.type(screen.getByLabelText("Month"), "2026-07-01");
+    await user.type(screen.getByLabelText("Wins"), "Finished one strong review.");
+    await user.click(screen.getByRole("button", { name: "Save monthly review" }));
+
+    await waitFor(() => {
+      expect(client.notifications.upsertMonthlyReview).toHaveBeenCalledWith({
+        challenges: null,
+        monthStart: "2026-07-01",
+        nextSteps: null,
+        wins: "Finished one strong review."
+      });
+    });
+    expect(await screen.findByText("Monthly review saved.")).toBeInTheDocument();
+    expect(screen.getByText("2026-07-01")).toBeInTheDocument();
   });
 
   it("shows existing records and server errors without false success", async () => {

@@ -378,6 +378,107 @@ export interface NotificationPage {
   offset: number;
 }
 
+export type NotificationWorkflowType =
+  | "weekly_review"
+  | "monthly_review"
+  | "learning_review"
+  | "habit_reminder"
+  | "processing_failure"
+  | "ai_provider_failure"
+  | "project_deadline";
+
+export type NotificationWorkflowStatus = "generated" | "skipped";
+
+export interface NotificationPreferences {
+  id: string;
+  inAppEnabled: boolean;
+  weeklyReviewEnabled: boolean;
+  monthlyReviewEnabled: boolean;
+  learningRemindersEnabled: boolean;
+  habitRemindersEnabled: boolean;
+  processingFailureEnabled: boolean;
+  aiProviderFailureEnabled: boolean;
+  projectDeadlineEnabled: boolean;
+  reminderHour: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type NotificationPreferencesUpdate = ExactOptionalUpdate<
+  Pick<
+    NotificationPreferences,
+    | "aiProviderFailureEnabled"
+    | "habitRemindersEnabled"
+    | "inAppEnabled"
+    | "learningRemindersEnabled"
+    | "monthlyReviewEnabled"
+    | "processingFailureEnabled"
+    | "projectDeadlineEnabled"
+    | "reminderHour"
+    | "weeklyReviewEnabled"
+  >
+>;
+
+export interface NotificationWorkflowRunRequest {
+  referenceDate?: string | null | undefined;
+}
+
+export interface NotificationWorkflowRecord {
+  id: string;
+  workflowType: NotificationWorkflowType;
+  sourceKey: string;
+  status: NotificationWorkflowStatus;
+  notificationId: string | null;
+  scheduledFor: string;
+  generatedAt: string | null;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface NotificationWorkflowRecordPage {
+  items: NotificationWorkflowRecord[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface NotificationWorkflowListQuery extends PaginationQuery {
+  workflowType?: NotificationWorkflowType;
+}
+
+export interface NotificationWorkflowRunResponse {
+  generatedCount: number;
+  existingCount: number;
+  records: NotificationWorkflowRecord[];
+}
+
+export interface MonthlyReviewUpsert {
+  monthStart: string;
+  wins?: string | null | undefined;
+  challenges?: string | null | undefined;
+  nextSteps?: string | null | undefined;
+}
+
+export interface MonthlyReview {
+  id: string;
+  monthStart: string;
+  wins: string | null;
+  challenges: string | null;
+  nextSteps: string | null;
+  period: "month";
+  metadata: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MonthlyReviewPage {
+  items: MonthlyReview[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
 export interface AuditLog {
   id: string;
   action: string;

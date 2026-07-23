@@ -76,6 +76,10 @@ The Knowledge Graph runs inside the existing web and API services. Local graph d
 Aetherium PostgreSQL database as owner-scoped `knowledge_nodes` and `knowledge_relationships` rows.
 It does not require a separate graph database, external graph service, or visual 3D renderer.
 
+Notification and review workflows run inside the existing API service. Local workflow records,
+preferences, and monthly reviews are stored in PostgreSQL, and generated notifications are in-app
+only. No email, push, SMS, or external notification credentials are required.
+
 ## Authentication Defaults
 
 Local development uses:

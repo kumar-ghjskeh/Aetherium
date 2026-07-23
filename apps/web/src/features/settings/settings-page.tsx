@@ -7,6 +7,9 @@ import {
   dataExportRequestCreateSchema,
   favoriteProjectCreateRequestSchema,
   favoriteResourceCreateRequestSchema,
+  monthlyReviewUpsertSchema,
+  notificationPreferencesUpdateSchema,
+  notificationWorkflowRunRequestSchema,
   privacySettingsUpdateSchema,
   profileLinkCreateRequestSchema,
   userProfileUpdateSchema
@@ -17,6 +20,9 @@ import type {
   DataExportRequest,
   FavoriteProject,
   FavoriteResource,
+  MonthlyReview,
+  NotificationPreferences,
+  NotificationWorkflowRecord,
   PrivacySettings,
   ProfileLink,
   UserProfile
@@ -34,6 +40,9 @@ interface SettingsData {
   favoriteProjects: FavoriteProject[];
   favoriteResources: FavoriteResource[];
   links: ProfileLink[];
+  monthlyReviews: MonthlyReview[];
+  notificationPreferences: NotificationPreferences;
+  notificationWorkflows: NotificationWorkflowRecord[];
   privacy: PrivacySettings;
   profile: UserProfile;
 }
@@ -52,6 +61,38 @@ function requestKey(prefix: string): string {
 function formString(form: FormData, name: string): string {
   const value = form.get(name);
   return typeof value === "string" ? value : "";
+}
+
+function currentMonthStart(): string {
+  const now = new Date();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  return `${now.getFullYear()}-${month}-01`;
+}
+
+function workflowLabel(value: string): string {
+  return value
+    .split("_")
+    .map((segment) => segment.slice(0, 1).toUpperCase() + segment.slice(1))
+    .join(" ");
+}
+
+function mergeWorkflowRecords(
+  records: NotificationWorkflowRecord[],
+  existing: NotificationWorkflowRecord[]
+): NotificationWorkflowRecord[] {
+  const seen = new Set<string>();
+  return [...records, ...existing].filter((record) => {
+    if (seen.has(record.id)) {
+      return false;
+    }
+    seen.add(record.id);
+    return true;
+  });
+}
+
+function mergeMonthlyReviews(review: MonthlyReview, existing: MonthlyReview[]): MonthlyReview[] {
+  const rest = existing.filter((item) => item.monthStart !== review.monthStart);
+  return [review, ...rest].sort((left, right) => right.monthStart.localeCompare(left.monthStart));
 }
 
 export function SettingsPage({
@@ -76,7 +117,10 @@ export function SettingsPage({
         favoriteResources,
         certificates,
         exportRequests,
-        deletionRequests
+        deletionRequests,
+        notificationPreferences,
+        notificationWorkflows,
+        monthlyReviews
       ] = await Promise.all([
         apiClient.users.getProfile(),
         apiClient.users.getPrivacy(),
@@ -85,7 +129,10 @@ export function SettingsPage({
         apiClient.users.listFavoriteResources({ limit: 25, offset: 0 }),
         apiClient.users.listCertificates({ limit: 25, offset: 0 }),
         apiClient.users.listDataExportRequests({ limit: 10, offset: 0 }),
-        apiClient.users.listAccountDeletionRequests({ limit: 10, offset: 0 })
+        apiClient.users.listAccountDeletionRequests({ limit: 10, offset: 0 }),
+        apiClient.notifications.getPreferences(),
+        apiClient.notifications.listWorkflows({ limit: 10, offset: 0 }),
+        apiClient.notifications.listMonthlyReviews({ limit: 5, offset: 0 })
       ]);
       setData({
         certificates: certificates.items,
@@ -94,6 +141,9 @@ export function SettingsPage({
         favoriteProjects: favoriteProjects.items,
         favoriteResources: favoriteResources.items,
         links: links.items,
+        monthlyReviews: monthlyReviews.items,
+        notificationPreferences,
+        notificationWorkflows: notificationWorkflows.items,
         privacy,
         profile
       });
@@ -193,6 +243,90 @@ export function SettingsPage({
       const privacy = await apiClient.users.updatePrivacy(parsed.data);
       setData((current) => (current ? { ...current, privacy } : current));
     }, "Privacy settings saved.");
+  }
+
+  async function updateNotificationPreferences(
+    event: React.FormEvent<HTMLFormElement>
+  ): Promise<void> {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const parsed = notificationPreferencesUpdateSchema.safeParse({
+      aiProviderFailureEnabled: form.get("aiProviderFailureEnabled") === "on",
+      habitRemindersEnabled: form.get("habitRemindersEnabled") === "on",
+      inAppEnabled: form.get("inAppEnabled") === "on",
+      learningRemindersEnabled: form.get("learningRemindersEnabled") === "on",
+      monthlyReviewEnabled: form.get("monthlyReviewEnabled") === "on",
+      processingFailureEnabled: form.get("processingFailureEnabled") === "on",
+      projectDeadlineEnabled: form.get("projectDeadlineEnabled") === "on",
+      reminderHour: Number(formString(form, "reminderHour")),
+      weeklyReviewEnabled: form.get("weeklyReviewEnabled") === "on"
+    });
+    if (!parsed.success) {
+      setError(parsed.error.issues[0]?.message ?? "Notification preferences are invalid.");
+      return;
+    }
+    await saveOperation(async () => {
+      const notificationPreferences = await apiClient.notifications.updatePreferences(parsed.data);
+      setData((current) => (current ? { ...current, notificationPreferences } : current));
+    }, "Notification preferences saved.");
+  }
+
+  async function runNotificationWorkflows(): Promise<void> {
+    const parsed = notificationWorkflowRunRequestSchema.safeParse({});
+    if (!parsed.success) {
+      setError(parsed.error.issues[0]?.message ?? "Notification workflow request is invalid.");
+      return;
+    }
+
+    setIsSaving(true);
+    setError(null);
+    setMessage(null);
+    try {
+      const result = await apiClient.notifications.runWorkflows(parsed.data);
+      setData((current) =>
+        current
+          ? {
+              ...current,
+              notificationWorkflows: mergeWorkflowRecords(
+                result.records,
+                current.notificationWorkflows
+              )
+            }
+          : current
+      );
+      setMessage(
+        `Generated ${result.generatedCount} new notifications; ${result.existingCount} already existed.`
+      );
+    } catch (operationError) {
+      setError(friendlyError(operationError));
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function upsertMonthlyReview(event: React.FormEvent<HTMLFormElement>): Promise<void> {
+    event.preventDefault();
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
+    const parsed = monthlyReviewUpsertSchema.safeParse({
+      challenges: formString(form, "challenges") || null,
+      monthStart: formString(form, "monthStart"),
+      nextSteps: formString(form, "nextSteps") || null,
+      wins: formString(form, "wins") || null
+    });
+    if (!parsed.success) {
+      setError(parsed.error.issues[0]?.message ?? "Monthly review form is invalid.");
+      return;
+    }
+    await saveOperation(async () => {
+      const review = await apiClient.notifications.upsertMonthlyReview(parsed.data);
+      setData((current) =>
+        current
+          ? { ...current, monthlyReviews: mergeMonthlyReviews(review, current.monthlyReviews) }
+          : current
+      );
+      formElement.reset();
+    }, "Monthly review saved.");
   }
 
   async function createFavoriteProject(event: React.FormEvent<HTMLFormElement>): Promise<void> {
@@ -482,6 +616,164 @@ export function SettingsPage({
                 id: request.id,
                 label: request.status,
                 value: request.requestedAt
+              }))}
+            />
+          )}
+        </section>
+      </section>
+
+      <section className="settings-layout">
+        <form
+          className="work-panel settings-form"
+          onSubmit={(event) => void updateNotificationPreferences(event)}
+        >
+          <h2>Notification workflows</h2>
+          <label className="toggle-row">
+            <input
+              defaultChecked={data.notificationPreferences.inAppEnabled}
+              name="inAppEnabled"
+              type="checkbox"
+            />
+            In-app notifications
+          </label>
+          <label className="toggle-row">
+            <input
+              defaultChecked={data.notificationPreferences.weeklyReviewEnabled}
+              name="weeklyReviewEnabled"
+              type="checkbox"
+            />
+            Weekly review prompts
+          </label>
+          <label className="toggle-row">
+            <input
+              defaultChecked={data.notificationPreferences.monthlyReviewEnabled}
+              name="monthlyReviewEnabled"
+              type="checkbox"
+            />
+            Monthly review prompts
+          </label>
+          <label className="toggle-row">
+            <input
+              defaultChecked={data.notificationPreferences.learningRemindersEnabled}
+              name="learningRemindersEnabled"
+              type="checkbox"
+            />
+            Learning review reminders
+          </label>
+          <label className="toggle-row">
+            <input
+              defaultChecked={data.notificationPreferences.habitRemindersEnabled}
+              name="habitRemindersEnabled"
+              type="checkbox"
+            />
+            Habit reminders
+          </label>
+          <label className="toggle-row">
+            <input
+              defaultChecked={data.notificationPreferences.processingFailureEnabled}
+              name="processingFailureEnabled"
+              type="checkbox"
+            />
+            File-processing failures
+          </label>
+          <label className="toggle-row">
+            <input
+              defaultChecked={data.notificationPreferences.aiProviderFailureEnabled}
+              name="aiProviderFailureEnabled"
+              type="checkbox"
+            />
+            AI-provider failures
+          </label>
+          <label className="toggle-row">
+            <input
+              defaultChecked={data.notificationPreferences.projectDeadlineEnabled}
+              name="projectDeadlineEnabled"
+              type="checkbox"
+            />
+            Project deadline reminders
+          </label>
+          <label>
+            Reminder hour
+            <input
+              defaultValue={data.notificationPreferences.reminderHour}
+              max={23}
+              min={0}
+              name="reminderHour"
+              type="number"
+            />
+          </label>
+          <button className="primary-action" disabled={isSaving} type="submit">
+            Save notifications
+          </button>
+        </form>
+
+        <section className="work-panel">
+          <h2>Review queue</h2>
+          <div className="settings-actions">
+            <button
+              className="secondary-action"
+              disabled={isSaving}
+              onClick={() => void runNotificationWorkflows()}
+              type="button"
+            >
+              Run review workflow check
+            </button>
+          </div>
+          {data.notificationWorkflows.length === 0 ? (
+            <p className="empty-note">No workflow records yet.</p>
+          ) : (
+            <RecordList
+              items={data.notificationWorkflows.map((record) => ({
+                id: record.id,
+                label: workflowLabel(record.workflowType),
+                value: record.scheduledFor
+              }))}
+            />
+          )}
+        </section>
+      </section>
+
+      <section className="settings-layout">
+        <form
+          className="work-panel settings-form"
+          onSubmit={(event) => void upsertMonthlyReview(event)}
+        >
+          <h2>Monthly review</h2>
+          <label>
+            Month
+            <input
+              defaultValue={data.monthlyReviews[0]?.monthStart ?? currentMonthStart()}
+              name="monthStart"
+              type="date"
+            />
+          </label>
+          <label>
+            Wins
+            <textarea name="wins" rows={3} />
+          </label>
+          <label>
+            Challenges
+            <textarea name="challenges" rows={3} />
+          </label>
+          <label>
+            Next steps
+            <textarea name="nextSteps" rows={3} />
+          </label>
+          <button className="secondary-action" disabled={isSaving} type="submit">
+            Save monthly review
+          </button>
+        </form>
+
+        <section className="work-panel">
+          <h2>Saved monthly reviews</h2>
+          {data.monthlyReviews.length === 0 ? (
+            <p className="empty-note">No monthly reviews saved.</p>
+          ) : (
+            <RecordList
+              items={data.monthlyReviews.map((review) => ({
+                id: review.id,
+                label: review.monthStart,
+                value: review.wins ?? "Recorded review"
               }))}
             />
           )}

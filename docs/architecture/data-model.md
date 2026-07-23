@@ -44,6 +44,8 @@ Current migrations:
   attempts, and coding assistant request records.
 - `0015_knowledge_graph`: creates owner-scoped knowledge graph nodes and relationships for
   non-visual topic, file, lesson, project, skill, question, and achievement connections.
+- `0016_notification_review_workflows`: creates owner-scoped notification workflow preferences,
+  generated workflow records, and monthly review records.
 
 Progress analytics add no new tables in Phase 12. The analytics service is a read-only aggregation
 layer over existing owner-scoped tables.
@@ -122,6 +124,35 @@ No 3D scenes, assets, movement, or rendering state are stored in this table.
 - Type, severity, title, body, optional action URL.
 - `read_at` for read and unread state.
 - Timestamps.
+
+### `notification_preferences`
+
+- UUID primary key.
+- Unique `owner_user_id` foreign key to `users.id`.
+- In-app notification enablement.
+- Per-category booleans for weekly reviews, monthly reviews, learning reminders, habit reminders,
+  file-processing failures, AI-provider failures, and project-deadline reminders.
+- Reminder hour constrained to 0 through 23.
+- Timestamps.
+
+### `notification_workflow_records`
+
+- UUID primary key.
+- `owner_user_id` foreign key to `users.id`.
+- Workflow type, source key, generated/skipped status, optional notification reference, scheduled
+  timestamp, generated timestamp, bounded metadata JSON, and timestamps.
+- Unique owner/workflow/source constraint makes generation idempotent.
+- Owner/type and owner/notification indexes support bounded workflow history and read-state joins.
+
+Workflow records are generated from existing owner-scoped records only. They do not send external
+notifications.
+
+### `monthly_reviews`
+
+- UUID primary key.
+- `owner_user_id` foreign key to `users.id`.
+- Month start, wins, challenges, next steps, `month` period, bounded metadata JSON, and timestamps.
+- Unique owner/month constraint supports idempotent monthly review updates.
 
 ### `audit_logs`
 

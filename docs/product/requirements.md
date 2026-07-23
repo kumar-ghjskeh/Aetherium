@@ -88,10 +88,13 @@ Implemented Phase 1 foundation slices:
 - Knowledge graph data foundation with owner-scoped nodes and relationships across topics, files,
   lessons, projects, skills, questions, and achievements, plus non-visual related-topic and review
   recommendations in Command Mode.
+- Notification and review workflows with owner-scoped in-app preferences, idempotent workflow
+  records, weekly/monthly review prompts, learning and habit reminders, processing and AI failure
+  notices, project deadline reminders, monthly review records, and Settings UI controls.
 
 Visual 3D world rendering, visual Knowledge Observatory presentation, external notification
-delivery, actual export generation, account deletion execution, and sandboxed code execution are
-intentionally deferred.
+delivery, deployed scheduler delivery, actual export generation, account deletion execution, and
+sandboxed code execution are intentionally deferred.
 
 ## Non-Goals For Current Slice
 
@@ -99,7 +102,7 @@ intentionally deferred.
 - No 3D scene or world interaction.
 - No arbitrary code execution.
 - No visual knowledge graph or Knowledge Observatory implementation.
-- No external notification delivery.
+- No external notification delivery or deployed scheduler.
 - No destructive account deletion execution.
 - No generated data-export archives or public profile publishing.
 - No visual World Mode implementation.
@@ -130,3 +133,5 @@ intentionally deferred.
   without exposing another user's data.
 - A signed-in user can save coding snippets, create coding exercises, submit attempts, and request
   AI code explanation or review without executing arbitrary code in Aetherium service containers.
+- A signed-in user can configure in-app notification workflows, run the review workflow generator,
+  save monthly review notes, and mark notifications read without affecting another user's records.

@@ -75,6 +75,11 @@ from app.models.mentors import (
     Message,
     MessageSource,
 )
+from app.models.notifications import (
+    MonthlyReview,
+    NotificationPreferences,
+    NotificationWorkflowRecord,
+)
 from app.models.profile import (
     AccountDeletionRequest,
     Certificate,
@@ -149,7 +154,10 @@ __all__ = [
     "MentorPermission",
     "Message",
     "MessageSource",
+    "MonthlyReview",
     "Notification",
+    "NotificationPreferences",
+    "NotificationWorkflowRecord",
     "PrivacySettings",
     "ProcessingFailure",
     "ProcessingJob",

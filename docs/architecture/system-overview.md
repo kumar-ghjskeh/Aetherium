@@ -29,7 +29,8 @@ foundation, user-owned foundation, protected Command Mode shell, Personal Vault 
 file ingestion, global search, provider-neutral AI gateway, AI mentor conversations, citation-backed
 document Q&A, habit tracking, the learning and mastery engine, the Project Dock foundation, and
 progress analytics, the achievement progression foundation, personal profile/privacy settings, and
-the Coding workspace foundation, and the non-visual knowledge graph data foundation:
+the Coding workspace foundation, the non-visual knowledge graph data foundation, and in-app
+notification/review workflows:
 
 - `apps/api`: FastAPI app, database settings, Alembic, health endpoints.
 - `apps/web`: Next.js App Router scaffold, web health route, auth UI, and protected `/app` Command
@@ -89,6 +90,10 @@ the Coding workspace foundation, and the non-visual knowledge graph data foundat
 - Knowledge graph: owner-scoped nodes and relationships for topics, files, lessons, projects,
   skills, questions, and achievements, plus approved source sync, related-topic and prerequisite
   queries, transparent review recommendations, and a 2D Learning UI panel.
+- Notification workflows: owner-scoped in-app notification preferences, idempotent workflow records,
+  weekly/monthly review prompts, learning and habit reminders, processing and AI failure notices,
+  project deadline reminders, monthly review records, bulk read state, and Settings UI controls.
+  External delivery is deferred.
 
 ## Frontend Boundaries
 
@@ -107,7 +112,7 @@ Backend domains will be added incrementally:
 - Mentor tools that can reuse citation-backed retrieval after explicit user approval.
 - Future sandboxed code execution as a separate isolated service behind the `CodeRunner` interface.
 - Goals and global tasks beyond project-scoped tasks.
-- Notification workflows, audit expansion, and security hardening.
+- Audit expansion and security hardening.
 
 Route handlers must remain thin as domains are added. Business rules should live in services or
 domain modules where separation improves testing and clarity.
@@ -155,6 +160,9 @@ plus reusable dependencies.
 - Knowledge graph routes are under `/api/v1/knowledge` and expose owner-scoped graph nodes,
   relationships, sync, related-topic context, prerequisites, review recommendations, and summary
   counts without rendering a visual graph.
+- Notification workflow routes are under `/api/v1/notifications` and expose owner-scoped
+  preferences, workflow records, in-app generation, monthly reviews, and read-state updates without
+  external delivery.
 
 ## Configuration
 

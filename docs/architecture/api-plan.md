@@ -40,6 +40,13 @@ Current routes:
 - `GET /api/v1/domain-events`
 - `POST /api/v1/domain-events`
 - `GET /api/v1/notifications`
+- `POST /api/v1/notifications/read-all`
+- `GET /api/v1/notifications/preferences`
+- `PATCH /api/v1/notifications/preferences`
+- `GET /api/v1/notifications/workflows`
+- `POST /api/v1/notifications/workflows/run`
+- `GET /api/v1/notifications/monthly-reviews`
+- `POST /api/v1/notifications/monthly-reviews`
 - `POST /api/v1/notifications/{notification_id}/read`
 - `GET /api/v1/audit-logs`
 - `POST /api/v1/files/uploads`
@@ -292,6 +299,22 @@ with bounded `limit` and `offset` parameters.
 
 `POST /api/v1/notifications/{notification_id}/read` marks only the authenticated user's notification
 as read. Cross-user IDs return `not_found`.
+
+`POST /api/v1/notifications/read-all` marks the authenticated user's unread notifications as read.
+It returns a fresh notification page and does not affect other users.
+
+`GET/PATCH /api/v1/notifications/preferences` reads and updates owner-scoped in-app notification
+workflow preferences.
+
+`GET /api/v1/notifications/workflows` lists generated notification workflow records with bounded
+pagination and optional workflow-type filtering.
+
+`POST /api/v1/notifications/workflows/run` generates idempotent in-app workflow notifications from
+real owner-scoped records. Current categories include weekly review, monthly review, learning
+review, habit reminder, file-processing failure, AI-provider failure, and project deadline.
+
+`GET/POST /api/v1/notifications/monthly-reviews` lists and upserts owner-scoped monthly review
+notes. Submitted dates must be the first day of the month.
 
 ## Personal Vault Routes
 

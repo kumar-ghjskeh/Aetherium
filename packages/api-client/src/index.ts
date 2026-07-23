@@ -102,9 +102,18 @@ import type {
   MessagePage,
   MessageSendRequest,
   MessageSendResponse,
+  MonthlyReview,
+  MonthlyReviewPage,
+  MonthlyReviewUpsert,
   Notification,
   NotificationListQuery,
   NotificationPage,
+  NotificationPreferences,
+  NotificationPreferencesUpdate,
+  NotificationWorkflowListQuery,
+  NotificationWorkflowRecordPage,
+  NotificationWorkflowRunRequest,
+  NotificationWorkflowRunResponse,
   PaginationQuery,
   Course,
   CourseCreateRequest,
@@ -280,8 +289,13 @@ import {
   mentorSchema,
   messagePageSchema,
   messageSendResponseSchema,
+  monthlyReviewPageSchema,
+  monthlyReviewSchema,
   notificationSchema,
   notificationPageSchema,
+  notificationPreferencesSchema,
+  notificationWorkflowRecordPageSchema,
+  notificationWorkflowRunResponseSchema,
   learningGoalPageSchema,
   learningGoalSchema,
   learningResourcePageSchema,
@@ -567,8 +581,19 @@ export interface AetheriumApiClient {
     ) => Promise<MentorPermission>;
   };
   notifications: {
+    getPreferences: () => Promise<NotificationPreferences>;
     list: (query?: NotificationListQuery) => Promise<NotificationPage>;
+    listMonthlyReviews: (query?: PaginationQuery) => Promise<MonthlyReviewPage>;
+    listWorkflows: (
+      query?: NotificationWorkflowListQuery
+    ) => Promise<NotificationWorkflowRecordPage>;
+    markAllRead: () => Promise<NotificationPage>;
     markRead: (notificationId: string) => Promise<Notification>;
+    runWorkflows: (
+      payload?: NotificationWorkflowRunRequest
+    ) => Promise<NotificationWorkflowRunResponse>;
+    updatePreferences: (payload: NotificationPreferencesUpdate) => Promise<NotificationPreferences>;
+    upsertMonthlyReview: (payload: MonthlyReviewUpsert) => Promise<MonthlyReview>;
   };
   search: {
     recent: (query?: PaginationQuery) => Promise<RecentSearchPage>;
@@ -667,6 +692,14 @@ function notificationQuery(query?: NotificationListQuery): string {
     ["unreadOnly", query?.unreadOnly],
     ["limit", query?.limit],
     ["offset", query?.offset]
+  ]);
+}
+
+function notificationWorkflowQuery(query?: NotificationWorkflowListQuery): string {
+  return queryString([
+    ["limit", query?.limit],
+    ["offset", query?.offset],
+    ["workflowType", query?.workflowType]
   ]);
 }
 
@@ -2133,11 +2166,44 @@ export function createAetheriumApiClient(options: AetheriumApiClientOptions): Ae
       }
     },
     notifications: {
+      getPreferences: async () => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          "/api/v1/notifications/preferences"
+        );
+        return notificationPreferencesSchema.parse(response);
+      },
       list: async (query) => {
         const response = await requestJson(
           fetcher,
           options.baseUrl,
           `/api/v1/notifications${notificationQuery(query)}`
+        );
+        return notificationPageSchema.parse(response);
+      },
+      listMonthlyReviews: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/notifications/monthly-reviews${paginationQuery(query)}`
+        );
+        return monthlyReviewPageSchema.parse(response);
+      },
+      listWorkflows: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/notifications/workflows${notificationWorkflowQuery(query)}`
+        );
+        return notificationWorkflowRecordPageSchema.parse(response);
+      },
+      markAllRead: async () => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          "/api/v1/notifications/read-all",
+          { method: "POST" }
         );
         return notificationPageSchema.parse(response);
       },
@@ -2149,6 +2215,42 @@ export function createAetheriumApiClient(options: AetheriumApiClientOptions): Ae
           { method: "POST" }
         );
         return notificationSchema.parse(response);
+      },
+      runWorkflows: async (payload = {}) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          "/api/v1/notifications/workflows/run",
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return notificationWorkflowRunResponseSchema.parse(response);
+      },
+      updatePreferences: async (payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          "/api/v1/notifications/preferences",
+          {
+            body: JSON.stringify(payload),
+            method: "PATCH"
+          }
+        );
+        return notificationPreferencesSchema.parse(response);
+      },
+      upsertMonthlyReview: async (payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          "/api/v1/notifications/monthly-reviews",
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return monthlyReviewSchema.parse(response);
       }
     },
     search: {

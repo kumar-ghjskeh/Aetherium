@@ -44,6 +44,22 @@ export function createUnusedKnowledgeClient(): AetheriumApiClient["knowledge"] {
   };
 }
 
+export function createUnusedNotificationsClient(): AetheriumApiClient["notifications"] {
+  const reject = () => Promise.reject(new Error("Unexpected notification workflow call"));
+
+  return {
+    getPreferences: vi.fn(reject),
+    list: vi.fn(reject),
+    listMonthlyReviews: vi.fn(reject),
+    listWorkflows: vi.fn(reject),
+    markAllRead: vi.fn(reject),
+    markRead: vi.fn(reject),
+    runWorkflows: vi.fn(reject),
+    updatePreferences: vi.fn(reject),
+    upsertMonthlyReview: vi.fn(reject)
+  };
+}
+
 export function createUnusedAchievementsClient(): AetheriumApiClient["achievements"] {
   const reject = () => Promise.reject(new Error("Unexpected achievement call"));
 
