@@ -76,8 +76,8 @@ Still out of scope unless explicitly requested:
 
 - OAuth, social login, email delivery, password reset, MFA, and magic links.
 - External email, push, SMS, and deployed scheduler notification delivery.
-- 3D world scenes, React Three Fiber, player controls, map travel, or world progression.
-- Visual world progression.
+- Visual 3D runtime, scene rendering, React Three Fiber dependencies, player controls, map travel,
+  or visual world progression until the corresponding approved World Mode phase is active.
 - Automatic production deployment.
 
 ## Product Independence
@@ -99,6 +99,14 @@ Use Aetherium-owned resources and names:
 Run `pnpm independence:check` before completing infrastructure changes. Run `pnpm world:check`
 before completing work that could affect World Mode dependencies or assets. Run
 `pnpm deployment:check` before completing deployment-preparation changes.
+
+## Visual World Mode
+
+The visual World Mode architecture is documented, but no rendering runtime has been installed yet.
+Follow `docs/architecture/decisions/0025-visual-world-mode-architecture.md`,
+`docs/world/world-mode-architecture.md`, and `docs/tasks/world/world-mode-roadmap.md` for W1 and
+later. Do not add unregistered assets, paid assets, editor-heavy engine dependencies, or any
+browser-exposed secret.
 
 ## Engineering Rules
 

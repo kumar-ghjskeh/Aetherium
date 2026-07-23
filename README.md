@@ -12,7 +12,8 @@ the Project Dock foundation, progress analytics, the achievement progression fou
 profile/privacy settings, the Coding workspace foundation, the non-visual knowledge graph data
 foundation, in-app notification/review workflows, non-visual World Mode data contracts,
 production-hardening baseline, and deployment-preparation documentation. It does not yet implement
-visual 3D world navigation.
+visual 3D world navigation. The visual World Mode architecture has been selected in documentation;
+the runtime is intentionally not installed yet.
 
 Aetherium is a standalone product. It uses its own repository, database, Redis namespace,
 object-storage buckets, environment variables, Docker resources, CI workflow, and future
@@ -86,10 +87,14 @@ authentication/session system. See `docs/architecture/product-independence.md` a
   an API-backed `/app/world` route that clearly marks visual World Mode as future work.
 - Production hardening baseline with request IDs, JSON structured API access logs, default API
   security headers, a non-sensitive observability endpoint, deployment/backup documentation, and a
-  CI guard that blocks visual 3D dependencies and assets before the approved phase.
+  CI guard that blocks unapproved visual 3D dependencies and unregistered assets.
 - Deployment preparation with separate environment boundaries, environment-variable documentation,
   migration and rollback procedures, health-check docs, release checklist, validation-only
   deployment-readiness workflow, and `docs/roadmap/3d-world-readiness.md`.
+- Visual World Mode planning docs under `docs/world/`, ADR 0025, and
+  `docs/tasks/world/world-mode-roadmap.md`. These documents define the future browser-based 3D
+  runtime, art direction, layout, budgets, asset policy, and visual testing plan without adding any
+  3D rendering code.
 - Docker Compose development infrastructure for Aetherium-isolated PostgreSQL, Redis, MinIO, API,
   worker, and web services.
 - CI workflow for independence checks, formatting, linting, type checks, tests, build, and Alembic
@@ -413,7 +418,8 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
   the AI gateway into the worker with explicit consent.
 - AI mentors and the Coding workspace are persistent and gateway-backed. The knowledge graph and
   World Mode foundations are available as non-visual owner-scoped data. In-app notification
-  workflows exist, but external notification delivery does not. Visual 3D scenes do not exist yet.
+  workflows exist, but external notification delivery does not. Visual 3D runtime and scenes do not
+  exist yet.
 - The Coding workspace can save snippets, exercises, attempts, and AI explain/review records. Code
   execution is deliberately unavailable until a separate isolated sandbox provider is implemented
   and validated.

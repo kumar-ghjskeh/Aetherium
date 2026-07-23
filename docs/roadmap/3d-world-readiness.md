@@ -102,7 +102,8 @@ Each world location maps to a Command Mode route such as `/app/library`, `/app/a
 - Keep scene state transient in client state and persist only approved world profile/progression
   state through the backend.
 - Use the scene-manifest API to decide which future assets and locations are available.
-- Preserve `pnpm world:check` until the visual-world ADR opens the allowed dependency list.
+- Update `pnpm world:check` in W1 so it allows only the visual dependencies approved by ADR 0025
+  while still blocking unregistered assets and unrelated game-engine dependencies.
 
 ## Recommended Scene Boundaries
 
@@ -147,15 +148,15 @@ Each world location maps to a Command Mode route such as `/app/library`, `/app/a
 
 ## Remaining Blockers
 
-- No selected visual-world ADR yet.
-- No Three.js or React Three Fiber dependency has been approved.
+- Visual-world ADR 0025 is selected, but visual dependencies are not installed yet.
+- Three.js and React Three Fiber are approved by ADR 0025, but the dependencies are not installed
+  yet.
 - No scene assets, art pipeline, or performance test harness exists.
 - No WebGL capability detection, visual-mode router, or scene-loading infrastructure exists.
 - No Playwright visual regression or canvas-pixel checks exist for 3D scenes.
 
 ## Exact First Task For Visual World Mode
 
-Create an ADR and implementation plan for the visual-world runtime that selects the 3D dependency
-set, route boundaries, progressive-enhancement behavior, asset-loading strategy, performance
-budgets, accessibility fallback, and validation plan. Only after that ADR is accepted should the
-visual dependencies be added and `pnpm world:check` be updated.
+Implement W1, the World Runtime Foundation. Install only the approved 3D dependencies from ADR 0025,
+update `pnpm world:check` to enforce that allowlist, lazy-load the `/app/world` runtime, add WebGL
+and reduced-motion fallbacks, add lifecycle diagnostics, and render only a minimal diagnostic scene.

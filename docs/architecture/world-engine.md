@@ -8,9 +8,15 @@ achievements.
 
 ## Current Status
 
-No 3D functionality is implemented. The protected `/app/world` route exists only as a non-visual
-Command Mode page that displays API-backed world data contracts and states that visual World Mode
-will be implemented later.
+No 3D runtime is implemented. The protected `/app/world` route exists only as a non-visual Command
+Mode page that displays API-backed world data contracts and states that visual World Mode will be
+implemented later.
+
+ADR 0025 now defines the approved visual World Mode architecture. It selects a browser-native React
+Three Fiber and Three.js runtime for the future visual phase, with WebGL2 as the default, WebGPU
+experiments behind feature flags, route-level lazy loading, Command Mode fallback, strict asset
+licensing, and performance budgets. Visual dependencies, scenes, player controls, and assets remain
+deferred until W1 and later phases.
 
 The current non-visual foundation stores world profile data only:
 
@@ -45,11 +51,12 @@ the user's data.
 ## Future Runtime Layers
 
 - Next.js route boundary for World Mode.
-- React Three Fiber renderer.
+- React Three Fiber renderer under a lazy `/app/world` route boundary.
 - Three.js assets and scene graph.
 - Zustand transient state for camera, controls, selected location, and debug overlays.
 - TanStack Query for server state shared with Command Mode.
 - Asset loading by district or zone.
+- Fixed-seed world generation for deterministic screenshots and regression tests.
 
 ## Progressive Enhancement
 

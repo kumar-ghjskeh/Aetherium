@@ -1,0 +1,92 @@
+# Visual Testing Strategy
+
+## Goals
+
+World Mode visual tests must prove that the world loads, renders, performs, and falls back safely.
+They must also catch broken assets, blank canvases, console errors, failed requests, and unstable
+interactions.
+
+## Test Stack
+
+- Vitest for deterministic manifests and engine utilities.
+- React Testing Library for loading, fallback, error, and panel behavior.
+- Playwright for browser rendering, screenshots, console checks, failed network checks, and
+  interaction smoke tests.
+- Fixed seeds for repeatable visual snapshots.
+
+## Standard Test Account
+
+Visual tests should create or seed a local test account with deterministic non-sensitive data:
+
+- One recent file.
+- One collection and tag.
+- One mentor conversation.
+- One daily habit with logs.
+- One subject, topic, course, lesson, quiz, and mastery record.
+- One project with milestone, task, and blocker.
+- One achievement state.
+
+Seed data must be local and test-only. Do not use private user data.
+
+## Required Captures
+
+After visual phases begin, capture:
+
+- Central Plaza spawn.
+- Plaza approach.
+- Knowledge Library.
+- AI Observatory.
+- Habit Garden.
+- Learning Academy.
+- Coding Arena.
+- Project Dock.
+- Progress Tower.
+- Achievement Hall.
+- Personal Sanctuary.
+- Day, sunset, and night.
+- Low preset.
+- Balanced preset.
+- Reduced-motion mode.
+- Loading failure fallback.
+- Unsupported 3D fallback.
+
+## Assertions
+
+Each Playwright visual test must check:
+
+- Page loaded.
+- Canvas is nonblank when rendering is expected.
+- Command Mode fallback appears when rendering is disabled or unsupported.
+- No critical browser console errors.
+- No failed app-owned network requests except deliberately mocked failures.
+- Loading state resolves.
+- Interaction prompt appears for focused objects.
+- Screenshot dimensions are stable.
+- Frame metrics are above the phase floor.
+
+## Performance Capture
+
+Capture per scenario:
+
+- Average FPS after warmup.
+- Average frame time.
+- Draw calls.
+- Triangles.
+- Loaded asset count.
+- Active physics bodies.
+- Preset.
+- Viewport.
+
+Early diagnostic phases may use relaxed thresholds. Final polish must meet the budgets in
+`performance-budgets.md`.
+
+## Baseline Policy
+
+Screenshots must be generated from fixed seeds and deterministic camera positions. Baseline updates
+require an intentional phase commit and a note in the phase completion report.
+
+## Failure Policy
+
+If tests show a black canvas, missing asset, persistent console error, browser crash, or performance
+below the required floor, stop the phase and report the diagnostic evidence instead of claiming
+success.

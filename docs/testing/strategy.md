@@ -111,8 +111,9 @@ Frontend and shared packages:
   bulk read state, and monthly review endpoints.
 - API-client contract tests for World Mode location registry, feature flags, deep-link contracts,
   scene-manifest schema, and profile visit endpoints.
-- Repository guard coverage through `pnpm world:check`, which blocks visual 3D dependencies and
-  visual-world asset files before the visual phase.
+- Repository guard coverage through `pnpm world:check`, which blocks unapproved visual 3D
+  dependencies and unregistered visual-world asset files. W1 will update the dependency allowlist to
+  match ADR 0025.
 - Deployment-readiness guard coverage through `pnpm deployment:check`, which verifies required
   operations docs, environment variables, and validation-only workflow wiring.
 - Next.js build validation.
@@ -166,6 +167,8 @@ Frontend and shared packages:
 
 ## Future World Tests
 
+- Runtime capability and fallback tests for unsupported WebGL, reduced motion, low graphics mode,
+  asset-loading failure, and tab backgrounding.
 - Scene state tests.
 - Interaction tests for selected objects and fast travel.
 - Stable visual regression screenshots.
