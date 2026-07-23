@@ -8,6 +8,7 @@ Current routes:
 
 - `GET /api/v1/health/live`
 - `GET /api/v1/health/ready`
+- `GET /api/v1/health/observability`
 - `POST /api/v1/auth/register`
 - `POST /api/v1/auth/login`
 - `POST /api/v1/auth/logout`
@@ -197,6 +198,18 @@ Planned route groups:
 
 - `/api/v1/goals`
 - `/api/v1/tasks`
+
+## Health And Observability Routes
+
+`GET /api/v1/health/live` returns basic API liveness.
+
+`GET /api/v1/health/ready` checks database readiness and returns a degraded 503 response when the
+database probe fails.
+
+`GET /api/v1/health/observability` returns non-sensitive runtime hardening status, including the
+request-ID header name, whether API security headers are enabled, whether metrics integration is
+enabled, whether error tracking is configured, and the Aetherium log namespace. It never returns
+DSNs, secrets, credentials, user records, cookies, object keys, raw prompts, or file contents.
 
 ## Authentication Routes
 

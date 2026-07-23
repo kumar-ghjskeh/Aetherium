@@ -177,6 +177,26 @@ class Settings(BaseSettings):
         default=60,
         validation_alias="AETHERIUM_AI_RATE_LIMIT_WINDOW_SECONDS",
     )
+    log_namespace: str = Field(default="aetherium", validation_alias="AETHERIUM_LOG_NAMESPACE")
+    request_id_header: str = Field(
+        default="X-Request-ID",
+        validation_alias="AETHERIUM_REQUEST_ID_HEADER",
+    )
+    security_headers_enabled: bool = Field(
+        default=True,
+        validation_alias="AETHERIUM_SECURITY_HEADERS_ENABLED",
+    )
+    content_security_policy: str = Field(
+        default="default-src 'none'; base-uri 'none'; frame-ancestors 'none'; "
+        "form-action 'none'; object-src 'none'",
+        validation_alias="AETHERIUM_CONTENT_SECURITY_POLICY",
+    )
+    metrics_enabled: bool = Field(default=True, validation_alias="AETHERIUM_METRICS_ENABLED")
+    error_tracking_dsn: str | None = Field(
+        default=None,
+        validation_alias="AETHERIUM_ERROR_TRACKING_DSN",
+    )
+    backup_bucket: str | None = Field(default=None, validation_alias="AETHERIUM_BACKUP_BUCKET")
     session_cookie_name: str = Field(
         default="aetherium_session",
         validation_alias="AETHERIUM_SESSION_COOKIE_NAME",
@@ -298,6 +318,38 @@ class Settings(BaseSettings):
     def require_known_ai_provider(cls, value: str) -> str:
         if value not in KNOWN_PROVIDER_NAMES:
             raise ValueError("Unknown Aetherium AI provider")
+
+        return value
+
+    @field_validator("log_namespace")
+    @classmethod
+    def require_aetherium_log_namespace(cls, value: str) -> str:
+        if not value.startswith("aetherium"):
+            raise ValueError("Aetherium logs must use an aetherium namespace")
+
+        return value
+
+    @field_validator("request_id_header")
+    @classmethod
+    def require_safe_request_id_header(cls, value: str) -> str:
+        if not value or any(character.isspace() for character in value):
+            raise ValueError("Aetherium request ID header must be a non-empty header token")
+
+        return value
+
+    @field_validator("content_security_policy")
+    @classmethod
+    def require_content_security_policy(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("Aetherium Content Security Policy must not be empty")
+
+        return value
+
+    @field_validator("backup_bucket")
+    @classmethod
+    def require_aetherium_backup_bucket(cls, value: str | None) -> str | None:
+        if value is not None and not value.startswith("aetherium"):
+            raise ValueError("Aetherium backup buckets must use an 'aetherium' prefix")
 
         return value
 

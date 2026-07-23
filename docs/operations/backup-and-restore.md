@@ -25,6 +25,8 @@ Back up these Aetherium-owned resources independently:
 - Redis only for durable queues or future state that cannot be safely reconstructed.
 - Deployment configuration metadata, excluding raw secrets.
 - Future audit logs required for security investigations.
+- Request-correlation and operational-log storage where required by the deployment, with secret
+  scrubbing and retention limits.
 
 ## Development Backup Notes
 
@@ -46,6 +48,8 @@ Production must provide:
 - Separate backup credentials with least privilege.
 - Restore tests in an isolated Aetherium environment.
 - Documented retention periods.
+- A documented restore drill that verifies database rows, object-storage originals, derived chunks,
+  Alembic revision state, and user-owned authorization boundaries after restore.
 
 ## Restore Rules
 
@@ -92,3 +96,7 @@ The `0015_knowledge_graph` migration introduces owner-scoped knowledge nodes and
 Restores must preserve owner UUIDs and stable source keys so graph sync remains idempotent. The
 graph can be rebuilt from approved source records in many cases, but restored relationship evidence
 and manual skill nodes should be treated as user-owned product data.
+
+Phase 19 adds no migration. Restore drills should still verify that request IDs, structured logs,
+security headers, observability status, and visual-world deferral checks are active in the restored
+environment before accepting traffic.

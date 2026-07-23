@@ -80,6 +80,10 @@ Notification and review workflows run inside the existing API service. Local wor
 preferences, and monthly reviews are stored in PostgreSQL, and generated notifications are in-app
 only. No email, push, SMS, or external notification credentials are required.
 
+The API emits `X-Request-ID`, `X-Aetherium-Process-Time-Ms`, default security headers, and JSON
+structured access logs in local development. `GET /api/v1/health/observability` reports whether the
+local observability integration points are enabled without exposing secrets.
+
 ## Authentication Defaults
 
 Local development uses:
@@ -96,6 +100,9 @@ Local development uses:
 - Worker poll interval: `5` seconds.
 - AI provider default: disabled unless explicitly configured.
 - External AI calls: disabled unless explicitly configured and consented.
+- Request ID header: `X-Request-ID`.
+- Log namespace: `aetherium`.
+- Security headers: enabled.
 
 Do not use the development session signing secret in production.
 
@@ -105,10 +112,12 @@ Run:
 
 ```powershell
 pnpm independence:check
+pnpm world:check
 pnpm run ci
 ```
 
-`pnpm run ci` includes the independence check, formatting, linting, type checks, tests, and build.
+`pnpm run ci` includes the independence check, the visual-world deferral check, formatting, linting,
+type checks, tests, and build.
 
 ## Isolation Rules
 

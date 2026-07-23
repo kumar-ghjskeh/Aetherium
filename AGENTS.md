@@ -65,6 +65,9 @@ Implemented foundation slices:
 - World Mode technical foundation with a non-visual location registry, deep-link contracts, future
   scene-manifest schema, world feature flags, protected current/visited/unlocked location APIs, and
   an API-backed `/app/world` data-contract page.
+- Production hardening baseline with request IDs, structured API access logs, default API security
+  headers, non-sensitive observability status, backup/restore documentation updates, and a CI guard
+  that keeps visual World Mode deferred.
 
 Still out of scope unless explicitly requested:
 
@@ -89,7 +92,8 @@ Use Aetherium-owned resources and names:
 - `aetherium_session` or another product-specific future session cookie name.
 - Aetherium-prefixed Docker services, containers, networks, volumes, databases, roles, and buckets.
 
-Run `pnpm independence:check` before completing infrastructure changes.
+Run `pnpm independence:check` before completing infrastructure changes. Run `pnpm world:check`
+before completing work that could affect World Mode dependencies or assets.
 
 ## Engineering Rules
 
@@ -126,3 +130,5 @@ Run `pnpm independence:check` before completing infrastructure changes.
 - Require explicit confirmation before destructive or externally visible actions.
 - Do not log passwords, session secrets, bearer tokens, full private documents, raw session tokens,
   authentication cookies, or raw sensitive prompts by default.
+- Preserve request IDs and structured logs without adding request bodies, cookies, raw prompts,
+  private file bodies, object keys, or provider secrets.

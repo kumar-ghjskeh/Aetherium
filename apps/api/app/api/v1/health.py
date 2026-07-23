@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import Settings, get_settings
 from app.db.session import get_async_session
-from app.schemas.health import HealthResponse
+from app.schemas.health import HealthResponse, ObservabilityResponse
 
 router = APIRouter()
 
@@ -57,6 +57,20 @@ async def ready(
 
     return HealthResponse(
         checks={"database": "ok"},
+        service="api",
+        status="ok",
+        version=settings.app_version,
+    )
+
+
+@router.get("/observability", response_model=ObservabilityResponse)
+async def observability(settings: Settings = Depends(get_settings)) -> ObservabilityResponse:
+    return ObservabilityResponse(
+        errorTrackingConfigured=bool(settings.error_tracking_dsn),
+        logNamespace=settings.log_namespace,
+        metricsEnabled=settings.metrics_enabled,
+        requestIdHeader=settings.request_id_header,
+        securityHeadersEnabled=settings.security_headers_enabled,
         service="api",
         status="ok",
         version=settings.app_version,

@@ -12,6 +12,8 @@
 Backend:
 
 - FastAPI health endpoint tests with dependency overrides.
+- FastAPI hardening tests for request-ID echo/replacement, default API security headers,
+  observability status, and configuration guardrails.
 - Authentication API tests for registration, login, logout, current user, session expiration,
   revocation, cookie settings, rate limiting, cross-user isolation, and database uniqueness.
 - User-owned foundation API tests for preference persistence, world profile updates, world
@@ -109,6 +111,8 @@ Frontend and shared packages:
   bulk read state, and monthly review endpoints.
 - API-client contract tests for World Mode location registry, feature flags, deep-link contracts,
   scene-manifest schema, and profile visit endpoints.
+- Repository guard coverage through `pnpm world:check`, which blocks visual 3D dependencies and
+  visual-world asset files before the visual phase.
 - Next.js build validation.
 - React Testing Library coverage for the Library page, including loading, empty, error, upload,
   favorite, tag, delete, processing failure, and retry states.
@@ -170,6 +174,7 @@ Frontend and shared packages:
 The minimal CI gate is:
 
 - Independence check.
+- Visual-world deferral check.
 - Dependency installation.
 - Alembic migration smoke validation.
 - Prettier check.

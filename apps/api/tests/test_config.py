@@ -21,6 +21,10 @@ def test_settings_defaults_use_aetherium_isolation_names() -> None:
     assert "aetherium" in settings.session_cookie_name
     assert settings.ai_provider_default == DISABLED_PROVIDER
     assert settings.ai_external_calls_enabled is False
+    assert settings.log_namespace.startswith("aetherium")
+    assert settings.request_id_header == "X-Request-ID"
+    assert settings.security_headers_enabled is True
+    assert settings.metrics_enabled is True
 
 
 def test_settings_reject_non_aetherium_redis_prefix(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -48,6 +52,27 @@ def test_settings_reject_non_aetherium_file_ingestion_queue(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv("AETHERIUM_FILE_INGESTION_QUEUE_NAME", "shared:file-ingestion")
+
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None)
+
+
+def test_settings_reject_non_aetherium_log_namespace(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("AETHERIUM_LOG_NAMESPACE", "shared")
+
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None)
+
+
+def test_settings_reject_unsafe_request_id_header(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("AETHERIUM_REQUEST_ID_HEADER", "X Request ID")
+
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None)
+
+
+def test_settings_reject_non_aetherium_backup_bucket(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("AETHERIUM_BACKUP_BUCKET", "shared-backups")
 
     with pytest.raises(ValidationError):
         Settings(_env_file=None)

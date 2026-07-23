@@ -73,4 +73,11 @@ Before deploying a new environment, verify:
 - Session signing secret is not the development default.
 - AI-provider credentials are configured specifically for Aetherium.
 - Logs and metrics have an Aetherium namespace.
+- API request IDs and structured logs are enabled, and external observability systems scrub
+  passwords, cookies, session tokens, raw prompts, private file bodies, provider secrets, and object
+  keys.
+- API security headers are enabled. Production should also set web-runtime CSP at the hosting or
+  Next.js layer.
+- CI keeps `pnpm independence:check` and `pnpm world:check` enabled until the visual 3D phase is
+  explicitly opened by a future ADR.
 - Backups and restore targets are separate from other products.

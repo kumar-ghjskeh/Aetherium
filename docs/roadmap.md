@@ -77,10 +77,13 @@ Current approved slice:
 - World Mode data foundation with a stable non-visual location registry, current/visited/unlocked
   location APIs, deep-link contracts, future scene-manifest schema, feature flags, and an API-backed
   `/app/world` contract page.
+- Production hardening baseline with request IDs, structured API logs, default API security headers,
+  non-sensitive observability status, backup/restore documentation updates, and a CI guard that
+  blocks visual 3D dependencies/assets before the approved visual phase.
 
 Later Phase 1 slices:
 
-- Production hardening and deployment preparation before visual 3D work begins.
+- Deployment preparation before visual 3D work begins.
 
 ## Phase 2 - Learning System
 
@@ -162,10 +165,12 @@ World technical status: implemented as the non-visual Phase 18 World Mode data f
 
 ## Phase 6 - Production Hardening
 
-- Security review.
-- Accessibility audit.
-- Load testing.
-- Performance optimization.
-- Backup and recovery testing.
-- Monitoring and deployment pipelines.
-- Account deletion and data export execution workflows. Privacy controls and request records exist.
+Status: baseline implemented as Phase 19.
+
+- Security review baseline with API headers, request IDs, structured logs, and phase guards.
+- Accessibility and performance review documented; full browser audit and load testing remain
+  deployment-readiness work.
+- Backup and recovery procedures documented; restore drills remain staging work.
+- Monitoring integration points exist; external exporters and alerting remain deployment work.
+- Account deletion and data export request records exist. Execution workflows remain future
+  privacy-hardening work.

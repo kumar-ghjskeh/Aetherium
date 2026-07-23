@@ -37,7 +37,7 @@
 | Credential stuffing                       | Aetherium-owned rate-limit abstraction on registration and login.                             |
 | Email enumeration                         | Login uses one generic invalid-credential response for nonexistent users and wrong passwords. |
 | SQL injection                             | Use SQLAlchemy expressions and parameterized queries.                                         |
-| XSS from rendered user content            | Sanitize rendered documents and use CSP/security headers in later UI slices.                  |
+| XSS from rendered user content            | Sanitize rendered documents and apply default API security headers and CSP.                   |
 | Malicious uploads                         | Validate type and size; use a malware scanning integration point before later parsing.        |
 | Object-key disclosure                     | Use server-generated object keys and return only expiring presigned URLs to owners.           |
 | AI data leakage                           | Require consent controls and provider-scoped policies.                                        |
@@ -211,6 +211,12 @@
 - Bulk notification read state affects only the authenticated user's notifications.
 - CI runs independence checks, formatting, linting, type checks, tests, build, and migration smoke
   validation.
+- API responses include request IDs, process-time headers, and default security headers.
+- API access logs are JSON-formatted under an Aetherium namespace and exclude request bodies,
+  cookies, session tokens, raw prompts, private file bodies, object keys, and provider secrets.
+- `/api/v1/health/observability` exposes non-sensitive hardening status only.
+- CI runs `pnpm world:check` to keep visual 3D dependencies and visual-world assets out of the
+  repository until the approved visual phase.
 
 ## Future Required Controls
 
@@ -219,7 +225,6 @@
 - Optional MFA.
 - Persistent distributed rate limiting for horizontally scaled production.
 - Audit-log retention policy.
-- Security headers and CSP.
 - Dependency vulnerability scanning.
 - Actual malware scanning service and quarantine workflow.
 - Background extraction sandboxing and resource limits for PDFs, DOCX, images, and source files.

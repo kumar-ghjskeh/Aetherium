@@ -35,6 +35,12 @@ def test_liveness_returns_ok(client: TestClient) -> None:
         "status": "ok",
         "version": "0.1.0",
     }
+    assert response.headers["X-Request-ID"]
+    assert response.headers["X-Aetherium-Process-Time-Ms"]
+    assert response.headers["X-Content-Type-Options"] == "nosniff"
+    assert response.headers["X-Frame-Options"] == "DENY"
+    assert response.headers["Referrer-Policy"] == "no-referrer"
+    assert response.headers["Content-Security-Policy"].startswith("default-src 'none'")
 
 
 def test_readiness_returns_ok_when_database_probe_passes(client: TestClient) -> None:
@@ -67,5 +73,36 @@ def test_readiness_returns_degraded_when_database_probe_fails(client: TestClient
         "checks": {"database": "unavailable"},
         "service": "api",
         "status": "degraded",
+        "version": "0.1.0",
+    }
+
+
+def test_request_id_header_echoes_safe_client_value(client: TestClient) -> None:
+    response = client.get("/api/v1/health/live", headers={"X-Request-ID": "aetherium-test-123"})
+
+    assert response.status_code == 200
+    assert response.headers["X-Request-ID"] == "aetherium-test-123"
+
+
+def test_request_id_header_replaces_unsafe_client_value(client: TestClient) -> None:
+    response = client.get("/api/v1/health/live", headers={"X-Request-ID": "not safe"})
+
+    assert response.status_code == 200
+    assert response.headers["X-Request-ID"] != "not safe"
+    assert len(response.headers["X-Request-ID"]) >= 32
+
+
+def test_observability_reports_non_sensitive_runtime_controls(client: TestClient) -> None:
+    response = client.get("/api/v1/health/observability")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "errorTrackingConfigured": False,
+        "logNamespace": "aetherium",
+        "metricsEnabled": True,
+        "requestIdHeader": "X-Request-ID",
+        "securityHeadersEnabled": True,
+        "service": "api",
+        "status": "ok",
         "version": "0.1.0",
     }
