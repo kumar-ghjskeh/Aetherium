@@ -80,10 +80,13 @@ Current approved slice:
 - Production hardening baseline with request IDs, structured API logs, default API security headers,
   non-sensitive observability status, backup/restore documentation updates, and a CI guard that
   blocks visual 3D dependencies/assets before the approved visual phase.
+- Deployment preparation with separate development/staging/production boundaries, environment
+  variable documentation, migration and rollback procedures, health-check docs, release checklist,
+  validation-only deployment-readiness workflow, and the final 3D readiness checkpoint.
 
 Later Phase 1 slices:
 
-- Deployment preparation before visual 3D work begins.
+- Visual 3D World Mode implementation after the readiness checkpoint and a new visual-world ADR.
 
 ## Phase 2 - Learning System
 
@@ -174,3 +177,4 @@ Status: baseline implemented as Phase 19.
 - Monitoring integration points exist; external exporters and alerting remain deployment work.
 - Account deletion and data export request records exist. Execution workflows remain future
   privacy-hardening work.
+- Deployment preparation is documented, but no automatic production deployment is configured.

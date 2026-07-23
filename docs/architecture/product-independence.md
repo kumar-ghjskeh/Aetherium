@@ -43,9 +43,10 @@ validated by CI.
 ## Current Audit Result
 
 The current scaffold, Personal Vault slice, background file-ingestion slice, global search slice,
-and provider-neutral AI gateway slice contain no references to another private product, another
-private repository, another product database, another product API, or another product object bucket.
-The audit found generic environment and Docker resource names in the initial scaffold; those were
+provider-neutral AI gateway slice, later Command Mode product slices, hardening baseline, and
+deployment-preparation docs contain no references to another private product, another private
+repository, another product database, another product API, or another product object bucket. The
+audit found generic environment and Docker resource names in the initial scaffold; those were
 replaced with Aetherium-specific names.
 
 ## Enforcement
@@ -53,3 +54,6 @@ replaced with Aetherium-specific names.
 `pnpm independence:check` fails on known prohibited private-product references, private repository
 URLs outside `kumar-ghjskeh/Aetherium`, generic environment names in `.env.example`, and generic
 Docker Compose resource names.
+
+`pnpm deployment:check` verifies the required deployment-preparation documents, environment
+variables, and validation-only workflow are present. It does not deploy or provision infrastructure.

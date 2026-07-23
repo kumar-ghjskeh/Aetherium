@@ -94,6 +94,16 @@ AI gateway:
 - `AETHERIUM_AI_RATE_LIMIT_ATTEMPTS`
 - `AETHERIUM_AI_RATE_LIMIT_WINDOW_SECONDS`
 
+Observability and deployment:
+
+- `AETHERIUM_LOG_NAMESPACE`
+- `AETHERIUM_REQUEST_ID_HEADER`
+- `AETHERIUM_SECURITY_HEADERS_ENABLED`
+- `AETHERIUM_CONTENT_SECURITY_POLICY`
+- `AETHERIUM_METRICS_ENABLED`
+- `AETHERIUM_ERROR_TRACKING_DSN`
+- `AETHERIUM_BACKUP_BUCKET`
+
 ## Redis Namespace
 
 All Aetherium Redis keys must start with `aetherium:`. The API settings reject any configured Redis
@@ -138,3 +148,10 @@ user consent stored in Aetherium's database. OpenAI-compatible and Anthropic-com
 also require Aetherium-specific API keys supplied by the deployment secret manager. Provider keys,
 base URLs, model names, timeout settings, retry settings, and rate-limit settings must not be shared
 with another private product.
+
+## Environment Separation
+
+Development, staging, and production must each use separate Aetherium-owned database credentials,
+Redis endpoints, object buckets, secrets, AI-provider configuration, cookie settings, web/API URLs,
+logs, metrics, backup targets, and restore procedures. See `docs/operations/environments.md` and
+`docs/operations/environment-variables.md`.

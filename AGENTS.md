@@ -68,6 +68,9 @@ Implemented foundation slices:
 - Production hardening baseline with request IDs, structured API access logs, default API security
   headers, non-sensitive observability status, backup/restore documentation updates, and a CI guard
   that keeps visual World Mode deferred.
+- Deployment preparation with separate development/staging/production environment boundaries,
+  migration and rollback procedures, health-check documentation, release checklist, a
+  validation-only deployment-readiness workflow, and the final 3D readiness checkpoint.
 
 Still out of scope unless explicitly requested:
 
@@ -75,6 +78,7 @@ Still out of scope unless explicitly requested:
 - External email, push, SMS, and deployed scheduler notification delivery.
 - 3D world scenes, React Three Fiber, player controls, map travel, or world progression.
 - Visual world progression.
+- Automatic production deployment.
 
 ## Product Independence
 
@@ -93,7 +97,8 @@ Use Aetherium-owned resources and names:
 - Aetherium-prefixed Docker services, containers, networks, volumes, databases, roles, and buckets.
 
 Run `pnpm independence:check` before completing infrastructure changes. Run `pnpm world:check`
-before completing work that could affect World Mode dependencies or assets.
+before completing work that could affect World Mode dependencies or assets. Run
+`pnpm deployment:check` before completing deployment-preparation changes.
 
 ## Engineering Rules
 

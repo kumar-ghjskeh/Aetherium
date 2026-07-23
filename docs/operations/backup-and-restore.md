@@ -51,6 +51,9 @@ Production must provide:
 - A documented restore drill that verifies database rows, object-storage originals, derived chunks,
   Alembic revision state, and user-owned authorization boundaries after restore.
 
+Backup buckets must be environment-specific and Aetherium-prefixed. A production backup bucket must
+not store staging, development, or another product's backups.
+
 ## Restore Rules
 
 Restore Aetherium data only into an Aetherium database, Aetherium object bucket, and Aetherium Redis

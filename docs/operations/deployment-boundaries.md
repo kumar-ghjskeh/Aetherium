@@ -20,6 +20,9 @@ Production must provide Aetherium-owned or Aetherium-dedicated resources for:
 - Logging, monitoring, alerting, backup, and restore configuration.
 - Domain names and TLS certificates.
 
+Development, staging, and production boundaries are detailed in `docs/operations/environments.md`.
+Required variables are documented in `docs/operations/environment-variables.md`.
+
 ## Environment Policy
 
 Production must use `AETHERIUM_` and `NEXT_PUBLIC_AETHERIUM_` environment variables. It must not
@@ -81,3 +84,11 @@ Before deploying a new environment, verify:
 - CI keeps `pnpm independence:check` and `pnpm world:check` enabled until the visual 3D phase is
   explicitly opened by a future ADR.
 - Backups and restore targets are separate from other products.
+
+## Procedure Documents
+
+- Deployment sequence: `docs/operations/deployment.md`
+- Migration procedure: `docs/operations/migrations.md`
+- Rollback procedure: `docs/operations/rollback.md`
+- Health checks: `docs/operations/health-checks.md`
+- Release checklist: `docs/operations/release-checklist.md`

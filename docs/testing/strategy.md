@@ -113,6 +113,8 @@ Frontend and shared packages:
   scene-manifest schema, and profile visit endpoints.
 - Repository guard coverage through `pnpm world:check`, which blocks visual 3D dependencies and
   visual-world asset files before the visual phase.
+- Deployment-readiness guard coverage through `pnpm deployment:check`, which verifies required
+  operations docs, environment variables, and validation-only workflow wiring.
 - Next.js build validation.
 - React Testing Library coverage for the Library page, including loading, empty, error, upload,
   favorite, tag, delete, processing failure, and retry states.
@@ -175,6 +177,7 @@ The minimal CI gate is:
 
 - Independence check.
 - Visual-world deferral check.
+- Deployment-readiness check.
 - Dependency installation.
 - Alembic migration smoke validation.
 - Prettier check.

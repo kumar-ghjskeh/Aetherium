@@ -97,6 +97,9 @@ notification/review workflows:
   weekly/monthly review prompts, learning and habit reminders, processing and AI failure notices,
   project deadline reminders, monthly review records, bulk read state, and Settings UI controls.
   External delivery is deferred.
+- Production hardening and deployment preparation: request IDs, security headers, structured logs,
+  observability status, environment separation, migration and rollback procedures, release
+  checklist, deployment-readiness validation, and final 3D readiness checkpoint.
 
 ## Frontend Boundaries
 
@@ -176,5 +179,6 @@ Production secrets must be supplied through deployment secret management, not so
 ## Deployment Assumption
 
 The first production-capable architecture assumes separately deployed web, API, worker, PostgreSQL,
-Redis, and object storage services. Docker Compose is a development convenience, not the production
-orchestration contract.
+Redis, object storage, logging, monitoring, and backup services. Docker Compose is a development
+convenience, not the production orchestration contract. The repository includes deployment
+preparation and validation-only workflows, but it does not deploy automatically.

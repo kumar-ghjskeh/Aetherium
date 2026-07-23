@@ -10,8 +10,9 @@ storage with background ingestion, global search, the provider-neutral AI gatewa
 conversations, citation-backed document Q&A, habit tracking, the learning and mastery engine, and
 the Project Dock foundation, progress analytics, the achievement progression foundation, personal
 profile/privacy settings, the Coding workspace foundation, the non-visual knowledge graph data
-foundation, in-app notification/review workflows, non-visual World Mode data contracts, and a
-production-hardening baseline. It does not yet implement visual 3D world navigation.
+foundation, in-app notification/review workflows, non-visual World Mode data contracts,
+production-hardening baseline, and deployment-preparation documentation. It does not yet implement
+visual 3D world navigation.
 
 Aetherium is a standalone product. It uses its own repository, database, Redis namespace,
 object-storage buckets, environment variables, Docker resources, CI workflow, and future
@@ -86,10 +87,14 @@ authentication/session system. See `docs/architecture/product-independence.md` a
 - Production hardening baseline with request IDs, JSON structured API access logs, default API
   security headers, a non-sensitive observability endpoint, deployment/backup documentation, and a
   CI guard that blocks visual 3D dependencies and assets before the approved phase.
+- Deployment preparation with separate environment boundaries, environment-variable documentation,
+  migration and rollback procedures, health-check docs, release checklist, validation-only
+  deployment-readiness workflow, and `docs/roadmap/3d-world-readiness.md`.
 - Docker Compose development infrastructure for Aetherium-isolated PostgreSQL, Redis, MinIO, API,
   worker, and web services.
 - CI workflow for independence checks, formatting, linting, type checks, tests, build, and Alembic
   migration smoke validation.
+- Deployment-readiness workflow that validates operational boundaries and does not deploy.
 
 ## Repository Layout
 
@@ -158,6 +163,7 @@ scripts/
 ```powershell
 pnpm independence:check
 pnpm world:check
+pnpm deployment:check
 pnpm format:check
 pnpm lint
 pnpm typecheck
@@ -425,3 +431,5 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
 - Production hardening is a baseline. External error tracking, metrics exporters, dependency
   vulnerability scanning, malware scanning, parser sandboxing, load testing, and full restore drills
   still require deployment-specific work.
+- Deployment preparation is documentation and validation only. This repository does not
+  automatically deploy Aetherium.

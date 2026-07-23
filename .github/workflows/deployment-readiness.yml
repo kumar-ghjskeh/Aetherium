@@ -1,0 +1,45 @@
+name: deployment-readiness
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".env.example"
+      - ".github/workflows/deployment-readiness.yml"
+      - "docs/operations/**"
+      - "docs/roadmap/3d-world-readiness.md"
+      - "infrastructure/**"
+      - "package.json"
+      - "scripts/deployment-readiness-check.mjs"
+
+jobs:
+  validate:
+    name: validate deployment boundaries
+    runs-on: ubuntu-latest
+    # No deployment happens in this workflow. It validates release/deployment preparation only.
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Enable pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.13.1 --activate
+
+      - name: Install JavaScript dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate deployment readiness
+        run: pnpm run deployment:check
+
+      - name: Validate independence boundary
+        run: pnpm run independence:check
+
+      - name: Validate visual-world deferral
+        run: pnpm run world:check
