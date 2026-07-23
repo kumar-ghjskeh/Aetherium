@@ -418,9 +418,11 @@ export interface WorldSceneManifestLocation {
   disabledReason: string;
 }
 
+export type WorldSceneManifestStatus = "data_contract_only" | "runtime_foundation";
+
 export interface WorldSceneManifest {
   manifestVersion: number;
-  implementationStatus: "data_contract_only";
+  implementationStatus: WorldSceneManifestStatus;
   visualRuntimeAvailable: boolean;
   locations: WorldSceneManifestLocation[];
 }

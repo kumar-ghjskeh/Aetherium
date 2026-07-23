@@ -111,9 +111,9 @@ Frontend and shared packages:
   bulk read state, and monthly review endpoints.
 - API-client contract tests for World Mode location registry, feature flags, deep-link contracts,
   scene-manifest schema, and profile visit endpoints.
-- Repository guard coverage through `pnpm world:check`, which blocks unapproved visual 3D
-  dependencies and unregistered visual-world asset files. W1 will update the dependency allowlist to
-  match ADR 0025.
+- Repository guard coverage through `pnpm world:check`, which allows only ADR-approved visual
+  runtime dependencies in the web app and blocks unapproved visual dependencies plus unregistered
+  visual-world asset files.
 - Deployment-readiness guard coverage through `pnpm deployment:check`, which verifies required
   operations docs, environment variables, and validation-only workflow wiring.
 - Next.js build validation.
@@ -146,8 +146,9 @@ Frontend and shared packages:
 - React Testing Library coverage for the Learning page knowledge graph panel, including graph
   summary rendering, related-topic rows, review recommendations, sync refresh behavior, and error
   state handling through the shared API client.
-- React Testing Library coverage for the World page, including API-backed non-visual location
-  contracts, feature flags, scene-manifest state, and error handling.
+- React Testing Library coverage for the World page, including API-backed location contracts,
+  feature flags, scene-manifest state, runtime capability fallback, reduced-motion fallback, lazy
+  runtime loading, and error handling.
 
 ## Future Backend Tests
 

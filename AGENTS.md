@@ -71,13 +71,19 @@ Implemented foundation slices:
 - Deployment preparation with separate development/staging/production environment boundaries,
   migration and rollback procedures, health-check documentation, release checklist, a
   validation-only deployment-readiness workflow, and the final 3D readiness checkpoint.
+- Visual World Mode W0 design foundation with ADR 0025, world architecture, art direction, layout,
+  performance budgets, asset policy, visual testing plan, troubleshooting docs, and the W0-W25 task
+  roadmap.
+- Visual World Mode W1 runtime foundation with approved browser-native 3D dependencies, `/app/world`
+  lazy-loading, WebGL2 and reduced-motion fallbacks, diagnostic scene rendering, graphics preset
+  controls, runtime diagnostics, and a dependency/asset policy guard.
 
 Still out of scope unless explicitly requested:
 
 - OAuth, social login, email delivery, password reset, MFA, and magic links.
 - External email, push, SMS, and deployed scheduler notification delivery.
-- Visual 3D runtime, scene rendering, React Three Fiber dependencies, player controls, map travel,
-  or visual world progression until the corresponding approved World Mode phase is active.
+- Final world district art, terrain, player controls, map travel, 3D interactions, audio, or visual
+  world progression until the corresponding approved World Mode phase is active.
 - Automatic production deployment.
 
 ## Product Independence
@@ -102,8 +108,8 @@ before completing work that could affect World Mode dependencies or assets. Run
 
 ## Visual World Mode
 
-The visual World Mode architecture is documented, but no rendering runtime has been installed yet.
-Follow `docs/architecture/decisions/0025-visual-world-mode-architecture.md`,
+The visual World Mode architecture and W1 diagnostic runtime foundation are documented. Follow
+`docs/architecture/decisions/0025-visual-world-mode-architecture.md`,
 `docs/world/world-mode-architecture.md`, and `docs/tasks/world/world-mode-roadmap.md` for W1 and
 later. Do not add unregistered assets, paid assets, editor-heavy engine dependencies, or any
 browser-exposed secret.

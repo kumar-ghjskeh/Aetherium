@@ -55,8 +55,8 @@ export default function Home(): React.ReactElement {
         </div>
 
         <footer className="border-t border-white/10 pt-5 text-sm text-[var(--muted)]">
-          Authentication is implemented. 3D world, AI, files, and habit workflows remain outside
-          this slice.
+          Authentication, Command Mode, AI, files, habits, learning, projects, analytics, and the
+          diagnostic World Mode runtime are implemented in this standalone scaffold.
         </footer>
       </section>
     </main>

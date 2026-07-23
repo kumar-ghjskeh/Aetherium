@@ -8,15 +8,15 @@ achievements.
 
 ## Current Status
 
-No 3D runtime is implemented. The protected `/app/world` route exists only as a non-visual Command
-Mode page that displays API-backed world data contracts and states that visual World Mode will be
-implemented later.
+The W1 diagnostic 3D runtime foundation is implemented. The protected `/app/world` route still loads
+API-backed world data contracts first, then lazy-loads a route-local visual bundle only when the
+backend runtime flag, scene manifest, browser WebGL2 support, and reduced-motion settings allow it.
 
 ADR 0025 now defines the approved visual World Mode architecture. It selects a browser-native React
-Three Fiber and Three.js runtime for the future visual phase, with WebGL2 as the default, WebGPU
-experiments behind feature flags, route-level lazy loading, Command Mode fallback, strict asset
-licensing, and performance budgets. Visual dependencies, scenes, player controls, and assets remain
-deferred until W1 and later phases.
+Three Fiber and Three.js runtime, with WebGL2 as the default, WebGPU experiments behind feature
+flags, route-level lazy loading, Command Mode fallback, strict asset licensing, and performance
+budgets. Final district scenes, player controls, navigation, audio, and assets remain deferred to
+later W phases.
 
 The current non-visual foundation stores world profile data only:
 
@@ -40,8 +40,9 @@ The Phase 18 data foundation also exposes:
 - `GET /api/v1/world/scene-manifest`
 - `GET /api/v1/world/feature-flags`
 
-The scene manifest contains future scene keys only. It sets `visualRuntimeAvailable` to `false`,
-sets every location `allowedToRender` value to `false`, and contains no asset bundle references.
+The scene manifest contains future scene keys only. In W1 it sets `visualRuntimeAvailable` to `true`
+for the diagnostic runtime, keeps every location `allowedToRender` value at `false`, and contains no
+asset bundle references.
 
 The achievement engine also writes `world_unlock_records` as future destination identifiers such as
 `achievement_hall:first_file_display`. These are non-visual progression records for the later World
@@ -70,7 +71,8 @@ The app must load Command Mode when:
 
 ## Initial World Scope
 
-The first world implementation should be a compact central campus with:
+W1 renders only a diagnostic scene with a ground plane, sky, camera, one test light, and debug grid.
+The first functional world implementation should become a compact central campus with:
 
 - Central Plaza.
 - Library.

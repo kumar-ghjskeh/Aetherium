@@ -249,7 +249,7 @@ def test_world_location_registry_exposes_profile_state(
     assert library.json()["unlocked"] is True
 
 
-def test_world_deep_links_and_scene_manifest_are_data_only(
+def test_world_deep_links_and_scene_manifest_expose_runtime_foundation(
     foundation_context: FoundationTestContext,
 ) -> None:
     register(foundation_context.client, email="world-contracts@example.com")
@@ -261,12 +261,12 @@ def test_world_deep_links_and_scene_manifest_are_data_only(
     assert deep_links.status_code == 200
     assert any(item["locationId"] == "library" for item in deep_links.json()["items"])
     assert manifest.status_code == 200
-    assert manifest.json()["implementationStatus"] == "data_contract_only"
-    assert manifest.json()["visualRuntimeAvailable"] is False
+    assert manifest.json()["implementationStatus"] == "runtime_foundation"
+    assert manifest.json()["visualRuntimeAvailable"] is True
     assert all(item["allowedToRender"] is False for item in manifest.json()["locations"])
     assert flags.status_code == 200
     assert flags.json()["dataContractsEnabled"] is True
-    assert flags.json()["visualWorldEnabled"] is False
+    assert flags.json()["visualWorldEnabled"] is True
     assert flags.json()["commandModeFallbackRequired"] is True
 
 

@@ -12,8 +12,9 @@ the Project Dock foundation, progress analytics, the achievement progression fou
 profile/privacy settings, the Coding workspace foundation, the non-visual knowledge graph data
 foundation, in-app notification/review workflows, non-visual World Mode data contracts,
 production-hardening baseline, and deployment-preparation documentation. It does not yet implement
-visual 3D world navigation. The visual World Mode architecture has been selected in documentation;
-the runtime is intentionally not installed yet.
+visual 3D world navigation. The visual World Mode architecture has been selected in documentation,
+and the first diagnostic browser runtime is available under `/app/world`; final district art, player
+movement, terrain, travel, and 3D interactions are still deferred.
 
 Aetherium is a standalone product. It uses its own repository, database, Redis namespace,
 object-storage buckets, environment variables, Docker resources, CI workflow, and future
@@ -95,6 +96,9 @@ authentication/session system. See `docs/architecture/product-independence.md` a
   `docs/tasks/world/world-mode-roadmap.md`. These documents define the future browser-based 3D
   runtime, art direction, layout, budgets, asset policy, and visual testing plan without adding any
   3D rendering code.
+- Visual World Mode runtime foundation under `/app/world` with a route-local lazy 3D bundle, WebGL2
+  and reduced-motion fallbacks, graphics preset controls, tab-background pause, runtime diagnostics,
+  and a minimal diagnostic scene. Final world locations are not visually implemented yet.
 - Docker Compose development infrastructure for Aetherium-isolated PostgreSQL, Redis, MinIO, API,
   worker, and web services.
 - CI workflow for independence checks, formatting, linting, type checks, tests, build, and Alembic
@@ -418,15 +422,15 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
   the AI gateway into the worker with explicit consent.
 - AI mentors and the Coding workspace are persistent and gateway-backed. The knowledge graph and
   World Mode foundations are available as non-visual owner-scoped data. In-app notification
-  workflows exist, but external notification delivery does not. Visual 3D runtime and scenes do not
-  exist yet.
+  workflows exist, but external notification delivery does not. Visual World Mode currently renders
+  only the W1 diagnostic runtime; final districts and traversal do not exist yet.
 - The Coding workspace can save snippets, exercises, attempts, and AI explain/review records. Code
   execution is deliberately unavailable until a separate isolated sandbox provider is implemented
   and validated.
 - Progress analytics are read-only aggregations from existing stored data. Unsupported metrics such
   as files opened and coding sessions are marked unavailable instead of being fabricated.
 - Achievements are non-visual progression records. Future world unlocks are stored as identifiers
-  only; no scene, asset, or 3D reward is rendered.
+  only; no final scene, asset, or 3D reward is rendered.
 - Profile and privacy settings are functional metadata records. Data-export and account deletion
   request endpoints record owner-scoped workflow requests only; export generation and destructive
   deletion execution are not active yet.

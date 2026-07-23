@@ -2,6 +2,7 @@
 
 import type { AetheriumApiClient } from "@aetherium/api-client";
 import type {
+  UserPreferences,
   WorldDeepLinkPage,
   WorldFeatureFlags,
   WorldLocationPage,
@@ -12,14 +13,23 @@ import Link from "next/link";
 import React from "react";
 
 import { createBrowserApiClient } from "../auth/auth-provider";
+import { WorldRuntimeErrorBoundary } from "./components/canvas/world-runtime-error-boundary";
+import { WorldRuntimeFallback, WorldRuntimeLoading } from "./components/ui/world-runtime-fallback";
+import { useWorldRuntimeReadiness } from "./hooks/use-world-runtime-readiness";
 
 interface WorldDataState {
   deepLinks: WorldDeepLinkPage;
   featureFlags: WorldFeatureFlags;
   locations: WorldLocationPage;
+  preferences: UserPreferences;
   profile: WorldProfile;
   sceneManifest: WorldSceneManifest;
 }
+
+const LazyWorldRuntimeCanvas = React.lazy(async () => {
+  const runtimeModule = await import("./components/canvas/world-runtime-canvas");
+  return { default: runtimeModule.WorldRuntimeCanvas };
+});
 
 function friendlyError(error: unknown): string {
   if (error instanceof Error) {
@@ -37,19 +47,28 @@ export function WorldPage({
   const [data, setData] = React.useState<WorldDataState | null>(null);
   const [status, setStatus] = React.useState<"loading" | "ready" | "error">("loading");
   const [error, setError] = React.useState<string | null>(null);
+  const [readinessVersion, setReadinessVersion] = React.useState(0);
+  const runtimeReadiness = useWorldRuntimeReadiness({
+    checkVersion: readinessVersion,
+    featureFlags: data?.featureFlags ?? null,
+    sceneManifest: data?.sceneManifest ?? null,
+    userReducedMotion: data?.preferences.reducedMotion ?? false
+  });
 
   const loadWorldData = React.useCallback(async () => {
     setStatus("loading");
     setError(null);
     try {
-      const [profile, locations, deepLinks, sceneManifest, featureFlags] = await Promise.all([
-        apiClient.world.getProfile(),
-        apiClient.world.listLocations(),
-        apiClient.world.listDeepLinks(),
-        apiClient.world.getSceneManifest(),
-        apiClient.world.getFeatureFlags()
-      ]);
-      setData({ deepLinks, featureFlags, locations, profile, sceneManifest });
+      const [profile, locations, deepLinks, sceneManifest, featureFlags, preferences] =
+        await Promise.all([
+          apiClient.world.getProfile(),
+          apiClient.world.listLocations(),
+          apiClient.world.listDeepLinks(),
+          apiClient.world.getSceneManifest(),
+          apiClient.world.getFeatureFlags(),
+          apiClient.settings.getPreferences()
+        ]);
+      setData({ deepLinks, featureFlags, locations, preferences, profile, sceneManifest });
       setStatus("ready");
     } catch (loadError) {
       setError(friendlyError(loadError));
@@ -86,10 +105,10 @@ export function WorldPage({
       <section className="work-panel">
         <header className="world-panel-header">
           <div>
-            <h2>Visual World Mode is not implemented</h2>
+            <h2>Visual World Mode runtime</h2>
             <p className="empty-note">
-              This route exposes data contracts for a later 3D phase. It does not render scenes,
-              assets, terrain, player controls, or camera movement.
+              This W1 route lazy-loads a diagnostic 3D runtime only when the backend flag, scene
+              manifest, browser capability, and motion settings allow it.
             </p>
           </div>
           <button className="secondary-action" onClick={() => void loadWorldData()} type="button">
@@ -127,6 +146,28 @@ export function WorldPage({
 
       {data ? (
         <>
+          {runtimeReadiness.status === "checking" ? <WorldRuntimeLoading /> : null}
+          {runtimeReadiness.status === "fallback" ? (
+            <WorldRuntimeFallback
+              detail={data.featureFlags.reason}
+              message={runtimeReadiness.message}
+              onRetry={() => setReadinessVersion((value) => value + 1)}
+            />
+          ) : null}
+          {runtimeReadiness.status === "ready" ? (
+            <WorldRuntimeErrorBoundary key={readinessVersion}>
+              <React.Suspense fallback={<WorldRuntimeLoading />}>
+                <LazyWorldRuntimeCanvas
+                  deepLinks={data.deepLinks}
+                  locationPage={data.locations}
+                  preferences={data.preferences}
+                  profile={data.profile}
+                  sceneManifest={data.sceneManifest}
+                />
+              </React.Suspense>
+            </WorldRuntimeErrorBoundary>
+          ) : null}
+
           <section className="work-panel">
             <header className="world-panel-header">
               <div>

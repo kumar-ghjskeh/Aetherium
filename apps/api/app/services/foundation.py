@@ -304,8 +304,8 @@ class UserDataService:
         await self.get_or_create_world_profile(user)
         return {
             "manifestVersion": 1,
-            "implementationStatus": "data_contract_only",
-            "visualRuntimeAvailable": False,
+            "implementationStatus": "runtime_foundation",
+            "visualRuntimeAvailable": True,
             "locations": [
                 {
                     "locationId": definition.id.value,
@@ -316,7 +316,7 @@ class UserDataService:
                     "assetBundleKey": None,
                     "allowedToRender": False,
                     "disabledReason": (
-                        "Visual World Mode is intentionally not implemented in this phase."
+                        "District rendering is deferred. W1 exposes only the diagnostic runtime."
                     ),
                 }
                 for definition in WORLD_LOCATION_DEFINITIONS
@@ -326,12 +326,13 @@ class UserDataService:
     def get_world_feature_flags(self) -> dict[str, object]:
         return {
             "dataContractsEnabled": True,
-            "visualWorldEnabled": False,
+            "visualWorldEnabled": True,
             "sceneManifestEnabled": True,
             "commandModeFallbackRequired": True,
             "reason": (
-                "Phase 18 exposes only non-visual world data contracts. Command Mode remains the "
-                "active interface until the visual 3D phase begins."
+                "Phase W1 enables the diagnostic visual runtime. Command Mode remains available "
+                "and required as the fallback for unsupported browsers, reduced motion, and "
+                "runtime failures."
             ),
         }
 

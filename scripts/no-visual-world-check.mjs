@@ -17,16 +17,64 @@ const packageFiles = [
   "packages/validation/package.json"
 ];
 
-const prohibitedDependencyNames = new Set([
+const approvedDirectVisualDependencyNames = new Set([
   "three",
   "@react-three/fiber",
   "@react-three/drei",
-  "@react-three/cannon",
   "@react-three/rapier",
   "@react-three/postprocessing",
+  "@react-spring/three",
+  "@types/three",
+  "gsap",
+  "three-stdlib",
+  "zustand"
+]);
+
+const approvedTransitiveVisualDependencyNames = new Set([
+  ...approvedDirectVisualDependencyNames,
+  "@dimforge/rapier3d-compat",
+  "@dimforge/rapier3d",
+  "@react-spring/animated",
+  "@react-spring/core",
+  "@react-spring/rafz",
+  "@react-spring/shared",
+  "@react-spring/types",
+  "@react-spring/web",
+  "@react-spring/zdog",
+  "camera-controls",
+  "detect-gpu",
+  "fflate",
+  "its-fine",
+  "maath",
+  "meshline",
+  "postprocessing",
+  "potpack",
+  "react-composer",
+  "stats-gl",
+  "suspend-react",
+  "troika-three-text",
+  "troika-three-utils",
+  "tunnel-rat",
+  "use-sync-external-store",
+  "utility-types",
+  "webgl-constants",
+  "zustand"
+]);
+
+const prohibitedDependencyNames = new Set([
+  "@babylonjs/core",
+  "@babylonjs/loaders",
+  "@playcanvas/engine",
+  "@react-three/cannon",
+  "@react-three/xr",
+  "babylonjs",
+  "cannon",
   "cannon-es",
+  "matter-js",
+  "pixi.js",
+  "playcanvas",
   "rapier",
-  "@dimforge/rapier3d-compat"
+  "unity-webgl"
 ]);
 
 const prohibitedAssetExtensions = new Set([".blend", ".fbx", ".glb", ".gltf"]);
@@ -66,7 +114,15 @@ function readPackageJson(relativeFilePath) {
     for (const dependencyName of Object.keys(dependencies)) {
       if (prohibitedDependencyNames.has(dependencyName)) {
         failures.push(
-          `${relativeFilePath}: ${dependencyBlock} must not include ${dependencyName} before the visual 3D phase`
+          `${relativeFilePath}: ${dependencyBlock} must not include unapproved visual dependency ${dependencyName}`
+        );
+      }
+      if (
+        approvedDirectVisualDependencyNames.has(dependencyName) &&
+        relativeFilePath !== "apps/web/package.json"
+      ) {
+        failures.push(
+          `${relativeFilePath}: approved World Mode dependency ${dependencyName} must be declared only in apps/web/package.json`
         );
       }
     }
@@ -84,9 +140,15 @@ function scanLockfile() {
     const escapedName = dependencyName.replaceAll("/", "\\/");
     const pattern = new RegExp(`(?:^|\\n)\\s{2,}${escapedName}:`, "i");
     if (pattern.test(lockfile)) {
-      failures.push(
-        `pnpm-lock.yaml: ${dependencyName} must not be installed before the visual 3D phase`
-      );
+      failures.push(`pnpm-lock.yaml: unapproved visual dependency ${dependencyName} is installed`);
+    }
+  }
+
+  for (const dependencyName of approvedDirectVisualDependencyNames) {
+    const escapedName = dependencyName.replaceAll("/", "\\/");
+    const pattern = new RegExp(`(?:^|\\n)\\s{2,}${escapedName}:`, "i");
+    if (pattern.test(lockfile) && !approvedTransitiveVisualDependencyNames.has(dependencyName)) {
+      failures.push(`pnpm-lock.yaml: visual dependency ${dependencyName} is not allowlisted`);
     }
   }
 }
@@ -124,4 +186,4 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-console.log("Aetherium visual-world deferral check passed.");
+console.log("Aetherium visual-world dependency and asset policy check passed.");

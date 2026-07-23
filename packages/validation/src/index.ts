@@ -518,7 +518,7 @@ export const worldSceneManifestLocationSchema = z.object({
 });
 
 export const worldSceneManifestSchema = z.object({
-  implementationStatus: z.literal("data_contract_only"),
+  implementationStatus: z.enum(["data_contract_only", "runtime_foundation"]),
   locations: z.array(worldSceneManifestLocationSchema),
   manifestVersion: z.number().int().positive(),
   visualRuntimeAvailable: z.boolean()

@@ -53,8 +53,8 @@ const sections = {
     title: "Projects"
   },
   world: {
-    body: "Visual World Mode is not implemented. This page uses only the non-visual world profile contract.",
-    label: "Future World Mode",
+    body: "World Mode starts with a diagnostic visual runtime and keeps Command Mode as the fallback.",
+    label: "World Mode",
     title: "World"
   }
 } satisfies Record<string, SectionConfig>;

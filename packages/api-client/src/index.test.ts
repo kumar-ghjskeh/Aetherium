@@ -1211,15 +1211,15 @@ describe("createAetheriumApiClient", () => {
           jsonResponse({
             commandModeFallbackRequired: true,
             dataContractsEnabled: true,
-            reason: "Data contracts only.",
+            reason: "Diagnostic runtime enabled.",
             sceneManifestEnabled: true,
-            visualWorldEnabled: false
+            visualWorldEnabled: true
           })
         );
       }
       return Promise.resolve(
         jsonResponse({
-          implementationStatus: "data_contract_only",
+          implementationStatus: "runtime_foundation",
           locations: [
             {
               allowedToRender: false,
@@ -1233,7 +1233,7 @@ describe("createAetheriumApiClient", () => {
             }
           ],
           manifestVersion: 1,
-          visualRuntimeAvailable: false
+          visualRuntimeAvailable: true
         })
       );
     });
@@ -1241,11 +1241,11 @@ describe("createAetheriumApiClient", () => {
     const client = createAetheriumApiClient({ baseUrl: "http://localhost:8000", fetcher });
 
     await expect(client.world.getFeatureFlags()).resolves.toMatchObject({
-      visualWorldEnabled: false
+      visualWorldEnabled: true
     });
     await expect(client.world.getSceneManifest()).resolves.toMatchObject({
-      implementationStatus: "data_contract_only",
-      visualRuntimeAvailable: false
+      implementationStatus: "runtime_foundation",
+      visualRuntimeAvailable: true
     });
   });
 

@@ -96,14 +96,14 @@ Each world location maps to a Command Mode route such as `/app/library`, `/app/a
 
 ## Recommended 3D Architecture
 
-- Add visual World Mode as a progressive enhancement over the existing backend and API client.
+- Visual World Mode W1 is now a progressive enhancement over the existing backend and API client.
 - Keep Command Mode fully usable when WebGL, motion, or performance requirements are not met.
 - Lazy-load visual world code separately from the Command Mode shell.
 - Keep scene state transient in client state and persist only approved world profile/progression
   state through the backend.
 - Use the scene-manifest API to decide which future assets and locations are available.
-- Update `pnpm world:check` in W1 so it allows only the visual dependencies approved by ADR 0025
-  while still blocking unregistered assets and unrelated game-engine dependencies.
+- `pnpm world:check` now allows only the visual dependencies approved by ADR 0025 while still
+  blocking unregistered assets and unrelated game-engine dependencies.
 
 ## Recommended Scene Boundaries
 
@@ -148,15 +148,13 @@ Each world location maps to a Command Mode route such as `/app/library`, `/app/a
 
 ## Remaining Blockers
 
-- Visual-world ADR 0025 is selected, but visual dependencies are not installed yet.
-- Three.js and React Three Fiber are approved by ADR 0025, but the dependencies are not installed
-  yet.
-- No scene assets, art pipeline, or performance test harness exists.
-- No WebGL capability detection, visual-mode router, or scene-loading infrastructure exists.
+- W1 visual dependencies are installed only in the web app.
+- No final scene assets, art pipeline, or performance test harness exists.
+- WebGL capability detection and the lazy visual-mode router exist for the diagnostic runtime only.
 - No Playwright visual regression or canvas-pixel checks exist for 3D scenes.
 
 ## Exact First Task For Visual World Mode
 
-Implement W1, the World Runtime Foundation. Install only the approved 3D dependencies from ADR 0025,
-update `pnpm world:check` to enforce that allowlist, lazy-load the `/app/world` runtime, add WebGL
-and reduced-motion fallbacks, add lifecycle diagnostics, and render only a minimal diagnostic scene.
+Implement W2, the Player Controller. Add input mapping, character capsule, movement states,
+collision-ready controller boundaries, pause behavior, reduced-motion handling, and tests without
+building final district art.

@@ -46,6 +46,6 @@ export const commandActions: CommandAction[] = [
   },
   { available: true, href: "/app/analytics", id: "open-analytics", label: "Open analytics" },
   { available: true, href: "/app/settings", id: "open-settings", label: "Open settings" },
-  { available: true, href: "/app/world", id: "open-world", label: "Open future World Mode page" },
+  { available: true, href: "/app/world", id: "open-world", label: "Open World Mode runtime" },
   { available: true, id: "logout", label: "Logout" }
 ];

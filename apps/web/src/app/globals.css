@@ -1680,6 +1680,166 @@ kbd {
   overflow-wrap: anywhere;
 }
 
+.world-runtime-shell {
+  display: grid;
+  gap: 14px;
+}
+
+.world-runtime-frame {
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(180deg, #081323 0%, #0b1217 58%, #061014 100%);
+  border: 1px solid rgba(130, 230, 240, 0.22);
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.28);
+  min-height: 420px;
+  overflow: hidden;
+  position: relative;
+}
+
+.world-runtime-frame canvas {
+  display: block;
+  height: 100% !important;
+  outline: none;
+  width: 100% !important;
+}
+
+.world-runtime-hud {
+  align-items: stretch;
+  background: rgba(5, 12, 17, 0.76);
+  border: 1px solid rgba(130, 230, 240, 0.2);
+  bottom: 16px;
+  color: #eef7fb;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  left: 16px;
+  padding: 12px;
+  position: absolute;
+  right: 16px;
+}
+
+.world-runtime-hud div {
+  min-width: 0;
+}
+
+.world-runtime-hud span,
+.world-runtime-label span,
+.world-runtime-fallback small,
+.world-runtime-loading p {
+  color: #adc5cc;
+}
+
+.world-runtime-hud span {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.world-runtime-hud strong {
+  display: block;
+  font-size: 0.94rem;
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+}
+
+.world-runtime-hud select {
+  background: #0a151c;
+  border: 1px solid rgba(130, 230, 240, 0.28);
+  color: #eef7fb;
+  font: inherit;
+  margin-top: 4px;
+  min-height: 34px;
+  padding: 6px 8px;
+  width: 100%;
+}
+
+.world-runtime-button {
+  background: rgba(130, 230, 240, 0.12);
+  border: 1px solid rgba(130, 230, 240, 0.34);
+  color: #eef7fb;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  padding: 8px 10px;
+}
+
+.world-runtime-metrics {
+  border-top: 1px solid rgba(130, 230, 240, 0.18);
+  display: grid;
+  gap: 6px 12px;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  margin: 0;
+  padding-top: 10px;
+}
+
+.world-runtime-metrics dt {
+  color: #adc5cc;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.world-runtime-metrics dd {
+  color: #eef7fb;
+  font-weight: 800;
+  margin: 0;
+}
+
+.world-runtime-label {
+  background: rgba(5, 12, 17, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #eef7fb;
+  display: grid;
+  gap: 4px;
+  left: 16px;
+  padding: 10px 12px;
+  position: absolute;
+  top: 16px;
+}
+
+.world-runtime-fallback,
+.world-runtime-loading {
+  align-items: center;
+  background: linear-gradient(135deg, rgba(9, 23, 35, 0.94), rgba(15, 24, 30, 0.94)), #081018;
+  border: 1px solid var(--panel-border);
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  min-height: 190px;
+  padding: 22px;
+}
+
+.world-runtime-fallback h2,
+.world-runtime-loading h2 {
+  margin: 0 0 8px;
+}
+
+.world-runtime-fallback p,
+.world-runtime-loading p {
+  margin: 0;
+}
+
+.world-runtime-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.world-runtime-loading {
+  justify-content: flex-start;
+}
+
+.world-runtime-loading > span {
+  aspect-ratio: 1;
+  background: conic-gradient(from 90deg, #82e6f0, #7d68ff, #d5ab4f, #82e6f0);
+  border-radius: 999px;
+  display: block;
+  flex: 0 0 46px;
+  width: 46px;
+}
+
 .world-location-list {
   display: grid;
   gap: 12px;
@@ -2233,6 +2393,8 @@ kbd {
 .coding-tab-row:focus,
 .permission-grid input:focus,
 .preset-button:focus,
+.world-runtime-button:focus,
+.world-runtime-hud select:focus,
 .danger-action:focus {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
@@ -2282,6 +2444,7 @@ kbd {
   .habit-metrics,
   .world-location-row,
   .world-status-grid,
+  .world-runtime-hud,
   .knowledge-columns,
   .knowledge-summary-grid,
   .learning-metrics,
@@ -2292,6 +2455,10 @@ kbd {
   .vault-grid,
   .vault-metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .world-runtime-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -2342,6 +2509,7 @@ kbd {
   .habit-metrics,
   .world-location-row,
   .world-status-grid,
+  .world-runtime-hud,
   .knowledge-columns,
   .knowledge-summary-grid,
   .learning-metrics,
@@ -2352,6 +2520,20 @@ kbd {
   .vault-filter-row,
   .vault-metrics {
     grid-template-columns: 1fr;
+  }
+
+  .world-runtime-frame {
+    min-height: 560px;
+  }
+
+  .world-runtime-fallback,
+  .world-runtime-loading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .world-runtime-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .achievement-toolbar {
