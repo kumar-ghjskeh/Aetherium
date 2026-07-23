@@ -48,6 +48,7 @@ from app.models.habits import (
     HabitTarget,
     WeeklyReview,
 )
+from app.models.knowledge import KnowledgeNode, KnowledgeRelationship
 from app.models.learning import (
     Attempt,
     Course,
@@ -138,6 +139,8 @@ __all__ = [
     "HabitSchedule",
     "HabitStreak",
     "HabitTarget",
+    "KnowledgeNode",
+    "KnowledgeRelationship",
     "LearningGoal",
     "LearningResource",
     "Lesson",

@@ -99,6 +99,8 @@ Frontend and shared packages:
   certificates, privacy settings, data-export requests, and account deletion request endpoints.
 - API-client contract tests for Coding workspace snippets, exercises, attempts, assistant requests,
   and runner status.
+- API-client contract tests for Knowledge Graph nodes, relationships, sync, related-topic context,
+  prerequisites, review recommendations, and summary endpoints.
 - Next.js build validation.
 - React Testing Library coverage for the Library page, including loading, empty, error, upload,
   favorite, tag, delete, processing failure, and retry states.
@@ -125,6 +127,9 @@ Frontend and shared packages:
 - React Testing Library coverage for the Coding workspace page, including loading, empty and error
   states, snippet validation, save/update/archive flows, AI explain/review requests, exercise
   creation, attempt submission, and unavailable runner messaging.
+- React Testing Library coverage for the Learning page knowledge graph panel, including graph
+  summary rendering, related-topic rows, review recommendations, sync refresh behavior, and error
+  state handling through the shared API client.
 
 ## Future Backend Tests
 

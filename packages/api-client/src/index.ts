@@ -33,6 +33,18 @@ import type {
   CodeSnippetCreateRequest,
   CodeSnippetPage,
   CodeSnippetUpdateRequest,
+  KnowledgeNode,
+  KnowledgeNodeCreateRequest,
+  KnowledgeNodeListQuery,
+  KnowledgeNodePage,
+  KnowledgeRecommendationPage,
+  KnowledgeRelatedNodePage,
+  KnowledgeRelationship,
+  KnowledgeRelationshipCreateRequest,
+  KnowledgeRelationshipListQuery,
+  KnowledgeRelationshipPage,
+  KnowledgeSummary,
+  KnowledgeSyncResponse,
   Collection,
   CollectionCreateRequest,
   CollectionItemRequest,
@@ -219,6 +231,14 @@ import {
   codeRunnerStatusSchema,
   codeSnippetPageSchema,
   codeSnippetSchema,
+  knowledgeNodePageSchema,
+  knowledgeNodeSchema,
+  knowledgeRecommendationPageSchema,
+  knowledgeRelatedNodePageSchema,
+  knowledgeRelationshipPageSchema,
+  knowledgeRelationshipSchema,
+  knowledgeSummarySchema,
+  knowledgeSyncResponseSchema,
   collectionPageSchema,
   collectionSchema,
   conversationExportSchema,
@@ -371,6 +391,21 @@ export interface AetheriumApiClient {
     ) => Promise<CodeSnippetPage>;
     review: (payload: CodeAssistantCreateRequest) => Promise<CodeAssistantRequest>;
     updateSnippet: (snippetId: string, payload: CodeSnippetUpdateRequest) => Promise<CodeSnippet>;
+  };
+  knowledge: {
+    createNode: (payload: KnowledgeNodeCreateRequest) => Promise<KnowledgeNode>;
+    createRelationship: (
+      payload: KnowledgeRelationshipCreateRequest
+    ) => Promise<KnowledgeRelationship>;
+    listNodes: (query?: KnowledgeNodeListQuery) => Promise<KnowledgeNodePage>;
+    listRelationships: (
+      query?: KnowledgeRelationshipListQuery
+    ) => Promise<KnowledgeRelationshipPage>;
+    prerequisites: (topicId: string, query?: PaginationQuery) => Promise<KnowledgeRelatedNodePage>;
+    recommendations: (query?: PaginationQuery) => Promise<KnowledgeRecommendationPage>;
+    relatedTopic: (topicId: string, query?: PaginationQuery) => Promise<KnowledgeRelatedNodePage>;
+    summary: () => Promise<KnowledgeSummary>;
+    sync: () => Promise<KnowledgeSyncResponse>;
   };
   domainEvents: {
     create: (payload: DomainEventCreateRequest) => Promise<DomainEvent>;
@@ -719,6 +754,25 @@ function learningResourceListQuery(query?: LearningResourceListQuery): string {
   ]);
 }
 
+function knowledgeNodeListQuery(query?: KnowledgeNodeListQuery): string {
+  return queryString([
+    ["limit", query?.limit],
+    ["nodeType", query?.nodeType],
+    ["offset", query?.offset],
+    ["query", query?.query]
+  ]);
+}
+
+function knowledgeRelationshipListQuery(query?: KnowledgeRelationshipListQuery): string {
+  return queryString([
+    ["direction", query?.direction],
+    ["limit", query?.limit],
+    ["nodeId", query?.nodeId],
+    ["offset", query?.offset],
+    ["relationType", query?.relationType]
+  ]);
+}
+
 function projectListQuery(query?: PaginationQuery & { includeArchived?: boolean }): string {
   return queryString([
     ["includeArchived", query?.includeArchived],
@@ -1057,6 +1111,77 @@ export function createAetheriumApiClient(options: AetheriumApiClientOptions): Ae
           }
         );
         return codeSnippetSchema.parse(response);
+      }
+    },
+    knowledge: {
+      createNode: async (payload) => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/knowledge/nodes", {
+          body: JSON.stringify(payload),
+          method: "POST"
+        });
+        return knowledgeNodeSchema.parse(response);
+      },
+      createRelationship: async (payload) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          "/api/v1/knowledge/relationships",
+          {
+            body: JSON.stringify(payload),
+            method: "POST"
+          }
+        );
+        return knowledgeRelationshipSchema.parse(response);
+      },
+      listNodes: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/knowledge/nodes${knowledgeNodeListQuery(query)}`
+        );
+        return knowledgeNodePageSchema.parse(response);
+      },
+      listRelationships: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/knowledge/relationships${knowledgeRelationshipListQuery(query)}`
+        );
+        return knowledgeRelationshipPageSchema.parse(response);
+      },
+      prerequisites: async (topicId, query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/knowledge/topics/${topicId}/prerequisites${paginationQuery(query)}`
+        );
+        return knowledgeRelatedNodePageSchema.parse(response);
+      },
+      recommendations: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/knowledge/recommendations${paginationQuery(query)}`
+        );
+        return knowledgeRecommendationPageSchema.parse(response);
+      },
+      relatedTopic: async (topicId, query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/knowledge/topics/${topicId}/related${paginationQuery(query)}`
+        );
+        return knowledgeRelatedNodePageSchema.parse(response);
+      },
+      summary: async () => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/knowledge/summary");
+        return knowledgeSummarySchema.parse(response);
+      },
+      sync: async () => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/knowledge/sync", {
+          method: "POST"
+        });
+        return knowledgeSyncResponseSchema.parse(response);
       }
     },
     domainEvents: {

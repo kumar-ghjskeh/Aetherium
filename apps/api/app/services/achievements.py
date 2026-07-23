@@ -22,6 +22,7 @@ from app.models.achievements import (
 from app.models.auth import User
 from app.models.foundation import DomainEvent
 from app.services.foundation import PageResult, UserDataService
+from app.services.knowledge import KnowledgeGraphService
 
 
 @dataclass(frozen=True)
@@ -299,6 +300,7 @@ class AchievementService:
         )
         self.db.add(user_achievement)
         await self.db.flush()
+        await KnowledgeGraphService(self.db).sync_user_achievement(user, user_achievement)
 
         rewards = await self._list_rewards(definition.id)
         for reward in rewards:

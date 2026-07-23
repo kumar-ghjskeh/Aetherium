@@ -1801,6 +1801,143 @@ export const codeRunnerStatusSchema = z.object({
   supportedLanguages: z.array(codingLanguageSchema)
 });
 
+export const knowledgeNodeTypeSchema = z.enum([
+  "topic",
+  "file",
+  "lesson",
+  "project",
+  "skill",
+  "question",
+  "achievement"
+]);
+
+export const knowledgeRelationTypeSchema = z.enum([
+  "requires",
+  "explains",
+  "references",
+  "practices",
+  "used_in",
+  "related_to",
+  "mastered_through",
+  "derived_from"
+]);
+
+export const knowledgeNodeStatusSchema = z.enum(["active", "archived"]);
+
+export const knowledgeRelationshipSourceSchema = z.enum([
+  "user",
+  "system",
+  "sync",
+  "learning",
+  "project",
+  "achievement"
+]);
+
+export const knowledgeRelationshipDirectionSchema = z.enum(["incoming", "outgoing", "both"]);
+
+export const knowledgeRecommendationPrioritySchema = z.enum(["high", "medium", "low"]);
+
+export const knowledgeNodeSchema = z.object({
+  createdAt: z.string().min(1),
+  description: z.string().nullable(),
+  id: z.string().uuid(),
+  metadata: z.record(z.unknown()),
+  nodeType: knowledgeNodeTypeSchema,
+  openUrl: z.string().min(1),
+  sourceId: z.string().uuid().nullable(),
+  sourceKey: z.string().min(1),
+  status: knowledgeNodeStatusSchema,
+  title: z.string().min(1),
+  updatedAt: z.string().min(1)
+});
+
+export const knowledgeNodePageSchema = z.object({
+  items: z.array(knowledgeNodeSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const knowledgeNodeCreateRequestSchema = z.object({
+  description: z.string().max(4000).nullable().optional(),
+  metadata: z.record(z.unknown()).optional(),
+  nodeType: knowledgeNodeTypeSchema.optional(),
+  openUrl: z.string().max(600).nullable().optional(),
+  title: z.string().trim().min(1, "Knowledge node title is required.").max(240)
+});
+
+export const knowledgeRelationshipSchema = z.object({
+  createdAt: z.string().min(1),
+  evidence: z.record(z.unknown()),
+  id: z.string().uuid(),
+  relationType: knowledgeRelationTypeSchema,
+  source: knowledgeRelationshipSourceSchema,
+  sourceNodeId: z.string().uuid(),
+  targetNodeId: z.string().uuid(),
+  updatedAt: z.string().min(1),
+  weight: z.number().min(0).max(1)
+});
+
+export const knowledgeRelationshipPageSchema = z.object({
+  items: z.array(knowledgeRelationshipSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const knowledgeRelationshipCreateRequestSchema = z.object({
+  evidence: z.record(z.unknown()).optional(),
+  relationType: knowledgeRelationTypeSchema,
+  sourceNodeId: z.string().uuid(),
+  targetNodeId: z.string().uuid(),
+  weight: z.number().min(0).max(1).optional()
+});
+
+export const knowledgeRelatedNodeSchema = z.object({
+  direction: knowledgeRelationshipDirectionSchema,
+  node: knowledgeNodeSchema,
+  reason: z.string().min(1),
+  relationship: knowledgeRelationshipSchema
+});
+
+export const knowledgeRelatedNodePageSchema = z.object({
+  items: z.array(knowledgeRelatedNodeSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const knowledgeRecommendationSchema = z.object({
+  masteryScore: z.number().min(0).max(1).nullable(),
+  openUrl: z.string().min(1),
+  priority: knowledgeRecommendationPrioritySchema,
+  reason: z.string().min(1),
+  staleSince: z.string().min(1).nullable(),
+  title: z.string().min(1),
+  topicId: z.string().uuid()
+});
+
+export const knowledgeRecommendationPageSchema = z.object({
+  items: z.array(knowledgeRecommendationSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
+export const knowledgeSummarySchema = z.object({
+  nodeCount: z.number().int().min(0),
+  relationshipCount: z.number().int().min(0),
+  staleTopicCount: z.number().int().min(0),
+  weakTopicCount: z.number().int().min(0)
+});
+
+export const knowledgeSyncResponseSchema = z.object({
+  nodesCreated: z.number().int().min(0),
+  nodesUpdated: z.number().int().min(0),
+  relationshipsCreated: z.number().int().min(0),
+  relationshipsReused: z.number().int().min(0)
+});
+
 export const analyticsPeriodSchema = z.enum(["week", "month", "quarter", "year"]);
 
 export const analyticsMetricKeySchema = z.enum([

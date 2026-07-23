@@ -42,6 +42,8 @@ Current migrations:
   request records.
 - `0014_coding_workspace`: creates owner-scoped coding snippets, coding exercises, exercise
   attempts, and coding assistant request records.
+- `0015_knowledge_graph`: creates owner-scoped knowledge graph nodes and relationships for
+  non-visual topic, file, lesson, project, skill, question, and achievement connections.
 
 Progress analytics add no new tables in Phase 12. The analytics service is a read-only aggregation
 layer over existing owner-scoped tables.
@@ -758,10 +760,33 @@ Attempts record a user's submitted answer. They do not imply that code was compi
 Assistant request rows store user-owned coding assistance history. AI usage records remain
 metadata-only and do not duplicate raw prompts or code excerpts.
 
+## Knowledge Graph Schema
+
+### `knowledge_nodes`
+
+Owner-scoped graph nodes for non-visual knowledge relationships. Supported node types are `topic`,
+`file`, `lesson`, `project`, `skill`, `question`, and `achievement`.
+
+Rows include owner, node type, stable source identifier, stable source key, title, summary, status,
+mastery score, confidence score, last-reviewed timestamp, stale-after timestamp, metadata, and
+timestamps. Source-backed nodes are unique per owner, node type, and source key. Manual creation is
+limited to user-created skill nodes in the first graph slice.
+
+### `knowledge_relationships`
+
+Owner-scoped graph edges between `knowledge_nodes`.
+
+Rows include owner, source node, target node, relation type, relationship source, weight,
+confidence, evidence, metadata, optional created-by event, and timestamps. Supported relationship
+types are `requires`, `explains`, `references`, `practices`, `used_in`, `related_to`,
+`mastered_through`, and `derived_from`.
+
+A unique constraint over owner, source node, target node, and relation type makes approved sync
+idempotent. A check constraint prevents self-edge relationships.
+
 ## Planned Later Tables
 
 Later schema slices will cover:
 
 - `world_locations`, `user_world_state`.
 - `goals`, global tasks, and goal milestones.
-- Knowledge graph foundation tables.

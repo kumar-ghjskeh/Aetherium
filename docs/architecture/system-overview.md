@@ -29,7 +29,7 @@ foundation, user-owned foundation, protected Command Mode shell, Personal Vault 
 file ingestion, global search, provider-neutral AI gateway, AI mentor conversations, citation-backed
 document Q&A, habit tracking, the learning and mastery engine, the Project Dock foundation, and
 progress analytics, the achievement progression foundation, personal profile/privacy settings, and
-the Coding workspace foundation:
+the Coding workspace foundation, and the non-visual knowledge graph data foundation:
 
 - `apps/api`: FastAPI app, database settings, Alembic, health endpoints.
 - `apps/web`: Next.js App Router scaffold, web health route, auth UI, and protected `/app` Command
@@ -86,6 +86,9 @@ the Coding workspace foundation:
 - Coding workspace: owner-scoped snippets, exercises, submitted attempts, AI explain/review
   requests, Monaco editor UI, project/file linking, and an unavailable code-runner provider that
   prevents arbitrary user code from executing in the API, worker, database, or web containers.
+- Knowledge graph: owner-scoped nodes and relationships for topics, files, lessons, projects,
+  skills, questions, and achievements, plus approved source sync, related-topic and prerequisite
+  queries, transparent review recommendations, and a 2D Learning UI panel.
 
 ## Frontend Boundaries
 
@@ -99,8 +102,8 @@ Three.js, React Three Fiber, scene assets, or player/camera controls until the v
 Backend domains will be added incrementally:
 
 - Additional world configuration and user world state beyond the current non-visual profile.
-- Global semantic search and knowledge extraction on top of the current Personal Vault, ingestion,
-  search, and AI gateway records.
+- Global semantic search and AI-assisted knowledge extraction on top of the current Personal Vault,
+  ingestion, search, AI gateway, and knowledge graph records.
 - Mentor tools that can reuse citation-backed retrieval after explicit user approval.
 - Future sandboxed code execution as a separate isolated service behind the `CodeRunner` interface.
 - Goals and global tasks beyond project-scoped tasks.
@@ -149,6 +152,9 @@ plus reusable dependencies.
   records.
 - Coding routes are under `/api/v1/coding` and expose snippets, exercises, submitted attempts, AI
   explain/review requests, and code-runner status without executing code.
+- Knowledge graph routes are under `/api/v1/knowledge` and expose owner-scoped graph nodes,
+  relationships, sync, related-topic context, prerequisites, review recommendations, and summary
+  counts without rendering a visual graph.
 
 ## Configuration
 

@@ -4,6 +4,9 @@ import type { AetheriumApiClient } from "@aetherium/api-client";
 import type {
   Course,
   Flashcard,
+  KnowledgeRecommendation,
+  KnowledgeRelatedNode,
+  KnowledgeSummary,
   LearningGoal,
   MasteryRecord,
   Quiz,
@@ -91,10 +94,15 @@ export function LearningPage({
   const apiClient = React.useMemo(() => client ?? createBrowserApiClient(), [client]);
   const [state, setState] = React.useState<LearningState>(emptyLearningState);
   const [mastery, setMastery] = React.useState<MasteryRecord | null>(null);
+  const [knowledgeSummary, setKnowledgeSummary] = React.useState<KnowledgeSummary | null>(null);
+  const [relatedTopics, setRelatedTopics] = React.useState<KnowledgeRelatedNode[]>([]);
+  const [recommendations, setRecommendations] = React.useState<KnowledgeRecommendation[]>([]);
   const [selectedTopicId, setSelectedTopicId] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(true);
+  const [isKnowledgeLoading, setIsKnowledgeLoading] = React.useState(false);
   const [activeAction, setActiveAction] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
+  const [knowledgeError, setKnowledgeError] = React.useState<string | null>(null);
   const [notice, setNotice] = React.useState<string | null>(null);
   const [subjectName, setSubjectName] = React.useState("");
   const [subjectDescription, setSubjectDescription] = React.useState("");
@@ -123,6 +131,30 @@ export function LearningPage({
   const [roadmapTopicId, setRoadmapTopicId] = React.useState("");
   const [courseTitle, setCourseTitle] = React.useState("");
   const [courseSubjectId, setCourseSubjectId] = React.useState("");
+
+  const loadKnowledge = React.useCallback(
+    async (topicId: string) => {
+      setIsKnowledgeLoading(true);
+      setKnowledgeError(null);
+      try {
+        const [summary, recommendationPage, relatedPage] = await Promise.all([
+          apiClient.knowledge.summary(),
+          apiClient.knowledge.recommendations({ limit: 5, offset: 0 }),
+          topicId
+            ? apiClient.knowledge.relatedTopic(topicId, { limit: 5, offset: 0 })
+            : Promise.resolve({ items: [], limit: 5, offset: 0, total: 0 })
+        ]);
+        setKnowledgeSummary(summary);
+        setRecommendations(recommendationPage.items);
+        setRelatedTopics(relatedPage.items);
+      } catch (loadError) {
+        setKnowledgeError(friendlyError(loadError));
+      } finally {
+        setIsKnowledgeLoading(false);
+      }
+    },
+    [apiClient]
+  );
 
   const loadLearning = React.useCallback(
     async (showLoading = true) => {
@@ -155,13 +187,14 @@ export function LearningPage({
         const nextTopicId = selectedTopicId || topics.items[0]?.id || "";
         setSelectedTopicId(nextTopicId);
         setMastery(nextTopicId ? await apiClient.learning.getMastery(nextTopicId) : null);
+        await loadKnowledge(nextTopicId);
       } catch (loadError) {
         setError(friendlyError(loadError));
       } finally {
         setIsLoading(false);
       }
     },
-    [apiClient, selectedTopicId]
+    [apiClient, loadKnowledge, selectedTopicId]
   );
 
   React.useEffect(() => {
@@ -184,6 +217,17 @@ export function LearningPage({
   async function selectTopic(topicId: string): Promise<void> {
     setSelectedTopicId(topicId);
     setMastery(topicId ? await apiClient.learning.getMastery(topicId) : null);
+    await loadKnowledge(topicId);
+  }
+
+  async function handleSyncKnowledge(): Promise<void> {
+    await runAction("knowledge:sync", async () => {
+      const syncResult = await apiClient.knowledge.sync();
+      setNotice(
+        `Knowledge graph synced: ${syncResult.nodesCreated} new nodes, ${syncResult.relationshipsCreated} new relationships.`
+      );
+      await loadKnowledge(selectedTopicId);
+    });
   }
 
   async function handleCreateSubject(event: React.FormEvent<HTMLFormElement>): Promise<void> {
@@ -608,6 +652,88 @@ export function LearningPage({
           ) : null}
         </section>
       </div>
+
+      <section className="work-panel knowledge-panel">
+        <header className="habit-panel-header">
+          <div>
+            <h2>Knowledge Graph</h2>
+            <p className="empty-note">Non-visual links between topics and source records.</p>
+          </div>
+          <button
+            className="secondary-action"
+            disabled={activeAction === "knowledge:sync"}
+            onClick={() => void handleSyncKnowledge()}
+            type="button"
+          >
+            Sync graph
+          </button>
+        </header>
+        {knowledgeError ? (
+          <section className="inline-alert" role="alert">
+            {knowledgeError}
+          </section>
+        ) : null}
+        <div className="knowledge-summary-grid">
+          <div>
+            <span>Nodes</span>
+            <strong>{knowledgeSummary?.nodeCount ?? 0}</strong>
+          </div>
+          <div>
+            <span>Relationships</span>
+            <strong>{knowledgeSummary?.relationshipCount ?? 0}</strong>
+          </div>
+          <div>
+            <span>Weak Topics</span>
+            <strong>{knowledgeSummary?.weakTopicCount ?? 0}</strong>
+          </div>
+          <div>
+            <span>Stale Topics</span>
+            <strong>{knowledgeSummary?.staleTopicCount ?? 0}</strong>
+          </div>
+        </div>
+        {isKnowledgeLoading ? <p className="empty-note">Loading knowledge records...</p> : null}
+        <div className="knowledge-columns">
+          <section aria-labelledby="related-knowledge-heading">
+            <h3 id="related-knowledge-heading">Related Topics</h3>
+            {relatedTopics.length === 0 ? (
+              <p className="empty-note">No topic links yet.</p>
+            ) : (
+              <div className="learning-list">
+                {relatedTopics.map((item) => (
+                  <article className="learning-row" key={item.relationship.id}>
+                    <span>
+                      <strong>{item.node.title}</strong>
+                      <small>{item.reason}</small>
+                    </span>
+                    <span className="status-token">{item.relationship.relationType}</span>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+          <section aria-labelledby="knowledge-recommendations-heading">
+            <h3 id="knowledge-recommendations-heading">Review Recommendations</h3>
+            {recommendations.length === 0 ? (
+              <p className="empty-note">No recommendations from stored mastery records.</p>
+            ) : (
+              <div className="learning-list">
+                {recommendations.map((recommendation) => (
+                  <article
+                    className="learning-row stacked-learning-row"
+                    key={recommendation.topicId}
+                  >
+                    <span>
+                      <strong>{recommendation.title}</strong>
+                      <small>{recommendation.reason}</small>
+                    </span>
+                    <span className="status-token">{recommendation.priority}</span>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
+      </section>
 
       <section className="work-panel">
         <header className="habit-panel-header">

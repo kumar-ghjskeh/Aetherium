@@ -17,6 +17,7 @@ import {
   createUnusedCodingClient,
   createUnusedFilesClient,
   createUnusedHabitsClient,
+  createUnusedKnowledgeClient,
   createUnusedLearningClient,
   createUnusedMentorsClient,
   createUnusedProjectsClient,
@@ -191,6 +192,7 @@ function createClient(overrides: Partial<AetheriumApiClient["habits"]> = {}): Ae
       ...overrides
     },
     health: { live: vi.fn(reject), ready: vi.fn(reject) },
+    knowledge: createUnusedKnowledgeClient(),
     learning: createUnusedLearningClient(),
     mentors: createUnusedMentorsClient(),
     notifications: { list: vi.fn(reject), markRead: vi.fn(reject) },

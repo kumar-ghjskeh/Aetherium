@@ -538,6 +538,77 @@ const codeRunnerStatus = {
   supportedLanguages: ["typescript", "python", "sql"]
 };
 
+const knowledgeTopicNode = {
+  createdAt: "2026-07-20T00:00:00Z",
+  description: "Instruction overlap and hazards.",
+  id: "d1111111-1111-4111-8111-111111111111",
+  metadata: { subjectId: learningSubject.id },
+  nodeType: "topic",
+  openUrl: `/app/learning?topicId=${learningTopic.id}`,
+  sourceId: learningTopic.id,
+  sourceKey: learningTopic.id,
+  status: "active",
+  title: "Pipelining",
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const knowledgeSkillNode = {
+  createdAt: "2026-07-20T00:00:00Z",
+  description: null,
+  id: "d2222222-2222-4222-8222-222222222222",
+  metadata: { source: "manual" },
+  nodeType: "skill",
+  openUrl: "/app/learning",
+  sourceId: null,
+  sourceKey: "manual:skill:data-modeling",
+  status: "active",
+  title: "Data Modeling",
+  updatedAt: "2026-07-20T00:00:00Z"
+};
+
+const knowledgeRelationship = {
+  createdAt: "2026-07-20T00:00:00Z",
+  evidence: { approvedBy: "user" },
+  id: "d3333333-3333-4333-8333-333333333333",
+  relationType: "related_to",
+  source: "user",
+  sourceNodeId: knowledgeSkillNode.id,
+  targetNodeId: knowledgeTopicNode.id,
+  updatedAt: "2026-07-20T00:00:00Z",
+  weight: 0.5
+};
+
+const knowledgeRelatedTopic = {
+  direction: "incoming",
+  node: knowledgeSkillNode,
+  reason: "Related learning record",
+  relationship: knowledgeRelationship
+};
+
+const knowledgeRecommendation = {
+  masteryScore: 0.2,
+  openUrl: `/app/learning?topicId=${learningTopic.id}`,
+  priority: "high",
+  reason: "Mastery is below 50%; review evidence and practice this topic.",
+  staleSince: null,
+  title: "Pipelining",
+  topicId: learningTopic.id
+};
+
+const knowledgeSummary = {
+  nodeCount: 2,
+  relationshipCount: 1,
+  staleTopicCount: 0,
+  weakTopicCount: 1
+};
+
+const knowledgeSyncResponse = {
+  nodesCreated: 1,
+  nodesUpdated: 1,
+  relationshipsCreated: 1,
+  relationshipsReused: 0
+};
+
 const analyticsSummary = {
   generatedAt: "2026-07-20T00:00:00Z",
   metrics: [
@@ -2117,6 +2188,106 @@ describe("createAetheriumApiClient", () => {
 
     expect(fetcher).toHaveBeenCalledWith(
       "http://localhost:8000/api/v1/coding/snippets?includeArchived=true&limit=5&offset=0",
+      {
+        credentials: "include",
+        headers: { Accept: "application/json" }
+      }
+    );
+  });
+
+  it("uses knowledge graph endpoints", async () => {
+    const fetcher = vi.fn<typeof fetch>((input) => {
+      const url = requestUrl(input);
+      if (
+        url ===
+        "http://localhost:8000/api/v1/knowledge/nodes?limit=5&nodeType=topic&offset=0&query=pipe"
+      ) {
+        return Promise.resolve(
+          jsonResponse({ items: [knowledgeTopicNode], limit: 5, offset: 0, total: 1 })
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/knowledge/nodes") {
+        return Promise.resolve(jsonResponse(knowledgeSkillNode, 201));
+      }
+      if (
+        url ===
+        `http://localhost:8000/api/v1/knowledge/relationships?direction=both&limit=5&nodeId=${knowledgeTopicNode.id}&offset=0&relationType=related_to`
+      ) {
+        return Promise.resolve(
+          jsonResponse({ items: [knowledgeRelationship], limit: 5, offset: 0, total: 1 })
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/knowledge/relationships") {
+        return Promise.resolve(jsonResponse(knowledgeRelationship, 201));
+      }
+      if (
+        url ===
+        `http://localhost:8000/api/v1/knowledge/topics/${learningTopic.id}/related?limit=5&offset=0`
+      ) {
+        return Promise.resolve(
+          jsonResponse({ items: [knowledgeRelatedTopic], limit: 5, offset: 0, total: 1 })
+        );
+      }
+      if (
+        url ===
+        `http://localhost:8000/api/v1/knowledge/topics/${learningTopic.id}/prerequisites?limit=5&offset=0`
+      ) {
+        return Promise.resolve(
+          jsonResponse({ items: [knowledgeRelatedTopic], limit: 5, offset: 0, total: 1 })
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/knowledge/recommendations?limit=5&offset=0") {
+        return Promise.resolve(
+          jsonResponse({ items: [knowledgeRecommendation], limit: 5, offset: 0, total: 1 })
+        );
+      }
+      if (url === "http://localhost:8000/api/v1/knowledge/summary") {
+        return Promise.resolve(jsonResponse(knowledgeSummary));
+      }
+      if (url === "http://localhost:8000/api/v1/knowledge/sync") {
+        return Promise.resolve(jsonResponse(knowledgeSyncResponse));
+      }
+      return Promise.resolve(jsonResponse({ error: { code: "not_found", message: url } }, 404));
+    });
+    const client = createAetheriumApiClient({ baseUrl: "http://localhost:8000", fetcher });
+
+    await expect(
+      client.knowledge.listNodes({ limit: 5, nodeType: "topic", offset: 0, query: "pipe" })
+    ).resolves.toMatchObject({ total: 1 });
+    await expect(
+      client.knowledge.createNode({ nodeType: "skill", title: "Data Modeling" })
+    ).resolves.toMatchObject({ nodeType: "skill" });
+    await expect(
+      client.knowledge.listRelationships({
+        direction: "both",
+        limit: 5,
+        nodeId: knowledgeTopicNode.id,
+        offset: 0,
+        relationType: "related_to"
+      })
+    ).resolves.toMatchObject({ total: 1 });
+    await expect(
+      client.knowledge.createRelationship({
+        relationType: "related_to",
+        sourceNodeId: knowledgeSkillNode.id,
+        targetNodeId: knowledgeTopicNode.id,
+        weight: 0.5
+      })
+    ).resolves.toMatchObject({ relationType: "related_to" });
+    await expect(
+      client.knowledge.relatedTopic(learningTopic.id, { limit: 5, offset: 0 })
+    ).resolves.toMatchObject({ total: 1 });
+    await expect(
+      client.knowledge.prerequisites(learningTopic.id, { limit: 5, offset: 0 })
+    ).resolves.toMatchObject({ total: 1 });
+    await expect(client.knowledge.recommendations({ limit: 5, offset: 0 })).resolves.toMatchObject({
+      items: [{ priority: "high" }]
+    });
+    await expect(client.knowledge.summary()).resolves.toMatchObject({ weakTopicCount: 1 });
+    await expect(client.knowledge.sync()).resolves.toMatchObject({ nodesCreated: 1 });
+
+    expect(fetcher).toHaveBeenCalledWith(
+      "http://localhost:8000/api/v1/knowledge/nodes?limit=5&nodeType=topic&offset=0&query=pipe",
       {
         credentials: "include",
         headers: { Accept: "application/json" }

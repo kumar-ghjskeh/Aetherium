@@ -169,6 +169,15 @@ Current routes:
 - `POST /api/v1/coding/assistant/explain`
 - `POST /api/v1/coding/assistant/review`
 - `GET /api/v1/coding/runner/status`
+- `GET /api/v1/knowledge/nodes`
+- `POST /api/v1/knowledge/nodes`
+- `GET /api/v1/knowledge/relationships`
+- `POST /api/v1/knowledge/relationships`
+- `POST /api/v1/knowledge/sync`
+- `GET /api/v1/knowledge/topics/{topic_id}/related`
+- `GET /api/v1/knowledge/topics/{topic_id}/prerequisites`
+- `GET /api/v1/knowledge/recommendations`
+- `GET /api/v1/knowledge/summary`
 
 Planned route groups:
 
@@ -551,6 +560,31 @@ metadata-only.
 `GET /api/v1/coding/runner/status` returns the current code-runner capability. The Phase 15 provider
 is intentionally `unavailable`; Aetherium does not execute arbitrary code in the API, worker,
 database, or web containers.
+
+## Knowledge Graph Routes
+
+`GET/POST /api/v1/knowledge/nodes` lists and creates owner-scoped graph nodes. Source-backed nodes
+are synchronized from approved Aetherium records; manual creation is limited to skill nodes in this
+phase.
+
+`GET/POST /api/v1/knowledge/relationships` lists and creates owner-scoped graph relationships. The
+service verifies that source and target nodes both belong to the authenticated user before creating
+an edge.
+
+`POST /api/v1/knowledge/sync` idempotently synchronizes approved source records such as topics,
+files, lessons, projects, questions, and achievements into graph nodes and relationships.
+
+`GET /api/v1/knowledge/topics/{topic_id}/related` returns bounded related-topic context for an owned
+learning topic.
+
+`GET /api/v1/knowledge/topics/{topic_id}/prerequisites` returns prerequisite topic nodes for an
+owned learning topic.
+
+`GET /api/v1/knowledge/recommendations` returns transparent review recommendations based on current
+mastery and stale review timestamps. It does not claim scientific certainty.
+
+`GET /api/v1/knowledge/summary` returns owner-scoped graph counts and weak/stale topic counts for
+Command Mode UI panels.
 
 ## Generated Client
 

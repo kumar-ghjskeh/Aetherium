@@ -1661,6 +1661,140 @@ export interface CodeRunnerStatus {
   securityRequirements: string[];
 }
 
+export type KnowledgeNodeType =
+  "topic" | "file" | "lesson" | "project" | "skill" | "question" | "achievement";
+
+export type KnowledgeRelationType =
+  | "requires"
+  | "explains"
+  | "references"
+  | "practices"
+  | "used_in"
+  | "related_to"
+  | "mastered_through"
+  | "derived_from";
+
+export type KnowledgeNodeStatus = "active" | "archived";
+
+export type KnowledgeRelationshipSource =
+  "user" | "system" | "sync" | "learning" | "project" | "achievement";
+
+export type KnowledgeRelationshipDirection = "incoming" | "outgoing" | "both";
+
+export type KnowledgeRecommendationPriority = "high" | "medium" | "low";
+
+export interface KnowledgeNode {
+  id: string;
+  nodeType: KnowledgeNodeType;
+  sourceId: string | null;
+  sourceKey: string;
+  title: string;
+  description: string | null;
+  openUrl: string;
+  status: KnowledgeNodeStatus;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface KnowledgeNodePage {
+  items: KnowledgeNode[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface KnowledgeNodeCreateRequest {
+  nodeType?: KnowledgeNodeType | undefined;
+  title: string;
+  description?: string | null | undefined;
+  openUrl?: string | null | undefined;
+  metadata?: Record<string, unknown> | undefined;
+}
+
+export interface KnowledgeNodeListQuery extends PaginationQuery {
+  nodeType?: KnowledgeNodeType;
+  query?: string;
+}
+
+export interface KnowledgeRelationship {
+  id: string;
+  sourceNodeId: string;
+  targetNodeId: string;
+  relationType: KnowledgeRelationType;
+  source: KnowledgeRelationshipSource;
+  weight: number;
+  evidence: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface KnowledgeRelationshipPage {
+  items: KnowledgeRelationship[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface KnowledgeRelationshipCreateRequest {
+  sourceNodeId: string;
+  targetNodeId: string;
+  relationType: KnowledgeRelationType;
+  weight?: number | undefined;
+  evidence?: Record<string, unknown> | undefined;
+}
+
+export interface KnowledgeRelationshipListQuery extends PaginationQuery {
+  nodeId?: string;
+  relationType?: KnowledgeRelationType;
+  direction?: KnowledgeRelationshipDirection;
+}
+
+export interface KnowledgeRelatedNode {
+  node: KnowledgeNode;
+  relationship: KnowledgeRelationship;
+  direction: KnowledgeRelationshipDirection;
+  reason: string;
+}
+
+export interface KnowledgeRelatedNodePage {
+  items: KnowledgeRelatedNode[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface KnowledgeRecommendation {
+  topicId: string;
+  title: string;
+  reason: string;
+  priority: KnowledgeRecommendationPriority;
+  openUrl: string;
+  masteryScore: number | null;
+  staleSince: string | null;
+}
+
+export interface KnowledgeRecommendationPage {
+  items: KnowledgeRecommendation[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface KnowledgeSummary {
+  nodeCount: number;
+  relationshipCount: number;
+  weakTopicCount: number;
+  staleTopicCount: number;
+}
+
+export interface KnowledgeSyncResponse {
+  nodesCreated: number;
+  nodesUpdated: number;
+  relationshipsCreated: number;
+  relationshipsReused: number;
+}
+
 export type AnalyticsPeriod = "week" | "month" | "quarter" | "year";
 
 export type AnalyticsMetricKey =

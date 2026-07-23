@@ -72,6 +72,10 @@ attempts, and AI explain/review requests. The local code-runner provider is inte
 unavailable, so no arbitrary code is executed in `aetherium-api`, `aetherium-worker`,
 `aetherium-postgres`, or `aetherium-web`.
 
+The Knowledge Graph runs inside the existing web and API services. Local graph data is stored in the
+Aetherium PostgreSQL database as owner-scoped `knowledge_nodes` and `knowledge_relationships` rows.
+It does not require a separate graph database, external graph service, or visual 3D renderer.
+
 ## Authentication Defaults
 
 Local development uses:

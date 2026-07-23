@@ -23,6 +23,7 @@ import {
   createUnusedCodingClient,
   createUnusedFilesClient,
   createUnusedHabitsClient,
+  createUnusedKnowledgeClient,
   createUnusedLearningClient,
   createUnusedMentorsClient,
   createUnusedProjectsClient,
@@ -211,6 +212,7 @@ function createClient(
       live: vi.fn(() => Promise.resolve(health)),
       ready: vi.fn(() => Promise.resolve(health))
     },
+    knowledge: createUnusedKnowledgeClient(),
     learning: createUnusedLearningClient(),
     mentors: { ...createUnusedMentorsClient(), ...(overrides.mentors ?? {}) },
     notifications: {

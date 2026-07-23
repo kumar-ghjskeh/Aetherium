@@ -28,6 +28,22 @@ export function createUnusedCodingClient(): AetheriumApiClient["coding"] {
   };
 }
 
+export function createUnusedKnowledgeClient(): AetheriumApiClient["knowledge"] {
+  const reject = () => Promise.reject(new Error("Unexpected knowledge graph call"));
+
+  return {
+    createNode: vi.fn(reject),
+    createRelationship: vi.fn(reject),
+    listNodes: vi.fn(reject),
+    listRelationships: vi.fn(reject),
+    prerequisites: vi.fn(reject),
+    recommendations: vi.fn(reject),
+    relatedTopic: vi.fn(reject),
+    summary: vi.fn(reject),
+    sync: vi.fn(reject)
+  };
+}
+
 export function createUnusedAchievementsClient(): AetheriumApiClient["achievements"] {
   const reject = () => Promise.reject(new Error("Unexpected achievement call"));
 

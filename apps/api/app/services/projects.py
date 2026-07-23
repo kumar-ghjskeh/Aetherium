@@ -51,6 +51,7 @@ from app.schemas.projects import (
     ProjectUpdate,
 )
 from app.services.foundation import PageResult, UserDataService
+from app.services.knowledge import KnowledgeGraphService
 
 
 class ProjectService:
@@ -112,6 +113,7 @@ class ProjectService:
             entity_id=project.id,
             metadata={"name": project.name},
         )
+        await KnowledgeGraphService(self.db).sync_project(user, project)
         await self.db.flush()
         return project
 
@@ -176,6 +178,7 @@ class ProjectService:
             entity_id=project.id,
             metadata={"updatedFields": sorted(updates.keys())},
         )
+        await KnowledgeGraphService(self.db).sync_project(user, project)
         await self.db.flush()
         return project
 
@@ -390,6 +393,7 @@ class ProjectService:
             description="File attached to project.",
             metadata={"fileId": str(payload.file_id)},
         )
+        await KnowledgeGraphService(self.db).sync_project_file(user, project_file)
         await self.db.flush()
         return project_file
 
@@ -415,6 +419,7 @@ class ProjectService:
             description="Learning topic linked to project.",
             metadata={"topicId": str(payload.topic_id)},
         )
+        await KnowledgeGraphService(self.db).sync_project_topic(user, project_topic)
         await self.db.flush()
         return project_topic
 

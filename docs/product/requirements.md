@@ -85,16 +85,20 @@ Implemented Phase 1 foundation slices:
   UI.
 - Coding workspace foundation with saved snippets, exercises, submitted attempts, AI code
   explanation/review, project/file linking, and an explicit no-execution code-runner status.
+- Knowledge graph data foundation with owner-scoped nodes and relationships across topics, files,
+  lessons, projects, skills, questions, and achievements, plus non-visual related-topic and review
+  recommendations in Command Mode.
 
-Visual 3D world rendering, knowledge graph, external notification delivery, actual export
-generation, account deletion execution, and sandboxed code execution are intentionally deferred.
+Visual 3D world rendering, visual Knowledge Observatory presentation, external notification
+delivery, actual export generation, account deletion execution, and sandboxed code execution are
+intentionally deferred.
 
 ## Non-Goals For Current Slice
 
 - No OAuth, social login, email delivery, password reset, MFA, or magic links.
 - No 3D scene or world interaction.
 - No arbitrary code execution.
-- No knowledge graph implementation.
+- No visual knowledge graph or Knowledge Observatory implementation.
 - No external notification delivery.
 - No destructive account deletion execution.
 - No generated data-export archives or public profile publishing.

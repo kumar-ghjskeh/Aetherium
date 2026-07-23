@@ -191,6 +191,12 @@
   by AI consent.
 - Coding audit logs store action metadata such as language, lengths, and entity IDs; they do not
   store raw code, provider credentials, cookies, session tokens, or secrets.
+- Knowledge graph nodes and relationships are scoped by `owner_user_id`.
+- Knowledge graph services verify owned source and target nodes before creating relationships.
+- Knowledge graph metadata stores approved descriptors and source links only; it must not store raw
+  private document text, authentication material, provider secrets, or full sensitive prompts.
+- Review recommendations are derived from transparent mastery and review timestamps and must not be
+  presented as clinical, medical, or scientifically guaranteed outcomes.
 - CI runs independence checks, formatting, linting, type checks, tests, build, and migration smoke
   validation.
 

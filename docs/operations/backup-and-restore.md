@@ -18,6 +18,8 @@ Back up these Aetherium-owned resources independently:
   indexes.
 - AI gateway records in PostgreSQL, including consent policies, model configurations, and
   metadata-only usage records.
+- Knowledge graph records in PostgreSQL, including owner-scoped nodes, relationships, manual skill
+  nodes, and approved source-link metadata.
 - Object-storage buckets with uploaded originals, generated derivatives, future avatars, and future
   exports.
 - Redis only for durable queues or future state that cannot be safely reconstructed.
@@ -85,3 +87,8 @@ records. Restores must preserve owner UUIDs and feature identifiers so consent d
 apply to the correct user and capability. Usage records are metadata-only; if future provider
 credentials are rotated after restore, existing usage history remains valid but should not imply
 that old provider keys are still active.
+
+The `0015_knowledge_graph` migration introduces owner-scoped knowledge nodes and relationships.
+Restores must preserve owner UUIDs and stable source keys so graph sync remains idempotent. The
+graph can be rebuilt from approved source records in many cases, but restored relationship evidence
+and manual skill nodes should be treated as user-owned product data.

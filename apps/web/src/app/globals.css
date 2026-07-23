@@ -1241,6 +1241,53 @@ kbd {
   height: 100%;
 }
 
+.knowledge-summary-grid,
+.knowledge-columns {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.knowledge-summary-grid div {
+  background: #0d1113;
+  border: 1px solid var(--panel-border);
+  min-width: 0;
+  padding: 12px;
+}
+
+.knowledge-summary-grid span,
+.knowledge-summary-grid small,
+.knowledge-columns h3 {
+  color: var(--muted);
+}
+
+.knowledge-summary-grid span {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.knowledge-summary-grid strong {
+  display: block;
+  font-size: clamp(1.5rem, 4vw, 2.35rem);
+  margin-top: 6px;
+  overflow-wrap: anywhere;
+}
+
+.knowledge-columns {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.knowledge-columns section {
+  min-width: 0;
+}
+
+.knowledge-columns h3 {
+  font-size: 0.95rem;
+  margin: 0 0 10px;
+}
+
 .project-grid,
 .project-detail-layout {
   display: grid;
@@ -2138,6 +2185,8 @@ kbd {
   .achievement-row,
   .habit-grid,
   .habit-metrics,
+  .knowledge-columns,
+  .knowledge-summary-grid,
   .learning-metrics,
   .project-metrics,
   .analytics-metrics,
@@ -2194,6 +2243,8 @@ kbd {
   .habit-detail-grid,
   .habit-log-row,
   .habit-metrics,
+  .knowledge-columns,
+  .knowledge-summary-grid,
   .learning-metrics,
   .conversation-tools,
   .create-mentor-form,

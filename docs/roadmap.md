@@ -67,6 +67,9 @@ Current approved slice:
 - Coding workspace foundation with owner-scoped snippets, exercises, submitted attempts, AI
   explain/review requests, Monaco editor UI, project/file linking, and an unavailable code-runner
   contract that prevents arbitrary execution in Aetherium service containers.
+- Knowledge graph data foundation with owner-scoped nodes and relationships for topics, files,
+  lessons, projects, skills, questions, and achievements, plus related-topic queries, prerequisites,
+  review recommendations, and a 2D Learning page panel.
 
 Later Phase 1 slices:
 
@@ -81,8 +84,8 @@ Status: implemented as the non-visual Phase 10 learning-engine vertical slice.
 - Quizzes and flashcards.
 - Study sessions.
 - Transparent mastery heuristic.
-- Research Laboratory and Knowledge Observatory remain future UI/world presentations over the same
-  owner-scoped data.
+- Research Laboratory remains a future UI/world presentation. Knowledge Observatory visual
+  presentation remains future work over the implemented owner-scoped knowledge graph data.
 
 ## Phase 3 - AI Mentor Expansion
 
@@ -111,6 +114,17 @@ Coding status: implemented as the non-visual Phase 15 Coding workspace foundatio
 - AI code explanation and review through the provider-neutral AI gateway.
 - CodeRunner abstraction with an unavailable provider until a separately isolated sandbox exists.
 - Programming Tower remains a future World Mode presentation over these records.
+
+Knowledge graph status: implemented as the non-visual Phase 16 Knowledge Graph foundation.
+
+- Owner-scoped graph nodes for topics, files, lessons, projects, skills, questions, and
+  achievements.
+- Owner-scoped graph relationships for prerequisites, explanations, references, practice, project
+  usage, mastery evidence, and derivation.
+- Approved system sync from learning, project, file, question, and achievement records.
+- Related-topic, prerequisite, summary, and review-recommendation APIs.
+- Simple accessible 2D Command Mode Learning panel.
+- Knowledge Observatory and 3D graph presentation remain future work.
 
 ## Phase 5 - World Progression
 

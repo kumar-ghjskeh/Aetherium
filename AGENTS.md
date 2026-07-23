@@ -55,12 +55,15 @@ Implemented foundation slices:
 - Coding workspace foundation with owner-scoped snippets, exercises, attempts, AI explain/review
   requests, Monaco editor UI, project/file linking, and an unavailable code-runner contract that
   does not execute arbitrary code.
+- Knowledge graph data foundation with owner-scoped nodes and relationships for topics, files,
+  lessons, projects, skills, questions, and achievements, plus prerequisites, related-topic queries,
+  review recommendations, and a 2D Learning UI panel.
 
 Still out of scope unless explicitly requested:
 
 - OAuth, social login, email delivery, password reset, MFA, and magic links.
 - 3D world scenes, React Three Fiber, player controls, map travel, or world progression.
-- Knowledge graph or visual world progression.
+- Visual world progression.
 
 ## Product Independence
 

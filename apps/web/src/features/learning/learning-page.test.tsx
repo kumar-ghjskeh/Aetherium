@@ -2,6 +2,11 @@ import type { AetheriumApiClient } from "@aetherium/api-client";
 import type {
   Flashcard,
   FlashcardReview,
+  KnowledgeNode,
+  KnowledgeRecommendation,
+  KnowledgeRelatedNode,
+  KnowledgeRelationship,
+  KnowledgeSummary,
   LearningGoal,
   MasteryRecord,
   Question,
@@ -23,6 +28,7 @@ import {
   createUnusedCodingClient,
   createUnusedFilesClient,
   createUnusedHabitsClient,
+  createUnusedKnowledgeClient,
   createUnusedLearningClient,
   createUnusedMentorsClient,
   createUnusedProjectsClient,
@@ -105,6 +111,70 @@ const session: StudySession = {
   updatedAt: now
 };
 
+const knowledgeTopicNode: KnowledgeNode = {
+  createdAt: now,
+  description: topic.description,
+  id: "cccccccc-1111-4111-8111-111111111111",
+  metadata: { subjectId: subject.id },
+  nodeType: "topic",
+  openUrl: `/app/learning?topicId=${topic.id}`,
+  sourceId: topic.id,
+  sourceKey: topic.id,
+  status: "active",
+  title: topic.name,
+  updatedAt: now
+};
+
+const knowledgeSkillNode: KnowledgeNode = {
+  createdAt: now,
+  description: "Manual skill marker.",
+  id: "cccccccc-2222-4222-8222-222222222222",
+  metadata: { source: "manual" },
+  nodeType: "skill",
+  openUrl: "/app/learning",
+  sourceId: null,
+  sourceKey: "manual:skill:data-modeling",
+  status: "active",
+  title: "Data Modeling",
+  updatedAt: now
+};
+
+const knowledgeRelationship: KnowledgeRelationship = {
+  createdAt: now,
+  evidence: { approvedBy: "user" },
+  id: "cccccccc-3333-4333-8333-333333333333",
+  relationType: "related_to",
+  source: "user",
+  sourceNodeId: knowledgeSkillNode.id,
+  targetNodeId: knowledgeTopicNode.id,
+  updatedAt: now,
+  weight: 0.5
+};
+
+const relatedKnowledge: KnowledgeRelatedNode = {
+  direction: "incoming",
+  node: knowledgeSkillNode,
+  reason: "Related learning record",
+  relationship: knowledgeRelationship
+};
+
+const knowledgeRecommendation: KnowledgeRecommendation = {
+  masteryScore: 0.2,
+  openUrl: `/app/learning?topicId=${topic.id}`,
+  priority: "high",
+  reason: "Mastery is below 50%; review evidence and practice this topic.",
+  staleSince: null,
+  title: topic.name,
+  topicId: topic.id
+};
+
+const knowledgeSummary: KnowledgeSummary = {
+  nodeCount: 2,
+  relationshipCount: 1,
+  staleTopicCount: 0,
+  weakTopicCount: 1
+};
+
 function page<T>(items: T[]): { items: T[]; limit: number; offset: number; total: number } {
   return {
     items,
@@ -122,7 +192,10 @@ function requireElement(element: HTMLElement | null): HTMLElement {
   return element;
 }
 
-function createClient(overrides: Partial<AetheriumApiClient["learning"]> = {}): AetheriumApiClient {
+function createClient(
+  overrides: Partial<AetheriumApiClient["learning"]> = {},
+  knowledgeOverrides: Partial<AetheriumApiClient["knowledge"]> = {}
+): AetheriumApiClient {
   const reject = () => Promise.reject(new Error("Unexpected non-learning call"));
 
   return {
@@ -152,6 +225,21 @@ function createClient(overrides: Partial<AetheriumApiClient["learning"]> = {}): 
     files: createUnusedFilesClient(),
     habits: createUnusedHabitsClient(),
     health: { live: vi.fn(reject), ready: vi.fn(reject) },
+    knowledge: {
+      ...createUnusedKnowledgeClient(),
+      recommendations: vi.fn(() => Promise.resolve(page([knowledgeRecommendation]))),
+      relatedTopic: vi.fn(() => Promise.resolve(page([relatedKnowledge]))),
+      summary: vi.fn(() => Promise.resolve(knowledgeSummary)),
+      sync: vi.fn(() =>
+        Promise.resolve({
+          nodesCreated: 1,
+          nodesUpdated: 1,
+          relationshipsCreated: 1,
+          relationshipsReused: 0
+        })
+      ),
+      ...knowledgeOverrides
+    },
     learning: {
       ...createUnusedLearningClient(),
       addQuestion: vi.fn(() =>
@@ -340,6 +428,27 @@ describe("LearningPage", () => {
     );
     expect(
       await screen.findByText("Quiz attempt saved and mastery recalculated.")
+    ).toBeInTheDocument();
+  });
+
+  it("shows the 2D knowledge graph panel and syncs source records", async () => {
+    const client = createClient({
+      listSubjects: vi.fn(() => Promise.resolve(page([subject]))),
+      listTopics: vi.fn(() => Promise.resolve(page([topic])))
+    });
+
+    render(<LearningPage client={client} />);
+
+    expect(await screen.findByRole("heading", { name: "Knowledge Graph" })).toBeInTheDocument();
+    expect(screen.getByText("Data Modeling")).toBeInTheDocument();
+    expect(
+      screen.getByText("Mastery is below 50%; review evidence and practice this topic.")
+    ).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Sync graph" }));
+
+    await waitFor(() => expect(client.knowledge.sync).toHaveBeenCalled());
+    expect(
+      await screen.findByText("Knowledge graph synced: 1 new nodes, 1 new relationships.")
     ).toBeInTheDocument();
   });
 

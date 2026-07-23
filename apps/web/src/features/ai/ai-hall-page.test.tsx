@@ -18,6 +18,7 @@ import {
   createUnusedCodingClient,
   createUnusedFilesClient,
   createUnusedHabitsClient,
+  createUnusedKnowledgeClient,
   createUnusedLearningClient,
   createUnusedMentorsClient,
   createUnusedProjectsClient,
@@ -203,6 +204,7 @@ function createClient(
     },
     habits: createUnusedHabitsClient(),
     health: { live: vi.fn(reject), ready: vi.fn(reject) },
+    knowledge: createUnusedKnowledgeClient(),
     learning: createUnusedLearningClient(),
     mentors: {
       ...createUnusedMentorsClient(),

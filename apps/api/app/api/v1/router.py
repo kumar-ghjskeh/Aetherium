@@ -11,6 +11,7 @@ from app.api.v1 import (
     files,
     habits,
     health,
+    knowledge,
     learning,
     mentors,
     notifications,
@@ -34,6 +35,7 @@ api_router.include_router(audit_logs.router, prefix="/audit-logs", tags=["audit-
 api_router.include_router(files.router, prefix="/files", tags=["files"])
 api_router.include_router(habits.router, prefix="/habits", tags=["habits"])
 api_router.include_router(learning.router, prefix="/learning", tags=["learning"])
+api_router.include_router(knowledge.router, prefix="/knowledge", tags=["knowledge"])
 api_router.include_router(projects.router, prefix="/projects", tags=["projects"])
 api_router.include_router(analytics.router, prefix="/analytics", tags=["analytics"])
 api_router.include_router(coding.router, prefix="/coding", tags=["coding"])

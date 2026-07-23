@@ -45,6 +45,7 @@ from app.models.learning import (
     TopicRelation,
 )
 from app.services.foundation import PageResult, UserDataService
+from app.services.knowledge import KnowledgeGraphService
 
 MASTERY_WEIGHTS = {
     "quizAccuracy": 0.35,
@@ -148,6 +149,7 @@ class LearningService:
         self.db.add(topic)
         await self.db.flush()
         await self.recalculate_mastery(user, topic.id)
+        await KnowledgeGraphService(self.db).sync_topic(user, topic)
         await UserDataService(self.db).record_audit_log(
             user,
             action="learning.topic_created",
@@ -217,6 +219,7 @@ class LearningService:
         )
         self.db.add(relation)
         await self.db.flush()
+        await KnowledgeGraphService(self.db).sync_topic_relation(user, relation)
         return relation
 
     async def create_resource(
@@ -249,6 +252,7 @@ class LearningService:
         )
         self.db.add(resource)
         await self.db.flush()
+        await KnowledgeGraphService(self.db).sync_learning_resource(user, resource)
         return resource
 
     async def list_resources(
@@ -369,6 +373,7 @@ class LearningService:
         )
         self.db.add(lesson)
         await self.db.flush()
+        await KnowledgeGraphService(self.db).sync_lesson(user, lesson)
         return lesson
 
     async def complete_lesson(self, user: User, lesson_id: UUID) -> Lesson:
@@ -396,6 +401,7 @@ class LearningService:
             if lesson.topic_id is not None:
                 await self.recalculate_mastery(user, lesson.topic_id)
             await self.db.flush()
+            await KnowledgeGraphService(self.db).sync_lesson(user, lesson)
         return lesson
 
     async def create_study_session(
@@ -547,6 +553,7 @@ class LearningService:
         )
         self.db.add(question)
         await self.db.flush()
+        await KnowledgeGraphService(self.db).sync_question(user, question)
         return question
 
     async def submit_attempt(
