@@ -28,7 +28,8 @@ import {
   createUnusedMentorsClient,
   createUnusedNotificationsClient,
   createUnusedProjectsClient,
-  createUnusedUsersClient
+  createUnusedUsersClient,
+  createUnusedWorldClient
 } from "../../test/api-client";
 import { AppDashboard } from "./app-dashboard";
 import { AppShell } from "./app-shell";
@@ -252,6 +253,7 @@ function createClient(
     },
     users: { ...createUnusedUsersClient(), ...(overrides.users ?? {}) },
     world: {
+      ...createUnusedWorldClient(),
       getProfile: vi.fn(() => Promise.resolve(worldProfile)),
       updateProfile: vi.fn(() => Promise.resolve(worldProfile)),
       visit: vi.fn(() => Promise.resolve(worldProfile)),

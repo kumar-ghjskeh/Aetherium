@@ -1160,6 +1160,95 @@ describe("createAetheriumApiClient", () => {
     });
   });
 
+  it("lists non-visual world locations through the world API", async () => {
+    const fetcher = vi.fn<typeof fetch>(() =>
+      Promise.resolve(
+        jsonResponse({
+          currentLocationId: "central_plaza",
+          items: [
+            {
+              category: "vault",
+              commandRoute: "/app/library",
+              current: false,
+              deepLinkEntityTypes: ["file", "file_chunk"],
+              defaultUnlocked: true,
+              description: "Destination for files.",
+              futureSceneKey: "knowledge-library",
+              id: "library",
+              spawn: false,
+              subtitle: "Personal Vault and sources",
+              title: "Knowledge Library",
+              unlockDependencyIds: [],
+              unlocked: true,
+              visited: false,
+              visualStatus: "data_contract_ready"
+            }
+          ],
+          total: 1,
+          unlockedCount: 1,
+          visitedCount: 0
+        })
+      )
+    );
+
+    const client = createAetheriumApiClient({ baseUrl: "http://localhost:8000", fetcher });
+
+    await expect(client.world.listLocations()).resolves.toMatchObject({
+      items: [{ commandRoute: "/app/library", futureSceneKey: "knowledge-library", id: "library" }]
+    });
+
+    expect(fetcher).toHaveBeenCalledWith("http://localhost:8000/api/v1/world/locations", {
+      credentials: "include",
+      headers: { Accept: "application/json" }
+    });
+  });
+
+  it("reads world feature flags and the future scene manifest", async () => {
+    const fetcher = vi.fn<typeof fetch>((url) => {
+      const requestedUrl = typeof url === "string" ? url : url instanceof URL ? url.href : url.url;
+      if (requestedUrl.endsWith("/api/v1/world/feature-flags")) {
+        return Promise.resolve(
+          jsonResponse({
+            commandModeFallbackRequired: true,
+            dataContractsEnabled: true,
+            reason: "Data contracts only.",
+            sceneManifestEnabled: true,
+            visualWorldEnabled: false
+          })
+        );
+      }
+      return Promise.resolve(
+        jsonResponse({
+          implementationStatus: "data_contract_only",
+          locations: [
+            {
+              allowedToRender: false,
+              assetBundleKey: null,
+              commandRoute: "/app/library",
+              disabledReason: "Not implemented.",
+              futureSceneKey: "knowledge-library",
+              implementationStatus: "data_contract_ready",
+              locationId: "library",
+              title: "Knowledge Library"
+            }
+          ],
+          manifestVersion: 1,
+          visualRuntimeAvailable: false
+        })
+      );
+    });
+
+    const client = createAetheriumApiClient({ baseUrl: "http://localhost:8000", fetcher });
+
+    await expect(client.world.getFeatureFlags()).resolves.toMatchObject({
+      visualWorldEnabled: false
+    });
+    await expect(client.world.getSceneManifest()).resolves.toMatchObject({
+      implementationStatus: "data_contract_only",
+      visualRuntimeAvailable: false
+    });
+  });
+
   it("lists domain events with query parameters", async () => {
     const fetcher = vi.fn<typeof fetch>(() =>
       Promise.resolve(

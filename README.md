@@ -10,8 +10,8 @@ storage with background ingestion, global search, the provider-neutral AI gatewa
 conversations, citation-backed document Q&A, habit tracking, the learning and mastery engine, and
 the Project Dock foundation, progress analytics, the achievement progression foundation, personal
 profile/privacy settings, the Coding workspace foundation, the non-visual knowledge graph data
-foundation, and in-app notification/review workflows. It does not yet implement visual 3D world
-navigation.
+foundation, in-app notification/review workflows, and non-visual World Mode data contracts. It does
+not yet implement visual 3D world navigation.
 
 Aetherium is a standalone product. It uses its own repository, database, Redis namespace,
 object-storage buckets, environment variables, Docker resources, CI workflow, and future
@@ -80,7 +80,9 @@ authentication/session system. See `docs/architecture/product-independence.md` a
 - Notification and review workflows under `/api/v1/notifications` with owner-scoped preferences,
   idempotent in-app workflow generation, monthly review records, bulk read state, and Settings UI
   controls. External email, push, and SMS delivery are not implemented.
-- Non-visual `/app/world` route that clearly marks visual World Mode as future work.
+- Non-visual World Mode data contracts under `/api/v1/world` with a location registry, current,
+  visited, and unlocked state APIs, deep links, feature flags, a future scene-manifest schema, and
+  an API-backed `/app/world` route that clearly marks visual World Mode as future work.
 - Docker Compose development infrastructure for Aetherium-isolated PostgreSQL, Redis, MinIO, API,
   worker, and web services.
 - CI workflow for independence checks, formatting, linting, type checks, tests, build, and Alembic
@@ -190,7 +192,7 @@ stored in localStorage or sessionStorage.
 - Analytics: `http://localhost:3000/app/analytics`
 - Achievements: `http://localhost:3000/app/achievements`
 - Settings: `http://localhost:3000/app/settings`
-- Future World Mode placeholder: `http://localhost:3000/app/world`
+- Future World Mode data-contract page: `http://localhost:3000/app/world`
 
 All `/app` routes are protected by the Aetherium auth state. Unauthenticated users are redirected to
 `/login?next=/app`.
@@ -199,6 +201,13 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
 
 - Preferences: `GET/PATCH http://localhost:8000/api/v1/settings/preferences`
 - Non-visual world profile: `GET/PATCH http://localhost:8000/api/v1/world/profile`
+- Non-visual world locations: `GET http://localhost:8000/api/v1/world/locations`
+- Unlocked world locations: `GET http://localhost:8000/api/v1/world/locations/unlocked`
+- Visited world locations: `GET http://localhost:8000/api/v1/world/locations/visited`
+- World location detail: `GET http://localhost:8000/api/v1/world/locations/{id}`
+- World deep-link contracts: `GET http://localhost:8000/api/v1/world/deep-links`
+- Future scene manifest: `GET http://localhost:8000/api/v1/world/scene-manifest`
+- World feature flags: `GET http://localhost:8000/api/v1/world/feature-flags`
 - Non-visual world location visit: `POST http://localhost:8000/api/v1/world/visit`
 - Domain events: `GET/POST http://localhost:8000/api/v1/domain-events`
 - Notifications: `GET http://localhost:8000/api/v1/notifications`
@@ -389,9 +398,9 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
   document Q&A can answer against them with citations when explicit file-content consent is enabled.
 - File-ingestion embedding jobs are still recorded as skipped by default until semantic search wires
   the AI gateway into the worker with explicit consent.
-- AI mentors and the Coding workspace are persistent and gateway-backed. The knowledge graph is
-  available as non-visual owner-scoped data. In-app notification workflows exist, but external
-  notification delivery does not. Visual 3D scenes do not exist yet.
+- AI mentors and the Coding workspace are persistent and gateway-backed. The knowledge graph and
+  World Mode foundations are available as non-visual owner-scoped data. In-app notification
+  workflows exist, but external notification delivery does not. Visual 3D scenes do not exist yet.
 - The Coding workspace can save snippets, exercises, attempts, and AI explain/review records. Code
   execution is deliberately unavailable until a separate isolated sandbox provider is implemented
   and validated.

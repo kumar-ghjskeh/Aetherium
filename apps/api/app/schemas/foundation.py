@@ -15,6 +15,7 @@ from app.domain.foundation import (
     PerformancePreset,
     Theme,
 )
+from app.domain.world import WorldLocationCategory, WorldVisualStatus
 
 
 class FoundationSchema(BaseModel):
@@ -124,6 +125,86 @@ class WorldVisitRequest(BaseModel):
         if value not in WORLD_LOCATION_IDS:
             raise ValueError("Unknown world location")
         return value
+
+
+class WorldLocationResponse(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    id: str
+    title: str
+    subtitle: str
+    description: str
+    category: WorldLocationCategory
+    command_route: str = Field(alias="commandRoute")
+    future_scene_key: str = Field(alias="futureSceneKey")
+    visual_status: WorldVisualStatus = Field(alias="visualStatus")
+    default_unlocked: bool = Field(alias="defaultUnlocked")
+    unlocked: bool
+    visited: bool
+    current: bool
+    spawn: bool
+    deep_link_entity_types: list[str] = Field(alias="deepLinkEntityTypes")
+    unlock_dependency_ids: list[str] = Field(alias="unlockDependencyIds")
+
+
+class WorldLocationPage(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    items: list[WorldLocationResponse]
+    total: int
+    unlocked_count: int = Field(alias="unlockedCount")
+    visited_count: int = Field(alias="visitedCount")
+    current_location_id: str = Field(alias="currentLocationId")
+
+
+class WorldDeepLinkResponse(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    location_id: str = Field(alias="locationId")
+    label: str
+    command_route: str = Field(alias="commandRoute")
+    route_pattern: str = Field(alias="routePattern")
+    entity_types: list[str] = Field(alias="entityTypes")
+    notes: str
+
+
+class WorldDeepLinkPage(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    items: list[WorldDeepLinkResponse]
+    total: int
+
+
+class WorldSceneManifestLocation(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    location_id: str = Field(alias="locationId")
+    title: str
+    future_scene_key: str = Field(alias="futureSceneKey")
+    command_route: str = Field(alias="commandRoute")
+    implementation_status: WorldVisualStatus = Field(alias="implementationStatus")
+    asset_bundle_key: str | None = Field(alias="assetBundleKey")
+    allowed_to_render: bool = Field(alias="allowedToRender")
+    disabled_reason: str = Field(alias="disabledReason")
+
+
+class WorldSceneManifestResponse(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    manifest_version: int = Field(alias="manifestVersion")
+    implementation_status: str = Field(alias="implementationStatus")
+    visual_runtime_available: bool = Field(alias="visualRuntimeAvailable")
+    locations: list[WorldSceneManifestLocation]
+
+
+class WorldFeatureFlagsResponse(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    data_contracts_enabled: bool = Field(alias="dataContractsEnabled")
+    visual_world_enabled: bool = Field(alias="visualWorldEnabled")
+    scene_manifest_enabled: bool = Field(alias="sceneManifestEnabled")
+    command_mode_fallback_required: bool = Field(alias="commandModeFallbackRequired")
+    reason: str
 
 
 class DomainEventCreate(BaseModel):

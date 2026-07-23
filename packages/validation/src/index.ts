@@ -431,6 +431,107 @@ export const worldVisitRequestSchema = z.object({
   locationId: z.string().min(1).max(64)
 });
 
+export const worldLocationIdSchema = z.enum([
+  "central_plaza",
+  "library",
+  "ai_hall",
+  "programming_tower",
+  "research_laboratory",
+  "habit_garden",
+  "command_center",
+  "personal_home",
+  "achievement_hall",
+  "knowledge_observatory",
+  "project_workshop",
+  "media_theater"
+]);
+
+export const worldLocationCategorySchema = z.enum([
+  "hub",
+  "vault",
+  "ai",
+  "coding",
+  "learning",
+  "habits",
+  "command",
+  "profile",
+  "achievements",
+  "knowledge",
+  "media",
+  "projects"
+]);
+
+export const worldVisualStatusSchema = z.enum([
+  "data_contract_ready",
+  "future_visual_implementation"
+]);
+
+export const worldLocationSchema = z.object({
+  category: worldLocationCategorySchema,
+  commandRoute: z.string().min(1),
+  current: z.boolean(),
+  deepLinkEntityTypes: z.array(z.string().min(1)),
+  defaultUnlocked: z.boolean(),
+  description: z.string().min(1),
+  futureSceneKey: z.string().min(1),
+  id: worldLocationIdSchema,
+  spawn: z.boolean(),
+  subtitle: z.string().min(1),
+  title: z.string().min(1),
+  unlockDependencyIds: z.array(worldLocationIdSchema),
+  unlocked: z.boolean(),
+  visited: z.boolean(),
+  visualStatus: worldVisualStatusSchema
+});
+
+export const worldLocationPageSchema = z.object({
+  currentLocationId: z.string().min(1),
+  items: z.array(worldLocationSchema),
+  total: z.number().int().min(0),
+  unlockedCount: z.number().int().min(0),
+  visitedCount: z.number().int().min(0)
+});
+
+export const worldDeepLinkSchema = z.object({
+  commandRoute: z.string().min(1),
+  entityTypes: z.array(z.string().min(1)),
+  label: z.string().min(1),
+  locationId: worldLocationIdSchema,
+  notes: z.string().min(1),
+  routePattern: z.string().min(1)
+});
+
+export const worldDeepLinkPageSchema = z.object({
+  items: z.array(worldDeepLinkSchema),
+  total: z.number().int().min(0)
+});
+
+export const worldSceneManifestLocationSchema = z.object({
+  allowedToRender: z.boolean(),
+  assetBundleKey: z.string().nullable(),
+  commandRoute: z.string().min(1),
+  disabledReason: z.string().min(1),
+  futureSceneKey: z.string().min(1),
+  implementationStatus: worldVisualStatusSchema,
+  locationId: worldLocationIdSchema,
+  title: z.string().min(1)
+});
+
+export const worldSceneManifestSchema = z.object({
+  implementationStatus: z.literal("data_contract_only"),
+  locations: z.array(worldSceneManifestLocationSchema),
+  manifestVersion: z.number().int().positive(),
+  visualRuntimeAvailable: z.boolean()
+});
+
+export const worldFeatureFlagsSchema = z.object({
+  commandModeFallbackRequired: z.boolean(),
+  dataContractsEnabled: z.boolean(),
+  reason: z.string().min(1),
+  sceneManifestEnabled: z.boolean(),
+  visualWorldEnabled: z.boolean()
+});
+
 export const domainEventCreateRequestSchema = z.object({
   eventType: domainEventTypeSchema,
   idempotencyKey: z.string().min(8).max(160),

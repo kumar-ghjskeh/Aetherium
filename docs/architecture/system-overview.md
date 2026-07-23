@@ -44,6 +44,9 @@ notification/review workflows:
   server-side session revocation, and product-specific cookies.
 - User-owned foundation: preferences, non-visual world profile state, domain events, notifications,
   audit logs, ownership checks, and pagination.
+- World Mode data foundation: static location registry, owner-scoped current/visited/unlocked
+  location state, deep-link contracts, future scene-manifest schema, feature flags, and an
+  API-backed `/app/world` contract page.
 - Command Mode shell: responsive navigation, command palette, notifications panel, profile menu,
   settings controls, and real API-backed loading, empty, and error states.
 - Personal Vault: user-owned file metadata, presigned upload/download contracts, S3-compatible
@@ -99,8 +102,9 @@ notification/review workflows:
 
 Command Mode is implemented under `/app` and uses the same auth and foundation APIs that future
 World Mode will use. Domain sections that do not have backend data yet render explicit empty states
-instead of fake content. The `/app/world` route is a non-visual placeholder and must not include
-Three.js, React Three Fiber, scene assets, or player/camera controls until the visual world phase.
+instead of fake content. The `/app/world` route is an API-backed non-visual data-contract page and
+must not include Three.js, React Three Fiber, scene assets, or player/camera controls until the
+visual world phase.
 
 ## Backend Boundaries
 

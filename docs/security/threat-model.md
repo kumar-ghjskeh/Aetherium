@@ -69,7 +69,10 @@
 - Security-relevant auth events are logged without passwords, raw session tokens, cookies, or full
   request bodies.
 - User-owned foundation tables are scoped by `owner_user_id`.
-- Preferences, world profile, domain events, notifications, and audit logs require authentication.
+- Preferences, world profile, world-location contract APIs, domain events, notifications, and audit
+  logs require authentication.
+- World-location APIs expose only registry metadata and authenticated profile-derived state. They do
+  not expose private file contents, AI prompts, object keys, or visual assets.
 - Notification mutation and list routes filter by owner.
 - Domain events are idempotent per user and idempotency key.
 - Persistent audit logs sanitize metadata before storage.

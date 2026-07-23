@@ -14,9 +14,9 @@ Backend:
 - FastAPI health endpoint tests with dependency overrides.
 - Authentication API tests for registration, login, logout, current user, session expiration,
   revocation, cookie settings, rate limiting, cross-user isolation, and database uniqueness.
-- User-owned foundation API tests for preference persistence, world profile updates, idempotent
-  domain events, notification read state, audit sanitization, pagination, unauthenticated access,
-  cross-user isolation, and database uniqueness.
+- User-owned foundation API tests for preference persistence, world profile updates, world
+  location-registry contracts, idempotent domain events, notification read state, audit
+  sanitization, pagination, unauthenticated access, cross-user isolation, and database uniqueness.
 - Personal Vault backend tests for upload validation, idempotent upload initiation and completion,
   file listing, rename, favorites, collections, tags, download URL ownership, soft deletion,
   restoration, permanent deletion, unauthenticated access, cross-user isolation, and database
@@ -107,6 +107,8 @@ Frontend and shared packages:
   prerequisites, review recommendations, and summary endpoints.
 - API-client contract tests for notification preferences, workflow listing, workflow generation,
   bulk read state, and monthly review endpoints.
+- API-client contract tests for World Mode location registry, feature flags, deep-link contracts,
+  scene-manifest schema, and profile visit endpoints.
 - Next.js build validation.
 - React Testing Library coverage for the Library page, including loading, empty, error, upload,
   favorite, tag, delete, processing failure, and retry states.
@@ -137,6 +139,8 @@ Frontend and shared packages:
 - React Testing Library coverage for the Learning page knowledge graph panel, including graph
   summary rendering, related-topic rows, review recommendations, sync refresh behavior, and error
   state handling through the shared API client.
+- React Testing Library coverage for the World page, including API-backed non-visual location
+  contracts, feature flags, scene-manifest state, and error handling.
 
 ## Future Backend Tests
 

@@ -230,3 +230,20 @@ export function createUnusedUsersClient(): AetheriumApiClient["users"] {
     updateProfile: vi.fn(reject)
   };
 }
+
+export function createUnusedWorldClient(): AetheriumApiClient["world"] {
+  const reject = () => Promise.reject(new Error("Unexpected world data call"));
+
+  return {
+    getFeatureFlags: vi.fn(reject),
+    getLocation: vi.fn(reject),
+    getProfile: vi.fn(reject),
+    getSceneManifest: vi.fn(reject),
+    listDeepLinks: vi.fn(reject),
+    listLocations: vi.fn(reject),
+    listUnlockedLocations: vi.fn(reject),
+    listVisitedLocations: vi.fn(reject),
+    updateProfile: vi.fn(reject),
+    visit: vi.fn(reject)
+  };
+}

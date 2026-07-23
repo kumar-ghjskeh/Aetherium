@@ -219,6 +219,80 @@ def test_world_profile_update_requires_unlocked_spawn(
     assert response.json()["error"]["code"] == "location_locked"
 
 
+def test_world_location_registry_exposes_profile_state(
+    foundation_context: FoundationTestContext,
+) -> None:
+    register(foundation_context.client, email="world-registry@example.com")
+
+    response = foundation_context.client.get("/api/v1/world/locations")
+    unlocked = foundation_context.client.get("/api/v1/world/locations/unlocked")
+    visited = foundation_context.client.get("/api/v1/world/locations/visited")
+    library = foundation_context.client.get("/api/v1/world/locations/library")
+
+    assert response.status_code == 200
+    assert response.json()["total"] == 12
+    assert response.json()["currentLocationId"] == "central_plaza"
+    assert response.json()["unlockedCount"] == 4
+    assert response.json()["visitedCount"] == 1
+    assert unlocked.status_code == 200
+    assert {item["id"] for item in unlocked.json()["items"]} == {
+        "central_plaza",
+        "library",
+        "habit_garden",
+        "command_center",
+    }
+    assert visited.status_code == 200
+    assert [item["id"] for item in visited.json()["items"]] == ["central_plaza"]
+    assert library.status_code == 200
+    assert library.json()["title"] == "Knowledge Library"
+    assert library.json()["commandRoute"] == "/app/library"
+    assert library.json()["unlocked"] is True
+
+
+def test_world_deep_links_and_scene_manifest_are_data_only(
+    foundation_context: FoundationTestContext,
+) -> None:
+    register(foundation_context.client, email="world-contracts@example.com")
+
+    deep_links = foundation_context.client.get("/api/v1/world/deep-links")
+    manifest = foundation_context.client.get("/api/v1/world/scene-manifest")
+    flags = foundation_context.client.get("/api/v1/world/feature-flags")
+
+    assert deep_links.status_code == 200
+    assert any(item["locationId"] == "library" for item in deep_links.json()["items"])
+    assert manifest.status_code == 200
+    assert manifest.json()["implementationStatus"] == "data_contract_only"
+    assert manifest.json()["visualRuntimeAvailable"] is False
+    assert all(item["allowedToRender"] is False for item in manifest.json()["locations"])
+    assert flags.status_code == 200
+    assert flags.json()["dataContractsEnabled"] is True
+    assert flags.json()["visualWorldEnabled"] is False
+    assert flags.json()["commandModeFallbackRequired"] is True
+
+
+def test_world_location_state_is_isolated_between_users(
+    foundation_context: FoundationTestContext,
+) -> None:
+    register(foundation_context.client, email="world-owner@example.com")
+    visit = foundation_context.client.post(
+        "/api/v1/world/visit",
+        json={"locationId": "library", "idempotencyKey": "owner-visit-library"},
+        headers={"Origin": VALID_ORIGIN},
+    )
+    assert visit.status_code == 200
+
+    with TestClient(foundation_context.client.app) as other_client:
+        register(other_client, email="world-other@example.com")
+        other_profile = other_client.get("/api/v1/world/profile")
+        other_library = other_client.get("/api/v1/world/locations/library")
+
+    assert other_profile.status_code == 200
+    assert other_profile.json()["currentLocationId"] == "central_plaza"
+    assert other_profile.json()["visitedLocationIds"] == ["central_plaza"]
+    assert other_library.status_code == 200
+    assert other_library.json()["visited"] is False
+
+
 def test_notifications_support_read_unread_state(
     foundation_context: FoundationTestContext,
 ) -> None:
@@ -393,6 +467,10 @@ def test_user_owned_endpoints_require_authentication(
 ) -> None:
     assert foundation_context.client.get("/api/v1/settings/preferences").status_code == 401
     assert foundation_context.client.get("/api/v1/world/profile").status_code == 401
+    assert foundation_context.client.get("/api/v1/world/locations").status_code == 401
+    assert foundation_context.client.get("/api/v1/world/deep-links").status_code == 401
+    assert foundation_context.client.get("/api/v1/world/scene-manifest").status_code == 401
+    assert foundation_context.client.get("/api/v1/world/feature-flags").status_code == 401
     assert foundation_context.client.get("/api/v1/notifications").status_code == 401
     assert foundation_context.client.get("/api/v1/domain-events").status_code == 401
     assert foundation_context.client.get("/api/v1/audit-logs").status_code == 401

@@ -36,6 +36,13 @@ Current routes:
 - `PATCH /api/v1/settings/preferences`
 - `GET /api/v1/world/profile`
 - `PATCH /api/v1/world/profile`
+- `GET /api/v1/world/locations`
+- `GET /api/v1/world/locations/unlocked`
+- `GET /api/v1/world/locations/visited`
+- `GET /api/v1/world/locations/{location_id}`
+- `GET /api/v1/world/deep-links`
+- `GET /api/v1/world/scene-manifest`
+- `GET /api/v1/world/feature-flags`
 - `POST /api/v1/world/visit`
 - `GET /api/v1/domain-events`
 - `POST /api/v1/domain-events`
@@ -290,6 +297,20 @@ for users that predate the foundation migration.
 
 `PATCH /api/v1/world/profile` updates non-visual profile preferences such as navigation method,
 tutorial completion, and spawn location. Spawn locations must already be unlocked.
+
+`GET /api/v1/world/locations`, `/locations/unlocked`, `/locations/visited`, and
+`/locations/{location_id}` expose registry metadata merged with the authenticated user's current,
+visited, unlocked, and spawn-location state.
+
+`GET /api/v1/world/deep-links` returns Command Mode route contracts for future world destinations.
+Entity IDs are still resolved through owner-scoped APIs before navigation.
+
+`GET /api/v1/world/scene-manifest` returns a future scene-manifest schema with
+`visualRuntimeAvailable=false`, no asset bundle keys, and `allowedToRender=false` for every
+location.
+
+`GET /api/v1/world/feature-flags` returns data-contract feature flags and explicitly reports that
+visual World Mode is disabled.
 
 `POST /api/v1/world/visit` records a visit to an unlocked non-visual location identifier and creates
 an idempotent `world.location_visited` domain event.

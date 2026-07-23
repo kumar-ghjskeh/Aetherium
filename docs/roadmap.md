@@ -74,10 +74,13 @@ Current approved slice:
   records, weekly/monthly review prompts, learning and habit reminders, processing and AI failure
   notices, project deadline reminders, monthly review records, bulk read state, and Settings UI
   controls.
+- World Mode data foundation with a stable non-visual location registry, current/visited/unlocked
+  location APIs, deep-link contracts, future scene-manifest schema, feature flags, and an API-backed
+  `/app/world` contract page.
 
 Later Phase 1 slices:
 
-- Non-visual world data expansion only until the visual 3D phase is explicitly started.
+- Production hardening and deployment preparation before visual 3D work begins.
 
 ## Phase 2 - Learning System
 
@@ -139,6 +142,14 @@ Notification/review status: implemented as the non-visual Phase 17 notification 
   workflow candidates.
 - Monthly review records and Settings UI controls.
 - External email, push, SMS, and scheduler deployment remain future work.
+
+World technical status: implemented as the non-visual Phase 18 World Mode data foundation.
+
+- Stable location registry and metadata for future world destinations.
+- Current, visited, unlocked, and spawn-location APIs derived from `world_profiles`.
+- Future scene-manifest schema with rendering explicitly disabled.
+- Deep-link contracts from future world destinations back to Command Mode routes.
+- `/app/world` displays API-backed world contracts and states that visual World Mode is future work.
 
 ## Phase 5 - World Progression
 

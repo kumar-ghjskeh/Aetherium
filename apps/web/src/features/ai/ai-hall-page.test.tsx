@@ -23,7 +23,8 @@ import {
   createUnusedMentorsClient,
   createUnusedNotificationsClient,
   createUnusedProjectsClient,
-  createUnusedUsersClient
+  createUnusedUsersClient,
+  createUnusedWorldClient
 } from "../../test/api-client";
 import { AiHallPage } from "./ai-hall-page";
 
@@ -240,7 +241,7 @@ function createClient(
     search: { recent: vi.fn(reject), run: vi.fn(reject) },
     settings: { getPreferences: vi.fn(reject), updatePreferences: vi.fn(reject) },
     users: createUnusedUsersClient(),
-    world: { getProfile: vi.fn(reject), updateProfile: vi.fn(reject), visit: vi.fn(reject) }
+    world: createUnusedWorldClient()
   };
 }
 

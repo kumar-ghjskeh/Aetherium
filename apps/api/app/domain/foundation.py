@@ -1,5 +1,28 @@
 from enum import StrEnum
 
+from app.domain.world import (
+    DEFAULT_SPAWN_LOCATION_ID,
+    DEFAULT_UNLOCKED_LOCATION_IDS,
+    DEFAULT_VISITED_LOCATION_IDS,
+    WORLD_LOCATION_IDS,
+    WorldLocationId,
+)
+
+__all__ = [
+    "DEFAULT_SPAWN_LOCATION_ID",
+    "DEFAULT_UNLOCKED_LOCATION_IDS",
+    "DEFAULT_VISITED_LOCATION_IDS",
+    "WORLD_LOCATION_IDS",
+    "DefaultInterfaceMode",
+    "DomainEventType",
+    "NavigationMethod",
+    "NotificationSeverity",
+    "NotificationType",
+    "PerformancePreset",
+    "Theme",
+    "WorldLocationId",
+]
+
 
 class Theme(StrEnum):
     SYSTEM = "system"
@@ -24,32 +47,6 @@ class NavigationMethod(StrEnum):
     FAST_TRAVEL = "fast_travel"
     GUIDED = "guided"
     DIRECT = "direct"
-
-
-class WorldLocationId(StrEnum):
-    CENTRAL_PLAZA = "central_plaza"
-    LIBRARY = "library"
-    AI_HALL = "ai_hall"
-    PROGRAMMING_TOWER = "programming_tower"
-    RESEARCH_LABORATORY = "research_laboratory"
-    HABIT_GARDEN = "habit_garden"
-    COMMAND_CENTER = "command_center"
-    PERSONAL_HOME = "personal_home"
-    ACHIEVEMENT_HALL = "achievement_hall"
-    KNOWLEDGE_OBSERVATORY = "knowledge_observatory"
-    PROJECT_WORKSHOP = "project_workshop"
-    MEDIA_THEATER = "media_theater"
-
-
-WORLD_LOCATION_IDS = frozenset(location.value for location in WorldLocationId)
-DEFAULT_SPAWN_LOCATION_ID = WorldLocationId.CENTRAL_PLAZA.value
-DEFAULT_VISITED_LOCATION_IDS = (WorldLocationId.CENTRAL_PLAZA.value,)
-DEFAULT_UNLOCKED_LOCATION_IDS = (
-    WorldLocationId.CENTRAL_PLAZA.value,
-    WorldLocationId.LIBRARY.value,
-    WorldLocationId.HABIT_GARDEN.value,
-    WorldLocationId.COMMAND_CENTER.value,
-)
 
 
 class DomainEventType(StrEnum):

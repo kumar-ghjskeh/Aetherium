@@ -107,6 +107,10 @@ record would leak ownership information.
 
 No 3D scenes, assets, movement, or rendering state are stored in this table.
 
+World-location metadata is currently a static application registry in `apps/api/app/domain/world.py`
+rather than a database table. The registry maps stable identifiers to Command Mode routes, future
+scene keys, categories, and deep-link entity types. User-specific state remains in `world_profiles`.
+
 ### `domain_events`
 
 - UUID primary key.

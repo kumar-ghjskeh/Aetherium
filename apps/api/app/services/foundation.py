@@ -23,6 +23,11 @@ from app.domain.foundation import (
     PerformancePreset,
     Theme,
 )
+from app.domain.world import (
+    WORLD_LOCATION_DEFINITIONS,
+    WorldLocationDefinition,
+    get_world_location_definition,
+)
 from app.models.auth import User
 from app.models.foundation import AuditLog, DomainEvent, Notification, UserPreferences, WorldProfile
 
@@ -257,6 +262,79 @@ class UserDataService:
 
         return profile
 
+    async def list_world_locations(
+        self, user: User, *, state_filter: str | None = None
+    ) -> list[dict[str, object]]:
+        profile = await self.get_or_create_world_profile(user)
+        locations = [
+            self._world_location_payload(definition, profile)
+            for definition in WORLD_LOCATION_DEFINITIONS
+        ]
+        if state_filter == "unlocked":
+            return [location for location in locations if bool(location["unlocked"])]
+        if state_filter == "visited":
+            return [location for location in locations if bool(location["visited"])]
+        return locations
+
+    async def get_world_location(self, user: User, location_id: str) -> dict[str, object]:
+        definition = get_world_location_definition(location_id)
+        if definition is None:
+            raise AppError(404, "not_found", "World location was not found.")
+        profile = await self.get_or_create_world_profile(user)
+        return self._world_location_payload(definition, profile)
+
+    async def list_world_deep_links(self, user: User) -> list[dict[str, object]]:
+        await self.get_or_create_world_profile(user)
+        return [
+            {
+                "locationId": definition.id.value,
+                "label": definition.title,
+                "commandRoute": definition.command_route,
+                "routePattern": f"{definition.command_route}{{?entityId,sourceId}}",
+                "entityTypes": list(definition.deep_link_entity_types),
+                "notes": (
+                    "Command Mode route used by future World Mode deep links. Entity IDs are "
+                    "resolved by owner-scoped APIs before navigation."
+                ),
+            }
+            for definition in WORLD_LOCATION_DEFINITIONS
+        ]
+
+    async def get_world_scene_manifest(self, user: User) -> dict[str, object]:
+        await self.get_or_create_world_profile(user)
+        return {
+            "manifestVersion": 1,
+            "implementationStatus": "data_contract_only",
+            "visualRuntimeAvailable": False,
+            "locations": [
+                {
+                    "locationId": definition.id.value,
+                    "title": definition.title,
+                    "futureSceneKey": definition.future_scene_key,
+                    "commandRoute": definition.command_route,
+                    "implementationStatus": definition.visual_status.value,
+                    "assetBundleKey": None,
+                    "allowedToRender": False,
+                    "disabledReason": (
+                        "Visual World Mode is intentionally not implemented in this phase."
+                    ),
+                }
+                for definition in WORLD_LOCATION_DEFINITIONS
+            ],
+        }
+
+    def get_world_feature_flags(self) -> dict[str, object]:
+        return {
+            "dataContractsEnabled": True,
+            "visualWorldEnabled": False,
+            "sceneManifestEnabled": True,
+            "commandModeFallbackRequired": True,
+            "reason": (
+                "Phase 18 exposes only non-visual world data contracts. Command Mode remains the "
+                "active interface until the visual 3D phase begins."
+            ),
+        }
+
     async def create_domain_event(
         self,
         user: User,
@@ -470,3 +548,29 @@ class UserDataService:
     async def _count(self, query: Select[tuple[int]]) -> int:
         value = await self.db.scalar(query)
         return int(value or 0)
+
+    def _world_location_payload(
+        self, definition: WorldLocationDefinition, profile: WorldProfile
+    ) -> dict[str, object]:
+        unlocked_ids = set(profile.unlocked_location_ids)
+        visited_ids = set(profile.visited_location_ids)
+        location_id = definition.id.value
+        return {
+            "id": location_id,
+            "title": definition.title,
+            "subtitle": definition.subtitle,
+            "description": definition.description,
+            "category": definition.category.value,
+            "commandRoute": definition.command_route,
+            "futureSceneKey": definition.future_scene_key,
+            "visualStatus": definition.visual_status.value,
+            "defaultUnlocked": definition.default_unlocked,
+            "unlocked": location_id in unlocked_ids,
+            "visited": location_id in visited_ids,
+            "current": profile.current_location_id == location_id,
+            "spawn": profile.spawn_location_id == location_id,
+            "deepLinkEntityTypes": list(definition.deep_link_entity_types),
+            "unlockDependencyIds": [
+                dependency_id.value for dependency_id in definition.unlock_dependency_ids
+            ],
+        }

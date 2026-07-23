@@ -9,8 +9,8 @@ achievements.
 ## Current Status
 
 No 3D functionality is implemented. The protected `/app/world` route exists only as a non-visual
-Command Mode page that displays the current world profile identifiers and states that visual World
-Mode will be implemented later.
+Command Mode page that displays API-backed world data contracts and states that visual World Mode
+will be implemented later.
 
 The current non-visual foundation stores world profile data only:
 
@@ -23,6 +23,19 @@ The current non-visual foundation stores world profile data only:
 
 This data is available through `/api/v1/world/profile` and `/api/v1/world/visit`. It is a future
 World Mode contract, not a rendered scene.
+
+The Phase 18 data foundation also exposes:
+
+- `GET /api/v1/world/locations`
+- `GET /api/v1/world/locations/unlocked`
+- `GET /api/v1/world/locations/visited`
+- `GET /api/v1/world/locations/{location_id}`
+- `GET /api/v1/world/deep-links`
+- `GET /api/v1/world/scene-manifest`
+- `GET /api/v1/world/feature-flags`
+
+The scene manifest contains future scene keys only. It sets `visualRuntimeAvailable` to `false`,
+sets every location `allowedToRender` value to `false`, and contains no asset bundle references.
 
 The achievement engine also writes `world_unlock_records` as future destination identifiers such as
 `achievement_hall:first_file_display`. These are non-visual progression records for the later World
@@ -62,6 +75,23 @@ Navigation will start with:
 - Fast travel.
 - Point-and-travel later.
 - Command palette access to the same destinations.
+
+## Current Location Registry
+
+The current registry uses stable non-visual identifiers:
+
+- `central_plaza`
+- `library`
+- `ai_hall`
+- `programming_tower`
+- `research_laboratory`
+- `habit_garden`
+- `command_center`
+- `personal_home`
+- `achievement_hall`
+- `knowledge_observatory`
+- `project_workshop`
+- `media_theater`
 
 ## Performance Budget
 

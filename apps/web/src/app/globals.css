@@ -1641,6 +1641,101 @@ kbd {
   color: var(--accent);
 }
 
+.world-panel-header {
+  align-items: flex-start;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.world-status-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.world-status-grid section {
+  background: #0d1113;
+  border: 1px solid var(--panel-border);
+  min-width: 0;
+  padding: 14px;
+}
+
+.world-status-grid span,
+.world-status-grid small {
+  color: var(--muted);
+}
+
+.world-status-grid span {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.world-status-grid strong {
+  display: block;
+  font-size: clamp(1.25rem, 3vw, 1.8rem);
+  margin-top: 6px;
+  overflow-wrap: anywhere;
+}
+
+.world-location-list {
+  display: grid;
+  gap: 12px;
+}
+
+.world-location-row {
+  border-top: 1px solid var(--panel-border);
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.75fr);
+  padding-top: 14px;
+}
+
+.world-location-row h3 {
+  font-size: 1rem;
+  margin: 0 0 6px;
+}
+
+.world-location-row p {
+  color: var(--muted);
+  margin: 0;
+}
+
+.world-location-row a {
+  color: var(--accent);
+  overflow-wrap: anywhere;
+}
+
+.world-table-wrap {
+  overflow-x: auto;
+}
+
+.world-table {
+  border-collapse: collapse;
+  min-width: 720px;
+  width: 100%;
+}
+
+.world-table caption {
+  color: var(--muted);
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.world-table th,
+.world-table td {
+  border-bottom: 1px solid var(--panel-border);
+  padding: 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.world-table th {
+  color: var(--accent);
+}
+
 .ai-hall-grid,
 .ai-chat-layout {
   display: grid;
@@ -2185,6 +2280,8 @@ kbd {
   .achievement-row,
   .habit-grid,
   .habit-metrics,
+  .world-location-row,
+  .world-status-grid,
   .knowledge-columns,
   .knowledge-summary-grid,
   .learning-metrics,
@@ -2243,6 +2340,8 @@ kbd {
   .habit-detail-grid,
   .habit-log-row,
   .habit-metrics,
+  .world-location-row,
+  .world-status-grid,
   .knowledge-columns,
   .knowledge-summary-grid,
   .learning-metrics,

@@ -337,6 +337,102 @@ export interface WorldVisitRequest {
   idempotencyKey: string;
 }
 
+export type WorldLocationId =
+  | "central_plaza"
+  | "library"
+  | "ai_hall"
+  | "programming_tower"
+  | "research_laboratory"
+  | "habit_garden"
+  | "command_center"
+  | "personal_home"
+  | "achievement_hall"
+  | "knowledge_observatory"
+  | "project_workshop"
+  | "media_theater";
+
+export type WorldLocationCategory =
+  | "hub"
+  | "vault"
+  | "ai"
+  | "coding"
+  | "learning"
+  | "habits"
+  | "command"
+  | "profile"
+  | "achievements"
+  | "knowledge"
+  | "media"
+  | "projects";
+
+export type WorldVisualStatus = "data_contract_ready" | "future_visual_implementation";
+
+export interface WorldLocation {
+  id: WorldLocationId;
+  title: string;
+  subtitle: string;
+  description: string;
+  category: WorldLocationCategory;
+  commandRoute: string;
+  futureSceneKey: string;
+  visualStatus: WorldVisualStatus;
+  defaultUnlocked: boolean;
+  unlocked: boolean;
+  visited: boolean;
+  current: boolean;
+  spawn: boolean;
+  deepLinkEntityTypes: string[];
+  unlockDependencyIds: WorldLocationId[];
+}
+
+export interface WorldLocationPage {
+  items: WorldLocation[];
+  total: number;
+  unlockedCount: number;
+  visitedCount: number;
+  currentLocationId: string;
+}
+
+export interface WorldDeepLink {
+  locationId: WorldLocationId;
+  label: string;
+  commandRoute: string;
+  routePattern: string;
+  entityTypes: string[];
+  notes: string;
+}
+
+export interface WorldDeepLinkPage {
+  items: WorldDeepLink[];
+  total: number;
+}
+
+export interface WorldSceneManifestLocation {
+  locationId: WorldLocationId;
+  title: string;
+  futureSceneKey: string;
+  commandRoute: string;
+  implementationStatus: WorldVisualStatus;
+  assetBundleKey: string | null;
+  allowedToRender: boolean;
+  disabledReason: string;
+}
+
+export interface WorldSceneManifest {
+  manifestVersion: number;
+  implementationStatus: "data_contract_only";
+  visualRuntimeAvailable: boolean;
+  locations: WorldSceneManifestLocation[];
+}
+
+export interface WorldFeatureFlags {
+  dataContractsEnabled: boolean;
+  visualWorldEnabled: boolean;
+  sceneManifestEnabled: boolean;
+  commandModeFallbackRequired: boolean;
+  reason: string;
+}
+
 export interface DomainEventCreateRequest {
   eventType: DomainEventType;
   idempotencyKey: string;

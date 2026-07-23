@@ -52,7 +52,7 @@ Implemented Phase 1 foundation slices:
   notifications, audit logs, ownership checks, and pagination.
 - Protected Command Mode shell with `/app` routes, responsive navigation, command palette,
   notification panel, profile menu, settings controls backed by the preferences API, and a
-  non-visual `/app/world` placeholder.
+  non-visual `/app/world` data-contract page.
 - Personal Vault storage for user-owned files, presigned uploads/downloads, collections, tags,
   favorites, deletion state, and a real Library UI.
 - Background file ingestion for uploaded files, including durable processing jobs, worker-based text
@@ -91,6 +91,9 @@ Implemented Phase 1 foundation slices:
 - Notification and review workflows with owner-scoped in-app preferences, idempotent workflow
   records, weekly/monthly review prompts, learning and habit reminders, processing and AI failure
   notices, project deadline reminders, monthly review records, and Settings UI controls.
+- World Mode technical foundation with a stable non-visual location registry, current/visited/
+  unlocked location APIs, deep-link contracts, future scene-manifest schema, feature flags, and no
+  visual renderer.
 
 Visual 3D world rendering, visual Knowledge Observatory presentation, external notification
 delivery, deployed scheduler delivery, actual export generation, account deletion execution, and
@@ -135,3 +138,5 @@ sandboxed code execution are intentionally deferred.
   AI code explanation or review without executing arbitrary code in Aetherium service containers.
 - A signed-in user can configure in-app notification workflows, run the review workflow generator,
   save monthly review notes, and mark notifications read without affecting another user's records.
+- A signed-in user can inspect `/app/world` data contracts, location state, deep links, feature
+  flags, and a non-renderable scene manifest without loading any visual World Mode implementation.

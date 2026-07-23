@@ -62,6 +62,9 @@ Implemented foundation slices:
   records, weekly/monthly review prompts, learning and habit reminders, processing and AI failure
   notices, project deadline reminders, monthly review records, bulk read state, and Settings UI
   controls.
+- World Mode technical foundation with a non-visual location registry, deep-link contracts, future
+  scene-manifest schema, world feature flags, protected current/visited/unlocked location APIs, and
+  an API-backed `/app/world` data-contract page.
 
 Still out of scope unless explicitly requested:
 

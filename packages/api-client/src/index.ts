@@ -208,8 +208,13 @@ import type {
   UserProfile,
   UserProfileUpdate,
   VaultFile,
+  WorldDeepLinkPage,
+  WorldFeatureFlags,
+  WorldLocation,
+  WorldLocationPage,
   WorldProfile,
   WorldProfileUpdate,
+  WorldSceneManifest,
   WorldVisitRequest,
   WeeklyReview,
   WeeklyReviewPage,
@@ -341,7 +346,12 @@ import {
   vaultFileSchema,
   weeklyReviewPageSchema,
   weeklyReviewSchema,
-  worldProfileSchema
+  worldDeepLinkPageSchema,
+  worldFeatureFlagsSchema,
+  worldLocationPageSchema,
+  worldLocationSchema,
+  worldProfileSchema,
+  worldSceneManifestSchema
 } from "@aetherium/validation";
 
 export interface AetheriumApiClientOptions {
@@ -630,7 +640,14 @@ export interface AetheriumApiClient {
     updateProfile: (payload: UserProfileUpdate) => Promise<UserProfile>;
   };
   world: {
+    getFeatureFlags: () => Promise<WorldFeatureFlags>;
+    getLocation: (locationId: string) => Promise<WorldLocation>;
     getProfile: () => Promise<WorldProfile>;
+    getSceneManifest: () => Promise<WorldSceneManifest>;
+    listDeepLinks: () => Promise<WorldDeepLinkPage>;
+    listLocations: () => Promise<WorldLocationPage>;
+    listUnlockedLocations: () => Promise<WorldLocationPage>;
+    listVisitedLocations: () => Promise<WorldLocationPage>;
     updateProfile: (payload: WorldProfileUpdate) => Promise<WorldProfile>;
     visit: (payload: WorldVisitRequest) => Promise<WorldProfile>;
   };
@@ -2466,9 +2483,53 @@ export function createAetheriumApiClient(options: AetheriumApiClientOptions): Ae
       }
     },
     world: {
+      getFeatureFlags: async () => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/world/feature-flags");
+        return worldFeatureFlagsSchema.parse(response);
+      },
+      getLocation: async (locationId) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/world/locations/${encodeURIComponent(locationId)}`
+        );
+        return worldLocationSchema.parse(response);
+      },
       getProfile: async () => {
         const response = await requestJson(fetcher, options.baseUrl, "/api/v1/world/profile");
         return worldProfileSchema.parse(response);
+      },
+      getSceneManifest: async () => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          "/api/v1/world/scene-manifest"
+        );
+        return worldSceneManifestSchema.parse(response);
+      },
+      listDeepLinks: async () => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/world/deep-links");
+        return worldDeepLinkPageSchema.parse(response);
+      },
+      listLocations: async () => {
+        const response = await requestJson(fetcher, options.baseUrl, "/api/v1/world/locations");
+        return worldLocationPageSchema.parse(response);
+      },
+      listUnlockedLocations: async () => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          "/api/v1/world/locations/unlocked"
+        );
+        return worldLocationPageSchema.parse(response);
+      },
+      listVisitedLocations: async () => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          "/api/v1/world/locations/visited"
+        );
+        return worldLocationPageSchema.parse(response);
       },
       updateProfile: async (payload) => {
         const response = await requestJson(fetcher, options.baseUrl, "/api/v1/world/profile", {

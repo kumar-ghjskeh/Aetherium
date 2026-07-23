@@ -28,7 +28,8 @@ import {
   createUnusedMentorsClient,
   createUnusedNotificationsClient,
   createUnusedProjectsClient,
-  createUnusedUsersClient
+  createUnusedUsersClient,
+  createUnusedWorldClient
 } from "../../test/api-client";
 import { SettingsPage } from "./settings-page";
 
@@ -271,7 +272,7 @@ function createClient(
       ),
       ...overrides
     },
-    world: { getProfile: vi.fn(reject), updateProfile: vi.fn(reject), visit: vi.fn(reject) }
+    world: createUnusedWorldClient()
   };
 }
 

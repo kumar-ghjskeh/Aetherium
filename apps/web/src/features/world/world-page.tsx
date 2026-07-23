@@ -1,0 +1,202 @@
+"use client";
+
+import type { AetheriumApiClient } from "@aetherium/api-client";
+import type {
+  WorldDeepLinkPage,
+  WorldFeatureFlags,
+  WorldLocationPage,
+  WorldProfile,
+  WorldSceneManifest
+} from "@aetherium/shared-types";
+import Link from "next/link";
+import React from "react";
+
+import { createBrowserApiClient } from "../auth/auth-provider";
+
+interface WorldDataState {
+  deepLinks: WorldDeepLinkPage;
+  featureFlags: WorldFeatureFlags;
+  locations: WorldLocationPage;
+  profile: WorldProfile;
+  sceneManifest: WorldSceneManifest;
+}
+
+function friendlyError(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return "World data contracts are unavailable.";
+}
+
+export function WorldPage({
+  client
+}: Readonly<{
+  client?: AetheriumApiClient;
+}>): React.ReactElement {
+  const apiClient = React.useMemo(() => client ?? createBrowserApiClient(), [client]);
+  const [data, setData] = React.useState<WorldDataState | null>(null);
+  const [status, setStatus] = React.useState<"loading" | "ready" | "error">("loading");
+  const [error, setError] = React.useState<string | null>(null);
+
+  const loadWorldData = React.useCallback(async () => {
+    setStatus("loading");
+    setError(null);
+    try {
+      const [profile, locations, deepLinks, sceneManifest, featureFlags] = await Promise.all([
+        apiClient.world.getProfile(),
+        apiClient.world.listLocations(),
+        apiClient.world.listDeepLinks(),
+        apiClient.world.getSceneManifest(),
+        apiClient.world.getFeatureFlags()
+      ]);
+      setData({ deepLinks, featureFlags, locations, profile, sceneManifest });
+      setStatus("ready");
+    } catch (loadError) {
+      setError(friendlyError(loadError));
+      setStatus("error");
+    }
+  }, [apiClient]);
+
+  React.useEffect(() => {
+    void loadWorldData();
+  }, [loadWorldData]);
+
+  return (
+    <section className="content-stack">
+      <header className="page-heading">
+        <div>
+          <p className="eyebrow">Future World Mode</p>
+          <h1>World Data Foundation</h1>
+        </div>
+        <span className="state-pill">
+          {status === "loading"
+            ? "Loading"
+            : data?.featureFlags.visualWorldEnabled
+              ? "Enabled"
+              : "Data only"}
+        </span>
+      </header>
+
+      {status === "error" ? (
+        <section className="inline-alert" role="alert">
+          {error ?? "World data contracts are unavailable."}
+        </section>
+      ) : null}
+
+      <section className="work-panel">
+        <header className="world-panel-header">
+          <div>
+            <h2>Visual World Mode is not implemented</h2>
+            <p className="empty-note">
+              This route exposes data contracts for a later 3D phase. It does not render scenes,
+              assets, terrain, player controls, or camera movement.
+            </p>
+          </div>
+          <button className="secondary-action" onClick={() => void loadWorldData()} type="button">
+            Refresh
+          </button>
+        </header>
+        {status === "loading" ? <p className="empty-note">Loading world contracts...</p> : null}
+        {data ? (
+          <div className="world-status-grid">
+            <section>
+              <span>Current location</span>
+              <strong>{data.profile.currentLocationId}</strong>
+              <small>{data.profile.preferredNavigationMethod.replace("_", " ")}</small>
+            </section>
+            <section>
+              <span>Unlocked</span>
+              <strong>{data.locations.unlockedCount}</strong>
+              <small>Profile identifiers</small>
+            </section>
+            <section>
+              <span>Visited</span>
+              <strong>{data.locations.visitedCount}</strong>
+              <small>Profile identifiers</small>
+            </section>
+            <section>
+              <span>Scene runtime</span>
+              <strong>{data.sceneManifest.visualRuntimeAvailable ? "Available" : "Off"}</strong>
+              <small>
+                {data.featureFlags.commandModeFallbackRequired ? "Command fallback" : "Optional"}
+              </small>
+            </section>
+          </div>
+        ) : null}
+      </section>
+
+      {data ? (
+        <>
+          <section className="work-panel">
+            <header className="world-panel-header">
+              <div>
+                <h2>Location registry</h2>
+                <p className="empty-note">
+                  Each location links to a real Command Mode route and a future scene key.
+                </p>
+              </div>
+            </header>
+            {data.locations.items.length === 0 ? (
+              <p className="empty-note">No world locations are registered.</p>
+            ) : (
+              <div className="world-location-list">
+                {data.locations.items.map((location) => (
+                  <article className="world-location-row" key={location.id}>
+                    <div>
+                      <h3>{location.title}</h3>
+                      <p>{location.description}</p>
+                    </div>
+                    <dl className="detail-list compact-detail-list">
+                      <dt>Status</dt>
+                      <dd>{location.unlocked ? "Unlocked" : "Locked"}</dd>
+                      <dt>Visited</dt>
+                      <dd>{location.visited ? "Yes" : "No"}</dd>
+                      <dt>Route</dt>
+                      <dd>
+                        <Link href={location.commandRoute}>{location.commandRoute}</Link>
+                      </dd>
+                      <dt>Future scene key</dt>
+                      <dd>{location.futureSceneKey}</dd>
+                    </dl>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+
+          <section className="work-panel">
+            <header className="world-panel-header">
+              <div>
+                <h2>Deep-link contracts</h2>
+                <p className="empty-note">
+                  Future World Mode can route selected world entities back into Command Mode.
+                </p>
+              </div>
+            </header>
+            <div className="world-table-wrap">
+              <table className="world-table">
+                <caption>Command destinations for future spatial navigation</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Location</th>
+                    <th scope="col">Route</th>
+                    <th scope="col">Entities</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.deepLinks.items.map((deepLink) => (
+                    <tr key={deepLink.locationId}>
+                      <th scope="row">{deepLink.label}</th>
+                      <td>{deepLink.commandRoute}</td>
+                      <td>{deepLink.entityTypes.join(", ")}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </>
+      ) : null}
+    </section>
+  );
+}
