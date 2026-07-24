@@ -8,10 +8,10 @@ achievements.
 
 ## Current Status
 
-The W1 diagnostic 3D runtime foundation, W2 player-controller foundation, and W3 camera foundation
-are implemented. The protected `/app/world` route still loads API-backed world data contracts first,
-then lazy-loads a route-local visual bundle only when the backend runtime flag, scene manifest,
-browser WebGL2 support, and reduced-motion settings allow it.
+The W1 diagnostic 3D runtime foundation, W2 player-controller foundation, W3 camera foundation, and
+W4 interaction framework are implemented. The protected `/app/world` route still loads API-backed
+world data contracts first, then lazy-loads a route-local visual bundle only when the backend
+runtime flag, scene manifest, browser WebGL2 support, and reduced-motion settings allow it.
 
 ADR 0025 now defines the approved visual World Mode architecture. It selects a browser-native React
 Three Fiber and Three.js runtime, with WebGL2 as the default, WebGPU experiments behind feature
@@ -19,8 +19,10 @@ flags, route-level lazy loading, Command Mode fallback, strict asset licensing, 
 budgets. W2 adds normalized keyboard/gamepad input, deterministic movement-state logic, a Rapier
 capsule controller, and a procedural diagnostic avatar. W3 adds smooth third-person follow, orbit
 input, FOV and smoothing settings, reduced-motion-aware behavior, and basic diagnostic camera
-collision. Final district scenes, authored cinematic travel paths, navigation maps, audio, and
-assets remain deferred to later W phases.
+collision. W4 adds typed interaction contracts, diagnostic deep-link-backed interaction terminals,
+radius/facing ranking, permission/loading/error state modeling, accessible prompts, and Command Mode
+routing. Final district scenes, authored cinematic travel paths, navigation maps, audio, and assets
+remain deferred to later W phases.
 
 The current non-visual foundation stores world profile data only:
 
@@ -76,8 +78,9 @@ The app must load Command Mode when:
 ## Initial World Scope
 
 W1 renders only a diagnostic scene with a ground plane, sky, camera, one test light, and debug grid.
-W2 adds movement over that diagnostic ground plane only, and W3 adds a diagnostic third-person
-camera. The first functional world implementation should become a compact central campus with:
+W2 adds movement over that diagnostic ground plane only, W3 adds a diagnostic third-person camera,
+and W4 adds diagnostic interaction prompts and markers tied to Command Mode deep links. The first
+functional world implementation should become a compact central campus with:
 
 - Central Plaza.
 - Library.

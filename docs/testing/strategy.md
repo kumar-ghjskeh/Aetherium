@@ -116,6 +116,8 @@ Frontend and shared packages:
   transitions, and direction smoothing.
 - World Mode camera unit tests for orbit clamping, mode priority, reduced-motion mode selection,
   sprint FOV behavior, diagnostic collision shortening, pose calculation, and smoothing.
+- World Mode interaction unit tests for radius detection, facing priority, blocked/loading/error
+  state handling, command-route activation, and deep-link-backed diagnostic interaction generation.
 - Repository guard coverage through `pnpm world:check`, which allows only ADR-approved visual
   runtime dependencies in the web app and blocks unapproved visual dependencies plus unregistered
   visual-world asset files.

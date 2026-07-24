@@ -106,6 +106,9 @@ authentication/session system. See `docs/architecture/product-independence.md` a
 - Visual World Mode camera foundation with pure camera math, smooth third-person follow,
   mouse/wheel/gamepad orbit input, distance/FOV/smoothing controls, reduced-motion-aware behavior,
   basic collision shortening, and camera telemetry in the diagnostic scene.
+- Visual World Mode interaction framework with typed interaction contracts, diagnostic
+  deep-link-backed terminals, radius/facing priority, keyboard/gamepad activation, accessible
+  prompts, permission/loading/error states, and Command Mode routing.
 - Docker Compose development infrastructure for Aetherium-isolated PostgreSQL, Redis, MinIO, API,
   worker, and web services.
 - CI workflow for independence checks, formatting, linting, type checks, tests, build, and Alembic
@@ -430,7 +433,7 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
 - AI mentors and the Coding workspace are persistent and gateway-backed. The knowledge graph and
   World Mode foundations are available as non-visual owner-scoped data. In-app notification
   workflows exist, but external notification delivery does not. Visual World Mode currently renders
-  only the W1-W3 diagnostic runtime foundations; final districts and full traversal do not exist
+  only the W1-W4 diagnostic runtime foundations; final districts and full traversal do not exist
   yet.
 - The Coding workspace can save snippets, exercises, attempts, and AI explain/review records. Code
   execution is deliberately unavailable until a separate isolated sandbox provider is implemented

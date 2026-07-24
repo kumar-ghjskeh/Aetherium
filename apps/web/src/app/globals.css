@@ -1816,6 +1816,44 @@ kbd {
   gap: 8px !important;
 }
 
+.world-interaction-prompt {
+  background: rgba(5, 12, 17, 0.84);
+  border: 1px solid rgba(130, 230, 240, 0.28);
+  bottom: 132px;
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.28);
+  color: #eef7fb;
+  display: grid;
+  gap: 8px;
+  left: 50%;
+  max-width: min(420px, calc(100% - 32px));
+  padding: 14px;
+  position: absolute;
+  transform: translateX(-50%);
+  width: 420px;
+}
+
+.world-interaction-prompt span {
+  color: #82e6f0;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.world-interaction-prompt strong {
+  font-size: 1.05rem;
+}
+
+.world-interaction-prompt small {
+  color: #adc5cc;
+  line-height: 1.45;
+}
+
+.world-interaction-prompt--permission_denied,
+.world-interaction-prompt--disabled,
+.world-interaction-prompt--error {
+  border-color: rgba(255, 181, 94, 0.38);
+}
+
 .world-runtime-label {
   background: rgba(5, 12, 17, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.14);

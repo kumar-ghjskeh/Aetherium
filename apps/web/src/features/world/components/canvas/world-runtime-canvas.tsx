@@ -10,6 +10,7 @@ import { Physics } from "@react-three/rapier";
 import React from "react";
 import type * as THREE from "three";
 
+import { buildDiagnosticWorldInteractions } from "../../engine/interaction-manifest";
 import { resolveGraphicsPresetSettings } from "../../engine/performance-manager";
 import { useWorldSettingsStore } from "../../state/settings-store";
 import { WorldCameraRig } from "../camera/world-camera-rig";
@@ -21,6 +22,8 @@ import {
   type WorldRuntimeMetrics
 } from "../diagnostics/runtime-diagnostics-panel";
 import { DiagnosticScene } from "../environments/diagnostic-scene";
+import { WorldInteractionPrompt } from "../interactions/world-interaction-prompt";
+import { WorldInteractionSystem } from "../interactions/world-interaction-system";
 
 export function WorldRuntimeCanvas({
   deepLinks,
@@ -63,6 +66,10 @@ export function WorldRuntimeCanvas({
   );
 
   const preset = resolveGraphicsPresetSettings(graphicsPreset);
+  const interactions = React.useMemo(
+    () => buildDiagnosticWorldInteractions({ deepLinks, locationPage }),
+    [deepLinks, locationPage]
+  );
 
   return (
     <section className="world-runtime-shell" aria-label="Aetherium diagnostic visual World Mode">
@@ -85,6 +92,10 @@ export function WorldRuntimeCanvas({
           <Physics gravity={[0, -9.81, 0]} paused={!pageVisible}>
             <DiagnosticScene />
             <PlayerController reducedMotion={preferences.reducedMotion} />
+            <WorldInteractionSystem
+              interactions={interactions}
+              reducedMotion={preferences.reducedMotion}
+            />
           </Physics>
           <WorldCameraRig reducedMotion={preferences.reducedMotion} />
           <RuntimeMetricsSampler onMetrics={setMetrics} />
@@ -96,6 +107,8 @@ export function WorldRuntimeCanvas({
           pageVisible={pageVisible}
           profile={profile}
         />
+
+        <WorldInteractionPrompt />
 
         <div className="world-runtime-label" aria-live="polite">
           <strong>Diagnostic runtime</strong>

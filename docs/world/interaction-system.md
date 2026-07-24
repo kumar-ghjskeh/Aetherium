@@ -5,6 +5,17 @@
 World interactions connect spatial objects to existing Aetherium data and Command Mode workflows.
 They must be generic, accessible, permission-aware, and honest about loading or error states.
 
+## Current Implementation Status
+
+W4 implements the reusable interaction foundation and diagnostic interaction terminals. It includes
+typed interaction contracts, radius detection, facing-aware priority ranking, activation state
+resolution, permission/loading/error/disabled state modeling, accessible 2D prompts, keyboard and
+gamepad activation contracts, simple diagnostic markers, and Command Mode route activation through
+existing world deep-link data.
+
+Final district-specific props, custom panels, backend mutation interactions, fast travel, and
+cinematic interaction framing remain scheduled for later World Mode phases.
+
 ## Interaction Types
 
 - Open application panel.
