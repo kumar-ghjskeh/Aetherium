@@ -2,13 +2,15 @@
 
 Every committed visual or audio asset must be recorded here before it is used by World Mode.
 
-No external visual or audio assets are registered through Phase W7. W5 adds procedural placeholder
+No external visual or audio assets are registered through Phase W8. W5 adds procedural placeholder
 asset IDs in `apps/web/src/features/world/manifests/assets.manifest.ts`; those entries are original
 Aetherium planning records and do not point to committed model, texture, or audio files. W6 adds
 code-generated terrain, water, mist, rocks, clouds, route lines, and district foundation markers
 only. W7 adds a procedural Central Plaza, crystal, arches, water channels, terminal pods, and
 in-scene labels through React Three Fiber primitives. It adds no downloaded model, texture, or audio
-files.
+files. W8 adds a procedural Knowledge Library exterior, dome, rings, shelf/tablet displays,
+collection shelves, file display tablets, and tag markers through React Three Fiber primitives. It
+adds no downloaded model, texture, or audio files.
 
 ## License Rules
 

@@ -171,6 +171,27 @@ Current limitations:
   Command Mode.
 - Browser screenshot automation and measured frame budgets remain scheduled for W23.
 
+## Current Knowledge Library Slice
+
+W8 adds the first functional non-plaza district in
+`apps/web/src/features/world/components/locations/knowledge-library.tsx`.
+
+Current Knowledge Library elements:
+
+- Procedural dome and entry facade at the `knowledge-library` manifest coordinates.
+- Luminous rings, columns, collection shelves, bounded featured-file displays, tag constellation,
+  and instanced tablet slots.
+- Near-district overlay backed by real Personal Vault file, collection, and tag API responses.
+- Library-specific interaction terminals for browsing vault records, searching files, and opening AI
+  document workflows.
+
+Current limitations:
+
+- The district is an exterior slice; it does not include a walkable interior.
+- File reading, download, tagging, favoriting, upload, deletion, and AI document Q&A remain in
+  existing Command Mode surfaces.
+- No downloaded models, textures, audio, glTF/GLB assets, or shelf-room interiors are introduced.
+
 ## Deterministic Generation
 
 Use fixed seeds for:

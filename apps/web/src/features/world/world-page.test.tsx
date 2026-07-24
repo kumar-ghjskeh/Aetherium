@@ -1,6 +1,7 @@
 import type { AetheriumApiClient } from "@aetherium/api-client";
 import type {
   AnalyticsSummary,
+  CollectionPage,
   FilePage,
   HabitPage,
   HabitSummary,
@@ -9,6 +10,7 @@ import type {
   NotificationPage,
   ProjectPage,
   PublicUser,
+  TagPage,
   UserPreferences,
   WorldDeepLinkPage,
   WorldFeatureFlags,
@@ -215,6 +217,20 @@ const filePage: FilePage = {
   total: 0
 };
 
+const collectionPage: CollectionPage = {
+  items: [],
+  limit: 12,
+  offset: 0,
+  total: 0
+};
+
+const tagPage: TagPage = {
+  items: [],
+  limit: 20,
+  offset: 0,
+  total: 0
+};
+
 const projectPage: ProjectPage = {
   items: [],
   limit: 5,
@@ -280,7 +296,9 @@ function createClient(
     },
     files: {
       ...createUnusedFilesClient(),
-      list: vi.fn(() => Promise.resolve(filePage))
+      list: vi.fn(() => Promise.resolve(filePage)),
+      listCollections: vi.fn(() => Promise.resolve(collectionPage)),
+      listTags: vi.fn(() => Promise.resolve(tagPage))
     },
     habits: {
       ...createUnusedHabitsClient(),
@@ -350,7 +368,9 @@ describe("WorldPage", () => {
     expect(client.habits.getSummary).toHaveBeenCalledWith({ period: "week" });
     expect(client.habits.list).toHaveBeenCalledWith({ limit: 5, offset: 0 });
     expect(client.notifications.list).toHaveBeenCalledWith({ limit: 5, offset: 0 });
-    expect(client.files.list).toHaveBeenCalledWith({ includeDeleted: false, limit: 5, offset: 0 });
+    expect(client.files.list).toHaveBeenCalledWith({ includeDeleted: false, limit: 18, offset: 0 });
+    expect(client.files.listCollections).toHaveBeenCalledWith({ limit: 12, offset: 0 });
+    expect(client.files.listTags).toHaveBeenCalledWith({ limit: 20, offset: 0 });
     expect(client.projects.list).toHaveBeenCalledWith({
       includeArchived: false,
       limit: 5,

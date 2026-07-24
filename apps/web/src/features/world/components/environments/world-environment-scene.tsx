@@ -6,6 +6,7 @@ import React from "react";
 import * as THREE from "three";
 
 import type { CentralPlazaOverviewData } from "../../engine/central-plaza-system";
+import type { KnowledgeLibraryOverviewData } from "../../engine/knowledge-library-system";
 import { WORLD_LOCATIONS_MANIFEST } from "../../manifests/locations.manifest";
 import {
   createRoutePoints,
@@ -21,13 +22,16 @@ import {
   WORLD_THEME_COLORS
 } from "../../engine/terrain-system";
 import { CentralPlazaVerticalSlice } from "../locations/central-plaza";
+import { KnowledgeLibraryDistrict } from "../locations/knowledge-library";
 
 export function WorldEnvironmentScene({
   graphicsPreset,
+  libraryOverview,
   plazaOverview,
   reducedMotion
 }: Readonly<{
   graphicsPreset: PerformancePreset;
+  libraryOverview: KnowledgeLibraryOverviewData;
   plazaOverview: CentralPlazaOverviewData;
   reducedMotion: boolean;
 }>): React.ReactElement {
@@ -54,6 +58,7 @@ export function WorldEnvironmentScene({
       <DistrictFoundationMarkers />
       <EnvironmentProps graphicsPreset={graphicsPreset} reducedMotion={reducedMotion} />
       <CentralPlazaVerticalSlice overview={plazaOverview} reducedMotion={reducedMotion} />
+      <KnowledgeLibraryDistrict overview={libraryOverview} reducedMotion={reducedMotion} />
     </>
   );
 }
@@ -210,33 +215,31 @@ function TerrainRoutes(): React.ReactElement {
 function DistrictFoundationMarkers(): React.ReactElement {
   return (
     <>
-      {WORLD_LOCATIONS_MANIFEST.filter((location) => location.id !== "central-plaza").map(
-        (location) => {
-          const [x, , z] = location.position;
-          const terrain = sampleTerrain(x, z);
-          const color = WORLD_THEME_COLORS.get(location.theme) ?? "#ffffff";
-          return (
-            <group key={location.id} position={[x, terrain.height + 0.18, z]}>
-              <mesh receiveShadow>
-                <cylinderGeometry
-                  args={[location.id === "central-plaza" ? 18 : 10, 11, 0.36, 32]}
-                />
-                <meshStandardMaterial color="#263340" metalness={0.16} roughness={0.78} />
-              </mesh>
-              <mesh position={[0, 2.2, 0]}>
-                <cylinderGeometry args={[0.8, 1.25, 4.2, 16]} />
-                <meshStandardMaterial
-                  color={color}
-                  emissive={color}
-                  emissiveIntensity={0.18}
-                  metalness={0.2}
-                  roughness={0.42}
-                />
-              </mesh>
-            </group>
-          );
-        }
-      )}
+      {WORLD_LOCATIONS_MANIFEST.filter(
+        (location) => location.id !== "central-plaza" && location.id !== "knowledge-library"
+      ).map((location) => {
+        const [x, , z] = location.position;
+        const terrain = sampleTerrain(x, z);
+        const color = WORLD_THEME_COLORS.get(location.theme) ?? "#ffffff";
+        return (
+          <group key={location.id} position={[x, terrain.height + 0.18, z]}>
+            <mesh receiveShadow>
+              <cylinderGeometry args={[10, 11, 0.36, 32]} />
+              <meshStandardMaterial color="#263340" metalness={0.16} roughness={0.78} />
+            </mesh>
+            <mesh position={[0, 2.2, 0]}>
+              <cylinderGeometry args={[0.8, 1.25, 4.2, 16]} />
+              <meshStandardMaterial
+                color={color}
+                emissive={color}
+                emissiveIntensity={0.18}
+                metalness={0.2}
+                roughness={0.42}
+              />
+            </mesh>
+          </group>
+        );
+      })}
     </>
   );
 }

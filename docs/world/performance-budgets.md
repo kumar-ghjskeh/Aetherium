@@ -83,6 +83,20 @@ The W7 Central Plaza vertical slice keeps the first polished district bounded:
 Until W23 visual automation is active, W7 validation relies on deterministic unit tests, type
 checks, production build validation, and the existing runtime diagnostics overlay.
 
+## Current W8 Knowledge Library Budget
+
+The W8 Knowledge Library adds one bounded district slice:
+
+- Procedural exterior meshes only.
+- One instanced mesh for tablet/book-like shelf filler slots.
+- Up to twelve featured file displays from the current vault page.
+- Up to six collection shelf displays and eight tag markers.
+- One local point light and two low-cost animated rings.
+- Reduced-motion mode disables ring animation.
+
+W8 does not add textures, downloaded assets, spatial audio, post-processing, dense foliage, or
+interior room loading. Browser screenshot and frame-metric automation remain scheduled for W23.
+
 ## Runtime Diagnostics
 
 Diagnostics must report:

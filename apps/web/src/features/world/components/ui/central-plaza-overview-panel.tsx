@@ -5,13 +5,21 @@ import {
   buildCentralPlazaViewModel,
   type CentralPlazaOverviewData
 } from "../../engine/central-plaza-system";
+import { usePlayerStore } from "../../state/player-store";
 
 export function CentralPlazaOverviewPanel({
   overview
 }: Readonly<{
   overview: CentralPlazaOverviewData;
-}>): React.ReactElement {
+}>): React.ReactElement | null {
   const viewModel = React.useMemo(() => buildCentralPlazaViewModel(overview), [overview]);
+  const nearPlaza = usePlayerStore(
+    (state) => Math.hypot(state.position[0], state.position[2]) <= 82
+  );
+
+  if (!nearPlaza) {
+    return null;
+  }
 
   return (
     <aside aria-label="Central Plaza live overview" className="world-plaza-panel">

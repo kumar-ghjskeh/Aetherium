@@ -84,4 +84,25 @@ describe("diagnostic world interaction manifest", () => {
     expect(mapTerminal?.commandRoute).toBe("/app/world");
     expect(mapTerminal?.status).toBe("available");
   });
+
+  it("adds Knowledge Library district terminals for vault browsing and AI Q&A", () => {
+    const interactions = buildDiagnosticWorldInteractions({ deepLinks, locationPage });
+
+    expect(
+      interactions.find((interaction) => interaction.id === "interaction-library-search-terminal")
+    ).toMatchObject({
+      commandRoute: "/app/library",
+      locationId: "library",
+      prompt: "Search Files",
+      status: "available"
+    });
+    expect(
+      interactions.find((interaction) => interaction.id === "interaction-library-ai-terminal")
+    ).toMatchObject({
+      commandRoute: "/app/ai",
+      locationId: "library",
+      prompt: "Ask About Files",
+      status: "available"
+    });
+  });
 });

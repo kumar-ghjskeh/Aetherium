@@ -95,6 +95,11 @@ console, and frame-metric capture remain scheduled for W23. Until that harness e
 - Type checks and production build validation.
 - The existing runtime diagnostics overlay for manual inspection.
 
+W8 adds the Knowledge Library district and uses the same interim validation approach. It adds
+deterministic vault-to-world mapping tests and verifies `/app/world` loads file, collection, and tag
+DTOs for the district. Fixed screenshot capture for the Library remains part of the W23 visual
+regression suite.
+
 ## Failure Policy
 
 If tests show a black canvas, missing asset, persistent console error, browser crash, or performance

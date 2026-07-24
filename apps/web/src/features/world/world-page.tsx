@@ -16,11 +16,13 @@ import { createBrowserApiClient } from "../auth/auth-provider";
 import { WorldRuntimeErrorBoundary } from "./components/canvas/world-runtime-error-boundary";
 import { WorldRuntimeFallback, WorldRuntimeLoading } from "./components/ui/world-runtime-fallback";
 import type { CentralPlazaOverviewData } from "./engine/central-plaza-system";
+import type { KnowledgeLibraryOverviewData } from "./engine/knowledge-library-system";
 import { useWorldRuntimeReadiness } from "./hooks/use-world-runtime-readiness";
 
 interface WorldDataState {
   deepLinks: WorldDeepLinkPage;
   featureFlags: WorldFeatureFlags;
+  libraryOverview: KnowledgeLibraryOverviewData;
   locations: WorldLocationPage;
   plazaOverview: CentralPlazaOverviewData;
   preferences: UserPreferences;
@@ -73,6 +75,8 @@ export function WorldPage({
         habits,
         notifications,
         files,
+        collections,
+        tags,
         projects,
         learningGoals,
         mentors,
@@ -88,7 +92,9 @@ export function WorldPage({
         apiClient.habits.getSummary({ period: "week" }),
         apiClient.habits.list({ limit: 5, offset: 0 }),
         apiClient.notifications.list({ limit: 5, offset: 0 }),
-        apiClient.files.list({ includeDeleted: false, limit: 5, offset: 0 }),
+        apiClient.files.list({ includeDeleted: false, limit: 18, offset: 0 }),
+        apiClient.files.listCollections({ limit: 12, offset: 0 }),
+        apiClient.files.listTags({ limit: 20, offset: 0 }),
         apiClient.projects.list({ includeArchived: false, limit: 5, offset: 0 }),
         apiClient.learning.listGoals({ limit: 5, offset: 0 }),
         apiClient.mentors.list({ includeArchived: false }),
@@ -97,6 +103,11 @@ export function WorldPage({
       setData({
         deepLinks,
         featureFlags,
+        libraryOverview: {
+          collections,
+          files,
+          tags
+        },
         locations,
         plazaOverview: {
           analytics,
@@ -204,6 +215,7 @@ export function WorldPage({
               <React.Suspense fallback={<WorldRuntimeLoading />}>
                 <LazyWorldRuntimeCanvas
                   deepLinks={data.deepLinks}
+                  libraryOverview={data.libraryOverview}
                   locationPage={data.locations}
                   plazaOverview={data.plazaOverview}
                   preferences={data.preferences}

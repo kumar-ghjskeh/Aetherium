@@ -48,3 +48,4 @@ See `docs/tasks/world/world-mode-roadmap.md`.
 - `docs/tasks/world/phase-w5-world-manifest-generation.md`
 - `docs/tasks/world/phase-w6-terrain-environment.md`
 - `docs/tasks/world/phase-w7-central-plaza.md`
+- `docs/tasks/world/phase-w8-knowledge-library.md`

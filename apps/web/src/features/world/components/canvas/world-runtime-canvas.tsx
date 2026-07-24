@@ -13,6 +13,7 @@ import type * as THREE from "three";
 import { buildDiagnosticWorldInteractions } from "../../engine/interaction-manifest";
 import { resolveGraphicsPresetSettings } from "../../engine/performance-manager";
 import type { CentralPlazaOverviewData } from "../../engine/central-plaza-system";
+import type { KnowledgeLibraryOverviewData } from "../../engine/knowledge-library-system";
 import { useWorldSettingsStore } from "../../state/settings-store";
 import { WorldCameraRig } from "../camera/world-camera-rig";
 import { PlayerController } from "../character/player-controller";
@@ -26,9 +27,11 @@ import { WorldEnvironmentScene } from "../environments/world-environment-scene";
 import { WorldInteractionPrompt } from "../interactions/world-interaction-prompt";
 import { WorldInteractionSystem } from "../interactions/world-interaction-system";
 import { CentralPlazaOverviewPanel } from "../ui/central-plaza-overview-panel";
+import { KnowledgeLibraryPanel } from "../ui/knowledge-library-panel";
 
 export function WorldRuntimeCanvas({
   deepLinks,
+  libraryOverview,
   locationPage,
   plazaOverview,
   preferences,
@@ -36,6 +39,7 @@ export function WorldRuntimeCanvas({
   sceneManifest
 }: Readonly<{
   deepLinks: WorldDeepLinkPage;
+  libraryOverview: KnowledgeLibraryOverviewData;
   locationPage: WorldLocationPage;
   plazaOverview: CentralPlazaOverviewData;
   preferences: UserPreferences;
@@ -96,6 +100,7 @@ export function WorldRuntimeCanvas({
           <Physics gravity={[0, -9.81, 0]} paused={!pageVisible}>
             <WorldEnvironmentScene
               graphicsPreset={graphicsPreset}
+              libraryOverview={libraryOverview}
               plazaOverview={plazaOverview}
               reducedMotion={preferences.reducedMotion}
             />
@@ -118,6 +123,7 @@ export function WorldRuntimeCanvas({
 
         <WorldInteractionPrompt />
         <CentralPlazaOverviewPanel overview={plazaOverview} />
+        <KnowledgeLibraryPanel overview={libraryOverview} />
 
         <div className="world-runtime-label" aria-live="polite">
           <strong>Central Plaza vertical slice</strong>

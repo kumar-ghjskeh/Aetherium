@@ -86,6 +86,42 @@ export const WORLD_INTERACTIONS_MANIFEST: WorldInteractionManifestEntry[] = [
     type: "open_file_collection"
   },
   {
+    accessibilityLabel: "Browse Knowledge Library collections in Command Mode",
+    commandRoute: "/app/library",
+    gamepadAction: "primary",
+    id: "interaction-library-collections-terminal",
+    keyboardAction: "KeyE",
+    locationId: "knowledge-library",
+    position: [171, 1.25, -260],
+    prompt: "Browse Collections",
+    radius: 10,
+    type: "open_file_collection"
+  },
+  {
+    accessibilityLabel: "Search Knowledge Library files in Command Mode",
+    commandRoute: "/app/library",
+    gamepadAction: "primary",
+    id: "interaction-library-search-terminal",
+    keyboardAction: "KeyE",
+    locationId: "knowledge-library",
+    position: [184, 1.25, -267],
+    prompt: "Search Files",
+    radius: 10,
+    type: "open_application_panel"
+  },
+  {
+    accessibilityLabel: "Ask an AI mentor about ready Knowledge Library files",
+    commandRoute: "/app/ai",
+    gamepadAction: "primary",
+    id: "interaction-library-ai-terminal",
+    keyboardAction: "KeyE",
+    locationId: "knowledge-library",
+    position: [197, 1.25, -260],
+    prompt: "Ask About Files",
+    radius: 10,
+    type: "start_ai_conversation"
+  },
+  {
     accessibilityLabel: "Ask an AI mentor in Command Mode",
     commandRoute: "/app/ai",
     gamepadAction: "primary",
