@@ -1,6 +1,7 @@
 import type { PerformancePreset, WorldLocationPage, WorldProfile } from "@aetherium/shared-types";
 import React from "react";
 
+import { usePlayerStore } from "../../state/player-store";
 import { useWorldSettingsStore } from "../../state/settings-store";
 
 export interface WorldRuntimeMetrics {
@@ -38,6 +39,10 @@ export function RuntimeDiagnosticsPanel({
   const graphicsPreset = useWorldSettingsStore((state) => state.graphicsPreset);
   const setDiagnosticsVisible = useWorldSettingsStore((state) => state.setDiagnosticsVisible);
   const setGraphicsPreset = useWorldSettingsStore((state) => state.setGraphicsPreset);
+  const movementState = usePlayerStore((state) => state.movementState);
+  const planarSpeed = usePlayerStore((state) => state.planarSpeed);
+  const playerPaused = usePlayerStore((state) => state.paused);
+  const inputMode = usePlayerStore((state) => state.inputMode);
   const diagnosticsAllowed =
     process.env.NODE_ENV !== "production" ||
     process.env.NEXT_PUBLIC_AETHERIUM_WORLD_DEBUG === "true";
@@ -67,7 +72,19 @@ export function RuntimeDiagnosticsPanel({
       </div>
       <div>
         <span>Runtime</span>
-        <strong>{pageVisible ? "Active" : "Paused"}</strong>
+        <strong>{playerPaused || !pageVisible ? "Paused" : "Active"}</strong>
+      </div>
+      <div>
+        <span>Movement</span>
+        <strong>{movementState}</strong>
+      </div>
+      <div>
+        <span>Input</span>
+        <strong>{inputMode}</strong>
+      </div>
+      <div>
+        <span>Speed</span>
+        <strong>{planarSpeed.toFixed(1)} m/s</strong>
       </div>
       <div>
         <span>Locations</span>

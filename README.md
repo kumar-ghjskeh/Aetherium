@@ -13,8 +13,9 @@ profile/privacy settings, the Coding workspace foundation, the non-visual knowle
 foundation, in-app notification/review workflows, non-visual World Mode data contracts,
 production-hardening baseline, and deployment-preparation documentation. It does not yet implement
 visual 3D world navigation. The visual World Mode architecture has been selected in documentation,
-and the first diagnostic browser runtime is available under `/app/world`; final district art, player
-movement, terrain, travel, and 3D interactions are still deferred.
+and the diagnostic browser runtime is available under `/app/world` with a basic player-controller
+foundation; final district art, terrain, travel, cinematic camera behavior, and district-specific 3D
+interactions are still deferred.
 
 Aetherium is a standalone product. It uses its own repository, database, Redis namespace,
 object-storage buckets, environment variables, Docker resources, CI workflow, and future
@@ -99,6 +100,9 @@ authentication/session system. See `docs/architecture/product-independence.md` a
 - Visual World Mode runtime foundation under `/app/world` with a route-local lazy 3D bundle, WebGL2
   and reduced-motion fallbacks, graphics preset controls, tab-background pause, runtime diagnostics,
   and a minimal diagnostic scene. Final world locations are not visually implemented yet.
+- Visual World Mode player-controller foundation with normalized keyboard and gamepad input,
+  deterministic movement states, a Rapier capsule controller, a procedural stylized avatar, pause
+  handling, and player telemetry in the diagnostic scene.
 - Docker Compose development infrastructure for Aetherium-isolated PostgreSQL, Redis, MinIO, API,
   worker, and web services.
 - CI workflow for independence checks, formatting, linting, type checks, tests, build, and Alembic

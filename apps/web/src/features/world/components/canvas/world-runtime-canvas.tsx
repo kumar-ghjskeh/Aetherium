@@ -18,6 +18,8 @@ import {
   type WorldRuntimeMetrics
 } from "../diagnostics/runtime-diagnostics-panel";
 import { DiagnosticScene } from "../environments/diagnostic-scene";
+import { Physics } from "@react-three/rapier";
+import { PlayerController } from "../character/player-controller";
 
 export function WorldRuntimeCanvas({
   deepLinks,
@@ -79,7 +81,10 @@ export function WorldRuntimeCanvas({
           }}
           shadows={preset.shadows}
         >
-          <DiagnosticScene />
+          <Physics gravity={[0, -9.81, 0]} paused={!pageVisible}>
+            <DiagnosticScene />
+            <PlayerController reducedMotion={preferences.reducedMotion} />
+          </Physics>
           <RuntimeMetricsSampler onMetrics={setMetrics} />
         </Canvas>
 

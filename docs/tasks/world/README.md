@@ -37,3 +37,9 @@ configured user author and must not include co-author trailers.
 ## Roadmap
 
 See `docs/tasks/world/world-mode-roadmap.md`.
+
+## Phase Task Records
+
+- `docs/tasks/world/phase-w0-visual-world-architecture.md`
+- `docs/tasks/world/phase-w1-world-runtime-foundation.md`
+- `docs/tasks/world/phase-w2-player-controller.md`

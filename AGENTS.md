@@ -77,13 +77,17 @@ Implemented foundation slices:
 - Visual World Mode W1 runtime foundation with approved browser-native 3D dependencies, `/app/world`
   lazy-loading, WebGL2 and reduced-motion fallbacks, diagnostic scene rendering, graphics preset
   controls, runtime diagnostics, and a dependency/asset policy guard.
+- Visual World Mode W2 player-controller foundation with normalized keyboard and gamepad input,
+  deterministic movement-state logic, a Rapier capsule controller in the diagnostic runtime,
+  procedural stylized avatar feedback, pause handling, and player telemetry.
 
 Still out of scope unless explicitly requested:
 
 - OAuth, social login, email delivery, password reset, MFA, and magic links.
 - External email, push, SMS, and deployed scheduler notification delivery.
-- Final world district art, terrain, player controls, map travel, 3D interactions, audio, or visual
-  world progression until the corresponding approved World Mode phase is active.
+- Final world district art, terrain, cinematic camera travel, map travel, district-specific 3D
+  interactions, audio, or visual world progression until the corresponding approved World Mode phase
+  is active.
 - Automatic production deployment.
 
 ## Product Independence
@@ -108,9 +112,9 @@ before completing work that could affect World Mode dependencies or assets. Run
 
 ## Visual World Mode
 
-The visual World Mode architecture and W1 diagnostic runtime foundation are documented. Follow
+The visual World Mode architecture and W1/W2 diagnostic runtime foundations are documented. Follow
 `docs/architecture/decisions/0025-visual-world-mode-architecture.md`,
-`docs/world/world-mode-architecture.md`, and `docs/tasks/world/world-mode-roadmap.md` for W1 and
+`docs/world/world-mode-architecture.md`, and `docs/tasks/world/world-mode-roadmap.md` for W2 and
 later. Do not add unregistered assets, paid assets, editor-heavy engine dependencies, or any
 browser-exposed secret.
 

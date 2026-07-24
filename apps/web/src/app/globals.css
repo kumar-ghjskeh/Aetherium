@@ -1710,7 +1710,7 @@ kbd {
   color: #eef7fb;
   display: grid;
   gap: 10px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   left: 16px;
   padding: 12px;
   position: absolute;

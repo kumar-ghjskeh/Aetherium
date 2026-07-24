@@ -96,7 +96,8 @@ Each world location maps to a Command Mode route such as `/app/library`, `/app/a
 
 ## Recommended 3D Architecture
 
-- Visual World Mode W1 is now a progressive enhancement over the existing backend and API client.
+- Visual World Mode W1 and W2 are now progressive enhancements over the existing backend and API
+  client.
 - Keep Command Mode fully usable when WebGL, motion, or performance requirements are not met.
 - Lazy-load visual world code separately from the Command Mode shell.
 - Keep scene state transient in client state and persist only approved world profile/progression
@@ -149,12 +150,15 @@ Each world location maps to a Command Mode route such as `/app/library`, `/app/a
 ## Remaining Blockers
 
 - W1 visual dependencies are installed only in the web app.
-- No final scene assets, art pipeline, or performance test harness exists.
+- W2 player movement exists only in the diagnostic runtime and is not yet a finished traversal
+  experience.
+- No final scene assets, art pipeline, district terrain, premium camera system, or performance test
+  harness exists.
 - WebGL capability detection and the lazy visual-mode router exist for the diagnostic runtime only.
 - No Playwright visual regression or canvas-pixel checks exist for 3D scenes.
 
 ## Exact First Task For Visual World Mode
 
-Implement W2, the Player Controller. Add input mapping, character capsule, movement states,
-collision-ready controller boundaries, pause behavior, reduced-motion handling, and tests without
-building final district art.
+Implement W3, the Camera System. Add smooth third-person follow behavior, configurable sensitivity,
+camera collision boundaries, sprint FOV transition, interaction framing contracts, reduced-motion
+behavior, and tests without building final district art.

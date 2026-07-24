@@ -111,6 +111,9 @@ Frontend and shared packages:
   bulk read state, and monthly review endpoints.
 - API-client contract tests for World Mode location registry, feature flags, deep-link contracts,
   scene-manifest schema, and profile visit endpoints.
+- World Mode input and player-controller unit tests for normalized keyboard/gamepad intent,
+  deterministic movement-state transitions, sprint behavior, pause behavior, falling/landing
+  transitions, and direction smoothing.
 - Repository guard coverage through `pnpm world:check`, which allows only ADR-approved visual
   runtime dependencies in the web app and blocks unapproved visual dependencies plus unregistered
   visual-world asset files.
