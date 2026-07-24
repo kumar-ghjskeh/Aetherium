@@ -6,11 +6,14 @@ import type {
   WorldSceneManifest
 } from "@aetherium/shared-types";
 import { Canvas } from "@react-three/fiber";
+import { Physics } from "@react-three/rapier";
 import React from "react";
 import type * as THREE from "three";
 
 import { resolveGraphicsPresetSettings } from "../../engine/performance-manager";
 import { useWorldSettingsStore } from "../../state/settings-store";
+import { WorldCameraRig } from "../camera/world-camera-rig";
+import { PlayerController } from "../character/player-controller";
 import { RuntimeMetricsSampler } from "../diagnostics/runtime-metrics-sampler";
 import {
   DEFAULT_RUNTIME_METRICS,
@@ -18,8 +21,6 @@ import {
   type WorldRuntimeMetrics
 } from "../diagnostics/runtime-diagnostics-panel";
 import { DiagnosticScene } from "../environments/diagnostic-scene";
-import { Physics } from "@react-three/rapier";
-import { PlayerController } from "../character/player-controller";
 
 export function WorldRuntimeCanvas({
   deepLinks,
@@ -85,6 +86,7 @@ export function WorldRuntimeCanvas({
             <DiagnosticScene />
             <PlayerController reducedMotion={preferences.reducedMotion} />
           </Physics>
+          <WorldCameraRig reducedMotion={preferences.reducedMotion} />
           <RuntimeMetricsSampler onMetrics={setMetrics} />
         </Canvas>
 

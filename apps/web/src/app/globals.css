@@ -1785,6 +1785,37 @@ kbd {
   margin: 0;
 }
 
+.world-runtime-camera-controls {
+  border-top: 1px solid rgba(130, 230, 240, 0.16);
+  display: grid;
+  gap: 10px;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  padding-top: 10px;
+}
+
+.world-runtime-camera-controls label {
+  color: #eef7fb;
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.world-runtime-camera-controls input[type="range"] {
+  accent-color: #82e6f0;
+  width: 100%;
+}
+
+.world-runtime-camera-controls input[type="checkbox"] {
+  accent-color: #82e6f0;
+}
+
+.world-runtime-camera-checkbox {
+  align-items: center;
+  display: flex !important;
+  gap: 8px !important;
+}
+
 .world-runtime-label {
   background: rgba(5, 12, 17, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.14);
@@ -2393,6 +2424,7 @@ kbd {
 .coding-tab-row:focus,
 .permission-grid input:focus,
 .preset-button:focus,
+.world-runtime-camera-controls input:focus,
 .world-runtime-button:focus,
 .world-runtime-hud select:focus,
 .danger-action:focus {

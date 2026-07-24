@@ -14,7 +14,7 @@ foundation, in-app notification/review workflows, non-visual World Mode data con
 production-hardening baseline, and deployment-preparation documentation. It does not yet implement
 visual 3D world navigation. The visual World Mode architecture has been selected in documentation,
 and the diagnostic browser runtime is available under `/app/world` with a basic player-controller
-foundation; final district art, terrain, travel, cinematic camera behavior, and district-specific 3D
+and camera foundation; final district art, terrain, travel paths, and district-specific 3D
 interactions are still deferred.
 
 Aetherium is a standalone product. It uses its own repository, database, Redis namespace,
@@ -103,6 +103,9 @@ authentication/session system. See `docs/architecture/product-independence.md` a
 - Visual World Mode player-controller foundation with normalized keyboard and gamepad input,
   deterministic movement states, a Rapier capsule controller, a procedural stylized avatar, pause
   handling, and player telemetry in the diagnostic scene.
+- Visual World Mode camera foundation with pure camera math, smooth third-person follow,
+  mouse/wheel/gamepad orbit input, distance/FOV/smoothing controls, reduced-motion-aware behavior,
+  basic collision shortening, and camera telemetry in the diagnostic scene.
 - Docker Compose development infrastructure for Aetherium-isolated PostgreSQL, Redis, MinIO, API,
   worker, and web services.
 - CI workflow for independence checks, formatting, linting, type checks, tests, build, and Alembic
@@ -427,7 +430,8 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
 - AI mentors and the Coding workspace are persistent and gateway-backed. The knowledge graph and
   World Mode foundations are available as non-visual owner-scoped data. In-app notification
   workflows exist, but external notification delivery does not. Visual World Mode currently renders
-  only the W1 diagnostic runtime; final districts and traversal do not exist yet.
+  only the W1-W3 diagnostic runtime foundations; final districts and full traversal do not exist
+  yet.
 - The Coding workspace can save snippets, exercises, attempts, and AI explain/review records. Code
   execution is deliberately unavailable until a separate isolated sandbox provider is implemented
   and validated.

@@ -114,6 +114,8 @@ Frontend and shared packages:
 - World Mode input and player-controller unit tests for normalized keyboard/gamepad intent,
   deterministic movement-state transitions, sprint behavior, pause behavior, falling/landing
   transitions, and direction smoothing.
+- World Mode camera unit tests for orbit clamping, mode priority, reduced-motion mode selection,
+  sprint FOV behavior, diagnostic collision shortening, pose calculation, and smoothing.
 - Repository guard coverage through `pnpm world:check`, which allows only ADR-approved visual
   runtime dependencies in the web app and blocks unapproved visual dependencies plus unregistered
   visual-world asset files.

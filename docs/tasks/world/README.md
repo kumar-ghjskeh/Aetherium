@@ -43,3 +43,4 @@ See `docs/tasks/world/world-mode-roadmap.md`.
 - `docs/tasks/world/phase-w0-visual-world-architecture.md`
 - `docs/tasks/world/phase-w1-world-runtime-foundation.md`
 - `docs/tasks/world/phase-w2-player-controller.md`
+- `docs/tasks/world/phase-w3-camera-system.md`

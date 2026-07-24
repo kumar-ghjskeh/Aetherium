@@ -5,6 +5,16 @@
 The camera should make the world feel cinematic without slowing practical work. It must remain
 predictable, adjustable, and accessible.
 
+## Current Implementation Status
+
+W3 implements the diagnostic camera foundation. It includes pure camera math, smooth third-person
+follow, mouse drag orbit, wheel distance adjustment, gamepad right-stick orbit, recenter, local
+distance/FOV/sensitivity/smoothing settings, reduced-motion-aware FOV behavior, optional sprint
+camera shake, and basic collision shortening against diagnostic blockers and world bounds.
+
+Authored cinematic travel paths, final district collision meshes, interaction framing, map overview,
+and production visual regression screenshots remain scheduled for later World Mode phases.
+
 ## Camera Modes
 
 - Third-person follow.

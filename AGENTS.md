@@ -80,12 +80,15 @@ Implemented foundation slices:
 - Visual World Mode W2 player-controller foundation with normalized keyboard and gamepad input,
   deterministic movement-state logic, a Rapier capsule controller in the diagnostic runtime,
   procedural stylized avatar feedback, pause handling, and player telemetry.
+- Visual World Mode W3 camera foundation with pure camera math, smooth third-person follow,
+  mouse/wheel/gamepad orbit input, distance/FOV/smoothing settings, basic collision shortening,
+  reduced-motion-aware behavior, sprint FOV/shake controls, and camera telemetry.
 
 Still out of scope unless explicitly requested:
 
 - OAuth, social login, email delivery, password reset, MFA, and magic links.
 - External email, push, SMS, and deployed scheduler notification delivery.
-- Final world district art, terrain, cinematic camera travel, map travel, district-specific 3D
+- Final world district art, terrain, cinematic travel paths, map travel, district-specific 3D
   interactions, audio, or visual world progression until the corresponding approved World Mode phase
   is active.
 - Automatic production deployment.
@@ -112,9 +115,9 @@ before completing work that could affect World Mode dependencies or assets. Run
 
 ## Visual World Mode
 
-The visual World Mode architecture and W1/W2 diagnostic runtime foundations are documented. Follow
+The visual World Mode architecture and W1-W3 diagnostic runtime foundations are documented. Follow
 `docs/architecture/decisions/0025-visual-world-mode-architecture.md`,
-`docs/world/world-mode-architecture.md`, and `docs/tasks/world/world-mode-roadmap.md` for W2 and
+`docs/world/world-mode-architecture.md`, and `docs/tasks/world/world-mode-roadmap.md` for W3 and
 later. Do not add unregistered assets, paid assets, editor-heavy engine dependencies, or any
 browser-exposed secret.
 

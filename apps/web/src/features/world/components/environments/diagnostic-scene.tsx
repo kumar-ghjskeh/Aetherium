@@ -1,16 +1,11 @@
 import { Grid, Sky } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
 import { CuboidCollider, RigidBody } from "@react-three/rapier";
-import { useFrame, useThree } from "@react-three/fiber";
 import React from "react";
 import type * as THREE from "three";
 
 export function DiagnosticScene(): React.ReactElement {
   const beaconRef = React.useRef<THREE.Mesh>(null);
-  const { camera } = useThree();
-
-  React.useEffect(() => {
-    camera.lookAt(0, 1, 0);
-  }, [camera]);
 
   useFrame((_, delta) => {
     if (beaconRef.current) {
