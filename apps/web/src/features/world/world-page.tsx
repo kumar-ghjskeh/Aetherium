@@ -15,12 +15,14 @@ import React from "react";
 import { createBrowserApiClient } from "../auth/auth-provider";
 import { WorldRuntimeErrorBoundary } from "./components/canvas/world-runtime-error-boundary";
 import { WorldRuntimeFallback, WorldRuntimeLoading } from "./components/ui/world-runtime-fallback";
+import type { CentralPlazaOverviewData } from "./engine/central-plaza-system";
 import { useWorldRuntimeReadiness } from "./hooks/use-world-runtime-readiness";
 
 interface WorldDataState {
   deepLinks: WorldDeepLinkPage;
   featureFlags: WorldFeatureFlags;
   locations: WorldLocationPage;
+  plazaOverview: CentralPlazaOverviewData;
   preferences: UserPreferences;
   profile: WorldProfile;
   sceneManifest: WorldSceneManifest;
@@ -59,16 +61,59 @@ export function WorldPage({
     setStatus("loading");
     setError(null);
     try {
-      const [profile, locations, deepLinks, sceneManifest, featureFlags, preferences] =
-        await Promise.all([
-          apiClient.world.getProfile(),
-          apiClient.world.listLocations(),
-          apiClient.world.listDeepLinks(),
-          apiClient.world.getSceneManifest(),
-          apiClient.world.getFeatureFlags(),
-          apiClient.settings.getPreferences()
-        ]);
-      setData({ deepLinks, featureFlags, locations, preferences, profile, sceneManifest });
+      const [
+        profile,
+        locations,
+        deepLinks,
+        sceneManifest,
+        featureFlags,
+        preferences,
+        user,
+        habitSummary,
+        habits,
+        notifications,
+        files,
+        projects,
+        learningGoals,
+        mentors,
+        analytics
+      ] = await Promise.all([
+        apiClient.world.getProfile(),
+        apiClient.world.listLocations(),
+        apiClient.world.listDeepLinks(),
+        apiClient.world.getSceneManifest(),
+        apiClient.world.getFeatureFlags(),
+        apiClient.settings.getPreferences(),
+        apiClient.auth.me(),
+        apiClient.habits.getSummary({ period: "week" }),
+        apiClient.habits.list({ limit: 5, offset: 0 }),
+        apiClient.notifications.list({ limit: 5, offset: 0 }),
+        apiClient.files.list({ includeDeleted: false, limit: 5, offset: 0 }),
+        apiClient.projects.list({ includeArchived: false, limit: 5, offset: 0 }),
+        apiClient.learning.listGoals({ limit: 5, offset: 0 }),
+        apiClient.mentors.list({ includeArchived: false }),
+        apiClient.analytics.summary({ period: "week" })
+      ]);
+      setData({
+        deepLinks,
+        featureFlags,
+        locations,
+        plazaOverview: {
+          analytics,
+          files,
+          habitSummary,
+          habits,
+          learningGoals,
+          mentors,
+          notifications,
+          preferences,
+          projects,
+          user
+        },
+        preferences,
+        profile,
+        sceneManifest
+      });
       setStatus("ready");
     } catch (loadError) {
       setError(friendlyError(loadError));
@@ -105,10 +150,10 @@ export function WorldPage({
       <section className="work-panel">
         <header className="world-panel-header">
           <div>
-            <h2>Visual World Mode runtime</h2>
+            <h2>Central Plaza runtime</h2>
             <p className="empty-note">
-              This W1 route lazy-loads a diagnostic 3D runtime only when the backend flag, scene
-              manifest, browser capability, and motion settings allow it.
+              This route lazy-loads the first polished World Mode vertical slice when the backend
+              flag, scene manifest, browser capability, and motion settings allow it.
             </p>
           </div>
           <button className="secondary-action" onClick={() => void loadWorldData()} type="button">
@@ -160,6 +205,7 @@ export function WorldPage({
                 <LazyWorldRuntimeCanvas
                   deepLinks={data.deepLinks}
                   locationPage={data.locations}
+                  plazaOverview={data.plazaOverview}
                   preferences={data.preferences}
                   profile={data.profile}
                   sceneManifest={data.sceneManifest}

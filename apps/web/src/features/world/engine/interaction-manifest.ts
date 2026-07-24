@@ -23,7 +23,7 @@ export function buildDiagnosticWorldInteractions({
     const deepLink = deepLinksByLocation.get(backendLocationId);
     const location = locationsById.get(backendLocationId);
     const unlocked = location?.unlocked ?? true;
-    const commandRoute = deepLink?.commandRoute ?? location?.commandRoute ?? layout.commandRoute;
+    const commandRoute = layout.commandRoute ?? deepLink?.commandRoute ?? location?.commandRoute;
 
     const interaction: WorldInteraction = {
       accessibilityLabel: layout.accessibilityLabel,

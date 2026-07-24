@@ -85,6 +85,16 @@ Early diagnostic phases may use relaxed thresholds. Final polish must meet the b
 Screenshots must be generated from fixed seeds and deterministic camera positions. Baseline updates
 require an intentional phase commit and a note in the phase completion report.
 
+## Current W7 Status
+
+W7 introduces the first visible Central Plaza district slice, but automated Playwright screenshot,
+console, and frame-metric capture remain scheduled for W23. Until that harness exists, W7 relies on:
+
+- Deterministic data-mapping tests for the plaza overview.
+- DOM tests for authenticated `/app/world` loading and fallback behavior.
+- Type checks and production build validation.
+- The existing runtime diagnostics overlay for manual inspection.
+
 ## Failure Policy
 
 If tests show a black canvas, missing asset, persistent console error, browser crash, or performance

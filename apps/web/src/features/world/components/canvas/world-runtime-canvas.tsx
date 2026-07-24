@@ -12,6 +12,7 @@ import type * as THREE from "three";
 
 import { buildDiagnosticWorldInteractions } from "../../engine/interaction-manifest";
 import { resolveGraphicsPresetSettings } from "../../engine/performance-manager";
+import type { CentralPlazaOverviewData } from "../../engine/central-plaza-system";
 import { useWorldSettingsStore } from "../../state/settings-store";
 import { WorldCameraRig } from "../camera/world-camera-rig";
 import { PlayerController } from "../character/player-controller";
@@ -24,16 +25,19 @@ import {
 import { WorldEnvironmentScene } from "../environments/world-environment-scene";
 import { WorldInteractionPrompt } from "../interactions/world-interaction-prompt";
 import { WorldInteractionSystem } from "../interactions/world-interaction-system";
+import { CentralPlazaOverviewPanel } from "../ui/central-plaza-overview-panel";
 
 export function WorldRuntimeCanvas({
   deepLinks,
   locationPage,
+  plazaOverview,
   preferences,
   profile,
   sceneManifest
 }: Readonly<{
   deepLinks: WorldDeepLinkPage;
   locationPage: WorldLocationPage;
+  plazaOverview: CentralPlazaOverviewData;
   preferences: UserPreferences;
   profile: WorldProfile;
   sceneManifest: WorldSceneManifest;
@@ -92,6 +96,7 @@ export function WorldRuntimeCanvas({
           <Physics gravity={[0, -9.81, 0]} paused={!pageVisible}>
             <WorldEnvironmentScene
               graphicsPreset={graphicsPreset}
+              plazaOverview={plazaOverview}
               reducedMotion={preferences.reducedMotion}
             />
             <PlayerController reducedMotion={preferences.reducedMotion} />
@@ -112,9 +117,10 @@ export function WorldRuntimeCanvas({
         />
 
         <WorldInteractionPrompt />
+        <CentralPlazaOverviewPanel overview={plazaOverview} />
 
         <div className="world-runtime-label" aria-live="polite">
-          <strong>Terrain foundation</strong>
+          <strong>Central Plaza vertical slice</strong>
           <span>
             {sceneManifest.locations.length} future locations, {deepLinks.total} deep-link contracts
           </span>

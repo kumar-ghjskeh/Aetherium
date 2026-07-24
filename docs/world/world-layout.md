@@ -148,6 +148,29 @@ Current limitations:
 - No dense foliage, spatial audio, dynamic weather, final route navigation, or district interiors
   exist yet.
 
+## Current Central Plaza Slice
+
+W7 replaces the central foundation marker with the first procedural Central Plaza vertical slice in
+`apps/web/src/features/world/components/locations/central-plaza.tsx`.
+
+Current plaza elements:
+
+- Circular central plaza platform.
+- Central Aetherium crystal/tower landmark.
+- Four stone-and-metal arch silhouettes.
+- Cross-shaped low-cost water channels.
+- Six terminal pods for continue activity, daily overview, notifications, world map, fast travel,
+  and mentors.
+- Compact DOM overview panel showing real user, habit, notification, file, project, learning,
+  mentor, and analytics summary data.
+
+Current limitations:
+
+- Terminal pods route to existing Command Mode pages through the W4 interaction framework.
+- The overview is intentionally compact; complex reading, coding, and settings flows remain in
+  Command Mode.
+- Browser screenshot automation and measured frame budgets remain scheduled for W23.
+
 ## Deterministic Generation
 
 Use fixed seeds for:

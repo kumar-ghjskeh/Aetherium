@@ -2,15 +2,87 @@ import type { WorldInteractionManifestEntry } from "../schemas/world-manifest-sc
 
 export const WORLD_INTERACTIONS_MANIFEST: WorldInteractionManifestEntry[] = [
   {
+    accessibilityLabel: "Continue the most relevant current activity from Central Plaza",
+    commandRoute: "/app",
+    gamepadAction: "primary",
+    id: "interaction-plaza-continue-terminal",
+    keyboardAction: "KeyE",
+    locationId: "central-plaza",
+    position: [0, 1.25, -18],
+    prompt: "Continue Activity",
+    radius: 3.2,
+    type: "continue_last_activity"
+  },
+  {
+    accessibilityLabel: "Open the daily overview from Central Plaza",
+    commandRoute: "/app/habits",
+    gamepadAction: "primary",
+    id: "interaction-plaza-daily-terminal",
+    keyboardAction: "KeyE",
+    locationId: "habit-garden",
+    position: [15.6, 1.25, -9],
+    prompt: "Open Daily Overview",
+    radius: 3.2,
+    type: "open_habit_dashboard"
+  },
+  {
+    accessibilityLabel: "Read notifications from Central Plaza",
+    commandRoute: "/app",
+    gamepadAction: "primary",
+    id: "interaction-plaza-notifications-terminal",
+    keyboardAction: "KeyE",
+    locationId: "central-plaza",
+    position: [15.6, 1.25, 9],
+    prompt: "Read Notifications",
+    radius: 3.2,
+    type: "read_notification"
+  },
+  {
+    accessibilityLabel: "Open the World Mode map and travel contracts from Central Plaza",
+    commandRoute: "/app/world",
+    gamepadAction: "primary",
+    id: "interaction-plaza-map-terminal",
+    keyboardAction: "KeyE",
+    locationId: "central-plaza",
+    position: [0, 1.25, 18],
+    prompt: "Open World Map",
+    radius: 3.2,
+    type: "open_application_panel"
+  },
+  {
+    accessibilityLabel: "Open fast travel from Central Plaza",
+    commandRoute: "/app/world",
+    gamepadAction: "primary",
+    id: "interaction-plaza-fast-travel-terminal",
+    keyboardAction: "KeyE",
+    locationId: "central-plaza",
+    position: [-15.6, 1.25, 9],
+    prompt: "Fast Travel",
+    radius: 3.2,
+    type: "fast_travel"
+  },
+  {
+    accessibilityLabel: "Open AI mentors from Central Plaza",
+    commandRoute: "/app/ai",
+    gamepadAction: "primary",
+    id: "interaction-plaza-mentor-terminal",
+    keyboardAction: "KeyE",
+    locationId: "ai-observatory",
+    position: [-15.6, 1.25, -9],
+    prompt: "Open Mentors",
+    radius: 3.2,
+    type: "start_ai_conversation"
+  },
+  {
     accessibilityLabel: "Open the Knowledge Library in Command Mode",
     commandRoute: "/app/library",
     gamepadAction: "primary",
     id: "interaction-library-terminal",
     keyboardAction: "KeyE",
     locationId: "knowledge-library",
-    position: [3.4, 0.36, -2.8],
+    position: [184, 0.36, -246],
     prompt: "Open Library",
-    radius: 2.35,
+    radius: 12,
     type: "open_file_collection"
   },
   {
@@ -20,9 +92,9 @@ export const WORLD_INTERACTIONS_MANIFEST: WorldInteractionManifestEntry[] = [
     id: "interaction-ai-terminal",
     keyboardAction: "KeyE",
     locationId: "ai-observatory",
-    position: [-3.4, 0.36, -2.8],
+    position: [-198, 0.36, -252],
     prompt: "Ask AI",
-    radius: 2.35,
+    radius: 12,
     type: "start_ai_conversation"
   },
   {
@@ -32,9 +104,9 @@ export const WORLD_INTERACTIONS_MANIFEST: WorldInteractionManifestEntry[] = [
     id: "interaction-habit-terminal",
     keyboardAction: "KeyE",
     locationId: "habit-garden",
-    position: [3.4, 0.36, 2.8],
+    position: [238, 0.36, 196],
     prompt: "Open Habits",
-    radius: 2.35,
+    radius: 12,
     type: "open_habit_dashboard"
   },
   {
@@ -44,9 +116,9 @@ export const WORLD_INTERACTIONS_MANIFEST: WorldInteractionManifestEntry[] = [
     id: "interaction-analytics-terminal",
     keyboardAction: "KeyE",
     locationId: "progress-tower",
-    position: [-3.4, 0.36, 2.8],
+    position: [340, 0.36, -52],
     prompt: "Open Analytics",
-    radius: 2.35,
+    radius: 12,
     type: "open_analytics"
   },
   {
@@ -56,9 +128,9 @@ export const WORLD_INTERACTIONS_MANIFEST: WorldInteractionManifestEntry[] = [
     id: "interaction-project-terminal",
     keyboardAction: "KeyE",
     locationId: "project-dock",
-    position: [0, 0.36, -5.2],
+    position: [-148, 0.36, 276],
     prompt: "Open Projects",
-    radius: 2.35,
+    radius: 12,
     type: "open_project"
   },
   {
@@ -68,9 +140,9 @@ export const WORLD_INTERACTIONS_MANIFEST: WorldInteractionManifestEntry[] = [
     id: "interaction-achievement-terminal",
     keyboardAction: "KeyE",
     locationId: "achievement-hall",
-    position: [0, 0.36, 5.2],
+    position: [78, 0.36, 344],
     prompt: "Open Achievements",
-    radius: 2.35,
+    radius: 12,
     type: "open_achievement_display"
   }
 ];

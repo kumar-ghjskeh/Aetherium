@@ -73,4 +73,15 @@ describe("diagnostic world interaction manifest", () => {
     expect(achievements?.commandRoute).toBe("/app/achievements");
     expect(achievements?.status).toBe("permission_denied");
   });
+
+  it("keeps Central Plaza terminal routes from the authored interaction manifest", () => {
+    const interactions = buildDiagnosticWorldInteractions({ deepLinks, locationPage });
+    const mapTerminal = interactions.find(
+      (interaction) => interaction.id === "interaction-plaza-map-terminal"
+    );
+
+    expect(mapTerminal?.locationId).toBe("central_plaza");
+    expect(mapTerminal?.commandRoute).toBe("/app/world");
+    expect(mapTerminal?.status).toBe("available");
+  });
 });

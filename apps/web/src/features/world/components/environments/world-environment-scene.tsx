@@ -5,6 +5,7 @@ import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import React from "react";
 import * as THREE from "three";
 
+import type { CentralPlazaOverviewData } from "../../engine/central-plaza-system";
 import { WORLD_LOCATIONS_MANIFEST } from "../../manifests/locations.manifest";
 import {
   createRoutePoints,
@@ -19,12 +20,15 @@ import {
   WORLD_TERRAIN_ROUTES,
   WORLD_THEME_COLORS
 } from "../../engine/terrain-system";
+import { CentralPlazaVerticalSlice } from "../locations/central-plaza";
 
 export function WorldEnvironmentScene({
   graphicsPreset,
+  plazaOverview,
   reducedMotion
 }: Readonly<{
   graphicsPreset: PerformancePreset;
+  plazaOverview: CentralPlazaOverviewData;
   reducedMotion: boolean;
 }>): React.ReactElement {
   return (
@@ -49,7 +53,7 @@ export function WorldEnvironmentScene({
       <TerrainRoutes />
       <DistrictFoundationMarkers />
       <EnvironmentProps graphicsPreset={graphicsPreset} reducedMotion={reducedMotion} />
-      <CentralTerrainAnchor reducedMotion={reducedMotion} />
+      <CentralPlazaVerticalSlice overview={plazaOverview} reducedMotion={reducedMotion} />
     </>
   );
 }
@@ -206,29 +210,33 @@ function TerrainRoutes(): React.ReactElement {
 function DistrictFoundationMarkers(): React.ReactElement {
   return (
     <>
-      {WORLD_LOCATIONS_MANIFEST.map((location) => {
-        const [x, , z] = location.position;
-        const terrain = sampleTerrain(x, z);
-        const color = WORLD_THEME_COLORS.get(location.theme) ?? "#ffffff";
-        return (
-          <group key={location.id} position={[x, terrain.height + 0.18, z]}>
-            <mesh receiveShadow>
-              <cylinderGeometry args={[location.id === "central-plaza" ? 18 : 10, 11, 0.36, 32]} />
-              <meshStandardMaterial color="#263340" metalness={0.16} roughness={0.78} />
-            </mesh>
-            <mesh position={[0, 2.2, 0]}>
-              <cylinderGeometry args={[0.8, 1.25, 4.2, 16]} />
-              <meshStandardMaterial
-                color={color}
-                emissive={color}
-                emissiveIntensity={0.18}
-                metalness={0.2}
-                roughness={0.42}
-              />
-            </mesh>
-          </group>
-        );
-      })}
+      {WORLD_LOCATIONS_MANIFEST.filter((location) => location.id !== "central-plaza").map(
+        (location) => {
+          const [x, , z] = location.position;
+          const terrain = sampleTerrain(x, z);
+          const color = WORLD_THEME_COLORS.get(location.theme) ?? "#ffffff";
+          return (
+            <group key={location.id} position={[x, terrain.height + 0.18, z]}>
+              <mesh receiveShadow>
+                <cylinderGeometry
+                  args={[location.id === "central-plaza" ? 18 : 10, 11, 0.36, 32]}
+                />
+                <meshStandardMaterial color="#263340" metalness={0.16} roughness={0.78} />
+              </mesh>
+              <mesh position={[0, 2.2, 0]}>
+                <cylinderGeometry args={[0.8, 1.25, 4.2, 16]} />
+                <meshStandardMaterial
+                  color={color}
+                  emissive={color}
+                  emissiveIntensity={0.18}
+                  metalness={0.2}
+                  roughness={0.42}
+                />
+              </mesh>
+            </group>
+          );
+        }
+      )}
     </>
   );
 }
@@ -305,38 +313,5 @@ function EnvironmentProps({
         );
       })}
     </>
-  );
-}
-
-function CentralTerrainAnchor({
-  reducedMotion
-}: Readonly<{
-  reducedMotion: boolean;
-}>): React.ReactElement {
-  const beaconRef = React.useRef<THREE.Mesh>(null);
-
-  useFrame((_, delta) => {
-    if (beaconRef.current && !reducedMotion) {
-      beaconRef.current.rotation.y += delta * 0.24;
-    }
-  });
-
-  return (
-    <group position={[0, sampleTerrain(0, 0).height + 0.3, 0]}>
-      <mesh receiveShadow>
-        <cylinderGeometry args={[15, 18, 0.6, 48]} />
-        <meshStandardMaterial color="#283b48" metalness={0.18} roughness={0.62} />
-      </mesh>
-      <mesh castShadow position={[0, 4.2, 0]} ref={beaconRef}>
-        <octahedronGeometry args={[2.6, 1]} />
-        <meshStandardMaterial
-          color="#7d68ff"
-          emissive="#2f24a7"
-          emissiveIntensity={0.92}
-          metalness={0.24}
-          roughness={0.36}
-        />
-      </mesh>
-    </group>
   );
 }

@@ -1,5 +1,14 @@
 import type { AetheriumApiClient } from "@aetherium/api-client";
 import type {
+  AnalyticsSummary,
+  FilePage,
+  HabitPage,
+  HabitSummary,
+  LearningGoalPage,
+  MentorPage,
+  NotificationPage,
+  ProjectPage,
+  PublicUser,
   UserPreferences,
   WorldDeepLinkPage,
   WorldFeatureFlags,
@@ -11,7 +20,17 @@ import { render, screen, waitFor } from "@testing-library/react";
 import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { createUnusedWorldClient } from "../../test/api-client";
+import {
+  createUnusedAnalyticsClient,
+  createUnusedAuthClient,
+  createUnusedFilesClient,
+  createUnusedHabitsClient,
+  createUnusedLearningClient,
+  createUnusedMentorsClient,
+  createUnusedNotificationsClient,
+  createUnusedProjectsClient,
+  createUnusedWorldClient
+} from "../../test/api-client";
 import { WorldPage } from "./world-page";
 
 vi.mock("./components/canvas/world-runtime-canvas", async () => {
@@ -151,6 +170,78 @@ const preferences: UserPreferences = {
   updatedAt: "2026-07-22T00:00:00Z"
 };
 
+const user: PublicUser = {
+  createdAt: "2026-07-22T00:00:00Z",
+  displayName: "Sai Kumar",
+  email: "sai@example.test",
+  id: "77777777-7777-4777-8777-777777777777",
+  isEmailVerified: true,
+  lastLoginAt: "2026-07-22T01:00:00Z"
+};
+
+const habitSummary: HabitSummary = {
+  activeHabitCount: 2,
+  bestStreak: 9,
+  completedLogCount: 4,
+  completionRate: 67,
+  currentStreakTotal: 4,
+  endDate: "2026-07-28",
+  gardenGrowthPoints: 24,
+  period: "week",
+  recoveryStreakTotal: 1,
+  scheduledCount: 6,
+  startDate: "2026-07-22"
+};
+
+const habitPage: HabitPage = {
+  items: [],
+  limit: 5,
+  offset: 0,
+  total: 0
+};
+
+const notificationPage: NotificationPage = {
+  items: [],
+  limit: 5,
+  offset: 0,
+  total: 0,
+  unreadCount: 0
+};
+
+const filePage: FilePage = {
+  items: [],
+  limit: 5,
+  offset: 0,
+  total: 0
+};
+
+const projectPage: ProjectPage = {
+  items: [],
+  limit: 5,
+  offset: 0,
+  total: 0
+};
+
+const learningGoalPage: LearningGoalPage = {
+  items: [],
+  limit: 5,
+  offset: 0,
+  total: 0
+};
+
+const mentorPage: MentorPage = {
+  items: []
+};
+
+const analyticsSummary: AnalyticsSummary = {
+  generatedAt: "2026-07-22T00:00:00Z",
+  metrics: [],
+  period: "week",
+  periodEnd: "2026-07-28",
+  periodStart: "2026-07-22",
+  trendBuckets: []
+};
+
 function mockMatchMedia(matches = false): void {
   vi.stubGlobal(
     "matchMedia",
@@ -179,6 +270,39 @@ function createClient(
   settingsOverrides: Partial<AetheriumApiClient["settings"]> = {}
 ): AetheriumApiClient {
   return {
+    analytics: {
+      ...createUnusedAnalyticsClient(),
+      summary: vi.fn(() => Promise.resolve(analyticsSummary))
+    },
+    auth: {
+      ...createUnusedAuthClient(),
+      me: vi.fn(() => Promise.resolve(user))
+    },
+    files: {
+      ...createUnusedFilesClient(),
+      list: vi.fn(() => Promise.resolve(filePage))
+    },
+    habits: {
+      ...createUnusedHabitsClient(),
+      getSummary: vi.fn(() => Promise.resolve(habitSummary)),
+      list: vi.fn(() => Promise.resolve(habitPage))
+    },
+    learning: {
+      ...createUnusedLearningClient(),
+      listGoals: vi.fn(() => Promise.resolve(learningGoalPage))
+    },
+    mentors: {
+      ...createUnusedMentorsClient(),
+      list: vi.fn(() => Promise.resolve(mentorPage))
+    },
+    notifications: {
+      ...createUnusedNotificationsClient(),
+      list: vi.fn(() => Promise.resolve(notificationPage))
+    },
+    projects: {
+      ...createUnusedProjectsClient(),
+      list: vi.fn(() => Promise.resolve(projectPage))
+    },
     settings: {
       getPreferences: vi.fn(() => Promise.resolve(preferences)),
       updatePreferences: vi.fn(() => Promise.resolve(preferences)),
@@ -193,7 +317,7 @@ function createClient(
       listLocations: vi.fn(() => Promise.resolve(locations)),
       ...overrides
     }
-  } as AetheriumApiClient;
+  } as unknown as AetheriumApiClient;
 }
 
 describe("WorldPage", () => {
@@ -211,7 +335,7 @@ describe("WorldPage", () => {
     expect(
       await screen.findByRole("heading", { name: "World Data Foundation" })
     ).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Visual World Mode runtime" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Central Plaza runtime" })).toBeInTheDocument();
     expect(screen.getByText("Enabled")).toBeInTheDocument();
     expect(await screen.findByTestId("world-runtime-canvas")).toBeInTheDocument();
     expect(screen.getByText("central_plaza")).toBeInTheDocument();
@@ -222,6 +346,19 @@ describe("WorldPage", () => {
     expect(client.world.getSceneManifest).toHaveBeenCalledTimes(1);
     expect(client.world.getFeatureFlags).toHaveBeenCalledTimes(1);
     expect(client.settings.getPreferences).toHaveBeenCalledTimes(1);
+    expect(client.auth.me).toHaveBeenCalledTimes(1);
+    expect(client.habits.getSummary).toHaveBeenCalledWith({ period: "week" });
+    expect(client.habits.list).toHaveBeenCalledWith({ limit: 5, offset: 0 });
+    expect(client.notifications.list).toHaveBeenCalledWith({ limit: 5, offset: 0 });
+    expect(client.files.list).toHaveBeenCalledWith({ includeDeleted: false, limit: 5, offset: 0 });
+    expect(client.projects.list).toHaveBeenCalledWith({
+      includeArchived: false,
+      limit: 5,
+      offset: 0
+    });
+    expect(client.learning.listGoals).toHaveBeenCalledWith({ limit: 5, offset: 0 });
+    expect(client.mentors.list).toHaveBeenCalledWith({ includeArchived: false });
+    expect(client.analytics.summary).toHaveBeenCalledWith({ period: "week" });
   });
 
   it("uses the command fallback when WebGL2 is unavailable", async () => {

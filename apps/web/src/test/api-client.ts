@@ -9,6 +9,17 @@ export function createUnusedAnalyticsClient(): AetheriumApiClient["analytics"] {
   };
 }
 
+export function createUnusedAuthClient(): AetheriumApiClient["auth"] {
+  const reject = () => Promise.reject(new Error("Unexpected auth call"));
+
+  return {
+    login: vi.fn(reject),
+    logout: vi.fn(reject),
+    me: vi.fn(reject),
+    register: vi.fn(reject)
+  };
+}
+
 export function createUnusedCodingClient(): AetheriumApiClient["coding"] {
   const reject = () => Promise.reject(new Error("Unexpected coding call"));
 

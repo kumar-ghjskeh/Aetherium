@@ -69,6 +69,20 @@ This baseline intentionally avoids dense foliage, large textures, downloaded ass
 post-processing, and terrain-following physics. Browser screenshot and frame-metric automation
 remain scheduled for W23.
 
+## Current W7 Central Plaza Budget
+
+The W7 Central Plaza vertical slice keeps the first polished district bounded:
+
+- Procedural plaza primitives only; no downloaded geometry, textures, or audio.
+- Six terminal pods and six in-scene text labels.
+- One central emissive crystal group and one local point light.
+- Four simple arch groups.
+- Two low-cost animated water-channel meshes.
+- Reduced-motion mode disables crystal and water-channel animation.
+
+Until W23 visual automation is active, W7 validation relies on deterministic unit tests, type
+checks, production build validation, and the existing runtime diagnostics overlay.
+
 ## Runtime Diagnostics
 
 Diagnostics must report:
