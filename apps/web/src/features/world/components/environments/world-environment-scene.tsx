@@ -7,6 +7,7 @@ import * as THREE from "three";
 
 import type { AIObservatoryOverviewData } from "../../engine/ai-observatory-system";
 import type { CentralPlazaOverviewData } from "../../engine/central-plaza-system";
+import type { HabitGardenOverviewData } from "../../engine/habit-garden-system";
 import type { KnowledgeLibraryOverviewData } from "../../engine/knowledge-library-system";
 import { WORLD_LOCATIONS_MANIFEST } from "../../manifests/locations.manifest";
 import {
@@ -24,17 +25,20 @@ import {
 } from "../../engine/terrain-system";
 import { CentralPlazaVerticalSlice } from "../locations/central-plaza";
 import { AIObservatoryDistrict } from "../locations/ai-observatory";
+import { HabitGardenDistrict } from "../locations/habit-garden";
 import { KnowledgeLibraryDistrict } from "../locations/knowledge-library";
 
 export function WorldEnvironmentScene({
   aiObservatoryOverview,
   graphicsPreset,
+  habitGardenOverview,
   libraryOverview,
   plazaOverview,
   reducedMotion
 }: Readonly<{
   aiObservatoryOverview: AIObservatoryOverviewData;
   graphicsPreset: PerformancePreset;
+  habitGardenOverview: HabitGardenOverviewData;
   libraryOverview: KnowledgeLibraryOverviewData;
   plazaOverview: CentralPlazaOverviewData;
   reducedMotion: boolean;
@@ -64,6 +68,7 @@ export function WorldEnvironmentScene({
       <CentralPlazaVerticalSlice overview={plazaOverview} reducedMotion={reducedMotion} />
       <KnowledgeLibraryDistrict overview={libraryOverview} reducedMotion={reducedMotion} />
       <AIObservatoryDistrict overview={aiObservatoryOverview} reducedMotion={reducedMotion} />
+      <HabitGardenDistrict overview={habitGardenOverview} reducedMotion={reducedMotion} />
     </>
   );
 }
@@ -224,7 +229,8 @@ function DistrictFoundationMarkers(): React.ReactElement {
         (location) =>
           location.id !== "central-plaza" &&
           location.id !== "knowledge-library" &&
-          location.id !== "ai-observatory"
+          location.id !== "ai-observatory" &&
+          location.id !== "habit-garden"
       ).map((location) => {
         const [x, , z] = location.position;
         const terrain = sampleTerrain(x, z);

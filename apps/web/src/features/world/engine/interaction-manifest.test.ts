@@ -41,6 +41,23 @@ const locationPage: WorldLocationPage = {
       visualStatus: "data_contract_ready"
     },
     {
+      category: "habits",
+      commandRoute: "/app/habits",
+      current: false,
+      deepLinkEntityTypes: ["habit", "habit_log"],
+      defaultUnlocked: true,
+      description: "Habits",
+      futureSceneKey: "habit-garden",
+      id: "habit_garden",
+      spawn: false,
+      subtitle: "Rhythms",
+      title: "Habit Garden",
+      unlockDependencyIds: [],
+      unlocked: true,
+      visited: false,
+      visualStatus: "data_contract_ready"
+    },
+    {
       category: "achievements",
       commandRoute: "/app/achievements",
       current: false,
@@ -72,6 +89,14 @@ const deepLinks: WorldDeepLinkPage = {
       locationId: "ai_hall",
       notes: "Route",
       routePattern: "/app/ai{?conversationId}"
+    },
+    {
+      commandRoute: "/app/habits",
+      entityTypes: ["habit", "habit_log"],
+      label: "Habit Garden",
+      locationId: "habit_garden",
+      notes: "Route",
+      routePattern: "/app/habits{?habitId}"
     },
     {
       commandRoute: "/app/library",
@@ -158,6 +183,37 @@ describe("diagnostic world interaction manifest", () => {
       commandRoute: "/app/settings",
       locationId: "ai_hall",
       prompt: "Review AI Settings",
+      status: "available"
+    });
+  });
+
+  it("adds Habit Garden terminals for logging, creation, and milestones", () => {
+    const interactions = buildDiagnosticWorldInteractions({ deepLinks, locationPage });
+
+    expect(
+      interactions.find((interaction) => interaction.id === "interaction-garden-log-terminal")
+    ).toMatchObject({
+      commandRoute: "/app/habits",
+      locationId: "habit_garden",
+      prompt: "Log Today",
+      status: "available"
+    });
+    expect(
+      interactions.find((interaction) => interaction.id === "interaction-garden-create-terminal")
+    ).toMatchObject({
+      commandRoute: "/app/habits",
+      locationId: "habit_garden",
+      prompt: "Create Habit",
+      status: "available"
+    });
+    expect(
+      interactions.find(
+        (interaction) => interaction.id === "interaction-garden-milestones-terminal"
+      )
+    ).toMatchObject({
+      commandRoute: "/app/achievements",
+      locationId: "habit_garden",
+      prompt: "Review Milestones",
       status: "available"
     });
   });

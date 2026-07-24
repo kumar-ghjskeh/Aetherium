@@ -105,6 +105,11 @@ deterministic mentor/probe mapping tests and verifies `/app/world` loads convers
 model-configuration, and AI usage DTOs for the district. Fixed screenshot capture for the
 Observatory remains part of the W23 visual regression suite.
 
+W10 adds the Habit Garden district and uses the same interim validation approach. It adds
+deterministic habit-to-plant mapping tests and verifies `/app/world` loads habit summary, active
+habit, and achievement summary DTOs for the district. Fixed screenshot capture for the Garden
+remains part of the W23 visual regression suite.
+
 ## Failure Policy
 
 If tests show a black canvas, missing asset, persistent console error, browser crash, or performance

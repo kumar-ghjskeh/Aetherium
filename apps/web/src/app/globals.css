@@ -2231,6 +2231,132 @@ kbd {
   border-color: rgba(185, 168, 255, 0.38);
 }
 
+.world-habit-panel {
+  background:
+    linear-gradient(135deg, rgba(11, 32, 21, 0.9), rgba(20, 35, 22, 0.76)), rgba(7, 18, 13, 0.86);
+  border: 1px solid rgba(119, 217, 139, 0.24);
+  box-shadow: 0 22px 64px rgba(0, 0, 0, 0.34);
+  color: #efffee;
+  display: grid;
+  gap: 12px;
+  left: 16px;
+  max-width: min(440px, calc(100% - 32px));
+  padding: 14px;
+  position: absolute;
+  top: 138px;
+  width: 400px;
+}
+
+.world-habit-panel header {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.world-habit-panel header span,
+.world-habit-plants span,
+.world-habit-status span {
+  color: #b8e5bd;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.world-habit-panel header strong {
+  font-size: 1rem;
+}
+
+.world-habit-metrics {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+}
+
+.world-habit-metrics div,
+.world-habit-actions a {
+  background: rgba(119, 217, 139, 0.08);
+  border: 1px solid rgba(119, 217, 139, 0.16);
+  min-width: 0;
+  padding: 9px;
+}
+
+.world-habit-metrics dt {
+  color: #c0d5c2;
+  font-size: 0.7rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.world-habit-metrics dd {
+  font-weight: 900;
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.world-habit-plants,
+.world-habit-status {
+  border-top: 1px solid rgba(119, 217, 139, 0.16);
+  display: grid;
+  gap: 8px;
+  padding-top: 10px;
+}
+
+.world-habit-plants p,
+.world-habit-plants ul {
+  margin: 0;
+}
+
+.world-habit-plants ul {
+  display: grid;
+  gap: 7px;
+  list-style: none;
+  padding: 0;
+}
+
+.world-habit-plants li {
+  display: grid;
+  gap: 2px;
+}
+
+.world-habit-plants li strong,
+.world-habit-status strong {
+  font-size: 0.86rem;
+  overflow-wrap: anywhere;
+}
+
+.world-habit-plants li small,
+.world-habit-plants p,
+.world-habit-status small {
+  color: #c6dcc8;
+}
+
+.world-habit-plants li em {
+  color: #f0c766;
+  font-size: 0.76rem;
+  font-style: normal;
+  overflow-wrap: anywhere;
+}
+
+.world-habit-actions {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.world-habit-actions a {
+  color: #efffee;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-align: center;
+  text-decoration: none;
+}
+
+.world-habit-actions a:focus,
+.world-habit-actions a:hover {
+  border-color: rgba(119, 217, 139, 0.38);
+}
+
 .world-runtime-fallback,
 .world-runtime-loading {
   align-items: center;
@@ -2986,6 +3112,19 @@ kbd {
 
   .world-ai-metrics,
   .world-ai-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .world-habit-panel {
+    left: 16px;
+    max-width: none;
+    right: 16px;
+    top: 138px;
+    width: auto;
+  }
+
+  .world-habit-metrics,
+  .world-habit-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 

@@ -182,6 +182,42 @@ export const WORLD_INTERACTIONS_MANIFEST: WorldInteractionManifestEntry[] = [
     type: "open_habit_dashboard"
   },
   {
+    accessibilityLabel: "Log today's habits from Habit Garden in Command Mode",
+    commandRoute: "/app/habits",
+    gamepadAction: "primary",
+    id: "interaction-garden-log-terminal",
+    keyboardAction: "KeyE",
+    locationId: "habit-garden",
+    position: [224, 1.25, 186],
+    prompt: "Log Today",
+    radius: 10,
+    type: "open_habit_dashboard"
+  },
+  {
+    accessibilityLabel: "Create a habit from Habit Garden in Command Mode",
+    commandRoute: "/app/habits",
+    gamepadAction: "primary",
+    id: "interaction-garden-create-terminal",
+    keyboardAction: "KeyE",
+    locationId: "habit-garden",
+    position: [238, 1.25, 178],
+    prompt: "Create Habit",
+    radius: 10,
+    type: "open_habit_dashboard"
+  },
+  {
+    accessibilityLabel: "Review habit milestones from Habit Garden",
+    commandRoute: "/app/achievements",
+    gamepadAction: "primary",
+    id: "interaction-garden-milestones-terminal",
+    keyboardAction: "KeyE",
+    locationId: "habit-garden",
+    position: [252, 1.25, 186],
+    prompt: "Review Milestones",
+    radius: 10,
+    type: "open_achievement_display"
+  },
+  {
     accessibilityLabel: "Open analytics in Command Mode",
     commandRoute: "/app/analytics",
     gamepadAction: "primary",

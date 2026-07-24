@@ -217,6 +217,33 @@ Current limitations:
 - No downloaded models, textures, audio, glTF/GLB assets, custom shaders, or AI avatar models are
   introduced.
 
+## Current Habit Garden Slice
+
+W10 adds the first habit district in
+`apps/web/src/features/world/components/locations/habit-garden.tsx`.
+
+Current Habit Garden elements:
+
+- Procedural terraced garden, central pond, water channels, canopy light, bounded habit plant beds,
+  and permanent milestone crystals at the `habit-garden` manifest coordinates.
+- Plant stages derived from active habit completion today, current streaks, 30-day completion rate,
+  recovery streaks, and recent log counts.
+- Near-district overlay backed by real habit summary, active habit, achievement summary, and world
+  unlock data.
+- Garden-specific interaction terminals for opening habit logging, creating habits, and reviewing
+  habit milestones in Command Mode.
+
+Current limitations:
+
+- The district does not yet include dense vegetation systems, spatial audio, weather ambience, or
+  advanced seasonal effects.
+- Habit logging, creation, archiving, check-ins, weekly reviews, and milestone sync remain in
+  existing Command Mode surfaces.
+- Missing days are represented as readiness or dormancy; the current visual slice does not implement
+  negative decay.
+- No downloaded models, textures, audio, glTF/GLB assets, custom shaders, or particle systems are
+  introduced.
+
 ## Deterministic Generation
 
 Use fixed seeds for:

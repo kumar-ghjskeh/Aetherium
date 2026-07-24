@@ -3,6 +3,7 @@ import type {
   AIModelConfigurationPage,
   AIProviderPage,
   AIUsageRecordPage,
+  AchievementSummary,
   AnalyticsSummary,
   CollectionPage,
   ConversationPage,
@@ -27,6 +28,7 @@ import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
+  createUnusedAchievementsClient,
   createUnusedAnalyticsClient,
   createUnusedAiClient,
   createUnusedAuthClient,
@@ -276,6 +278,16 @@ const aiUsageRecordPage: AIUsageRecordPage = {
   total: 0
 };
 
+const achievementSummary: AchievementSummary = {
+  lockedCount: 0,
+  recentUnlocks: [],
+  totalAchievements: 0,
+  totalPoints: 0,
+  unlockedCount: 0,
+  unlockedPoints: 0,
+  worldUnlocks: []
+};
+
 const analyticsSummary: AnalyticsSummary = {
   generatedAt: "2026-07-22T00:00:00Z",
   metrics: [],
@@ -313,6 +325,10 @@ function createClient(
   settingsOverrides: Partial<AetheriumApiClient["settings"]> = {}
 ): AetheriumApiClient {
   return {
+    achievements: {
+      ...createUnusedAchievementsClient(),
+      summary: vi.fn(() => Promise.resolve(achievementSummary))
+    },
     analytics: {
       ...createUnusedAnalyticsClient(),
       summary: vi.fn(() => Promise.resolve(analyticsSummary))
@@ -420,6 +436,7 @@ describe("WorldPage", () => {
     expect(client.ai.listProviders).toHaveBeenCalledTimes(1);
     expect(client.ai.listModelConfigs).toHaveBeenCalledTimes(1);
     expect(client.ai.listUsage).toHaveBeenCalledWith({ limit: 8, offset: 0 });
+    expect(client.achievements.summary).toHaveBeenCalledTimes(1);
     expect(client.analytics.summary).toHaveBeenCalledWith({ period: "week" });
   });
 

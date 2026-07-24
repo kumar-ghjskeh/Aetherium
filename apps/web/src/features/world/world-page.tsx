@@ -17,6 +17,7 @@ import { WorldRuntimeErrorBoundary } from "./components/canvas/world-runtime-err
 import { WorldRuntimeFallback, WorldRuntimeLoading } from "./components/ui/world-runtime-fallback";
 import type { AIObservatoryOverviewData } from "./engine/ai-observatory-system";
 import type { CentralPlazaOverviewData } from "./engine/central-plaza-system";
+import type { HabitGardenOverviewData } from "./engine/habit-garden-system";
 import type { KnowledgeLibraryOverviewData } from "./engine/knowledge-library-system";
 import { useWorldRuntimeReadiness } from "./hooks/use-world-runtime-readiness";
 
@@ -24,6 +25,7 @@ interface WorldDataState {
   aiObservatoryOverview: AIObservatoryOverviewData;
   deepLinks: WorldDeepLinkPage;
   featureFlags: WorldFeatureFlags;
+  habitGardenOverview: HabitGardenOverviewData;
   libraryOverview: KnowledgeLibraryOverviewData;
   locations: WorldLocationPage;
   plazaOverview: CentralPlazaOverviewData;
@@ -86,6 +88,7 @@ export function WorldPage({
         providers,
         modelConfigs,
         usage,
+        achievementSummary,
         analytics
       ] = await Promise.all([
         apiClient.world.getProfile(),
@@ -108,6 +111,7 @@ export function WorldPage({
         apiClient.ai.listProviders(),
         apiClient.ai.listModelConfigs(),
         apiClient.ai.listUsage({ limit: 8, offset: 0 }),
+        apiClient.achievements.summary(),
         apiClient.analytics.summary({ period: "week" })
       ]);
       setData({
@@ -120,6 +124,11 @@ export function WorldPage({
         },
         deepLinks,
         featureFlags,
+        habitGardenOverview: {
+          achievementSummary,
+          habits,
+          summary: habitSummary
+        },
         libraryOverview: {
           collections,
           files,
@@ -233,6 +242,7 @@ export function WorldPage({
                 <LazyWorldRuntimeCanvas
                   aiObservatoryOverview={data.aiObservatoryOverview}
                   deepLinks={data.deepLinks}
+                  habitGardenOverview={data.habitGardenOverview}
                   libraryOverview={data.libraryOverview}
                   locationPage={data.locations}
                   plazaOverview={data.plazaOverview}

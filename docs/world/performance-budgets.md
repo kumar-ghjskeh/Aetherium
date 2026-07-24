@@ -111,6 +111,20 @@ W9 does not add textures, downloaded assets, spatial audio, post-processing, liv
 provider-side mutations, or custom shader work. Browser screenshot and frame-metric automation
 remain scheduled for W23.
 
+## Current W10 Habit Garden Budget
+
+The W10 Habit Garden adds one bounded habit district slice:
+
+- Procedural garden terrace meshes only.
+- Up to eight habit plant beds derived from the current habit page.
+- Up to five permanent milestone crystals derived from achievement summary and world unlock records.
+- One local point light, one animated pond material, and two low-cost water-channel meshes.
+- Reduced-motion mode disables pond opacity animation and plant sway.
+
+W10 does not add textures, downloaded assets, spatial audio, post-processing, dense foliage systems,
+live particles, mutation controls, or custom shader work. Browser screenshot and frame-metric
+automation remain scheduled for W23.
+
 ## Runtime Diagnostics
 
 Diagnostics must report:
