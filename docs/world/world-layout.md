@@ -21,25 +21,30 @@ Traversal goals:
 Use meters as world units. The Central Plaza is near origin.
 
 ```text
-                North
+                         North
 
-      Knowledge Library        AI Observatory
-            (-220,-210)        (170,-250)
+      AI Observatory     Learning Academy     Knowledge Library
+       (-198,-252)          (-60,-334)           (184,-246)
 
-   Learning Academy       Central Plaza       Progress Tower
-       (-270,40)              (0,0)              (260,20)
+       Coding Arena       Central Plaza        Progress Tower
+        (-324,76)             (0,0)              (340,-52)
 
-      Habit Garden        Personal Sanctuary   Achievement Hall
-       (-170,230)              (80,250)          (285,220)
+        Project Dock       Habit Garden      Personal Sanctuary
+        (-148,276)          (238,196)            (334,312)
 
-             Project Dock          Coding Arena
-              (-10,330)             (210,340)
+                        Achievement Hall
+                          (78,344)
 
-                South
+                         South
 ```
 
 Y elevation is intentionally omitted in the map. Actual layout will use terraces and ramps for
 verticality.
+
+The source of truth for these coordinates is
+`apps/web/src/features/world/manifests/locations.manifest.ts`. Future terrain, pathing, district
+loading, audio zones, and fast-travel systems should consume the W5 manifests instead of duplicating
+location maps in scene components.
 
 ## District Plan
 

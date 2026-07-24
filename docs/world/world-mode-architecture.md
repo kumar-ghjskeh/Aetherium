@@ -128,6 +128,21 @@ The scene registry maps manifest IDs to lazy loaders. A location can be active, 
 unloaded. The registry decides which chunks are loaded based on player position, fast-travel target,
 camera path, and performance preset.
 
+W5 implements the initial source-controlled manifest layer:
+
+- `world.manifest.ts` combines registries for themes, assets, locations, spawns, fast travel, camera
+  routes, interactions, environment zones, and audio zones.
+- `locations.manifest.ts` maps ten future visual district IDs to the existing backend world location
+  identifiers and Command Mode routes.
+- `interactions.manifest.ts` defines diagnostic interaction terminals that are converted to runtime
+  interactions only after backend location unlock state and deep-link contracts are loaded.
+- `scene-registry.ts` validates manifest references and exposes deterministic location, fast-travel,
+  and interaction lookups.
+
+These manifests are not an authorization boundary. They contain no private user data, object keys,
+AI provider configuration, cookies, or secrets. Runtime actions must still use owner-scoped
+Aetherium APIs.
+
 ## Interaction Boundary
 
 World interactions are generic contracts:

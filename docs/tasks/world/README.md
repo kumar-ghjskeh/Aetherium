@@ -45,3 +45,4 @@ See `docs/tasks/world/world-mode-roadmap.md`.
 - `docs/tasks/world/phase-w2-player-controller.md`
 - `docs/tasks/world/phase-w3-camera-system.md`
 - `docs/tasks/world/phase-w4-interaction-framework.md`
+- `docs/tasks/world/phase-w5-world-manifest-generation.md`

@@ -86,6 +86,9 @@ Implemented foundation slices:
 - Visual World Mode W4 interaction framework with typed interaction contracts, diagnostic
   deep-link-backed interaction terminals, radius/facing priority, keyboard/gamepad activation,
   permission/loading/error states, Command Mode routing, accessible prompts, and interaction tests.
+- Visual World Mode W5 manifest foundation with source-controlled typed registries for ten future
+  districts, backend location mappings, assets, spawns, fast travel, interactions, environment
+  zones, audio zones, camera routes, themes, and deterministic registry validation.
 
 Still out of scope unless explicitly requested:
 
@@ -118,9 +121,9 @@ before completing work that could affect World Mode dependencies or assets. Run
 
 ## Visual World Mode
 
-The visual World Mode architecture and W1-W4 diagnostic runtime foundations are documented. Follow
+The visual World Mode architecture and W1-W5 diagnostic runtime foundations are documented. Follow
 `docs/architecture/decisions/0025-visual-world-mode-architecture.md`,
-`docs/world/world-mode-architecture.md`, and `docs/tasks/world/world-mode-roadmap.md` for W4 and
+`docs/world/world-mode-architecture.md`, and `docs/tasks/world/world-mode-roadmap.md` for W6 and
 later. Do not add unregistered assets, paid assets, editor-heavy engine dependencies, or any
 browser-exposed secret.
 

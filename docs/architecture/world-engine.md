@@ -8,10 +8,11 @@ achievements.
 
 ## Current Status
 
-The W1 diagnostic 3D runtime foundation, W2 player-controller foundation, W3 camera foundation, and
-W4 interaction framework are implemented. The protected `/app/world` route still loads API-backed
-world data contracts first, then lazy-loads a route-local visual bundle only when the backend
-runtime flag, scene manifest, browser WebGL2 support, and reduced-motion settings allow it.
+The W1 diagnostic 3D runtime foundation, W2 player-controller foundation, W3 camera foundation, W4
+interaction framework, and W5 source-controlled manifest foundation are implemented. The protected
+`/app/world` route still loads API-backed world data contracts first, then lazy-loads a route-local
+visual bundle only when the backend runtime flag, scene manifest, browser WebGL2 support, and
+reduced-motion settings allow it.
 
 ADR 0025 now defines the approved visual World Mode architecture. It selects a browser-native React
 Three Fiber and Three.js runtime, with WebGL2 as the default, WebGPU experiments behind feature
@@ -21,8 +22,11 @@ capsule controller, and a procedural diagnostic avatar. W3 adds smooth third-per
 input, FOV and smoothing settings, reduced-motion-aware behavior, and basic diagnostic camera
 collision. W4 adds typed interaction contracts, diagnostic deep-link-backed interaction terminals,
 radius/facing ranking, permission/loading/error state modeling, accessible prompts, and Command Mode
-routing. Final district scenes, authored cinematic travel paths, navigation maps, audio, and assets
-remain deferred to later W phases.
+routing. W5 adds typed registries for ten future districts, backend location mappings, procedural
+asset placeholders, spawns, fast-travel points, diagnostic interactions, environment zones, audio
+zones, skippable camera routes, and themes. Final district scenes, authored terrain, navigation
+maps, audio playback, final assets, and polished district interactions remain deferred to later W
+phases.
 
 The current non-visual foundation stores world profile data only:
 
@@ -46,9 +50,11 @@ The Phase 18 data foundation also exposes:
 - `GET /api/v1/world/scene-manifest`
 - `GET /api/v1/world/feature-flags`
 
-The scene manifest contains future scene keys only. In W1 it sets `visualRuntimeAvailable` to `true`
-for the diagnostic runtime, keeps every location `allowedToRender` value at `false`, and contains no
-asset bundle references.
+The backend scene manifest contains future scene keys only. In W1 it sets `visualRuntimeAvailable`
+to `true` for the diagnostic runtime, keeps every location `allowedToRender` value at `false`, and
+contains no asset bundle references. The W5 frontend world manifest is a separate source-controlled
+planning and runtime registry; it contains no private user data and no downloadable asset bundle
+URLs.
 
 The achievement engine also writes `world_unlock_records` as future destination identifiers such as
 `achievement_hall:first_file_display`. These are non-visual progression records for the later World
@@ -79,8 +85,24 @@ The app must load Command Mode when:
 
 W1 renders only a diagnostic scene with a ground plane, sky, camera, one test light, and debug grid.
 W2 adds movement over that diagnostic ground plane only, W3 adds a diagnostic third-person camera,
-and W4 adds diagnostic interaction prompts and markers tied to Command Mode deep links. The first
-functional world implementation should become a compact central campus with:
+W4 adds diagnostic interaction prompts and markers tied to Command Mode deep links, and W5 adds the
+data-driven source manifests that later phases must consume. The first polished district
+implementation remains Central Plaza in W7 after W6 terrain and environment foundation.
+
+The W5 visual district manifest uses these frontend IDs:
+
+- `central-plaza`
+- `knowledge-library`
+- `ai-observatory`
+- `habit-garden`
+- `learning-academy`
+- `coding-arena`
+- `project-dock`
+- `progress-tower`
+- `achievement-hall`
+- `personal-sanctuary`
+
+The first functional world implementation should become a compact central campus with:
 
 - Central Plaza.
 - Library.
@@ -88,8 +110,9 @@ functional world implementation should become a compact central campus with:
 
 Current diagnostic movement supports keyboard and gamepad movement, sprint, pause, and a
 collision-ready capsule body. Current diagnostic camera support includes mouse drag, wheel distance,
-gamepad right-stick orbit, recenter, sprint FOV transition, and basic collision shortening. Future
-navigation phases add:
+gamepad right-stick orbit, recenter, sprint FOV transition, and basic collision shortening. Current
+diagnostic interactions are generated from W5 source manifests and backend unlock/deep-link data.
+Future navigation phases add:
 
 - Fast travel.
 - Point-and-travel later.

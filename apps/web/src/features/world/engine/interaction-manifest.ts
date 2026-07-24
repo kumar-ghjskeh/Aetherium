@@ -1,73 +1,8 @@
-import type {
-  WorldDeepLinkPage,
-  WorldLocationId,
-  WorldLocationPage
-} from "@aetherium/shared-types";
+import type { WorldDeepLinkPage, WorldLocationPage } from "@aetherium/shared-types";
 
-import type { Vector3Tuple } from "./camera-system";
-import type { WorldInteraction, WorldInteractionType } from "./interaction-system";
-
-interface DiagnosticInteractionLayout {
-  accessibilityLabel: string;
-  locationId: WorldLocationId;
-  position: Vector3Tuple;
-  prompt: string;
-  type: WorldInteractionType;
-}
-
-const DIAGNOSTIC_INTERACTION_LAYOUT: readonly DiagnosticInteractionLayout[] = [
-  {
-    accessibilityLabel: "Open the Knowledge Library in Command Mode",
-    locationId: "library",
-    position: [3.4, 0.36, -2.8],
-    prompt: "Open Library",
-    type: "open_file_collection"
-  },
-  {
-    accessibilityLabel: "Ask an AI mentor in Command Mode",
-    locationId: "ai_hall",
-    position: [-3.4, 0.36, -2.8],
-    prompt: "Ask AI",
-    type: "start_ai_conversation"
-  },
-  {
-    accessibilityLabel: "Open Habit Garden in Command Mode",
-    locationId: "habit_garden",
-    position: [3.4, 0.36, 2.8],
-    prompt: "Open Habits",
-    type: "open_habit_dashboard"
-  },
-  {
-    accessibilityLabel: "Open analytics in Command Mode",
-    locationId: "command_center",
-    position: [-3.4, 0.36, 2.8],
-    prompt: "Open Analytics",
-    type: "open_analytics"
-  },
-  {
-    accessibilityLabel: "Open the Project Workshop in Command Mode",
-    locationId: "project_workshop",
-    position: [0, 0.36, -5.2],
-    prompt: "Open Projects",
-    type: "open_project"
-  },
-  {
-    accessibilityLabel: "Open Achievement Hall in Command Mode",
-    locationId: "achievement_hall",
-    position: [0, 0.36, 5.2],
-    prompt: "Open Achievements",
-    type: "open_achievement_display"
-  }
-];
-
-const FALLBACK_ROUTES: Partial<Record<WorldLocationId, string>> = {
-  achievement_hall: "/app/achievements",
-  ai_hall: "/app/ai",
-  command_center: "/app/analytics",
-  habit_garden: "/app/habits",
-  library: "/app/library",
-  project_workshop: "/app/projects"
-};
+import { WORLD_INTERACTIONS_MANIFEST } from "../manifests/interactions.manifest";
+import { WORLD_LOCATIONS_MANIFEST } from "../manifests/locations.manifest";
+import type { WorldInteraction } from "./interaction-system";
 
 export function buildDiagnosticWorldInteractions({
   deepLinks,
@@ -78,28 +13,29 @@ export function buildDiagnosticWorldInteractions({
 }>): WorldInteraction[] {
   const deepLinksByLocation = new Map(deepLinks.items.map((link) => [link.locationId, link]));
   const locationsById = new Map(locationPage.items.map((location) => [location.id, location]));
+  const worldLocationsById = new Map(
+    WORLD_LOCATIONS_MANIFEST.map((location) => [location.id, location])
+  );
 
-  return DIAGNOSTIC_INTERACTION_LAYOUT.map((layout) => {
-    const deepLink = deepLinksByLocation.get(layout.locationId);
-    const location = locationsById.get(layout.locationId);
+  return WORLD_INTERACTIONS_MANIFEST.map((layout) => {
+    const worldLocation = worldLocationsById.get(layout.locationId);
+    const backendLocationId = worldLocation?.backendLocationId ?? "central_plaza";
+    const deepLink = deepLinksByLocation.get(backendLocationId);
+    const location = locationsById.get(backendLocationId);
     const unlocked = location?.unlocked ?? true;
-    const commandRoute =
-      deepLink?.commandRoute ??
-      location?.commandRoute ??
-      FALLBACK_ROUTES[layout.locationId] ??
-      "/app";
+    const commandRoute = deepLink?.commandRoute ?? location?.commandRoute ?? layout.commandRoute;
 
     const interaction: WorldInteraction = {
       accessibilityLabel: layout.accessibilityLabel,
       commandRoute,
-      gamepadAction: "primary",
-      id: `diagnostic-${layout.locationId}`,
-      keyboardAction: "KeyE",
-      locationId: layout.locationId,
+      gamepadAction: layout.gamepadAction,
+      id: layout.id,
+      keyboardAction: layout.keyboardAction,
+      locationId: backendLocationId,
       permission: "allowed",
       position: layout.position,
       prompt: layout.prompt,
-      radius: 2.35,
+      radius: layout.radius,
       status: unlocked ? "available" : "permission_denied",
       type: layout.type
     };

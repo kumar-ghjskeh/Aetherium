@@ -118,6 +118,9 @@ Frontend and shared packages:
   sprint FOV behavior, diagnostic collision shortening, pose calculation, and smoothing.
 - World Mode interaction unit tests for radius detection, facing priority, blocked/loading/error
   state handling, command-route activation, and deep-link-backed diagnostic interaction generation.
+- World Mode manifest tests for source-controlled registry validation, ten-district coverage inside
+  the declared 800 m world bounds, deterministic scene-registry lookups, skippable camera-route
+  references, and broken-reference rejection.
 - Repository guard coverage through `pnpm world:check`, which allows only ADR-approved visual
   runtime dependencies in the web app and blocks unapproved visual dependencies plus unregistered
   visual-world asset files.

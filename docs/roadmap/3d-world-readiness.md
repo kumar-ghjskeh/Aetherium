@@ -98,6 +98,8 @@ Each world location maps to a Command Mode route such as `/app/library`, `/app/a
 
 - Visual World Mode W1 through W4 are now progressive enhancements over the existing backend and API
   client.
+- Visual World Mode W5 adds the source-controlled frontend world manifest and registry that future
+  terrain, district, navigation, interaction, audio, and asset-loading phases must consume.
 - Keep Command Mode fully usable when WebGL, motion, or performance requirements are not met.
 - Lazy-load visual world code separately from the Command Mode shell.
 - Keep scene state transient in client state and persist only approved world profile/progression
@@ -156,12 +158,16 @@ Each world location maps to a Command Mode route such as `/app/library`, `/app/a
   cinematic travel paths or final district collision meshes.
 - W4 interactions exist only as diagnostic deep-link terminals and are not final district-specific
   props or panels.
+- W5 source-controlled manifests define the ten future districts, backend mappings, route contracts,
+  travel points, camera-route placeholders, environment zones, audio zones, procedural asset
+  placeholders, and diagnostic interaction registry. These manifests contain no final terrain,
+  district art, audio playback, or asset bundle URLs.
 - No final scene assets, art pipeline, district terrain, or performance test harness exists.
 - WebGL capability detection and the lazy visual-mode router exist for the diagnostic runtime only.
 - No Playwright visual regression or canvas-pixel checks exist for 3D scenes.
 
 ## Exact First Task For Visual World Mode
 
-Implement W5, the World Manifest And Generation System. Add typed data-driven registries for
-locations, assets, spawns, fast-travel points, interactions, environment zones, audio zones, camera
-routes, and district themes without building final district art.
+Implement W6, the Terrain And Environment Foundation. Build the deterministic 800 m x 800 m base
+terrain, river, waterfalls, paths, mountain perimeter, sky, low-cost atmosphere, and environment
+systems from the W5 source manifests without adding dense foliage or final district interiors.

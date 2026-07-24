@@ -2,7 +2,9 @@
 
 Every committed visual or audio asset must be recorded here before it is used by World Mode.
 
-No external visual or audio assets are registered in Phase W0.
+No external visual or audio assets are registered through Phase W5. W5 adds procedural placeholder
+asset IDs in `apps/web/src/features/world/manifests/assets.manifest.ts`; those entries are original
+Aetherium planning records and do not point to committed model, texture, or audio files.
 
 ## License Rules
 
