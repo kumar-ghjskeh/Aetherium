@@ -24,6 +24,23 @@ const locationPage: WorldLocationPage = {
       visualStatus: "data_contract_ready"
     },
     {
+      category: "ai",
+      commandRoute: "/app/ai",
+      current: false,
+      deepLinkEntityTypes: ["mentor", "conversation"],
+      defaultUnlocked: true,
+      description: "Mentors",
+      futureSceneKey: "ai-observatory",
+      id: "ai_hall",
+      spawn: false,
+      subtitle: "Mentors",
+      title: "AI Hall",
+      unlockDependencyIds: [],
+      unlocked: true,
+      visited: false,
+      visualStatus: "data_contract_ready"
+    },
+    {
       category: "achievements",
       commandRoute: "/app/achievements",
       current: false,
@@ -48,6 +65,14 @@ const locationPage: WorldLocationPage = {
 
 const deepLinks: WorldDeepLinkPage = {
   items: [
+    {
+      commandRoute: "/app/ai",
+      entityTypes: ["mentor", "conversation"],
+      label: "AI Hall",
+      locationId: "ai_hall",
+      notes: "Route",
+      routePattern: "/app/ai{?conversationId}"
+    },
     {
       commandRoute: "/app/library",
       entityTypes: ["file"],
@@ -102,6 +127,37 @@ describe("diagnostic world interaction manifest", () => {
       commandRoute: "/app/ai",
       locationId: "library",
       prompt: "Ask About Files",
+      status: "available"
+    });
+  });
+
+  it("adds AI Observatory terminals for mentor chat, document Q&A, and provider settings", () => {
+    const interactions = buildDiagnosticWorldInteractions({ deepLinks, locationPage });
+
+    expect(
+      interactions.find((interaction) => interaction.id === "interaction-observatory-mentor-chat")
+    ).toMatchObject({
+      commandRoute: "/app/ai",
+      locationId: "ai_hall",
+      prompt: "Open Mentor Chat",
+      status: "available"
+    });
+    expect(
+      interactions.find((interaction) => interaction.id === "interaction-observatory-document-qa")
+    ).toMatchObject({
+      commandRoute: "/app/ai",
+      locationId: "ai_hall",
+      prompt: "Open Document Q&A",
+      status: "available"
+    });
+    expect(
+      interactions.find(
+        (interaction) => interaction.id === "interaction-observatory-provider-status"
+      )
+    ).toMatchObject({
+      commandRoute: "/app/settings",
+      locationId: "ai_hall",
+      prompt: "Review AI Settings",
       status: "available"
     });
   });

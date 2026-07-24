@@ -1,7 +1,11 @@
 import type { AetheriumApiClient } from "@aetherium/api-client";
 import type {
+  AIModelConfigurationPage,
+  AIProviderPage,
+  AIUsageRecordPage,
   AnalyticsSummary,
   CollectionPage,
+  ConversationPage,
   FilePage,
   HabitPage,
   HabitSummary,
@@ -24,6 +28,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   createUnusedAnalyticsClient,
+  createUnusedAiClient,
   createUnusedAuthClient,
   createUnusedFilesClient,
   createUnusedHabitsClient,
@@ -249,6 +254,28 @@ const mentorPage: MentorPage = {
   items: []
 };
 
+const conversationPage: ConversationPage = {
+  items: [],
+  limit: 8,
+  offset: 0,
+  total: 0
+};
+
+const aiProviderPage: AIProviderPage = {
+  items: []
+};
+
+const aiModelConfigPage: AIModelConfigurationPage = {
+  items: []
+};
+
+const aiUsageRecordPage: AIUsageRecordPage = {
+  items: [],
+  limit: 8,
+  offset: 0,
+  total: 0
+};
+
 const analyticsSummary: AnalyticsSummary = {
   generatedAt: "2026-07-22T00:00:00Z",
   metrics: [],
@@ -290,6 +317,12 @@ function createClient(
       ...createUnusedAnalyticsClient(),
       summary: vi.fn(() => Promise.resolve(analyticsSummary))
     },
+    ai: {
+      ...createUnusedAiClient(),
+      listModelConfigs: vi.fn(() => Promise.resolve(aiModelConfigPage)),
+      listProviders: vi.fn(() => Promise.resolve(aiProviderPage)),
+      listUsage: vi.fn(() => Promise.resolve(aiUsageRecordPage))
+    },
     auth: {
       ...createUnusedAuthClient(),
       me: vi.fn(() => Promise.resolve(user))
@@ -311,7 +344,8 @@ function createClient(
     },
     mentors: {
       ...createUnusedMentorsClient(),
-      list: vi.fn(() => Promise.resolve(mentorPage))
+      list: vi.fn(() => Promise.resolve(mentorPage)),
+      listConversations: vi.fn(() => Promise.resolve(conversationPage))
     },
     notifications: {
       ...createUnusedNotificationsClient(),
@@ -378,6 +412,14 @@ describe("WorldPage", () => {
     });
     expect(client.learning.listGoals).toHaveBeenCalledWith({ limit: 5, offset: 0 });
     expect(client.mentors.list).toHaveBeenCalledWith({ includeArchived: false });
+    expect(client.mentors.listConversations).toHaveBeenCalledWith({
+      includeArchived: false,
+      limit: 8,
+      offset: 0
+    });
+    expect(client.ai.listProviders).toHaveBeenCalledTimes(1);
+    expect(client.ai.listModelConfigs).toHaveBeenCalledTimes(1);
+    expect(client.ai.listUsage).toHaveBeenCalledWith({ limit: 8, offset: 0 });
     expect(client.analytics.summary).toHaveBeenCalledWith({ period: "week" });
   });
 

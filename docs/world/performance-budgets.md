@@ -97,6 +97,20 @@ The W8 Knowledge Library adds one bounded district slice:
 W8 does not add textures, downloaded assets, spatial audio, post-processing, dense foliage, or
 interior room loading. Browser screenshot and frame-metric automation remain scheduled for W23.
 
+## Current W9 AI Observatory Budget
+
+The W9 AI Observatory adds one bounded mentor district slice:
+
+- Procedural observatory exterior meshes only.
+- Up to six mentor probes derived from the current mentor page.
+- Three status terminals showing real mentor, conversation, provider, model, and usage counts.
+- One local point light and three low-cost animated orbital rings.
+- Reduced-motion mode disables ring and probe animation.
+
+W9 does not add textures, downloaded assets, spatial audio, post-processing, live particle systems,
+provider-side mutations, or custom shader work. Browser screenshot and frame-metric automation
+remain scheduled for W23.
+
 ## Runtime Diagnostics
 
 Diagnostics must report:

@@ -192,6 +192,31 @@ Current limitations:
   existing Command Mode surfaces.
 - No downloaded models, textures, audio, glTF/GLB assets, or shelf-room interiors are introduced.
 
+## Current AI Observatory Slice
+
+W9 adds the first AI mentor district in
+`apps/web/src/features/world/components/locations/ai-observatory.tsx`.
+
+Current AI Observatory elements:
+
+- Procedural dome, circular terrace, rotating orbital rings, entry terminal wall, columns, and
+  mentor probes at the `ai-observatory` manifest coordinates.
+- Probe states derived from real mentor archive state, mentor permissions, conversations, and recent
+  AI usage failures.
+- Near-district overlay backed by real mentor, conversation, provider, model-configuration, and AI
+  usage API responses.
+- Observatory-specific interaction terminals for opening mentor chat, document Q&A, and AI settings
+  in Command Mode.
+
+Current limitations:
+
+- The district does not yet include a walkable interior or live in-world streaming chat panel.
+- Mentor conversations, citation-backed document Q&A, provider configuration, and consent controls
+  remain in existing Command Mode surfaces.
+- Spatial audio identities for probes are deferred to W19; W9 provides visual state identities only.
+- No downloaded models, textures, audio, glTF/GLB assets, custom shaders, or AI avatar models are
+  introduced.
+
 ## Deterministic Generation
 
 Use fixed seeds for:

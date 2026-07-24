@@ -13,6 +13,7 @@ import type * as THREE from "three";
 import { buildDiagnosticWorldInteractions } from "../../engine/interaction-manifest";
 import { resolveGraphicsPresetSettings } from "../../engine/performance-manager";
 import type { CentralPlazaOverviewData } from "../../engine/central-plaza-system";
+import type { AIObservatoryOverviewData } from "../../engine/ai-observatory-system";
 import type { KnowledgeLibraryOverviewData } from "../../engine/knowledge-library-system";
 import { useWorldSettingsStore } from "../../state/settings-store";
 import { WorldCameraRig } from "../camera/world-camera-rig";
@@ -27,9 +28,11 @@ import { WorldEnvironmentScene } from "../environments/world-environment-scene";
 import { WorldInteractionPrompt } from "../interactions/world-interaction-prompt";
 import { WorldInteractionSystem } from "../interactions/world-interaction-system";
 import { CentralPlazaOverviewPanel } from "../ui/central-plaza-overview-panel";
+import { AIObservatoryPanel } from "../ui/ai-observatory-panel";
 import { KnowledgeLibraryPanel } from "../ui/knowledge-library-panel";
 
 export function WorldRuntimeCanvas({
+  aiObservatoryOverview,
   deepLinks,
   libraryOverview,
   locationPage,
@@ -38,6 +41,7 @@ export function WorldRuntimeCanvas({
   profile,
   sceneManifest
 }: Readonly<{
+  aiObservatoryOverview: AIObservatoryOverviewData;
   deepLinks: WorldDeepLinkPage;
   libraryOverview: KnowledgeLibraryOverviewData;
   locationPage: WorldLocationPage;
@@ -99,6 +103,7 @@ export function WorldRuntimeCanvas({
         >
           <Physics gravity={[0, -9.81, 0]} paused={!pageVisible}>
             <WorldEnvironmentScene
+              aiObservatoryOverview={aiObservatoryOverview}
               graphicsPreset={graphicsPreset}
               libraryOverview={libraryOverview}
               plazaOverview={plazaOverview}
@@ -124,9 +129,10 @@ export function WorldRuntimeCanvas({
         <WorldInteractionPrompt />
         <CentralPlazaOverviewPanel overview={plazaOverview} />
         <KnowledgeLibraryPanel overview={libraryOverview} />
+        <AIObservatoryPanel overview={aiObservatoryOverview} />
 
         <div className="world-runtime-label" aria-live="polite">
-          <strong>Central Plaza vertical slice</strong>
+          <strong>World Mode district slices</strong>
           <span>
             {sceneManifest.locations.length} future locations, {deepLinks.total} deep-link contracts
           </span>

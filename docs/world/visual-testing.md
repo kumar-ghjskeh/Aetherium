@@ -100,6 +100,11 @@ deterministic vault-to-world mapping tests and verifies `/app/world` loads file,
 DTOs for the district. Fixed screenshot capture for the Library remains part of the W23 visual
 regression suite.
 
+W9 adds the AI Observatory district and uses the same interim validation approach. It adds
+deterministic mentor/probe mapping tests and verifies `/app/world` loads conversation, provider,
+model-configuration, and AI usage DTOs for the district. Fixed screenshot capture for the
+Observatory remains part of the W23 visual regression suite.
+
 ## Failure Policy
 
 If tests show a black canvas, missing asset, persistent console error, browser crash, or performance

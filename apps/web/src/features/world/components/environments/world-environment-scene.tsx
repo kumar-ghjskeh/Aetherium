@@ -5,6 +5,7 @@ import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import React from "react";
 import * as THREE from "three";
 
+import type { AIObservatoryOverviewData } from "../../engine/ai-observatory-system";
 import type { CentralPlazaOverviewData } from "../../engine/central-plaza-system";
 import type { KnowledgeLibraryOverviewData } from "../../engine/knowledge-library-system";
 import { WORLD_LOCATIONS_MANIFEST } from "../../manifests/locations.manifest";
@@ -22,14 +23,17 @@ import {
   WORLD_THEME_COLORS
 } from "../../engine/terrain-system";
 import { CentralPlazaVerticalSlice } from "../locations/central-plaza";
+import { AIObservatoryDistrict } from "../locations/ai-observatory";
 import { KnowledgeLibraryDistrict } from "../locations/knowledge-library";
 
 export function WorldEnvironmentScene({
+  aiObservatoryOverview,
   graphicsPreset,
   libraryOverview,
   plazaOverview,
   reducedMotion
 }: Readonly<{
+  aiObservatoryOverview: AIObservatoryOverviewData;
   graphicsPreset: PerformancePreset;
   libraryOverview: KnowledgeLibraryOverviewData;
   plazaOverview: CentralPlazaOverviewData;
@@ -59,6 +63,7 @@ export function WorldEnvironmentScene({
       <EnvironmentProps graphicsPreset={graphicsPreset} reducedMotion={reducedMotion} />
       <CentralPlazaVerticalSlice overview={plazaOverview} reducedMotion={reducedMotion} />
       <KnowledgeLibraryDistrict overview={libraryOverview} reducedMotion={reducedMotion} />
+      <AIObservatoryDistrict overview={aiObservatoryOverview} reducedMotion={reducedMotion} />
     </>
   );
 }
@@ -216,7 +221,10 @@ function DistrictFoundationMarkers(): React.ReactElement {
   return (
     <>
       {WORLD_LOCATIONS_MANIFEST.filter(
-        (location) => location.id !== "central-plaza" && location.id !== "knowledge-library"
+        (location) =>
+          location.id !== "central-plaza" &&
+          location.id !== "knowledge-library" &&
+          location.id !== "ai-observatory"
       ).map((location) => {
         const [x, , z] = location.position;
         const terrain = sampleTerrain(x, z);

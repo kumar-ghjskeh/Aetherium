@@ -134,6 +134,42 @@ export const WORLD_INTERACTIONS_MANIFEST: WorldInteractionManifestEntry[] = [
     type: "start_ai_conversation"
   },
   {
+    accessibilityLabel: "Open AI Observatory mentor conversations in Command Mode",
+    commandRoute: "/app/ai",
+    gamepadAction: "primary",
+    id: "interaction-observatory-mentor-chat",
+    keyboardAction: "KeyE",
+    locationId: "ai-observatory",
+    position: [-210, 1.25, -262],
+    prompt: "Open Mentor Chat",
+    radius: 10,
+    type: "start_ai_conversation"
+  },
+  {
+    accessibilityLabel: "Open citation-backed document question answering from AI Observatory",
+    commandRoute: "/app/ai",
+    gamepadAction: "primary",
+    id: "interaction-observatory-document-qa",
+    keyboardAction: "KeyE",
+    locationId: "ai-observatory",
+    position: [-198, 1.25, -269],
+    prompt: "Open Document Q&A",
+    radius: 10,
+    type: "start_ai_conversation"
+  },
+  {
+    accessibilityLabel: "Review provider and model status from AI Observatory",
+    commandRoute: "/app/settings",
+    gamepadAction: "primary",
+    id: "interaction-observatory-provider-status",
+    keyboardAction: "KeyE",
+    locationId: "ai-observatory",
+    position: [-186, 1.25, -262],
+    prompt: "Review AI Settings",
+    radius: 10,
+    type: "open_application_panel"
+  },
+  {
     accessibilityLabel: "Open Habit Garden in Command Mode",
     commandRoute: "/app/habits",
     gamepadAction: "primary",

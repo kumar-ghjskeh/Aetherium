@@ -15,11 +15,13 @@ import React from "react";
 import { createBrowserApiClient } from "../auth/auth-provider";
 import { WorldRuntimeErrorBoundary } from "./components/canvas/world-runtime-error-boundary";
 import { WorldRuntimeFallback, WorldRuntimeLoading } from "./components/ui/world-runtime-fallback";
+import type { AIObservatoryOverviewData } from "./engine/ai-observatory-system";
 import type { CentralPlazaOverviewData } from "./engine/central-plaza-system";
 import type { KnowledgeLibraryOverviewData } from "./engine/knowledge-library-system";
 import { useWorldRuntimeReadiness } from "./hooks/use-world-runtime-readiness";
 
 interface WorldDataState {
+  aiObservatoryOverview: AIObservatoryOverviewData;
   deepLinks: WorldDeepLinkPage;
   featureFlags: WorldFeatureFlags;
   libraryOverview: KnowledgeLibraryOverviewData;
@@ -80,6 +82,10 @@ export function WorldPage({
         projects,
         learningGoals,
         mentors,
+        conversations,
+        providers,
+        modelConfigs,
+        usage,
         analytics
       ] = await Promise.all([
         apiClient.world.getProfile(),
@@ -98,9 +104,20 @@ export function WorldPage({
         apiClient.projects.list({ includeArchived: false, limit: 5, offset: 0 }),
         apiClient.learning.listGoals({ limit: 5, offset: 0 }),
         apiClient.mentors.list({ includeArchived: false }),
+        apiClient.mentors.listConversations({ includeArchived: false, limit: 8, offset: 0 }),
+        apiClient.ai.listProviders(),
+        apiClient.ai.listModelConfigs(),
+        apiClient.ai.listUsage({ limit: 8, offset: 0 }),
         apiClient.analytics.summary({ period: "week" })
       ]);
       setData({
+        aiObservatoryOverview: {
+          conversations,
+          mentors,
+          modelConfigs,
+          providers,
+          usage
+        },
         deepLinks,
         featureFlags,
         libraryOverview: {
@@ -214,6 +231,7 @@ export function WorldPage({
             <WorldRuntimeErrorBoundary key={readinessVersion}>
               <React.Suspense fallback={<WorldRuntimeLoading />}>
                 <LazyWorldRuntimeCanvas
+                  aiObservatoryOverview={data.aiObservatoryOverview}
                   deepLinks={data.deepLinks}
                   libraryOverview={data.libraryOverview}
                   locationPage={data.locations}

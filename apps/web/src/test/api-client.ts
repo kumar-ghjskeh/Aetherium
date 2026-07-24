@@ -9,6 +9,23 @@ export function createUnusedAnalyticsClient(): AetheriumApiClient["analytics"] {
   };
 }
 
+export function createUnusedAiClient(): AetheriumApiClient["ai"] {
+  const reject = () => Promise.reject(new Error("Unexpected AI gateway call"));
+
+  return {
+    answerDocumentQuestion: vi.fn(reject),
+    completeChat: vi.fn(reject),
+    createEmbeddings: vi.fn(reject),
+    listConsent: vi.fn(reject),
+    listModelConfigs: vi.fn(reject),
+    listProviders: vi.fn(reject),
+    listUsage: vi.fn(reject),
+    streamChat: vi.fn(reject),
+    updateConsent: vi.fn(reject),
+    updateModelConfig: vi.fn(reject)
+  };
+}
+
 export function createUnusedAuthClient(): AetheriumApiClient["auth"] {
   const reject = () => Promise.reject(new Error("Unexpected auth call"));
 
