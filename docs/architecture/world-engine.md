@@ -9,10 +9,10 @@ achievements.
 ## Current Status
 
 The W1 diagnostic 3D runtime foundation, W2 player-controller foundation, W3 camera foundation, W4
-interaction framework, and W5 source-controlled manifest foundation are implemented. The protected
-`/app/world` route still loads API-backed world data contracts first, then lazy-loads a route-local
-visual bundle only when the backend runtime flag, scene manifest, browser WebGL2 support, and
-reduced-motion settings allow it.
+interaction framework, W5 source-controlled manifest foundation, and W6 terrain/environment
+foundation are implemented. The protected `/app/world` route still loads API-backed world data
+contracts first, then lazy-loads a route-local visual bundle only when the backend runtime flag,
+scene manifest, browser WebGL2 support, and reduced-motion settings allow it.
 
 ADR 0025 now defines the approved visual World Mode architecture. It selects a browser-native React
 Three Fiber and Three.js runtime, with WebGL2 as the default, WebGPU experiments behind feature
@@ -24,9 +24,11 @@ collision. W4 adds typed interaction contracts, diagnostic deep-link-backed inte
 radius/facing ranking, permission/loading/error state modeling, accessible prompts, and Command Mode
 routing. W5 adds typed registries for ten future districts, backend location mappings, procedural
 asset placeholders, spawns, fast-travel points, diagnostic interactions, environment zones, audio
-zones, skippable camera routes, and themes. Final district scenes, authored terrain, navigation
-maps, audio playback, final assets, and polished district interactions remain deferred to later W
-phases.
+zones, skippable camera routes, and themes. W6 replaces the tiny diagnostic ground plane with an 800
+m deterministic terrain foundation, mountain perimeter, river ribbon, waterfall sheets, route
+surfaces, bounded rocks/mist/clouds, district foundation markers, and terrain-bound player reset.
+Final district scenes, finished navigation maps, audio playback, final assets, and polished district
+interactions remain deferred to later W phases.
 
 The current non-visual foundation stores world profile data only:
 
@@ -86,8 +88,9 @@ The app must load Command Mode when:
 W1 renders only a diagnostic scene with a ground plane, sky, camera, one test light, and debug grid.
 W2 adds movement over that diagnostic ground plane only, W3 adds a diagnostic third-person camera,
 W4 adds diagnostic interaction prompts and markers tied to Command Mode deep links, and W5 adds the
-data-driven source manifests that later phases must consume. The first polished district
-implementation remains Central Plaza in W7 after W6 terrain and environment foundation.
+data-driven source manifests that later phases must consume. W6 renders the first environment
+foundation from those manifests. The first polished district implementation remains Central Plaza in
+W7.
 
 The W5 visual district manifest uses these frontend IDs:
 
@@ -111,8 +114,10 @@ The first functional world implementation should become a compact central campus
 Current diagnostic movement supports keyboard and gamepad movement, sprint, pause, and a
 collision-ready capsule body. Current diagnostic camera support includes mouse drag, wheel distance,
 gamepad right-stick orbit, recenter, sprint FOV transition, and basic collision shortening. Current
-diagnostic interactions are generated from W5 source manifests and backend unlock/deep-link data.
-Future navigation phases add:
+diagnostic interactions are generated from W5 source manifests and backend unlock/deep-link data. W6
+terrain collision remains a conservative fixed traversal collider while visual terrain elevation is
+generated procedurally; authored slope and district collision meshes are deferred to later
+terrain/collision refinement. Future navigation phases add:
 
 - Fast travel.
 - Point-and-travel later.

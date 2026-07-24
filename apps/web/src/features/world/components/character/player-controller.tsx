@@ -10,6 +10,7 @@ import {
   resolvePlayerMovementState,
   type PlanarVelocity
 } from "../../engine/player-controller";
+import { isInsideTerrainBounds } from "../../engine/terrain-system";
 import { useWorldInput } from "../../hooks/use-world-input";
 import { usePlayerStore } from "../../state/player-store";
 import { PlayerAvatar } from "./player-avatar";
@@ -82,7 +83,10 @@ export function PlayerController({
       avatarRootRef.current.rotation.y = facingRadiansRef.current;
     }
 
-    if (currentTranslation.y < -8) {
+    if (
+      currentTranslation.y < -12 ||
+      !isInsideTerrainBounds([currentTranslation.x, currentTranslation.y, currentTranslation.z], 12)
+    ) {
       body.setTranslation({ x: 0, y: 1.1, z: 0 }, true);
       body.setLinvel({ x: 0, y: 0, z: 0 }, true);
       velocityRef.current = { x: 0, z: 0 };

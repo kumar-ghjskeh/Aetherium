@@ -121,6 +121,9 @@ Frontend and shared packages:
 - World Mode manifest tests for source-controlled registry validation, ten-district coverage inside
   the declared 800 m world bounds, deterministic scene-registry lookups, skippable camera-route
   references, and broken-reference rejection.
+- World Mode terrain-generation tests for central-valley and mountain-perimeter shaping, river
+  corridor carving, terrain mesh and river ribbon geometry counts, central route generation from the
+  location manifest, graphics-preset environment budgets, and deterministic bounded prop placement.
 - Repository guard coverage through `pnpm world:check`, which allows only ADR-approved visual
   runtime dependencies in the web app and blocks unapproved visual dependencies plus unregistered
   visual-world asset files.

@@ -125,6 +125,29 @@ Each district has:
 The runtime may keep the current district and nearby district loaded, while distant districts use
 low-detail silhouettes.
 
+## Current Terrain Foundation
+
+W6 implements the first generated world base in
+`apps/web/src/features/world/engine/terrain-system.ts` and
+`apps/web/src/features/world/components/environments/world-environment-scene.tsx`.
+
+Current generated elements:
+
+- `800 m x 800 m` terrain mesh with a central low valley and raised mountain perimeter.
+- River ribbon following a deterministic north-south curve.
+- Three waterfall sheets near the river path.
+- Terrain-colored route surfaces from Central Plaza to each non-plaza district.
+- Bounded procedural rocks, mist, and clouds scaled by graphics preset.
+- Data-driven district foundation markers at the W5 location-manifest coordinates.
+- Conservative terrain-bound reset when the player leaves the generated world area.
+
+Current limitations:
+
+- Physics uses a stable fixed traversal collider rather than a terrain-following heightfield.
+- District markers are foundation anchors, not final buildings or final art.
+- No dense foliage, spatial audio, dynamic weather, final route navigation, or district interiors
+  exist yet.
+
 ## Deterministic Generation
 
 Use fixed seeds for:

@@ -52,6 +52,23 @@ Initial budgets before measurement:
 
 These numbers are starting constraints and must be revised with measured data.
 
+## Current W6 Baseline
+
+The W6 terrain foundation uses code-generated geometry only:
+
+- Terrain grid: `96 x 96` cells, approximately `18,432` triangles.
+- River ribbon: `96` segments, approximately `192` triangles.
+- Route ribbons: nine source-manifest routes rendered as low-cost lines.
+- District foundation markers: ten simple marker groups.
+- Environment props by preset:
+  - Low: 18 rocks, 8 mist puffs, 5 clouds.
+  - Balanced/Automatic: 30 rocks, 16 mist puffs, 9 clouds.
+  - High: 44 rocks, 24 mist puffs, 14 clouds.
+
+This baseline intentionally avoids dense foliage, large textures, downloaded assets, heavy
+post-processing, and terrain-following physics. Browser screenshot and frame-metric automation
+remain scheduled for W23.
+
 ## Runtime Diagnostics
 
 Diagnostics must report:

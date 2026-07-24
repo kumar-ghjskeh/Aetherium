@@ -100,6 +100,9 @@ Each world location maps to a Command Mode route such as `/app/library`, `/app/a
   client.
 - Visual World Mode W5 adds the source-controlled frontend world manifest and registry that future
   terrain, district, navigation, interaction, audio, and asset-loading phases must consume.
+- Visual World Mode W6 adds deterministic terrain and environment generation for the 800 m world
+  foundation, including route surfaces, a river ribbon, waterfall sheets, bounded atmosphere props,
+  district foundation markers, and terrain generation tests.
 - Keep Command Mode fully usable when WebGL, motion, or performance requirements are not met.
 - Lazy-load visual world code separately from the Command Mode shell.
 - Keep scene state transient in client state and persist only approved world profile/progression
@@ -162,12 +165,16 @@ Each world location maps to a Command Mode route such as `/app/library`, `/app/a
   travel points, camera-route placeholders, environment zones, audio zones, procedural asset
   placeholders, and diagnostic interaction registry. These manifests contain no final terrain,
   district art, audio playback, or asset bundle URLs.
-- No final scene assets, art pipeline, district terrain, or performance test harness exists.
+- W6 source-generated terrain and environment props render inside `/app/world`, but they are still a
+  foundation: district buildings, final route navigation, terrain-following collision, audio
+  playback, and visual regression screenshots remain unfinished.
+- No final scene assets, art pipeline, polished district terrain, or performance test harness
+  exists.
 - WebGL capability detection and the lazy visual-mode router exist for the diagnostic runtime only.
 - No Playwright visual regression or canvas-pixel checks exist for 3D scenes.
 
 ## Exact First Task For Visual World Mode
 
-Implement W6, the Terrain And Environment Foundation. Build the deterministic 800 m x 800 m base
-terrain, river, waterfalls, paths, mountain perimeter, sky, low-cost atmosphere, and environment
-systems from the W5 source manifests without adding dense foliage or final district interiors.
+Implement W7, the Central Plaza Vertical Slice. Replace the central foundation marker with a
+polished Central Plaza district using real overview data, functional terminals, accessible
+interaction prompts, and fixed screenshot/performance checks without building other final districts.

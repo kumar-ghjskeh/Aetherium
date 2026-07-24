@@ -89,6 +89,10 @@ Implemented foundation slices:
 - Visual World Mode W5 manifest foundation with source-controlled typed registries for ten future
   districts, backend location mappings, assets, spawns, fast travel, interactions, environment
   zones, audio zones, camera routes, themes, and deterministic registry validation.
+- Visual World Mode W6 terrain and environment foundation with deterministic 800 m procedural
+  terrain, mountain perimeter, river ribbon, waterfall sheets, route surfaces, bounded cloud/mist
+  and rock props, data-driven district foundation markers, terrain-bound player reset, and terrain
+  generation tests.
 
 Still out of scope unless explicitly requested:
 
@@ -121,9 +125,9 @@ before completing work that could affect World Mode dependencies or assets. Run
 
 ## Visual World Mode
 
-The visual World Mode architecture and W1-W5 diagnostic runtime foundations are documented. Follow
+The visual World Mode architecture and W1-W6 runtime foundations are documented. Follow
 `docs/architecture/decisions/0025-visual-world-mode-architecture.md`,
-`docs/world/world-mode-architecture.md`, and `docs/tasks/world/world-mode-roadmap.md` for W6 and
+`docs/world/world-mode-architecture.md`, and `docs/tasks/world/world-mode-roadmap.md` for W7 and
 later. Do not add unregistered assets, paid assets, editor-heavy engine dependencies, or any
 browser-exposed secret.
 

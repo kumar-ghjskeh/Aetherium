@@ -21,7 +21,7 @@ import {
   RuntimeDiagnosticsPanel,
   type WorldRuntimeMetrics
 } from "../diagnostics/runtime-diagnostics-panel";
-import { DiagnosticScene } from "../environments/diagnostic-scene";
+import { WorldEnvironmentScene } from "../environments/world-environment-scene";
 import { WorldInteractionPrompt } from "../interactions/world-interaction-prompt";
 import { WorldInteractionSystem } from "../interactions/world-interaction-system";
 
@@ -72,11 +72,11 @@ export function WorldRuntimeCanvas({
   );
 
   return (
-    <section className="world-runtime-shell" aria-label="Aetherium diagnostic visual World Mode">
+    <section className="world-runtime-shell" aria-label="Aetherium terrain foundation World Mode">
       <div className="world-runtime-frame">
         <Canvas
-          aria-label="Diagnostic 3D world runtime"
-          camera={{ far: 600, fov: 52, near: 0.1, position: [10, 7, 12] }}
+          aria-label="Terrain foundation 3D world runtime"
+          camera={{ far: 1200, fov: 52, near: 0.1, position: [10, 7, 12] }}
           dpr={[1, preset.maxPixelRatio]}
           frameloop={pageVisible ? "always" : "never"}
           gl={{
@@ -90,7 +90,10 @@ export function WorldRuntimeCanvas({
           shadows={preset.shadows}
         >
           <Physics gravity={[0, -9.81, 0]} paused={!pageVisible}>
-            <DiagnosticScene />
+            <WorldEnvironmentScene
+              graphicsPreset={graphicsPreset}
+              reducedMotion={preferences.reducedMotion}
+            />
             <PlayerController reducedMotion={preferences.reducedMotion} />
             <WorldInteractionSystem
               interactions={interactions}
@@ -111,7 +114,7 @@ export function WorldRuntimeCanvas({
         <WorldInteractionPrompt />
 
         <div className="world-runtime-label" aria-live="polite">
-          <strong>Diagnostic runtime</strong>
+          <strong>Terrain foundation</strong>
           <span>
             {sceneManifest.locations.length} future locations, {deepLinks.total} deep-link contracts
           </span>

@@ -13,9 +13,10 @@ profile/privacy settings, the Coding workspace foundation, the non-visual knowle
 foundation, in-app notification/review workflows, non-visual World Mode data contracts,
 production-hardening baseline, and deployment-preparation documentation. It does not yet implement
 visual 3D world navigation. The visual World Mode architecture has been selected in documentation,
-and the diagnostic browser runtime is available under `/app/world` with a basic player-controller,
-camera foundation, interaction framework, and source-controlled world manifests; final district art,
-terrain, travel paths, and district-specific 3D interactions are still deferred.
+and the browser runtime is available under `/app/world` with a basic player-controller, camera
+foundation, interaction framework, source-controlled world manifests, and deterministic terrain and
+environment foundation; final district art, travel paths, and district-specific 3D interactions are
+still deferred.
 
 Aetherium is a standalone product. It uses its own repository, database, Redis namespace,
 object-storage buckets, environment variables, Docker resources, CI workflow, and future
@@ -113,6 +114,9 @@ authentication/session system. See `docs/architecture/product-independence.md` a
   districts, backend location mappings, procedural asset placeholders, spawns, fast-travel points,
   diagnostic interactions, environment zones, audio zones, skippable camera routes, and district
   themes.
+- Visual World Mode terrain and environment foundation with deterministic 800 m terrain, mountain
+  perimeter, river ribbon, waterfall sheets, route surfaces, bounded clouds, mist and rocks,
+  data-driven district foundation markers, terrain-bound player reset, and generation tests.
 - Docker Compose development infrastructure for Aetherium-isolated PostgreSQL, Redis, MinIO, API,
   worker, and web services.
 - CI workflow for independence checks, formatting, linting, type checks, tests, build, and Alembic
@@ -437,8 +441,9 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
 - AI mentors and the Coding workspace are persistent and gateway-backed. The knowledge graph and
   World Mode foundations are available as non-visual owner-scoped data. In-app notification
   workflows exist, but external notification delivery does not. Visual World Mode currently renders
-  the W1-W4 diagnostic runtime foundations and uses W5 source-controlled manifests; final districts
-  and full traversal do not exist yet.
+  the W1-W6 runtime foundations with generated terrain and environment props; final districts,
+  cinematic travel, finished route navigation, district-specific panels, audio playback, and full
+  traversal do not exist yet.
 - The Coding workspace can save snippets, exercises, attempts, and AI explain/review records. Code
   execution is deliberately unavailable until a separate isolated sandbox provider is implemented
   and validated.

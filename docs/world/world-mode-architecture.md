@@ -143,6 +143,21 @@ These manifests are not an authorization boundary. They contain no private user 
 AI provider configuration, cookies, or secrets. Runtime actions must still use owner-scoped
 Aetherium APIs.
 
+## Terrain Foundation
+
+W6 introduces a deterministic terrain engine:
+
+- `terrain-system.ts` owns height sampling, river-center calculation, terrain mesh data, river
+  ribbon data, central routes, preset-scaled environment budgets, and seeded prop placement.
+- `world-environment-scene.tsx` renders the generated terrain, water, waterfall sheets, route lines,
+  foundation markers, and bounded environment props.
+- The generated environment consumes W5 manifests for location positions and theme colors.
+- Player bounds use the terrain world size to reset safely when the player exits the generated 800 m
+  area.
+
+The current collision surface is still conservative and flat. Terrain-following collision,
+district-specific collision meshes, final pathfinding, and authored travel routes remain later work.
+
 ## Interaction Boundary
 
 World interactions are generic contracts:
