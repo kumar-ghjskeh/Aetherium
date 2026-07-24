@@ -2357,6 +2357,257 @@ kbd {
   border-color: rgba(119, 217, 139, 0.38);
 }
 
+.world-learning-panel {
+  background:
+    linear-gradient(135deg, rgba(13, 28, 42, 0.92), rgba(27, 38, 52, 0.76)), rgba(8, 18, 28, 0.86);
+  border: 1px solid rgba(216, 242, 255, 0.24);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.36);
+  color: #f4fbff;
+  display: grid;
+  gap: 12px;
+  left: 16px;
+  max-width: min(440px, calc(100% - 32px));
+  padding: 14px;
+  position: absolute;
+  top: 160px;
+  width: 408px;
+}
+
+.world-learning-panel header {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.world-learning-panel header span,
+.world-learning-list span,
+.world-learning-status span {
+  color: #cdefff;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.world-learning-panel header strong {
+  font-size: 1rem;
+}
+
+.world-learning-metrics {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+}
+
+.world-learning-metrics div,
+.world-learning-actions a {
+  background: rgba(216, 242, 255, 0.08);
+  border: 1px solid rgba(216, 242, 255, 0.16);
+  min-width: 0;
+  padding: 9px;
+}
+
+.world-learning-metrics dt {
+  color: #c7d6df;
+  font-size: 0.7rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.world-learning-metrics dd {
+  font-weight: 900;
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.world-learning-list,
+.world-learning-status {
+  border-top: 1px solid rgba(216, 242, 255, 0.16);
+  display: grid;
+  gap: 8px;
+  padding-top: 10px;
+}
+
+.world-learning-list p,
+.world-learning-list ul {
+  margin: 0;
+}
+
+.world-learning-list ul {
+  display: grid;
+  gap: 7px;
+  list-style: none;
+  padding: 0;
+}
+
+.world-learning-list li {
+  display: grid;
+  gap: 2px;
+}
+
+.world-learning-list li strong,
+.world-learning-status strong {
+  font-size: 0.86rem;
+  overflow-wrap: anywhere;
+}
+
+.world-learning-list li small,
+.world-learning-list p,
+.world-learning-status small {
+  color: #c7d6df;
+}
+
+.world-learning-list li em {
+  color: #8be8ff;
+  font-size: 0.76rem;
+  font-style: normal;
+  overflow-wrap: anywhere;
+}
+
+.world-learning-actions {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.world-learning-actions a {
+  color: #f4fbff;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-align: center;
+  text-decoration: none;
+}
+
+.world-learning-actions a:focus,
+.world-learning-actions a:hover {
+  border-color: rgba(139, 232, 255, 0.42);
+}
+
+.world-roadmap-progress {
+  background:
+    linear-gradient(145deg, rgba(8, 18, 30, 0.94), rgba(21, 28, 42, 0.88)), rgba(7, 15, 25, 0.9);
+  border: 1px solid rgba(216, 242, 255, 0.2);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
+  color: #f4fbff;
+  display: grid;
+  gap: 12px;
+  max-width: min(300px, calc(100vw - 32px));
+  padding: 14px;
+  position: fixed;
+  right: 18px;
+  top: 92px;
+  width: 288px;
+  z-index: 40;
+}
+
+.world-roadmap-progress header {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.world-roadmap-progress header span,
+.world-roadmap-progress section span {
+  color: #cdefff;
+  font-size: 0.68rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.world-roadmap-progress header strong {
+  font-size: 1.1rem;
+}
+
+.world-roadmap-progress-bar {
+  background: rgba(216, 242, 255, 0.08);
+  border: 1px solid rgba(216, 242, 255, 0.16);
+  height: 10px;
+  overflow: hidden;
+}
+
+.world-roadmap-progress-bar span {
+  background: linear-gradient(90deg, #77d98b, #8be8ff, #f0c766);
+  display: block;
+  height: 100%;
+}
+
+.world-roadmap-progress dl {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.world-roadmap-progress dl div {
+  background: rgba(216, 242, 255, 0.08);
+  border: 1px solid rgba(216, 242, 255, 0.14);
+  padding: 8px;
+}
+
+.world-roadmap-progress dt {
+  color: #c7d6df;
+  font-size: 0.66rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.world-roadmap-progress dd {
+  font-weight: 900;
+  margin: 3px 0 0;
+}
+
+.world-roadmap-progress section {
+  border-top: 1px solid rgba(216, 242, 255, 0.16);
+  display: grid;
+  gap: 5px;
+  padding-top: 10px;
+}
+
+.world-roadmap-progress section strong {
+  font-size: 0.84rem;
+}
+
+.world-roadmap-progress ol {
+  display: grid;
+  gap: 5px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.world-roadmap-progress li {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 42px minmax(0, 1fr);
+}
+
+.world-roadmap-progress li span {
+  border: 1px solid rgba(216, 242, 255, 0.16);
+  color: #cdefff;
+  font-size: 0.68rem;
+  font-weight: 900;
+  padding: 4px 6px;
+  text-align: center;
+}
+
+.world-roadmap-progress li small {
+  color: #c7d6df;
+  overflow-wrap: anywhere;
+}
+
+.world-roadmap-progress li[data-status="complete"] span {
+  background: rgba(119, 217, 139, 0.16);
+  border-color: rgba(119, 217, 139, 0.3);
+  color: #efffee;
+}
+
+.world-roadmap-progress li[data-status="next"] span {
+  background: rgba(240, 199, 102, 0.16);
+  border-color: rgba(240, 199, 102, 0.32);
+  color: #fff4ce;
+}
+
 .world-runtime-fallback,
 .world-runtime-loading {
   align-items: center;
@@ -3021,6 +3272,11 @@ kbd {
   .world-runtime-metrics {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+
+  .world-roadmap-progress {
+    position: static;
+    width: auto;
+  }
 }
 
 @media (max-width: 680px) {
@@ -3125,6 +3381,19 @@ kbd {
 
   .world-habit-metrics,
   .world-habit-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .world-learning-panel {
+    left: 16px;
+    max-width: none;
+    right: 16px;
+    top: 158px;
+    width: auto;
+  }
+
+  .world-learning-metrics,
+  .world-learning-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 

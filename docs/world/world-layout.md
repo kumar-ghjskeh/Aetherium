@@ -244,6 +244,33 @@ Current limitations:
 - No downloaded models, textures, audio, glTF/GLB assets, custom shaders, or particle systems are
   introduced.
 
+## Current Learning Academy Slice
+
+W11 adds the first learning district in
+`apps/web/src/features/world/components/locations/learning-academy.tsx`.
+
+Current Learning Academy elements:
+
+- Procedural academy hall, wing structures, course halls, lesson stations, mastery beacon, and
+  rotating study rings at the `learning-academy` manifest coordinates.
+- Subject wings derived from real subjects, topics, course counts, and bounded mastery records.
+- Course halls derived from real courses, modules, and lesson counts.
+- Lesson stations derived from real lessons, with practice and review states from quizzes and
+  flashcards.
+- Near-district overlay backed by real learning pages, active goals, roadmaps, and mastery signals.
+- Academy-specific interaction terminals for lesson resume, quizzes, flashcards, roadmaps, and AI
+  mentor access in Command Mode.
+
+Current limitations:
+
+- The district does not yet include walkable interior classrooms, live quizzes, or flashcard panels
+  inside World Mode.
+- Study sessions, lesson completion, quiz attempts, flashcard review, course creation, roadmaps, and
+  mentor conversations remain in existing Command Mode surfaces.
+- Prerequisites are shown as guidance and never physically lock access to owned learning records.
+- No downloaded models, textures, audio, glTF/GLB assets, custom shaders, or particle systems are
+  introduced.
+
 ## Deterministic Generation
 
 Use fixed seeds for:

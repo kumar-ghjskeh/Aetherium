@@ -166,6 +166,12 @@ def test_learning_course_lesson_completion_records_event(
         json={"position": 0, "title": "Hazards", "topicId": topic["id"]},
         headers={"Origin": VALID_ORIGIN},
     )
+    modules = learning_context.client.get(
+        f"/api/v1/learning/modules?courseId={course.json()['id']}&limit=5&offset=0"
+    )
+    lessons = learning_context.client.get(
+        f"/api/v1/learning/lessons?moduleId={module.json()['id']}&limit=5&offset=0"
+    )
     completion = learning_context.client.post(
         f"/api/v1/learning/lessons/{lesson.json()['id']}/complete",
         headers={"Origin": VALID_ORIGIN},
@@ -176,6 +182,12 @@ def test_learning_course_lesson_completion_records_event(
     assert course.status_code == 201
     assert module.status_code == 201
     assert lesson.status_code == 201
+    assert modules.status_code == 200
+    assert modules.json()["total"] == 1
+    assert modules.json()["items"][0]["title"] == "CPU Basics"
+    assert lessons.status_code == 200
+    assert lessons.json()["total"] == 1
+    assert lessons.json()["items"][0]["title"] == "Hazards"
     assert completion.status_code == 200
     assert completion.json()["status"] == "completed"
     assert mastery.json()["exerciseScore"] == 1
@@ -278,6 +290,21 @@ def test_learning_sessions_goals_roadmaps_and_validation(
 def test_learning_cross_user_isolation(learning_context: LearningTestContext) -> None:
     register(learning_context.client, email="owner@example.com")
     topic = create_topic(learning_context.client)
+    course = learning_context.client.post(
+        "/api/v1/learning/courses",
+        json={"title": "Owner Course"},
+        headers={"Origin": VALID_ORIGIN},
+    )
+    module = learning_context.client.post(
+        f"/api/v1/learning/courses/{course.json()['id']}/modules",
+        json={"position": 0, "title": "Owner Module"},
+        headers={"Origin": VALID_ORIGIN},
+    )
+    lesson = learning_context.client.post(
+        f"/api/v1/learning/modules/{module.json()['id']}/lessons",
+        json={"position": 0, "title": "Owner Lesson", "topicId": topic["id"]},
+        headers={"Origin": VALID_ORIGIN},
+    )
 
     with TestClient(learning_context.client.app) as other_client:
         register(other_client, email="other-learning@example.com")
@@ -288,11 +315,28 @@ def test_learning_cross_user_isolation(learning_context: LearningTestContext) ->
             headers={"Origin": VALID_ORIGIN},
         )
         other_topics = other_client.get("/api/v1/learning/topics")
+        other_modules = other_client.get("/api/v1/learning/modules")
+        other_course_modules = other_client.get(
+            f"/api/v1/learning/modules?courseId={course.json()['id']}"
+        )
+        other_lessons = other_client.get("/api/v1/learning/lessons")
+        other_module_lessons = other_client.get(
+            f"/api/v1/learning/lessons?moduleId={module.json()['id']}"
+        )
 
+    assert course.status_code == 201
+    assert module.status_code == 201
+    assert lesson.status_code == 201
     assert other_mastery.status_code == 404
     assert other_quiz.status_code == 404
     assert other_topics.status_code == 200
     assert other_topics.json()["total"] == 0
+    assert other_modules.status_code == 200
+    assert other_modules.json()["total"] == 0
+    assert other_course_modules.status_code == 404
+    assert other_lessons.status_code == 200
+    assert other_lessons.json()["total"] == 0
+    assert other_module_lessons.status_code == 404
 
 
 def test_learning_duplicate_normalized_subject_constraint(

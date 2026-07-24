@@ -51,3 +51,4 @@ See `docs/tasks/world/world-mode-roadmap.md`.
 - `docs/tasks/world/phase-w8-knowledge-library.md`
 - `docs/tasks/world/phase-w9-ai-observatory.md`
 - `docs/tasks/world/phase-w10-habit-garden.md`
+- `docs/tasks/world/phase-w11-learning-academy.md`

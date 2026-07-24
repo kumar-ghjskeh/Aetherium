@@ -119,6 +119,8 @@ import type {
   CourseCreateRequest,
   CourseModule,
   CourseModuleCreateRequest,
+  CourseModuleListQuery,
+  CourseModulePage,
   CoursePage,
   CodingAttempt,
   CodingAttemptCreateRequest,
@@ -139,6 +141,8 @@ import type {
   LearningResourcePage,
   Lesson,
   LessonCreateRequest,
+  LessonListQuery,
+  LessonPage,
   MasteryRecord,
   ProcessingJobPage,
   ProcessingJob,
@@ -281,6 +285,7 @@ import {
   healthCheckResponseSchema,
   attemptSchema,
   courseModuleSchema,
+  courseModulePageSchema,
   coursePageSchema,
   courseSchema,
   codingAttemptSchema,
@@ -306,6 +311,7 @@ import {
   learningResourcePageSchema,
   learningResourceSchema,
   lessonSchema,
+  lessonPageSchema,
   masteryRecordSchema,
   processingJobPageSchema,
   processingJobSchema,
@@ -500,6 +506,8 @@ export interface AetheriumApiClient {
     listCourses: (query?: PaginationQuery) => Promise<CoursePage>;
     listFlashcards: (query?: PaginationQuery) => Promise<FlashcardPage>;
     listGoals: (query?: PaginationQuery) => Promise<LearningGoalPage>;
+    listLessons: (query?: LessonListQuery) => Promise<LessonPage>;
+    listModules: (query?: CourseModuleListQuery) => Promise<CourseModulePage>;
     listQuizzes: (query?: PaginationQuery) => Promise<QuizPage>;
     listResources: (query?: LearningResourceListQuery) => Promise<LearningResourcePage>;
     listRoadmaps: (query?: PaginationQuery) => Promise<StudyRoadmapPage>;
@@ -799,6 +807,23 @@ function topicListQuery(query?: TopicListQuery): string {
 function learningResourceListQuery(query?: LearningResourceListQuery): string {
   return queryString([
     ["limit", query?.limit],
+    ["offset", query?.offset],
+    ["topicId", query?.topicId]
+  ]);
+}
+
+function courseModuleListQuery(query?: CourseModuleListQuery): string {
+  return queryString([
+    ["courseId", query?.courseId],
+    ["limit", query?.limit],
+    ["offset", query?.offset]
+  ]);
+}
+
+function lessonListQuery(query?: LessonListQuery): string {
+  return queryString([
+    ["limit", query?.limit],
+    ["moduleId", query?.moduleId],
     ["offset", query?.offset],
     ["topicId", query?.topicId]
   ]);
@@ -1723,6 +1748,22 @@ export function createAetheriumApiClient(options: AetheriumApiClientOptions): Ae
           `/api/v1/learning/goals${paginationQuery(query)}`
         );
         return learningGoalPageSchema.parse(response);
+      },
+      listLessons: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/learning/lessons${lessonListQuery(query)}`
+        );
+        return lessonPageSchema.parse(response);
+      },
+      listModules: async (query) => {
+        const response = await requestJson(
+          fetcher,
+          options.baseUrl,
+          `/api/v1/learning/modules${courseModuleListQuery(query)}`
+        );
+        return courseModulePageSchema.parse(response);
       },
       listQuizzes: async (query) => {
         const response = await requestJson(

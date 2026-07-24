@@ -125,6 +125,23 @@ W10 does not add textures, downloaded assets, spatial audio, post-processing, de
 live particles, mutation controls, or custom shader work. Browser screenshot and frame-metric
 automation remain scheduled for W23.
 
+## Current W11 Learning Academy Budget
+
+The W11 Learning Academy adds one bounded learning district slice:
+
+- Procedural academy exterior meshes only.
+- Up to five subject wing displays derived from the current subject/topic pages.
+- Up to six course hall displays derived from current courses, modules, and lessons.
+- Up to eight lesson stations derived from current lessons, quizzes, and flashcards.
+- Up to six bounded mastery requests per `/app/world` load for district illumination.
+- One local point light, one low-cost animated academy ring group, and station-ring animation.
+- Fixed DOM roadmap-progress panel with no canvas asset cost.
+- Reduced-motion mode disables decorative ring and station-ring animation.
+
+W11 does not add textures, downloaded assets, spatial audio, post-processing, live particles,
+mutation controls, interior classrooms, or custom shader work. Browser screenshot and frame-metric
+automation remain scheduled for W23.
+
 ## Runtime Diagnostics
 
 Diagnostics must report:

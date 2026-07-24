@@ -9,6 +9,7 @@ import type { AIObservatoryOverviewData } from "../../engine/ai-observatory-syst
 import type { CentralPlazaOverviewData } from "../../engine/central-plaza-system";
 import type { HabitGardenOverviewData } from "../../engine/habit-garden-system";
 import type { KnowledgeLibraryOverviewData } from "../../engine/knowledge-library-system";
+import type { LearningAcademyOverviewData } from "../../engine/learning-academy-system";
 import { WORLD_LOCATIONS_MANIFEST } from "../../manifests/locations.manifest";
 import {
   createRoutePoints,
@@ -27,11 +28,13 @@ import { CentralPlazaVerticalSlice } from "../locations/central-plaza";
 import { AIObservatoryDistrict } from "../locations/ai-observatory";
 import { HabitGardenDistrict } from "../locations/habit-garden";
 import { KnowledgeLibraryDistrict } from "../locations/knowledge-library";
+import { LearningAcademyDistrict } from "../locations/learning-academy";
 
 export function WorldEnvironmentScene({
   aiObservatoryOverview,
   graphicsPreset,
   habitGardenOverview,
+  learningAcademyOverview,
   libraryOverview,
   plazaOverview,
   reducedMotion
@@ -39,6 +42,7 @@ export function WorldEnvironmentScene({
   aiObservatoryOverview: AIObservatoryOverviewData;
   graphicsPreset: PerformancePreset;
   habitGardenOverview: HabitGardenOverviewData;
+  learningAcademyOverview: LearningAcademyOverviewData;
   libraryOverview: KnowledgeLibraryOverviewData;
   plazaOverview: CentralPlazaOverviewData;
   reducedMotion: boolean;
@@ -69,6 +73,7 @@ export function WorldEnvironmentScene({
       <KnowledgeLibraryDistrict overview={libraryOverview} reducedMotion={reducedMotion} />
       <AIObservatoryDistrict overview={aiObservatoryOverview} reducedMotion={reducedMotion} />
       <HabitGardenDistrict overview={habitGardenOverview} reducedMotion={reducedMotion} />
+      <LearningAcademyDistrict overview={learningAcademyOverview} reducedMotion={reducedMotion} />
     </>
   );
 }
@@ -230,7 +235,8 @@ function DistrictFoundationMarkers(): React.ReactElement {
           location.id !== "central-plaza" &&
           location.id !== "knowledge-library" &&
           location.id !== "ai-observatory" &&
-          location.id !== "habit-garden"
+          location.id !== "habit-garden" &&
+          location.id !== "learning-academy"
       ).map((location) => {
         const [x, , z] = location.position;
         const terrain = sampleTerrain(x, z);

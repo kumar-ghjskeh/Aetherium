@@ -218,6 +218,66 @@ export const WORLD_INTERACTIONS_MANIFEST: WorldInteractionManifestEntry[] = [
     type: "open_achievement_display"
   },
   {
+    accessibilityLabel: "Resume a lesson from Learning Academy in Command Mode",
+    commandRoute: "/app/learning",
+    gamepadAction: "primary",
+    id: "interaction-academy-resume-lesson",
+    keyboardAction: "KeyE",
+    locationId: "learning-academy",
+    position: [-60, 1.25, -306],
+    prompt: "Resume Lesson",
+    radius: 10,
+    type: "start_lesson"
+  },
+  {
+    accessibilityLabel: "Open Learning Academy quizzes and practice in Command Mode",
+    commandRoute: "/app/learning",
+    gamepadAction: "primary",
+    id: "interaction-academy-quiz-terminal",
+    keyboardAction: "KeyE",
+    locationId: "learning-academy",
+    position: [-74, 1.25, -316],
+    prompt: "Take Quiz",
+    radius: 10,
+    type: "start_lesson"
+  },
+  {
+    accessibilityLabel: "Review flashcards from Learning Academy in Command Mode",
+    commandRoute: "/app/learning",
+    gamepadAction: "primary",
+    id: "interaction-academy-flashcards-terminal",
+    keyboardAction: "KeyE",
+    locationId: "learning-academy",
+    position: [-46, 1.25, -316],
+    prompt: "Review Flashcards",
+    radius: 10,
+    type: "start_lesson"
+  },
+  {
+    accessibilityLabel: "Ask an AI mentor from Learning Academy",
+    commandRoute: "/app/ai",
+    gamepadAction: "primary",
+    id: "interaction-academy-mentor-terminal",
+    keyboardAction: "KeyE",
+    locationId: "learning-academy",
+    position: [-60, 1.25, -324],
+    prompt: "Ask Mentor",
+    radius: 10,
+    type: "start_ai_conversation"
+  },
+  {
+    accessibilityLabel: "Open Learning Academy roadmaps in Command Mode",
+    commandRoute: "/app/learning",
+    gamepadAction: "primary",
+    id: "interaction-academy-roadmap-terminal",
+    keyboardAction: "KeyE",
+    locationId: "learning-academy",
+    position: [-60, 1.25, -340],
+    prompt: "Open Roadmap",
+    radius: 10,
+    type: "open_application_panel"
+  },
+  {
     accessibilityLabel: "Open analytics in Command Mode",
     commandRoute: "/app/analytics",
     gamepadAction: "primary",

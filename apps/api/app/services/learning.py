@@ -326,6 +326,32 @@ class LearningService:
             offset=pagination.offset,
         )
 
+    async def list_modules(
+        self,
+        user: User,
+        pagination: PaginationParams,
+        *,
+        course_id: UUID | None = None,
+    ) -> PageResult[CourseModule]:
+        predicates = [CourseModule.owner_user_id == user.id]
+        if course_id is not None:
+            await self._get_owned_course(user, course_id)
+            predicates.append(CourseModule.course_id == course_id)
+        total = await self._count(select(func.count(CourseModule.id)).where(*predicates))
+        result = await self.db.execute(
+            select(CourseModule)
+            .where(*predicates)
+            .order_by(CourseModule.position.asc(), CourseModule.updated_at.desc(), CourseModule.id)
+            .offset(pagination.offset)
+            .limit(pagination.limit)
+        )
+        return PageResult(
+            items=list(result.scalars().all()),
+            total=total,
+            limit=pagination.limit,
+            offset=pagination.offset,
+        )
+
     async def create_module(
         self,
         user: User,
@@ -346,6 +372,36 @@ class LearningService:
         self.db.add(module)
         await self.db.flush()
         return module
+
+    async def list_lessons(
+        self,
+        user: User,
+        pagination: PaginationParams,
+        *,
+        module_id: UUID | None = None,
+        topic_id: UUID | None = None,
+    ) -> PageResult[Lesson]:
+        predicates = [Lesson.owner_user_id == user.id]
+        if module_id is not None:
+            await self._get_owned_module(user, module_id)
+            predicates.append(Lesson.module_id == module_id)
+        if topic_id is not None:
+            await self._get_owned_topic(user, topic_id)
+            predicates.append(Lesson.topic_id == topic_id)
+        total = await self._count(select(func.count(Lesson.id)).where(*predicates))
+        result = await self.db.execute(
+            select(Lesson)
+            .where(*predicates)
+            .order_by(Lesson.position.asc(), Lesson.updated_at.desc(), Lesson.id)
+            .offset(pagination.offset)
+            .limit(pagination.limit)
+        )
+        return PageResult(
+            items=list(result.scalars().all()),
+            total=total,
+            limit=pagination.limit,
+            offset=pagination.offset,
+        )
 
     async def create_lesson(
         self,

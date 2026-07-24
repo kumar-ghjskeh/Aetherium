@@ -110,6 +110,12 @@ deterministic habit-to-plant mapping tests and verifies `/app/world` loads habit
 habit, and achievement summary DTOs for the district. Fixed screenshot capture for the Garden
 remains part of the W23 visual regression suite.
 
+W11 adds the Learning Academy district and uses the same interim validation approach. It adds
+deterministic learning-record-to-wing/hall/station mapping tests, backend ownership tests for module
+and lesson lists, and verifies `/app/world` loads subjects, topics, courses, modules, lessons,
+sessions, quizzes, flashcards, goals, roadmaps, and bounded mastery DTOs for the district. Fixed
+screenshot capture for the Academy remains part of the W23 visual regression suite.
+
 ## Failure Policy
 
 If tests show a black canvas, missing asset, persistent console error, browser crash, or performance

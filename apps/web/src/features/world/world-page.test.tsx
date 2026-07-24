@@ -6,16 +6,26 @@ import type {
   AchievementSummary,
   AnalyticsSummary,
   CollectionPage,
+  CourseModulePage,
+  CoursePage,
   ConversationPage,
   FilePage,
+  FlashcardPage,
   HabitPage,
   HabitSummary,
   LearningGoalPage,
+  LessonPage,
+  MasteryRecord,
   MentorPage,
   NotificationPage,
   ProjectPage,
   PublicUser,
+  QuizPage,
+  StudyRoadmapPage,
+  StudySessionPage,
+  SubjectPage,
   TagPage,
+  TopicPage,
   UserPreferences,
   WorldDeepLinkPage,
   WorldFeatureFlags,
@@ -252,6 +262,104 @@ const learningGoalPage: LearningGoalPage = {
   total: 0
 };
 
+const learningSubjectPage: SubjectPage = {
+  items: [
+    {
+      createdAt: "2026-07-22T00:00:00Z",
+      description: "Systems learning",
+      id: "88888888-1111-4111-8111-111111111111",
+      name: "Computer Architecture",
+      status: "active",
+      updatedAt: "2026-07-22T00:00:00Z"
+    }
+  ],
+  limit: 5,
+  offset: 0,
+  total: 1
+};
+
+const learningTopicPage: TopicPage = {
+  items: [
+    {
+      createdAt: "2026-07-22T00:00:00Z",
+      description: "Instruction overlap and hazards.",
+      id: "88888888-2222-4222-8222-222222222222",
+      name: "Pipelining",
+      status: "active",
+      subjectId: "88888888-1111-4111-8111-111111111111",
+      updatedAt: "2026-07-22T00:00:00Z"
+    }
+  ],
+  limit: 8,
+  offset: 0,
+  total: 1
+};
+
+const learningCoursePage: CoursePage = {
+  items: [],
+  limit: 6,
+  offset: 0,
+  total: 0
+};
+
+const learningModulePage: CourseModulePage = {
+  items: [],
+  limit: 12,
+  offset: 0,
+  total: 0
+};
+
+const learningLessonPage: LessonPage = {
+  items: [],
+  limit: 12,
+  offset: 0,
+  total: 0
+};
+
+const studySessionPage: StudySessionPage = {
+  items: [],
+  limit: 5,
+  offset: 0,
+  total: 0
+};
+
+const learningQuizPage: QuizPage = {
+  items: [],
+  limit: 8,
+  offset: 0,
+  total: 0
+};
+
+const learningFlashcardPage: FlashcardPage = {
+  items: [],
+  limit: 8,
+  offset: 0,
+  total: 0
+};
+
+const studyRoadmapPage: StudyRoadmapPage = {
+  items: [],
+  limit: 5,
+  offset: 0,
+  total: 0
+};
+
+const masteryRecord: MasteryRecord = {
+  calculation: { method: "transparent_heuristic_v1" },
+  confidenceScore: 0,
+  createdAt: "2026-07-22T00:00:00Z",
+  exerciseScore: 0,
+  hintsPenalty: 0,
+  id: "88888888-3333-4333-8333-333333333333",
+  masteryScore: 0.2,
+  projectEvidenceScore: 0,
+  quizAccuracy: 0,
+  reviewRecencyScore: 0,
+  successfulRecallScore: 0,
+  topicId: "88888888-2222-4222-8222-222222222222",
+  updatedAt: "2026-07-22T00:00:00Z"
+};
+
 const mentorPage: MentorPage = {
   items: []
 };
@@ -356,7 +464,17 @@ function createClient(
     },
     learning: {
       ...createUnusedLearningClient(),
-      listGoals: vi.fn(() => Promise.resolve(learningGoalPage))
+      getMastery: vi.fn(() => Promise.resolve(masteryRecord)),
+      listCourses: vi.fn(() => Promise.resolve(learningCoursePage)),
+      listFlashcards: vi.fn(() => Promise.resolve(learningFlashcardPage)),
+      listGoals: vi.fn(() => Promise.resolve(learningGoalPage)),
+      listLessons: vi.fn(() => Promise.resolve(learningLessonPage)),
+      listModules: vi.fn(() => Promise.resolve(learningModulePage)),
+      listQuizzes: vi.fn(() => Promise.resolve(learningQuizPage)),
+      listRoadmaps: vi.fn(() => Promise.resolve(studyRoadmapPage)),
+      listSessions: vi.fn(() => Promise.resolve(studySessionPage)),
+      listSubjects: vi.fn(() => Promise.resolve(learningSubjectPage)),
+      listTopics: vi.fn(() => Promise.resolve(learningTopicPage))
     },
     mentors: {
       ...createUnusedMentorsClient(),
@@ -405,6 +523,9 @@ describe("WorldPage", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Central Plaza runtime" })).toBeInTheDocument();
     expect(screen.getByText("Enabled")).toBeInTheDocument();
+    expect(
+      screen.getByRole("progressbar", { name: /12 of 26 World Mode phases complete/u })
+    ).toBeInTheDocument();
     expect(await screen.findByTestId("world-runtime-canvas")).toBeInTheDocument();
     expect(screen.getByText("central_plaza")).toBeInTheDocument();
     expect(screen.getAllByText("Knowledge Library").length).toBeGreaterThan(0);
@@ -427,6 +548,16 @@ describe("WorldPage", () => {
       offset: 0
     });
     expect(client.learning.listGoals).toHaveBeenCalledWith({ limit: 5, offset: 0 });
+    expect(client.learning.listSubjects).toHaveBeenCalledWith({ limit: 5, offset: 0 });
+    expect(client.learning.listTopics).toHaveBeenCalledWith({ limit: 8, offset: 0 });
+    expect(client.learning.listCourses).toHaveBeenCalledWith({ limit: 6, offset: 0 });
+    expect(client.learning.listModules).toHaveBeenCalledWith({ limit: 12, offset: 0 });
+    expect(client.learning.listLessons).toHaveBeenCalledWith({ limit: 12, offset: 0 });
+    expect(client.learning.listSessions).toHaveBeenCalledWith({ limit: 5, offset: 0 });
+    expect(client.learning.listQuizzes).toHaveBeenCalledWith({ limit: 8, offset: 0 });
+    expect(client.learning.listFlashcards).toHaveBeenCalledWith({ limit: 8, offset: 0 });
+    expect(client.learning.listRoadmaps).toHaveBeenCalledWith({ limit: 5, offset: 0 });
+    expect(client.learning.getMastery).toHaveBeenCalledWith(learningTopicPage.items[0]?.id);
     expect(client.mentors.list).toHaveBeenCalledWith({ includeArchived: false });
     expect(client.mentors.listConversations).toHaveBeenCalledWith({
       includeArchived: false,

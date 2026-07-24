@@ -134,7 +134,9 @@ Current routes:
 - `POST /api/v1/learning/resources`
 - `GET /api/v1/learning/courses`
 - `POST /api/v1/learning/courses`
+- `GET /api/v1/learning/modules`
 - `POST /api/v1/learning/courses/{course_id}/modules`
+- `GET /api/v1/learning/lessons`
 - `POST /api/v1/learning/modules/{module_id}/lessons`
 - `POST /api/v1/learning/lessons/{lesson_id}/complete`
 - `GET /api/v1/learning/study-sessions`
@@ -517,8 +519,11 @@ an owned topic, creating an initial zero-score record when needed.
 `GET/POST /api/v1/learning/resources` lists and creates owner-scoped learning resources. File-linked
 resources must reference an owned file.
 
-`GET/POST /api/v1/learning/courses`, `POST /api/v1/learning/courses/{course_id}/modules`, and
-`POST /api/v1/learning/modules/{module_id}/lessons` manage owner-scoped course structure.
+`GET/POST /api/v1/learning/courses`, `GET /api/v1/learning/modules`,
+`POST /api/v1/learning/courses/{course_id}/modules`, `GET /api/v1/learning/lessons`, and
+`POST /api/v1/learning/modules/{module_id}/lessons` manage owner-scoped course structure. Module and
+lesson list endpoints are read-only, paginated, and support owner-validated course/module/topic
+filters for Command Mode and World Mode presentation.
 
 `POST /api/v1/learning/lessons/{lesson_id}/complete` marks an owned lesson complete, emits an
 idempotent `lesson.completed` event, writes a sanitized audit log, and updates topic mastery when

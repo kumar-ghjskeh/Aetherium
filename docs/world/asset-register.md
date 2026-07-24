@@ -2,7 +2,7 @@
 
 Every committed visual or audio asset must be recorded here before it is used by World Mode.
 
-No external visual or audio assets are registered through Phase W10. W5 adds procedural placeholder
+No external visual or audio assets are registered through Phase W11. W5 adds procedural placeholder
 asset IDs in `apps/web/src/features/world/manifests/assets.manifest.ts`; those entries are original
 Aetherium planning records and do not point to committed model, texture, or audio files. W6 adds
 code-generated terrain, water, mist, rocks, clouds, route lines, and district foundation markers
@@ -14,7 +14,10 @@ adds no downloaded model, texture, or audio files. W9 adds a procedural AI Obser
 rings, mentor probes, status terminals, columns, and probe labels through React Three Fiber
 primitives. It adds no downloaded model, texture, or audio files. W10 adds a procedural Habit Garden
 terrace, pond, water channels, plant beds, canopy light, milestone crystals, and habit labels
-through React Three Fiber primitives. It adds no downloaded model, texture, or audio files.
+through React Three Fiber primitives. It adds no downloaded model, texture, or audio files. W11 adds
+a procedural Learning Academy exterior, wing structures, course halls, lesson stations, mastery
+beacon, and a fixed DOM roadmap-progress panel. It adds no downloaded model, texture, or audio
+files.
 
 ## License Rules
 

@@ -1340,6 +1340,13 @@ export const courseModuleSchema = z.object({
   updatedAt: z.string().min(1)
 });
 
+export const courseModulePageSchema = z.object({
+  items: z.array(courseModuleSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
+});
+
 export const lessonCreateRequestSchema = z.object({
   content: z.string().max(20000).nullable().optional(),
   estimatedMinutes: z.number().int().positive().max(5000).nullable().optional(),
@@ -1359,6 +1366,13 @@ export const lessonSchema = z.object({
   title: z.string().min(1),
   topicId: z.string().uuid().nullable(),
   updatedAt: z.string().min(1)
+});
+
+export const lessonPageSchema = z.object({
+  items: z.array(lessonSchema),
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0)
 });
 
 export const studySessionCreateRequestSchema = z.object({

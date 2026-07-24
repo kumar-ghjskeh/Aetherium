@@ -197,6 +197,8 @@ export function createUnusedLearningClient(): AetheriumApiClient["learning"] {
     listCourses: vi.fn(reject),
     listFlashcards: vi.fn(reject),
     listGoals: vi.fn(reject),
+    listLessons: vi.fn(reject),
+    listModules: vi.fn(reject),
     listQuizzes: vi.fn(reject),
     listResources: vi.fn(reject),
     listRoadmaps: vi.fn(reject),

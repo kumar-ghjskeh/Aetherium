@@ -16,6 +16,7 @@ import type { CentralPlazaOverviewData } from "../../engine/central-plaza-system
 import type { AIObservatoryOverviewData } from "../../engine/ai-observatory-system";
 import type { KnowledgeLibraryOverviewData } from "../../engine/knowledge-library-system";
 import type { HabitGardenOverviewData } from "../../engine/habit-garden-system";
+import type { LearningAcademyOverviewData } from "../../engine/learning-academy-system";
 import { useWorldSettingsStore } from "../../state/settings-store";
 import { WorldCameraRig } from "../camera/world-camera-rig";
 import { PlayerController } from "../character/player-controller";
@@ -32,11 +33,13 @@ import { CentralPlazaOverviewPanel } from "../ui/central-plaza-overview-panel";
 import { AIObservatoryPanel } from "../ui/ai-observatory-panel";
 import { KnowledgeLibraryPanel } from "../ui/knowledge-library-panel";
 import { HabitGardenPanel } from "../ui/habit-garden-panel";
+import { LearningAcademyPanel } from "../ui/learning-academy-panel";
 
 export function WorldRuntimeCanvas({
   aiObservatoryOverview,
   deepLinks,
   habitGardenOverview,
+  learningAcademyOverview,
   libraryOverview,
   locationPage,
   plazaOverview,
@@ -47,6 +50,7 @@ export function WorldRuntimeCanvas({
   aiObservatoryOverview: AIObservatoryOverviewData;
   deepLinks: WorldDeepLinkPage;
   habitGardenOverview: HabitGardenOverviewData;
+  learningAcademyOverview: LearningAcademyOverviewData;
   libraryOverview: KnowledgeLibraryOverviewData;
   locationPage: WorldLocationPage;
   plazaOverview: CentralPlazaOverviewData;
@@ -110,6 +114,7 @@ export function WorldRuntimeCanvas({
               aiObservatoryOverview={aiObservatoryOverview}
               graphicsPreset={graphicsPreset}
               habitGardenOverview={habitGardenOverview}
+              learningAcademyOverview={learningAcademyOverview}
               libraryOverview={libraryOverview}
               plazaOverview={plazaOverview}
               reducedMotion={preferences.reducedMotion}
@@ -136,6 +141,7 @@ export function WorldRuntimeCanvas({
         <KnowledgeLibraryPanel overview={libraryOverview} />
         <AIObservatoryPanel overview={aiObservatoryOverview} />
         <HabitGardenPanel overview={habitGardenOverview} />
+        <LearningAcademyPanel overview={learningAcademyOverview} />
 
         <div className="world-runtime-label" aria-live="polite">
           <strong>World Mode district slices</strong>

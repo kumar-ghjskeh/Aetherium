@@ -17,6 +17,7 @@ from app.schemas.learning import (
     AttemptResponse,
     CourseCreateRequest,
     CourseModuleCreateRequest,
+    CourseModulePage,
     CourseModuleResponse,
     CoursePage,
     CourseResponse,
@@ -32,6 +33,7 @@ from app.schemas.learning import (
     LearningResourcePage,
     LearningResourceResponse,
     LessonCreateRequest,
+    LessonPage,
     LessonResponse,
     MasteryResponse,
     QuestionCreateRequest,
@@ -293,6 +295,23 @@ async def create_course(
         raise
 
 
+@router.get("/modules", response_model=CourseModulePage, responses=ERROR_RESPONSES)
+async def list_modules(
+    current_user: Annotated[User, Depends(get_current_user)],
+    service: Annotated[LearningService, Depends(get_learning_service)],
+    pagination: Annotated[PaginationParams, Depends(get_pagination)],
+    course_id: Annotated[UUID | None, Query(alias="courseId")] = None,
+) -> CourseModulePage:
+    page = await service.list_modules(current_user, pagination, course_id=course_id)
+    await service.db.commit()
+    return CourseModulePage(
+        items=[CourseModuleResponse.from_module(module) for module in page.items],
+        total=page.total,
+        limit=page.limit,
+        offset=page.offset,
+    )
+
+
 @router.post(
     "/courses/{course_id}/modules",
     response_model=CourseModuleResponse,
@@ -319,6 +338,29 @@ async def create_module(
     except Exception:
         await service.db.rollback()
         raise
+
+
+@router.get("/lessons", response_model=LessonPage, responses=ERROR_RESPONSES)
+async def list_lessons(
+    current_user: Annotated[User, Depends(get_current_user)],
+    service: Annotated[LearningService, Depends(get_learning_service)],
+    pagination: Annotated[PaginationParams, Depends(get_pagination)],
+    module_id: Annotated[UUID | None, Query(alias="moduleId")] = None,
+    topic_id: Annotated[UUID | None, Query(alias="topicId")] = None,
+) -> LessonPage:
+    page = await service.list_lessons(
+        current_user,
+        pagination,
+        module_id=module_id,
+        topic_id=topic_id,
+    )
+    await service.db.commit()
+    return LessonPage(
+        items=[LessonResponse.from_lesson(lesson) for lesson in page.items],
+        total=page.total,
+        limit=page.limit,
+        offset=page.offset,
+    )
 
 
 @router.post(

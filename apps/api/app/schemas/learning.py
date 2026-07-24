@@ -213,6 +213,15 @@ class CourseModuleResponse(LearningSchema):
         return cls.model_validate(module)
 
 
+class CourseModulePage(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    items: list[CourseModuleResponse]
+    total: int
+    limit: int
+    offset: int
+
+
 class LessonCreateRequest(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -238,6 +247,15 @@ class LessonResponse(LearningSchema):
     @classmethod
     def from_lesson(cls, lesson: Lesson) -> LessonResponse:
         return cls.model_validate(lesson)
+
+
+class LessonPage(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    items: list[LessonResponse]
+    total: int
+    limit: int
+    offset: int
 
 
 class StudySessionCreateRequest(BaseModel):

@@ -2,6 +2,8 @@
 
 import type { AetheriumApiClient } from "@aetherium/api-client";
 import type {
+  MasteryRecord,
+  TopicPage,
   UserPreferences,
   WorldDeepLinkPage,
   WorldFeatureFlags,
@@ -15,10 +17,12 @@ import React from "react";
 import { createBrowserApiClient } from "../auth/auth-provider";
 import { WorldRuntimeErrorBoundary } from "./components/canvas/world-runtime-error-boundary";
 import { WorldRuntimeFallback, WorldRuntimeLoading } from "./components/ui/world-runtime-fallback";
+import { WorldRoadmapProgress } from "./components/ui/world-roadmap-progress";
 import type { AIObservatoryOverviewData } from "./engine/ai-observatory-system";
 import type { CentralPlazaOverviewData } from "./engine/central-plaza-system";
 import type { HabitGardenOverviewData } from "./engine/habit-garden-system";
 import type { KnowledgeLibraryOverviewData } from "./engine/knowledge-library-system";
+import type { LearningAcademyOverviewData } from "./engine/learning-academy-system";
 import { useWorldRuntimeReadiness } from "./hooks/use-world-runtime-readiness";
 
 interface WorldDataState {
@@ -26,6 +30,7 @@ interface WorldDataState {
   deepLinks: WorldDeepLinkPage;
   featureFlags: WorldFeatureFlags;
   habitGardenOverview: HabitGardenOverviewData;
+  learningAcademyOverview: LearningAcademyOverviewData;
   libraryOverview: KnowledgeLibraryOverviewData;
   locations: WorldLocationPage;
   plazaOverview: CentralPlazaOverviewData;
@@ -44,6 +49,15 @@ function friendlyError(error: unknown): string {
     return error.message;
   }
   return "World data contracts are unavailable.";
+}
+
+async function loadAcademyMasteryRecords(
+  apiClient: AetheriumApiClient,
+  topics: TopicPage
+): Promise<MasteryRecord[]> {
+  return Promise.all(
+    topics.items.slice(0, 6).map((topic) => apiClient.learning.getMastery(topic.id))
+  );
 }
 
 export function WorldPage({
@@ -83,6 +97,15 @@ export function WorldPage({
         tags,
         projects,
         learningGoals,
+        learningSubjects,
+        learningTopics,
+        learningCourses,
+        learningModules,
+        learningLessons,
+        learningSessions,
+        learningQuizzes,
+        learningFlashcards,
+        learningRoadmaps,
         mentors,
         conversations,
         providers,
@@ -106,6 +129,15 @@ export function WorldPage({
         apiClient.files.listTags({ limit: 20, offset: 0 }),
         apiClient.projects.list({ includeArchived: false, limit: 5, offset: 0 }),
         apiClient.learning.listGoals({ limit: 5, offset: 0 }),
+        apiClient.learning.listSubjects({ limit: 5, offset: 0 }),
+        apiClient.learning.listTopics({ limit: 8, offset: 0 }),
+        apiClient.learning.listCourses({ limit: 6, offset: 0 }),
+        apiClient.learning.listModules({ limit: 12, offset: 0 }),
+        apiClient.learning.listLessons({ limit: 12, offset: 0 }),
+        apiClient.learning.listSessions({ limit: 5, offset: 0 }),
+        apiClient.learning.listQuizzes({ limit: 8, offset: 0 }),
+        apiClient.learning.listFlashcards({ limit: 8, offset: 0 }),
+        apiClient.learning.listRoadmaps({ limit: 5, offset: 0 }),
         apiClient.mentors.list({ includeArchived: false }),
         apiClient.mentors.listConversations({ includeArchived: false, limit: 8, offset: 0 }),
         apiClient.ai.listProviders(),
@@ -114,6 +146,7 @@ export function WorldPage({
         apiClient.achievements.summary(),
         apiClient.analytics.summary({ period: "week" })
       ]);
+      const masteryRecords = await loadAcademyMasteryRecords(apiClient, learningTopics);
       setData({
         aiObservatoryOverview: {
           conversations,
@@ -128,6 +161,19 @@ export function WorldPage({
           achievementSummary,
           habits,
           summary: habitSummary
+        },
+        learningAcademyOverview: {
+          courses: learningCourses,
+          flashcards: learningFlashcards,
+          goals: learningGoals,
+          lessons: learningLessons,
+          masteryRecords,
+          modules: learningModules,
+          quizzes: learningQuizzes,
+          roadmaps: learningRoadmaps,
+          sessions: learningSessions,
+          subjects: learningSubjects,
+          topics: learningTopics
         },
         libraryOverview: {
           collections,
@@ -164,6 +210,7 @@ export function WorldPage({
 
   return (
     <section className="content-stack">
+      <WorldRoadmapProgress />
       <header className="page-heading">
         <div>
           <p className="eyebrow">Future World Mode</p>
@@ -243,6 +290,7 @@ export function WorldPage({
                   aiObservatoryOverview={data.aiObservatoryOverview}
                   deepLinks={data.deepLinks}
                   habitGardenOverview={data.habitGardenOverview}
+                  learningAcademyOverview={data.learningAcademyOverview}
                   libraryOverview={data.libraryOverview}
                   locationPage={data.locations}
                   plazaOverview={data.plazaOverview}

@@ -58,6 +58,23 @@ const locationPage: WorldLocationPage = {
       visualStatus: "data_contract_ready"
     },
     {
+      category: "learning",
+      commandRoute: "/app/learning",
+      current: false,
+      deepLinkEntityTypes: ["subject", "topic", "course", "lesson", "quiz", "flashcard"],
+      defaultUnlocked: true,
+      description: "Learning records",
+      futureSceneKey: "learning-academy",
+      id: "research_laboratory",
+      spawn: false,
+      subtitle: "Learning Academy",
+      title: "Learning Academy",
+      unlockDependencyIds: [],
+      unlocked: true,
+      visited: false,
+      visualStatus: "data_contract_ready"
+    },
+    {
       category: "achievements",
       commandRoute: "/app/achievements",
       current: false,
@@ -75,8 +92,8 @@ const locationPage: WorldLocationPage = {
       visualStatus: "data_contract_ready"
     }
   ],
-  total: 2,
-  unlockedCount: 1,
+  total: 5,
+  unlockedCount: 4,
   visitedCount: 0
 };
 
@@ -105,9 +122,17 @@ const deepLinks: WorldDeepLinkPage = {
       locationId: "library",
       notes: "Route",
       routePattern: "/app/library{?entityId}"
+    },
+    {
+      commandRoute: "/app/learning",
+      entityTypes: ["subject", "topic", "course", "lesson", "quiz", "flashcard"],
+      label: "Learning Academy",
+      locationId: "research_laboratory",
+      notes: "Route",
+      routePattern: "/app/learning{?topicId,lessonId}"
     }
   ],
-  total: 1
+  total: 4
 };
 
 describe("diagnostic world interaction manifest", () => {
@@ -214,6 +239,53 @@ describe("diagnostic world interaction manifest", () => {
       commandRoute: "/app/achievements",
       locationId: "habit_garden",
       prompt: "Review Milestones",
+      status: "available"
+    });
+  });
+
+  it("adds Learning Academy terminals for lessons, practice, review, roadmaps, and mentors", () => {
+    const interactions = buildDiagnosticWorldInteractions({ deepLinks, locationPage });
+
+    expect(
+      interactions.find((interaction) => interaction.id === "interaction-academy-resume-lesson")
+    ).toMatchObject({
+      commandRoute: "/app/learning",
+      locationId: "research_laboratory",
+      prompt: "Resume Lesson",
+      status: "available"
+    });
+    expect(
+      interactions.find((interaction) => interaction.id === "interaction-academy-quiz-terminal")
+    ).toMatchObject({
+      commandRoute: "/app/learning",
+      locationId: "research_laboratory",
+      prompt: "Take Quiz",
+      status: "available"
+    });
+    expect(
+      interactions.find(
+        (interaction) => interaction.id === "interaction-academy-flashcards-terminal"
+      )
+    ).toMatchObject({
+      commandRoute: "/app/learning",
+      locationId: "research_laboratory",
+      prompt: "Review Flashcards",
+      status: "available"
+    });
+    expect(
+      interactions.find((interaction) => interaction.id === "interaction-academy-mentor-terminal")
+    ).toMatchObject({
+      commandRoute: "/app/ai",
+      locationId: "research_laboratory",
+      prompt: "Ask Mentor",
+      status: "available"
+    });
+    expect(
+      interactions.find((interaction) => interaction.id === "interaction-academy-roadmap-terminal")
+    ).toMatchObject({
+      commandRoute: "/app/learning",
+      locationId: "research_laboratory",
+      prompt: "Open Roadmap",
       status: "available"
     });
   });

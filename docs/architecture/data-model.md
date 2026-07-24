@@ -609,6 +609,8 @@ owner scope, and cross-user identifiers return not-found style responses.
 - Lessons store owner, module, optional topic, title, position, content summary, status, completion
   state, estimated duration, and timestamps.
 - Position constraints keep module and lesson ordering deterministic.
+- Course modules and lessons are exposed through paginated read contracts with service-layer owner
+  validation for optional course, module, and topic filters.
 - Completing a lesson emits an idempotent `lesson.completed` event and updates mastery with an
   exercise-completion signal when the lesson is linked to a topic.
 

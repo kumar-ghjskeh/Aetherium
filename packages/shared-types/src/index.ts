@@ -1225,6 +1225,17 @@ export interface CourseModule {
   updatedAt: string;
 }
 
+export interface CourseModulePage {
+  items: CourseModule[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface CourseModuleListQuery extends PaginationQuery {
+  courseId?: string;
+}
+
 export interface CourseModuleCreateRequest {
   title: string;
   description?: string | null | undefined;
@@ -1242,6 +1253,18 @@ export interface Lesson {
   estimatedMinutes: number | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface LessonPage {
+  items: Lesson[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface LessonListQuery extends PaginationQuery {
+  moduleId?: string;
+  topicId?: string;
 }
 
 export interface LessonCreateRequest {

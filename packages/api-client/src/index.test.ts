@@ -1970,8 +1970,24 @@ describe("createAetheriumApiClient", () => {
       if (url === "http://localhost:8000/api/v1/learning/courses") {
         return Promise.resolve(jsonResponse(learningCourse, 201));
       }
+      if (
+        url ===
+        `http://localhost:8000/api/v1/learning/modules?courseId=${learningCourse.id}&limit=5&offset=0`
+      ) {
+        return Promise.resolve(
+          jsonResponse({ items: [learningModule], limit: 5, offset: 0, total: 1 })
+        );
+      }
       if (url === `http://localhost:8000/api/v1/learning/courses/${learningCourse.id}/modules`) {
         return Promise.resolve(jsonResponse(learningModule, 201));
+      }
+      if (
+        url ===
+        `http://localhost:8000/api/v1/learning/lessons?limit=5&moduleId=${learningModule.id}&offset=0`
+      ) {
+        return Promise.resolve(
+          jsonResponse({ items: [learningLesson], limit: 5, offset: 0, total: 1 })
+        );
       }
       if (url === `http://localhost:8000/api/v1/learning/modules/${learningModule.id}/lessons`) {
         return Promise.resolve(jsonResponse(learningLesson, 201));
@@ -2080,8 +2096,14 @@ describe("createAetheriumApiClient", () => {
       client.learning.createCourse({ subjectId: learningSubject.id, title: "Systems Path" })
     ).resolves.toMatchObject({ title: "Systems Path" });
     await expect(
+      client.learning.listModules({ courseId: learningCourse.id, limit: 5, offset: 0 })
+    ).resolves.toMatchObject({ total: 1 });
+    await expect(
       client.learning.createModule(learningCourse.id, { position: 0, title: "CPU Basics" })
     ).resolves.toMatchObject({ courseId: learningCourse.id });
+    await expect(
+      client.learning.listLessons({ limit: 5, moduleId: learningModule.id, offset: 0 })
+    ).resolves.toMatchObject({ total: 1 });
     await expect(
       client.learning.createLesson(learningModule.id, {
         position: 0,

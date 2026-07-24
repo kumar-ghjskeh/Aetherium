@@ -93,14 +93,25 @@ Implemented foundation slices:
   terrain, mountain perimeter, river ribbon, waterfall sheets, route surfaces, bounded cloud/mist
   and rock props, data-driven district foundation markers, terrain-bound player reset, and terrain
   generation tests.
+- Visual World Mode W7 Central Plaza vertical slice with a procedural plaza landmark, terminal pods,
+  real user overview data, Command Mode deep links, and plaza mapping tests.
+- Visual World Mode W8 Knowledge Library with a procedural district exterior, bounded file,
+  collection, and tag displays, vault interaction terminals, and file-mapping tests.
+- Visual World Mode W9 AI Observatory with a procedural dome, mentor probes, real AI/provider usage
+  mapping, observatory interaction terminals, and mentor-state tests.
+- Visual World Mode W10 Habit Garden with procedural terraces, habit plant beds, real habit and
+  achievement mapping, garden interaction terminals, and habit-to-plant tests.
+- Visual World Mode W11 Learning Academy with procedural academy wings, course halls, lesson
+  stations, real learning/mastery mapping, read-only module and lesson list contracts, a fixed
+  `/app/world` progress panel, and learning Academy tests.
 
 Still out of scope unless explicitly requested:
 
 - OAuth, social login, email delivery, password reset, MFA, and magic links.
 - External email, push, SMS, and deployed scheduler notification delivery.
-- Final world district art, terrain, cinematic travel paths, map travel, district-specific 3D
-  interactions, audio, or visual world progression until the corresponding approved World Mode phase
-  is active.
+- Remaining district art, cinematic travel paths, map travel, audio, atmosphere, performance
+  optimization, automated visual regression, accessibility polish, or visual world progression until
+  the corresponding approved World Mode phase is active.
 - Automatic production deployment.
 
 ## Product Independence
@@ -125,8 +136,8 @@ before completing work that could affect World Mode dependencies or assets. Run
 
 ## Visual World Mode
 
-The visual World Mode architecture and W1-W6 runtime foundations are documented. Follow
-`docs/architecture/decisions/0025-visual-world-mode-architecture.md`,
+The visual World Mode architecture and W1-W11 runtime and district foundations are documented.
+Follow `docs/architecture/decisions/0025-visual-world-mode-architecture.md`,
 `docs/world/world-mode-architecture.md`, and `docs/tasks/world/world-mode-roadmap.md` for W7 and
 later. Do not add unregistered assets, paid assets, editor-heavy engine dependencies, or any
 browser-exposed secret.
