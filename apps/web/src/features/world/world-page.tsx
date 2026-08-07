@@ -20,6 +20,7 @@ import { WorldRuntimeFallback, WorldRuntimeLoading } from "./components/ui/world
 import { WorldRoadmapProgress } from "./components/ui/world-roadmap-progress";
 import type { AIObservatoryOverviewData } from "./engine/ai-observatory-system";
 import type { CentralPlazaOverviewData } from "./engine/central-plaza-system";
+import type { CodingArenaOverviewData } from "./engine/coding-arena-system";
 import type { HabitGardenOverviewData } from "./engine/habit-garden-system";
 import type { KnowledgeLibraryOverviewData } from "./engine/knowledge-library-system";
 import type { LearningAcademyOverviewData } from "./engine/learning-academy-system";
@@ -27,6 +28,7 @@ import { useWorldRuntimeReadiness } from "./hooks/use-world-runtime-readiness";
 
 interface WorldDataState {
   aiObservatoryOverview: AIObservatoryOverviewData;
+  codingArenaOverview: CodingArenaOverviewData;
   deepLinks: WorldDeepLinkPage;
   featureFlags: WorldFeatureFlags;
   habitGardenOverview: HabitGardenOverviewData;
@@ -112,7 +114,11 @@ export function WorldPage({
         modelConfigs,
         usage,
         achievementSummary,
-        analytics
+        analytics,
+        codingSnippets,
+        codingExercises,
+        codingAssistantRequests,
+        codingRunner
       ] = await Promise.all([
         apiClient.world.getProfile(),
         apiClient.world.listLocations(),
@@ -144,7 +150,11 @@ export function WorldPage({
         apiClient.ai.listModelConfigs(),
         apiClient.ai.listUsage({ limit: 8, offset: 0 }),
         apiClient.achievements.summary(),
-        apiClient.analytics.summary({ period: "week" })
+        apiClient.analytics.summary({ period: "week" }),
+        apiClient.coding.listSnippets({ includeArchived: false, limit: 6, offset: 0 }),
+        apiClient.coding.listExercises({ includeArchived: false, limit: 6, offset: 0 }),
+        apiClient.coding.listAssistantRequests({ limit: 5, offset: 0 }),
+        apiClient.coding.getRunnerStatus()
       ]);
       const masteryRecords = await loadAcademyMasteryRecords(apiClient, learningTopics);
       setData({
@@ -154,6 +164,13 @@ export function WorldPage({
           modelConfigs,
           providers,
           usage
+        },
+        codingArenaOverview: {
+          assistantRequests: codingAssistantRequests,
+          exercises: codingExercises,
+          projects,
+          runner: codingRunner,
+          snippets: codingSnippets
         },
         deepLinks,
         featureFlags,
@@ -288,6 +305,7 @@ export function WorldPage({
               <React.Suspense fallback={<WorldRuntimeLoading />}>
                 <LazyWorldRuntimeCanvas
                   aiObservatoryOverview={data.aiObservatoryOverview}
+                  codingArenaOverview={data.codingArenaOverview}
                   deepLinks={data.deepLinks}
                   habitGardenOverview={data.habitGardenOverview}
                   learningAcademyOverview={data.learningAcademyOverview}

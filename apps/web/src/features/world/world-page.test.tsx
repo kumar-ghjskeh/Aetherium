@@ -6,8 +6,12 @@ import type {
   AchievementSummary,
   AnalyticsSummary,
   CollectionPage,
+  CodeAssistantRequestPage,
+  CodeRunnerStatus,
+  CodeSnippetPage,
   CourseModulePage,
   CoursePage,
+  CodingExercisePage,
   ConversationPage,
   FilePage,
   FlashcardPage,
@@ -42,6 +46,7 @@ import {
   createUnusedAnalyticsClient,
   createUnusedAiClient,
   createUnusedAuthClient,
+  createUnusedCodingClient,
   createUnusedFilesClient,
   createUnusedHabitsClient,
   createUnusedLearningClient,
@@ -255,6 +260,36 @@ const projectPage: ProjectPage = {
   total: 0
 };
 
+const codeSnippetPage: CodeSnippetPage = {
+  items: [],
+  limit: 6,
+  offset: 0,
+  total: 0
+};
+
+const codingExercisePage: CodingExercisePage = {
+  items: [],
+  limit: 6,
+  offset: 0,
+  total: 0
+};
+
+const codeAssistantRequestPage: CodeAssistantRequestPage = {
+  items: [],
+  limit: 5,
+  offset: 0,
+  total: 0
+};
+
+const codeRunnerStatus: CodeRunnerStatus = {
+  availability: "unavailable",
+  executionAvailable: false,
+  providerName: "none",
+  reason: "No isolated execution provider is configured.",
+  securityRequirements: ["cpu_limit", "no_aetherium_secrets"],
+  supportedLanguages: ["python", "typescript", "sql"]
+};
+
 const learningGoalPage: LearningGoalPage = {
   items: [],
   limit: 5,
@@ -451,6 +486,13 @@ function createClient(
       ...createUnusedAuthClient(),
       me: vi.fn(() => Promise.resolve(user))
     },
+    coding: {
+      ...createUnusedCodingClient(),
+      getRunnerStatus: vi.fn(() => Promise.resolve(codeRunnerStatus)),
+      listAssistantRequests: vi.fn(() => Promise.resolve(codeAssistantRequestPage)),
+      listExercises: vi.fn(() => Promise.resolve(codingExercisePage)),
+      listSnippets: vi.fn(() => Promise.resolve(codeSnippetPage))
+    },
     files: {
       ...createUnusedFilesClient(),
       list: vi.fn(() => Promise.resolve(filePage)),
@@ -524,7 +566,7 @@ describe("WorldPage", () => {
     expect(screen.getByRole("heading", { name: "Central Plaza runtime" })).toBeInTheDocument();
     expect(screen.getByText("Enabled")).toBeInTheDocument();
     expect(
-      screen.getByRole("progressbar", { name: /12 of 26 World Mode phases complete/u })
+      screen.getByRole("progressbar", { name: /13 of 26 World Mode phases complete/u })
     ).toBeInTheDocument();
     expect(await screen.findByTestId("world-runtime-canvas")).toBeInTheDocument();
     expect(screen.getByText("central_plaza")).toBeInTheDocument();
@@ -569,6 +611,18 @@ describe("WorldPage", () => {
     expect(client.ai.listUsage).toHaveBeenCalledWith({ limit: 8, offset: 0 });
     expect(client.achievements.summary).toHaveBeenCalledTimes(1);
     expect(client.analytics.summary).toHaveBeenCalledWith({ period: "week" });
+    expect(client.coding.listSnippets).toHaveBeenCalledWith({
+      includeArchived: false,
+      limit: 6,
+      offset: 0
+    });
+    expect(client.coding.listExercises).toHaveBeenCalledWith({
+      includeArchived: false,
+      limit: 6,
+      offset: 0
+    });
+    expect(client.coding.listAssistantRequests).toHaveBeenCalledWith({ limit: 5, offset: 0 });
+    expect(client.coding.getRunnerStatus).toHaveBeenCalledTimes(1);
   });
 
   it("uses the command fallback when WebGL2 is unavailable", async () => {

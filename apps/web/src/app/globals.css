@@ -2483,6 +2483,170 @@ kbd {
   border-color: rgba(139, 232, 255, 0.42);
 }
 
+.world-coding-panel {
+  background:
+    linear-gradient(145deg, rgba(5, 22, 29, 0.94), rgba(16, 35, 42, 0.84)), rgba(4, 16, 22, 0.9);
+  border: 1px solid rgba(85, 217, 242, 0.3);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.4);
+  color: #eafcff;
+  display: grid;
+  gap: 12px;
+  left: 16px;
+  max-width: min(450px, calc(100% - 32px));
+  padding: 14px;
+  position: absolute;
+  top: 160px;
+  width: 418px;
+}
+
+.world-coding-panel header {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.world-coding-panel header span,
+.world-coding-list > span,
+.world-coding-runner > span,
+.world-coding-assistant > span {
+  color: #8be8ff;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.world-coding-panel header strong {
+  border: 1px solid rgba(121, 215, 166, 0.28);
+  color: #bff3d4;
+  font-size: 0.78rem;
+  padding: 6px 8px;
+}
+
+.world-coding-panel header strong[data-available="false"] {
+  border-color: rgba(240, 199, 102, 0.34);
+  color: #ffe6a8;
+}
+
+.world-coding-metrics {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+}
+
+.world-coding-metrics div,
+.world-coding-actions a {
+  background: rgba(85, 217, 242, 0.07);
+  border: 1px solid rgba(85, 217, 242, 0.17);
+  min-width: 0;
+  padding: 9px;
+}
+
+.world-coding-metrics dt {
+  color: #a9c6cf;
+  font-size: 0.68rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.world-coding-metrics dd {
+  font-weight: 900;
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.world-coding-list,
+.world-coding-runner,
+.world-coding-assistant {
+  border-top: 1px solid rgba(85, 217, 242, 0.17);
+  display: grid;
+  gap: 8px;
+  padding-top: 10px;
+}
+
+.world-coding-list p,
+.world-coding-list ul,
+.world-coding-runner ul {
+  margin: 0;
+}
+
+.world-coding-list p,
+.world-coding-runner small,
+.world-coding-assistant small {
+  color: #adc5cd;
+}
+
+.world-coding-list ul {
+  display: grid;
+  gap: 7px;
+  list-style: none;
+  padding: 0;
+}
+
+.world-coding-list li {
+  align-items: center;
+  display: grid;
+  gap: 3px 8px;
+  grid-template-columns: 8px minmax(0, 1fr);
+}
+
+.world-coding-list li i {
+  grid-row: 1 / 3;
+  height: 100%;
+  min-height: 28px;
+  width: 3px;
+}
+
+.world-coding-list li strong,
+.world-coding-runner strong,
+.world-coding-assistant strong {
+  font-size: 0.84rem;
+  overflow-wrap: anywhere;
+}
+
+.world-coding-list li small {
+  color: #adc5cd;
+  font-size: 0.75rem;
+}
+
+.world-coding-runner ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  list-style: none;
+  padding: 0;
+}
+
+.world-coding-runner li {
+  background: rgba(240, 199, 102, 0.1);
+  border: 1px solid rgba(240, 199, 102, 0.2);
+  color: #ffe6a8;
+  font-size: 0.66rem;
+  font-weight: 800;
+  padding: 4px 6px;
+  text-transform: uppercase;
+}
+
+.world-coding-actions {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.world-coding-actions a {
+  color: #eafcff;
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-align: center;
+  text-decoration: none;
+}
+
+.world-coding-actions a:focus,
+.world-coding-actions a:hover {
+  border-color: rgba(85, 217, 242, 0.48);
+}
+
 .world-roadmap-progress {
   background:
     linear-gradient(145deg, rgba(8, 18, 30, 0.94), rgba(21, 28, 42, 0.88)), rgba(7, 15, 25, 0.9);
@@ -3394,6 +3558,19 @@ kbd {
 
   .world-learning-metrics,
   .world-learning-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .world-coding-panel {
+    left: 16px;
+    max-width: none;
+    right: 16px;
+    top: 158px;
+    width: auto;
+  }
+
+  .world-coding-metrics,
+  .world-coding-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 

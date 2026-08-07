@@ -271,6 +271,31 @@ Current limitations:
 - No downloaded models, textures, audio, glTF/GLB assets, custom shaders, or particle systems are
   introduced.
 
+## Current Coding Arena Slice
+
+W12 adds the coding district in `apps/web/src/features/world/components/locations/coding-arena.tsx`.
+
+Current Coding Arena elements:
+
+- Procedural circular arena, tiered stands, central compiler core, rotating code rails, workspace
+  consoles, exercise pylons, and sealed runner vault at the `coding-arena` manifest coordinates.
+- Workspace consoles derived from real saved-snippet titles, languages, and linked projects.
+- Practice pylons derived from real exercise titles, languages, and difficulty states.
+- Near-district overlay backed by real snippet, exercise, AI request, runner status, and project API
+  responses.
+- Arena-specific interaction terminals for workspace, exercises, AI review, runner status, and
+  linked projects in Command Mode.
+
+Current limitations:
+
+- The district does not execute code and does not imply that an unavailable runner is operational.
+- Editing, attempts, AI explain/review requests, and project updates remain in existing Command Mode
+  surfaces.
+- Raw code, notes, prompts, responses, starter code, and solution notes are omitted from scene view
+  models.
+- No downloaded models, textures, audio, glTF/GLB assets, custom shaders, or particle systems are
+  introduced.
+
 ## Deterministic Generation
 
 Use fixed seeds for:

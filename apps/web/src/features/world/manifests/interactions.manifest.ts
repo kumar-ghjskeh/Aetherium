@@ -278,6 +278,66 @@ export const WORLD_INTERACTIONS_MANIFEST: WorldInteractionManifestEntry[] = [
     type: "open_application_panel"
   },
   {
+    accessibilityLabel: "Open the saved-code workspace from Coding Arena",
+    commandRoute: "/app/coding",
+    gamepadAction: "primary",
+    id: "interaction-arena-workspace-terminal",
+    keyboardAction: "KeyE",
+    locationId: "coding-arena",
+    position: [-306, 1.25, 67],
+    prompt: "Open Workspace",
+    radius: 10,
+    type: "open_application_panel"
+  },
+  {
+    accessibilityLabel: "Choose a coding exercise from Coding Arena",
+    commandRoute: "/app/coding",
+    gamepadAction: "primary",
+    id: "interaction-arena-exercise-terminal",
+    keyboardAction: "KeyE",
+    locationId: "coding-arena",
+    position: [-313, 1.25, 93],
+    prompt: "Choose Exercise",
+    radius: 10,
+    type: "open_application_panel"
+  },
+  {
+    accessibilityLabel: "Open AI code explanation and review from Coding Arena",
+    commandRoute: "/app/coding",
+    gamepadAction: "primary",
+    id: "interaction-arena-review-terminal",
+    keyboardAction: "KeyE",
+    locationId: "coding-arena",
+    position: [-335, 1.25, 93],
+    prompt: "Review Code",
+    radius: 10,
+    type: "open_application_panel"
+  },
+  {
+    accessibilityLabel: "Inspect the isolated code-runner security boundary from Coding Arena",
+    commandRoute: "/app/coding",
+    gamepadAction: "primary",
+    id: "interaction-arena-runner-terminal",
+    keyboardAction: "KeyE",
+    locationId: "coding-arena",
+    position: [-342, 1.25, 76],
+    prompt: "Runner Status",
+    radius: 10,
+    type: "open_application_panel"
+  },
+  {
+    accessibilityLabel: "Open projects linked to Coding Arena workspaces",
+    commandRoute: "/app/projects",
+    gamepadAction: "primary",
+    id: "interaction-arena-project-terminal",
+    keyboardAction: "KeyE",
+    locationId: "coding-arena",
+    position: [-324, 1.25, 103],
+    prompt: "Linked Projects",
+    radius: 10,
+    type: "open_project"
+  },
+  {
     accessibilityLabel: "Open analytics in Command Mode",
     commandRoute: "/app/analytics",
     gamepadAction: "primary",

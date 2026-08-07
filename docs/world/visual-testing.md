@@ -116,6 +116,12 @@ and lesson lists, and verifies `/app/world` loads subjects, topics, courses, mod
 sessions, quizzes, flashcards, goals, roadmaps, and bounded mastery DTOs for the district. Fixed
 screenshot capture for the Academy remains part of the W23 visual regression suite.
 
+W12 adds the Coding Arena district and uses the same interim validation approach. It adds
+deterministic tests for snippet, exercise, project, AI request, and runner-status mapping; verifies
+that raw code and private request content are omitted from the world view model; and verifies that
+`/app/world` loads the bounded coding pages and runner contract. Fixed screenshot capture for the
+Arena remains part of the W23 visual regression suite.
+
 ## Failure Policy
 
 If tests show a black canvas, missing asset, persistent console error, browser crash, or performance

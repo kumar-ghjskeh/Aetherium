@@ -104,6 +104,9 @@ Implemented foundation slices:
 - Visual World Mode W11 Learning Academy with procedural academy wings, course halls, lesson
   stations, real learning/mastery mapping, read-only module and lesson list contracts, a fixed
   `/app/world` progress panel, and learning Academy tests.
+- Visual World Mode W12 Coding Arena with a procedural circular arena, compiler core, workspace
+  consoles, exercise pylons, real coding/project mapping, an honest sealed runner state, privacy
+  filtering for raw code and AI request content, and Coding Arena tests.
 
 Still out of scope unless explicitly requested:
 
@@ -136,7 +139,7 @@ before completing work that could affect World Mode dependencies or assets. Run
 
 ## Visual World Mode
 
-The visual World Mode architecture and W1-W11 runtime and district foundations are documented.
+The visual World Mode architecture and W1-W12 runtime and district foundations are documented.
 Follow `docs/architecture/decisions/0025-visual-world-mode-architecture.md`,
 `docs/world/world-mode-architecture.md`, and `docs/tasks/world/world-mode-roadmap.md` for W7 and
 later. Do not add unregistered assets, paid assets, editor-heavy engine dependencies, or any

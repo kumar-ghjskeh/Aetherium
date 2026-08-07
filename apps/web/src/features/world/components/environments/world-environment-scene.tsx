@@ -7,6 +7,7 @@ import * as THREE from "three";
 
 import type { AIObservatoryOverviewData } from "../../engine/ai-observatory-system";
 import type { CentralPlazaOverviewData } from "../../engine/central-plaza-system";
+import type { CodingArenaOverviewData } from "../../engine/coding-arena-system";
 import type { HabitGardenOverviewData } from "../../engine/habit-garden-system";
 import type { KnowledgeLibraryOverviewData } from "../../engine/knowledge-library-system";
 import type { LearningAcademyOverviewData } from "../../engine/learning-academy-system";
@@ -29,9 +30,11 @@ import { AIObservatoryDistrict } from "../locations/ai-observatory";
 import { HabitGardenDistrict } from "../locations/habit-garden";
 import { KnowledgeLibraryDistrict } from "../locations/knowledge-library";
 import { LearningAcademyDistrict } from "../locations/learning-academy";
+import { CodingArenaDistrict } from "../locations/coding-arena";
 
 export function WorldEnvironmentScene({
   aiObservatoryOverview,
+  codingArenaOverview,
   graphicsPreset,
   habitGardenOverview,
   learningAcademyOverview,
@@ -40,6 +43,7 @@ export function WorldEnvironmentScene({
   reducedMotion
 }: Readonly<{
   aiObservatoryOverview: AIObservatoryOverviewData;
+  codingArenaOverview: CodingArenaOverviewData;
   graphicsPreset: PerformancePreset;
   habitGardenOverview: HabitGardenOverviewData;
   learningAcademyOverview: LearningAcademyOverviewData;
@@ -74,6 +78,7 @@ export function WorldEnvironmentScene({
       <AIObservatoryDistrict overview={aiObservatoryOverview} reducedMotion={reducedMotion} />
       <HabitGardenDistrict overview={habitGardenOverview} reducedMotion={reducedMotion} />
       <LearningAcademyDistrict overview={learningAcademyOverview} reducedMotion={reducedMotion} />
+      <CodingArenaDistrict overview={codingArenaOverview} reducedMotion={reducedMotion} />
     </>
   );
 }
@@ -236,7 +241,8 @@ function DistrictFoundationMarkers(): React.ReactElement {
           location.id !== "knowledge-library" &&
           location.id !== "ai-observatory" &&
           location.id !== "habit-garden" &&
-          location.id !== "learning-academy"
+          location.id !== "learning-academy" &&
+          location.id !== "coding-arena"
       ).map((location) => {
         const [x, , z] = location.position;
         const terrain = sampleTerrain(x, z);

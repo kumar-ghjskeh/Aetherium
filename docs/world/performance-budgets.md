@@ -142,6 +142,23 @@ W11 does not add textures, downloaded assets, spatial audio, post-processing, li
 mutation controls, interior classrooms, or custom shader work. Browser screenshot and frame-metric
 automation remain scheduled for W23.
 
+## Current W12 Coding Arena Budget
+
+The W12 Coding Arena adds one bounded coding district slice:
+
+- Procedural arena exterior and floor meshes only.
+- Up to six workspace consoles derived from the current saved-snippet page.
+- Up to six exercise pylons derived from the current coding-exercise page.
+- One compiler core with three low-cost animated rings and one local point light.
+- One sealed runner-vault display backed by the existing runner-status contract.
+- Monaco and raw editor content remain outside the canvas and retain their existing lazy Command
+  Mode boundary.
+- Reduced-motion mode disables compiler-ring and exercise-ring animation.
+
+W12 does not add textures, downloaded assets, spatial audio, post-processing, code execution, custom
+shaders, live particles, or in-canvas editor rendering. Browser screenshot and frame-metric
+automation remain scheduled for W23.
+
 ## Runtime Diagnostics
 
 Diagnostics must report:

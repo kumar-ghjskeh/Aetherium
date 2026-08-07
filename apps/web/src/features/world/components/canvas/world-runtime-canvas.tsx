@@ -13,6 +13,7 @@ import type * as THREE from "three";
 import { buildDiagnosticWorldInteractions } from "../../engine/interaction-manifest";
 import { resolveGraphicsPresetSettings } from "../../engine/performance-manager";
 import type { CentralPlazaOverviewData } from "../../engine/central-plaza-system";
+import type { CodingArenaOverviewData } from "../../engine/coding-arena-system";
 import type { AIObservatoryOverviewData } from "../../engine/ai-observatory-system";
 import type { KnowledgeLibraryOverviewData } from "../../engine/knowledge-library-system";
 import type { HabitGardenOverviewData } from "../../engine/habit-garden-system";
@@ -34,9 +35,11 @@ import { AIObservatoryPanel } from "../ui/ai-observatory-panel";
 import { KnowledgeLibraryPanel } from "../ui/knowledge-library-panel";
 import { HabitGardenPanel } from "../ui/habit-garden-panel";
 import { LearningAcademyPanel } from "../ui/learning-academy-panel";
+import { CodingArenaPanel } from "../ui/coding-arena-panel";
 
 export function WorldRuntimeCanvas({
   aiObservatoryOverview,
+  codingArenaOverview,
   deepLinks,
   habitGardenOverview,
   learningAcademyOverview,
@@ -48,6 +51,7 @@ export function WorldRuntimeCanvas({
   sceneManifest
 }: Readonly<{
   aiObservatoryOverview: AIObservatoryOverviewData;
+  codingArenaOverview: CodingArenaOverviewData;
   deepLinks: WorldDeepLinkPage;
   habitGardenOverview: HabitGardenOverviewData;
   learningAcademyOverview: LearningAcademyOverviewData;
@@ -112,6 +116,7 @@ export function WorldRuntimeCanvas({
           <Physics gravity={[0, -9.81, 0]} paused={!pageVisible}>
             <WorldEnvironmentScene
               aiObservatoryOverview={aiObservatoryOverview}
+              codingArenaOverview={codingArenaOverview}
               graphicsPreset={graphicsPreset}
               habitGardenOverview={habitGardenOverview}
               learningAcademyOverview={learningAcademyOverview}
@@ -142,6 +147,7 @@ export function WorldRuntimeCanvas({
         <AIObservatoryPanel overview={aiObservatoryOverview} />
         <HabitGardenPanel overview={habitGardenOverview} />
         <LearningAcademyPanel overview={learningAcademyOverview} />
+        <CodingArenaPanel overview={codingArenaOverview} />
 
         <div className="world-runtime-label" aria-live="polite">
           <strong>World Mode district slices</strong>
