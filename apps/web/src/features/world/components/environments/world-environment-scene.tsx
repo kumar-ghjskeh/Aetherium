@@ -1,7 +1,7 @@
 import type { PerformancePreset } from "@aetherium/shared-types";
 import { Line, Sky } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { CuboidCollider, RigidBody } from "@react-three/rapier";
+import { RigidBody } from "@react-three/rapier";
 import React from "react";
 import * as THREE from "three";
 
@@ -24,7 +24,6 @@ import {
   resolveEnvironmentDensityBudget,
   resolveRiverCenterX,
   sampleTerrain,
-  TERRAIN_HALF_SIZE_METERS,
   TERRAIN_SEED,
   WORLD_TERRAIN_ROUTES,
   WORLD_THEME_COLORS
@@ -106,16 +105,18 @@ export function WorldEnvironmentScene({
   );
 }
 
+function createTerrainGeometry(): THREE.BufferGeometry {
+  const data = generateTerrainMeshData();
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.BufferAttribute(data.positions, 3));
+  geometry.setAttribute("color", new THREE.BufferAttribute(data.colors, 3));
+  geometry.setIndex(new THREE.BufferAttribute(data.indices, 1));
+  geometry.computeVertexNormals();
+  return geometry;
+}
+
 function TerrainMesh(): React.ReactElement {
-  const geometry = React.useMemo(() => {
-    const data = generateTerrainMeshData();
-    const bufferGeometry = new THREE.BufferGeometry();
-    bufferGeometry.setAttribute("position", new THREE.BufferAttribute(data.positions, 3));
-    bufferGeometry.setAttribute("color", new THREE.BufferAttribute(data.colors, 3));
-    bufferGeometry.setIndex(new THREE.BufferAttribute(data.indices, 1));
-    bufferGeometry.computeVertexNormals();
-    return bufferGeometry;
-  }, []);
+  const geometry = React.useMemo(createTerrainGeometry, []);
 
   React.useEffect(
     () => () => {
@@ -132,12 +133,18 @@ function TerrainMesh(): React.ReactElement {
 }
 
 function TerrainCollision(): React.ReactElement {
+  const geometry = React.useMemo(createTerrainGeometry, []);
+
+  React.useEffect(
+    () => () => {
+      geometry.dispose();
+    },
+    [geometry]
+  );
+
   return (
-    <RigidBody colliders={false} type="fixed">
-      <CuboidCollider
-        args={[TERRAIN_HALF_SIZE_METERS, 0.16, TERRAIN_HALF_SIZE_METERS]}
-        position={[0, -0.18, 0]}
-      />
+    <RigidBody colliders="trimesh" type="fixed">
+      <mesh geometry={geometry} visible={false} />
     </RigidBody>
   );
 }

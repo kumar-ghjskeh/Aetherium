@@ -27,7 +27,9 @@ a procedural Achievement Hall, colonnade, memorial wall, laurels, trophy pedesta
 plaques, completed-project models, and world-unlock crystals. It adds no downloaded model, texture,
 or audio files. W16 adds a procedural Personal Sanctuary terrace, pavilion, symbolic avatar focus,
 favorite alcoves, certificate displays, privacy shields, and preference beacons. It adds no
-downloaded model, texture, image, or audio files.
+downloaded model, texture, image, or audio files. W17 adds procedural destination markers and a DOM
+map driven by the existing manifests. It adds no downloaded map, model, texture, image, or audio
+files.
 
 ## License Rules
 

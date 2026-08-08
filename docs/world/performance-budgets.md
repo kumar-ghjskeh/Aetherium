@@ -222,6 +222,20 @@ W16 does not add textures, downloaded assets, spatial audio, post-processing, up
 rendering, profile mutation, custom shaders, or live particles. Browser screenshot and frame-metric
 automation remain scheduled for W23.
 
+## Current W17 Navigation Budget
+
+The W17 navigation slice adds:
+
+- Ten memoized destination records and ten bounded procedural location markers.
+- A DOM world map that renders only while open.
+- One deterministic terrain trimesh collider generated from the visible terrain data.
+- Arrival checks throttled to 750 ms.
+- Travel interpolation in the existing frame loop with no per-frame React component state.
+- Marker animation limited to the current and selected destination.
+
+W17 adds no downloaded map, model, texture, or audio assets. Browser travel screenshots, console
+checks, and frame metrics remain scheduled for W23.
+
 ## Runtime Diagnostics
 
 Diagnostics must report:

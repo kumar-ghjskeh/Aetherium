@@ -96,6 +96,40 @@ export function WorldPage({
     userReducedMotion: data?.preferences.reducedMotion ?? false
   });
 
+  const visitWorldLocation = React.useCallback(
+    async (locationId: string): Promise<WorldProfile> => {
+      const updatedProfile = await apiClient.world.visit({
+        idempotencyKey: globalThis.crypto.randomUUID(),
+        locationId
+      });
+      setData((current) => {
+        if (!current) {
+          return current;
+        }
+        const visited = new Set(updatedProfile.visitedLocationIds);
+        const unlocked = new Set(updatedProfile.unlockedLocationIds);
+        return {
+          ...current,
+          locations: {
+            ...current.locations,
+            currentLocationId: updatedProfile.currentLocationId,
+            items: current.locations.items.map((location) => ({
+              ...location,
+              current: location.id === updatedProfile.currentLocationId,
+              unlocked: unlocked.has(location.id),
+              visited: visited.has(location.id)
+            })),
+            unlockedCount: unlocked.size,
+            visitedCount: visited.size
+          },
+          profile: updatedProfile
+        };
+      });
+      return updatedProfile;
+    },
+    [apiClient]
+  );
+
   const loadWorldData = React.useCallback(async () => {
     setStatus("loading");
     setError(null);
@@ -369,6 +403,7 @@ export function WorldPage({
                   learningAcademyOverview={data.learningAcademyOverview}
                   libraryOverview={data.libraryOverview}
                   locationPage={data.locations}
+                  onVisitLocation={visitWorldLocation}
                   personalSanctuaryOverview={data.personalSanctuaryOverview}
                   plazaOverview={data.plazaOverview}
                   preferences={data.preferences}

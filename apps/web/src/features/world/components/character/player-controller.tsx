@@ -10,14 +10,18 @@ import {
   resolvePlayerMovementState,
   type PlanarVelocity
 } from "../../engine/player-controller";
-import { isInsideTerrainBounds } from "../../engine/terrain-system";
+import { isInsideTerrainBounds, sampleTerrain } from "../../engine/terrain-system";
+import { sampleWorldTravelPlan, type WorldDestination } from "../../engine/navigation-system";
 import { useWorldInput } from "../../hooks/use-world-input";
 import { usePlayerStore } from "../../state/player-store";
+import { useWorldNavigationStore } from "../../state/navigation-store";
 import { PlayerAvatar } from "./player-avatar";
 
 export function PlayerController({
+  onArrive,
   reducedMotion
 }: Readonly<{
+  onArrive: (destination: WorldDestination) => Promise<void> | void;
   reducedMotion: boolean;
 }>): React.ReactElement {
   useWorldInput();
@@ -36,6 +40,50 @@ export function PlayerController({
     }
 
     const playerState = usePlayerStore.getState();
+    const navigationState = useWorldNavigationStore.getState();
+    if (navigationState.activeTravel) {
+      const plan = navigationState.activeTravel;
+      const sample = navigationState.skipRequested
+        ? { complete: true, position: plan.target.point, progress: 1 }
+        : sampleWorldTravelPlan(plan, performance.now());
+      const travelVelocity = sample.complete
+        ? { x: 0, z: 0 }
+        : {
+            x: (plan.target.point[0] - sample.position[0]) / Math.max(plan.durationSeconds, 1),
+            z: (plan.target.point[2] - sample.position[2]) / Math.max(plan.durationSeconds, 1)
+          };
+
+      body.setTranslation(
+        { x: sample.position[0], y: sample.position[1], z: sample.position[2] },
+        true
+      );
+      body.setLinvel({ x: 0, y: 0, z: 0 }, true);
+      velocityRef.current = travelVelocity;
+      const travelFacing = Math.atan2(
+        plan.target.point[0] - sample.position[0],
+        plan.target.point[2] - sample.position[2]
+      );
+      if (Number.isFinite(travelFacing)) {
+        facingRadiansRef.current = travelFacing;
+      }
+      if (avatarRootRef.current) {
+        avatarRootRef.current.rotation.y = facingRadiansRef.current;
+      }
+      playerState.setPlayerRuntimeState({
+        facingRadians: facingRadiansRef.current,
+        grounded: sample.complete,
+        movementState: sample.complete ? "idle" : "jog",
+        planarSpeed: Math.hypot(travelVelocity.x, travelVelocity.z),
+        position: sample.position,
+        velocity: travelVelocity
+      });
+
+      if (sample.complete) {
+        navigationState.completeTravel();
+        void onArrive(plan.target);
+      }
+      return;
+    }
     const keySet = new Set(playerState.pressedKeys);
     const intent = createMovementIntent({
       gamepad: playerState.gamepadInput,
@@ -48,7 +96,9 @@ export function PlayerController({
     };
     const currentTranslation = body.translation();
     const currentLinearVelocity = body.linvel();
-    const grounded = currentTranslation.y <= 0.86 && Math.abs(currentLinearVelocity.y) < 0.45;
+    const groundHeight = sampleTerrain(currentTranslation.x, currentTranslation.z).height;
+    const grounded =
+      currentTranslation.y <= groundHeight + 0.86 && Math.abs(currentLinearVelocity.y) < 0.45;
     const movementState = resolvePlayerMovementState({
       grounded,
       intent,
@@ -87,7 +137,7 @@ export function PlayerController({
       currentTranslation.y < -12 ||
       !isInsideTerrainBounds([currentTranslation.x, currentTranslation.y, currentTranslation.z], 12)
     ) {
-      body.setTranslation({ x: 0, y: 1.1, z: 0 }, true);
+      body.setTranslation({ x: 0, y: sampleTerrain(0, 0).height + 1.1, z: 0 }, true);
       body.setLinvel({ x: 0, y: 0, z: 0 }, true);
       velocityRef.current = { x: 0, z: 0 };
     }
@@ -128,7 +178,7 @@ export function PlayerController({
       enabledRotations={[false, false, false]}
       linearDamping={0.18}
       lockRotations
-      position={[0, 1.1, 4]}
+      position={[0, sampleTerrain(0, 4).height + 1.1, 4]}
       ref={rigidBodyRef}
     >
       <CapsuleCollider args={[0.46, 0.34]} />

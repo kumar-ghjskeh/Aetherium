@@ -12,6 +12,11 @@ import type * as THREE from "three";
 
 import { buildDiagnosticWorldInteractions } from "../../engine/interaction-manifest";
 import { resolveGraphicsPresetSettings } from "../../engine/performance-manager";
+import {
+  buildWorldDestinations,
+  createWorldTravelPlan,
+  type WorldDestination
+} from "../../engine/navigation-system";
 import type { CentralPlazaOverviewData } from "../../engine/central-plaza-system";
 import type { AchievementHallOverviewData } from "../../engine/achievement-hall-system";
 import type { CodingArenaOverviewData } from "../../engine/coding-arena-system";
@@ -23,6 +28,8 @@ import type { ProjectDockOverviewData } from "../../engine/project-dock-system";
 import type { ProgressTowerOverviewData } from "../../engine/progress-tower-system";
 import type { PersonalSanctuaryOverviewData } from "../../engine/personal-sanctuary-system";
 import { useWorldSettingsStore } from "../../state/settings-store";
+import { useWorldNavigationStore } from "../../state/navigation-store";
+import { usePlayerStore } from "../../state/player-store";
 import { WorldCameraRig } from "../camera/world-camera-rig";
 import { PlayerController } from "../character/player-controller";
 import { RuntimeMetricsSampler } from "../diagnostics/runtime-metrics-sampler";
@@ -34,6 +41,9 @@ import {
 import { WorldEnvironmentScene } from "../environments/world-environment-scene";
 import { WorldInteractionPrompt } from "../interactions/world-interaction-prompt";
 import { WorldInteractionSystem } from "../interactions/world-interaction-system";
+import { WorldArrivalTracker } from "../navigation/world-arrival-tracker";
+import { WorldLocationMarkers } from "../navigation/world-location-markers";
+import { WorldNavigationOverlay } from "../navigation/world-navigation-overlay";
 import { CentralPlazaOverviewPanel } from "../ui/central-plaza-overview-panel";
 import { AIObservatoryPanel } from "../ui/ai-observatory-panel";
 import { KnowledgeLibraryPanel } from "../ui/knowledge-library-panel";
@@ -54,6 +64,7 @@ export function WorldRuntimeCanvas({
   learningAcademyOverview,
   libraryOverview,
   locationPage,
+  onVisitLocation,
   personalSanctuaryOverview,
   plazaOverview,
   preferences,
@@ -70,6 +81,7 @@ export function WorldRuntimeCanvas({
   learningAcademyOverview: LearningAcademyOverviewData;
   libraryOverview: KnowledgeLibraryOverviewData;
   locationPage: WorldLocationPage;
+  onVisitLocation: (locationId: string) => Promise<WorldProfile>;
   personalSanctuaryOverview: PersonalSanctuaryOverviewData;
   plazaOverview: CentralPlazaOverviewData;
   preferences: UserPreferences;
@@ -83,6 +95,8 @@ export function WorldRuntimeCanvas({
   const graphicsPreset = useWorldSettingsStore((state) => state.graphicsPreset);
   const setGraphicsPreset = useWorldSettingsStore((state) => state.setGraphicsPreset);
   const rendererRef = React.useRef<THREE.WebGLRenderer | null>(null);
+  const initialSpawnAppliedRef = React.useRef(false);
+  const lastSyncedLocationRef = React.useRef(profile.currentLocationId);
 
   React.useEffect(() => {
     setGraphicsPreset(preferences.performancePreset);
@@ -109,6 +123,58 @@ export function WorldRuntimeCanvas({
   const interactions = React.useMemo(
     () => buildDiagnosticWorldInteractions({ deepLinks, locationPage }),
     [deepLinks, locationPage]
+  );
+  const destinations = React.useMemo(() => buildWorldDestinations(locationPage), [locationPage]);
+
+  React.useEffect(() => {
+    lastSyncedLocationRef.current = profile.currentLocationId;
+  }, [profile.currentLocationId]);
+
+  React.useEffect(() => {
+    if (initialSpawnAppliedRef.current) {
+      return;
+    }
+    const initialDestination =
+      destinations.find(
+        (destination) => destination.backendLocationId === profile.currentLocationId
+      ) ??
+      destinations.find((destination) => destination.backendLocationId === profile.spawnLocationId);
+    if (!initialDestination || !initialDestination.unlocked) {
+      return;
+    }
+    initialSpawnAppliedRef.current = true;
+    const navigation = useWorldNavigationStore.getState();
+    navigation.selectDestination(initialDestination.id);
+    navigation.startTravel(
+      createWorldTravelPlan({
+        destination: initialDestination,
+        from: usePlayerStore.getState().position,
+        mode: "instant",
+        reducedMotion: preferences.reducedMotion,
+        startedAtMilliseconds: performance.now()
+      })
+    );
+  }, [destinations, preferences.reducedMotion, profile.currentLocationId, profile.spawnLocationId]);
+
+  const handleArrival = React.useCallback(
+    async (destination: WorldDestination) => {
+      if (lastSyncedLocationRef.current === destination.backendLocationId) {
+        return;
+      }
+      lastSyncedLocationRef.current = destination.backendLocationId;
+      const navigation = useWorldNavigationStore.getState();
+      navigation.setSyncing(destination);
+      try {
+        await onVisitLocation(destination.backendLocationId);
+        navigation.setSyncIdle();
+      } catch (arrivalError) {
+        lastSyncedLocationRef.current = profile.currentLocationId;
+        navigation.setSyncError(
+          arrivalError instanceof Error ? arrivalError.message : "Location could not be saved."
+        );
+      }
+    },
+    [onVisitLocation, profile.currentLocationId]
   );
 
   return (
@@ -144,7 +210,12 @@ export function WorldRuntimeCanvas({
               progressTowerOverview={progressTowerOverview}
               reducedMotion={preferences.reducedMotion}
             />
-            <PlayerController reducedMotion={preferences.reducedMotion} />
+            <PlayerController onArrive={handleArrival} reducedMotion={preferences.reducedMotion} />
+            <WorldArrivalTracker destinations={destinations} onArrive={handleArrival} />
+            <WorldLocationMarkers
+              destinations={destinations}
+              reducedMotion={preferences.reducedMotion}
+            />
             <WorldInteractionSystem
               interactions={interactions}
               reducedMotion={preferences.reducedMotion}
@@ -162,6 +233,11 @@ export function WorldRuntimeCanvas({
         />
 
         <WorldInteractionPrompt />
+        <WorldNavigationOverlay
+          destinations={destinations}
+          profile={profile}
+          reducedMotion={preferences.reducedMotion}
+        />
         <CentralPlazaOverviewPanel overview={plazaOverview} />
         <KnowledgeLibraryPanel overview={libraryOverview} />
         <AIObservatoryPanel overview={aiObservatoryOverview} />

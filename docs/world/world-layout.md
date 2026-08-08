@@ -398,6 +398,24 @@ Current limitations:
 - No downloaded models, textures, audio, glTF/GLB assets, custom shaders, or particle systems are
   introduced.
 
+## Current Navigation Slice
+
+W17 connects all ten districts through the source-controlled location and travel manifests.
+
+Current navigation elements:
+
+- Terrain-aware saved spawn and fast-travel points.
+- World map with current, visited, unlocked, locked, and selected destination states.
+- Walk highlighting, skippable cinematic travel, instant travel, and Command Mode deep links.
+- Backend-synchronized walking and travel arrivals.
+- Procedural in-world destination markers and a shared terrain collider.
+
+Current limitations:
+
+- Walk mode does not provide automatic pathfinding.
+- Cinematic routes use deterministic terrain-aware interpolation until final camera-path polish.
+- Visual screenshot and frame-time validation remain scheduled for W23.
+
 ## Deterministic Generation
 
 Use fixed seeds for:

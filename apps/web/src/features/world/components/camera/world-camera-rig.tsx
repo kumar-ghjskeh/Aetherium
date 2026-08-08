@@ -12,6 +12,7 @@ import {
 } from "../../engine/camera-system";
 import { useWorldCameraInput } from "../../hooks/use-world-camera-input";
 import { useWorldCameraStore } from "../../state/camera-store";
+import { useWorldNavigationStore } from "../../state/navigation-store";
 import { usePlayerStore } from "../../state/player-store";
 
 export function WorldCameraRig({
@@ -34,6 +35,7 @@ export function WorldCameraRig({
     const perspectiveCamera = camera as THREE.PerspectiveCamera;
     const playerState = usePlayerStore.getState();
     const cameraState = useWorldCameraStore.getState();
+    const navigationState = useWorldNavigationStore.getState();
     const gamepad = playerState.gamepadInput;
 
     if (gamepad) {
@@ -58,7 +60,7 @@ export function WorldCameraRig({
       settings: nextCameraState.settings
     });
     const mode = resolveCameraMode({
-      cinematicTravelRequested: false,
+      cinematicTravelRequested: navigationState.activeTravel?.mode === "cinematic",
       interactionActive: playerState.interactionAligning || playerState.interactionRequested,
       panelOpen: playerState.paused || playerState.commandModeRequested || playerState.mapRequested,
       reducedMotion,

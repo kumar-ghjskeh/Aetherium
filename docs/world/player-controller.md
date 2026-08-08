@@ -7,11 +7,13 @@ combat, vehicle, climbing, or multiplayer controller.
 
 ## Current Implementation Status
 
-W2 implements the controller foundation inside the diagnostic runtime only. It includes normalized
+W2 implements the controller foundation inside the diagnostic runtime. It includes normalized
 keyboard and gamepad input, deterministic movement-state calculations, a Rapier capsule controller,
-pause handling, a procedural stylized avatar, and player telemetry. Final animation assets, polished
-terrain traversal, camera collision, and district-specific interaction alignment remain scheduled
-for later World Mode phases.
+pause handling, a procedural stylized avatar, and player telemetry. W17 replaces the flat
+development collider with a terrain trimesh generated from the visible terrain data. Ground checks,
+saved spawn, fast travel, cinematic travel, and walking arrivals now share the terrain sampler.
+Final animation assets and district-specific interaction alignment remain scheduled for later World
+Mode phases.
 
 ## Input Contract
 

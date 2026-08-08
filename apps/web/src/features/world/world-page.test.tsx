@@ -45,7 +45,7 @@ import type {
   WorldProfile,
   WorldSceneManifest
 } from "@aetherium/shared-types";
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -69,8 +69,25 @@ import { WorldPage } from "./world-page";
 vi.mock("./components/canvas/world-runtime-canvas", async () => {
   const React = await import("react");
   return {
-    WorldRuntimeCanvas: () =>
-      React.createElement("div", { "data-testid": "world-runtime-canvas" }, "Mock runtime canvas")
+    WorldRuntimeCanvas: ({
+      onVisitLocation
+    }: {
+      onVisitLocation: (locationId: string) => Promise<unknown>;
+    }) =>
+      React.createElement(
+        React.Fragment,
+        null,
+        React.createElement(
+          "div",
+          { "data-testid": "world-runtime-canvas" },
+          "Mock runtime canvas"
+        ),
+        React.createElement(
+          "button",
+          { onClick: () => void onVisitLocation("library"), type: "button" },
+          "Mock visit Library"
+        )
+      )
   };
 });
 
@@ -658,7 +675,7 @@ describe("WorldPage", () => {
     expect(screen.getByRole("heading", { name: "Central Plaza runtime" })).toBeInTheDocument();
     expect(screen.getByText("Enabled")).toBeInTheDocument();
     expect(
-      screen.getByRole("progressbar", { name: /17 of 26 World Mode phases complete/u })
+      screen.getByRole("progressbar", { name: /18 of 26 World Mode phases complete/u })
     ).toBeInTheDocument();
     expect(await screen.findByTestId("world-runtime-canvas")).toBeInTheDocument();
     expect(screen.getByText("central_plaza")).toBeInTheDocument();
@@ -742,6 +759,29 @@ describe("WorldPage", () => {
       screen.getByText("This browser did not provide a stable WebGL2 context.")
     ).toBeInTheDocument();
     expect(screen.queryByTestId("world-runtime-canvas")).not.toBeInTheDocument();
+  });
+
+  it("persists a World Mode arrival and updates current location state", async () => {
+    const updatedProfile: WorldProfile = {
+      ...profile,
+      currentLocationId: "library",
+      lastVisitedLocationId: "central_plaza",
+      unlockedLocationIds: [...profile.unlockedLocationIds, "library"],
+      visitedLocationIds: [...profile.visitedLocationIds, "library"]
+    };
+    const client = createClient({
+      visit: vi.fn(() => Promise.resolve(updatedProfile))
+    });
+
+    render(<WorldPage client={client} />);
+    fireEvent.click(await screen.findByRole("button", { name: "Mock visit Library" }));
+
+    await waitFor(() => expect(client.world.visit).toHaveBeenCalledTimes(1));
+    const visitPayload = vi.mocked(client.world.visit).mock.calls[0]?.[0];
+    expect(visitPayload?.locationId).toBe("library");
+    expect(typeof visitPayload?.idempotencyKey).toBe("string");
+    expect(visitPayload?.idempotencyKey.length).toBeGreaterThan(0);
+    expect(await screen.findByText("library")).toBeInTheDocument();
   });
 
   it("uses the command fallback when reduced motion is enabled", async () => {

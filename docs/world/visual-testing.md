@@ -143,6 +143,11 @@ tests for preset-avatar metadata, favorites, certificates, privacy and preferenc
 private-field filtering, honest empty states, and accessible Command Mode handoffs. Fixed screenshot
 capture for Personal Sanctuary remains part of the W23 visual regression suite.
 
+W17 adds deterministic tests for destination/backend mapping, terrain-aware travel points, cinematic
+interpolation, exact arrival, reduced-motion travel, locked-destination rejection, map keyboard
+behavior, skip behavior, store transitions, and authenticated arrival persistence. Fixed map and
+travel screenshot capture remains part of the W23 visual regression suite.
+
 ## Failure Policy
 
 If tests show a black canvas, missing asset, persistent console error, browser crash, or performance

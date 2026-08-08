@@ -12,8 +12,10 @@ follow, mouse drag orbit, wheel distance adjustment, gamepad right-stick orbit, 
 distance/FOV/sensitivity/smoothing settings, reduced-motion-aware FOV behavior, optional sprint
 camera shake, and basic collision shortening against diagnostic blockers and world bounds.
 
-Authored cinematic travel paths, final district collision meshes, interaction framing, map overview,
-and production visual regression screenshots remain scheduled for later World Mode phases.
+W17 activates cinematic camera mode while the player follows a terrain-aware travel plan. Travel is
+bounded, skippable, and converted to instant relocation in reduced-motion mode. Final district
+camera collision meshes, interaction framing, and production visual regression screenshots remain
+scheduled for later World Mode phases.
 
 ## Camera Modes
 

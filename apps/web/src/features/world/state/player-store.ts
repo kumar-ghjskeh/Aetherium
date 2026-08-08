@@ -29,6 +29,7 @@ interface PlayerStoreState extends PlayerRuntimeState, PlayerActionState {
   setGamepadInput: (input: GamepadInputSnapshot | null) => void;
   setInteractionAligning: (aligning: boolean) => void;
   setKeyPressed: (key: string, pressed: boolean) => void;
+  setMovementDisabled: (disabled: boolean) => void;
   setPlayerRuntimeState: (state: PlayerRuntimeState) => void;
   togglePaused: () => void;
 }
@@ -65,6 +66,7 @@ export const usePlayerStore = create<PlayerStoreState>((set) => ({
       }
       return { inputMode: "keyboard", pressedKeys: [...keySet] };
     }),
+  setMovementDisabled: (movementDisabled) => set({ movementDisabled }),
   setPlayerRuntimeState: (runtimeState) => set(runtimeState),
   togglePaused: () => set((state) => ({ paused: !state.paused })),
   velocity: { x: 0, z: 0 }
