@@ -350,6 +350,42 @@ export const WORLD_INTERACTIONS_MANIFEST: WorldInteractionManifestEntry[] = [
     type: "open_analytics"
   },
   {
+    accessibilityLabel: "Review learning progress from Progress Tower in Command Mode",
+    commandRoute: "/app/learning",
+    gamepadAction: "primary",
+    id: "interaction-progress-learning-terminal",
+    keyboardAction: "KeyE",
+    locationId: "progress-tower",
+    position: [326, 1.25, -62],
+    prompt: "Learning Progress",
+    radius: 10,
+    type: "open_analytics"
+  },
+  {
+    accessibilityLabel: "Review habit progress from Progress Tower in Command Mode",
+    commandRoute: "/app/habits",
+    gamepadAction: "primary",
+    id: "interaction-progress-habits-terminal",
+    keyboardAction: "KeyE",
+    locationId: "progress-tower",
+    position: [340, 1.25, -70],
+    prompt: "Habit Progress",
+    radius: 10,
+    type: "open_analytics"
+  },
+  {
+    accessibilityLabel: "Review project progress from Progress Tower in Command Mode",
+    commandRoute: "/app/projects",
+    gamepadAction: "primary",
+    id: "interaction-progress-projects-terminal",
+    keyboardAction: "KeyE",
+    locationId: "progress-tower",
+    position: [354, 1.25, -62],
+    prompt: "Project Progress",
+    radius: 10,
+    type: "open_analytics"
+  },
+  {
     accessibilityLabel: "Open the Project Dock in Command Mode",
     commandRoute: "/app/projects",
     gamepadAction: "primary",

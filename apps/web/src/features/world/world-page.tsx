@@ -25,6 +25,7 @@ import type { HabitGardenOverviewData } from "./engine/habit-garden-system";
 import type { KnowledgeLibraryOverviewData } from "./engine/knowledge-library-system";
 import type { LearningAcademyOverviewData } from "./engine/learning-academy-system";
 import type { ProjectDockOverviewData } from "./engine/project-dock-system";
+import type { ProgressTowerOverviewData } from "./engine/progress-tower-system";
 import { useWorldRuntimeReadiness } from "./hooks/use-world-runtime-readiness";
 
 interface WorldDataState {
@@ -40,6 +41,7 @@ interface WorldDataState {
   preferences: UserPreferences;
   profile: WorldProfile;
   projectDockOverview: ProjectDockOverviewData;
+  progressTowerOverview: ProgressTowerOverviewData;
   sceneManifest: WorldSceneManifest;
 }
 
@@ -230,6 +232,9 @@ export function WorldPage({
           featuredProject,
           projects
         },
+        progressTowerOverview: {
+          summary: analytics
+        },
         sceneManifest
       });
       setStatus("ready");
@@ -333,6 +338,7 @@ export function WorldPage({
                   preferences={data.preferences}
                   profile={data.profile}
                   projectDockOverview={data.projectDockOverview}
+                  progressTowerOverview={data.progressTowerOverview}
                   sceneManifest={data.sceneManifest}
                 />
               </React.Suspense>

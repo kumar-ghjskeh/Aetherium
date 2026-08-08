@@ -12,6 +12,7 @@ import type { HabitGardenOverviewData } from "../../engine/habit-garden-system";
 import type { KnowledgeLibraryOverviewData } from "../../engine/knowledge-library-system";
 import type { LearningAcademyOverviewData } from "../../engine/learning-academy-system";
 import type { ProjectDockOverviewData } from "../../engine/project-dock-system";
+import type { ProgressTowerOverviewData } from "../../engine/progress-tower-system";
 import { WORLD_LOCATIONS_MANIFEST } from "../../manifests/locations.manifest";
 import {
   createRoutePoints,
@@ -32,6 +33,7 @@ import { HabitGardenDistrict } from "../locations/habit-garden";
 import { KnowledgeLibraryDistrict } from "../locations/knowledge-library";
 import { LearningAcademyDistrict } from "../locations/learning-academy";
 import { ProjectDockDistrict } from "../locations/project-dock";
+import { ProgressTowerDistrict } from "../locations/progress-tower";
 import { CodingArenaDistrict } from "../locations/coding-arena";
 
 export function WorldEnvironmentScene({
@@ -43,6 +45,7 @@ export function WorldEnvironmentScene({
   libraryOverview,
   plazaOverview,
   projectDockOverview,
+  progressTowerOverview,
   reducedMotion
 }: Readonly<{
   aiObservatoryOverview: AIObservatoryOverviewData;
@@ -53,6 +56,7 @@ export function WorldEnvironmentScene({
   libraryOverview: KnowledgeLibraryOverviewData;
   plazaOverview: CentralPlazaOverviewData;
   projectDockOverview: ProjectDockOverviewData;
+  progressTowerOverview: ProgressTowerOverviewData;
   reducedMotion: boolean;
 }>): React.ReactElement {
   return (
@@ -84,6 +88,7 @@ export function WorldEnvironmentScene({
       <LearningAcademyDistrict overview={learningAcademyOverview} reducedMotion={reducedMotion} />
       <CodingArenaDistrict overview={codingArenaOverview} reducedMotion={reducedMotion} />
       <ProjectDockDistrict overview={projectDockOverview} reducedMotion={reducedMotion} />
+      <ProgressTowerDistrict overview={progressTowerOverview} reducedMotion={reducedMotion} />
     </>
   );
 }
@@ -248,7 +253,8 @@ function DistrictFoundationMarkers(): React.ReactElement {
           location.id !== "habit-garden" &&
           location.id !== "learning-academy" &&
           location.id !== "coding-arena" &&
-          location.id !== "project-dock"
+          location.id !== "project-dock" &&
+          location.id !== "progress-tower"
       ).map((location) => {
         const [x, , z] = location.position;
         const terrain = sampleTerrain(x, z);

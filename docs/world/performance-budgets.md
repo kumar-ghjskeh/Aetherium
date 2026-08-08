@@ -174,6 +174,21 @@ W13 does not add textures, downloaded assets, spatial audio, post-processing, pr
 custom shaders, live particles, or in-canvas project editing. Browser screenshot and frame-metric
 automation remain scheduled for W23.
 
+## Current W14 Progress Tower Budget
+
+The W14 Progress Tower adds one bounded analytics district slice:
+
+- Procedural tower exterior and observation crown meshes only.
+- Up to twelve metric floors derived from the current weekly analytics summary.
+- Up to eight same-unit study-minute trend columns.
+- Four structural fins, two low-cost animated crown rings, and one local point light.
+- No additional API request; W14 reuses the analytics summary already loaded for Central Plaza.
+- Reduced-motion mode disables crown animation.
+
+W14 does not add textures, downloaded assets, spatial audio, post-processing, analytics mutation,
+custom shaders, live particles, or in-canvas charting. Browser screenshot and frame-metric
+automation remain scheduled for W23.
+
 ## Runtime Diagnostics
 
 Diagnostics must report:

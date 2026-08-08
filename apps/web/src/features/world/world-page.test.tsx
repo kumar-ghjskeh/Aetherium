@@ -592,7 +592,7 @@ describe("WorldPage", () => {
     expect(screen.getByRole("heading", { name: "Central Plaza runtime" })).toBeInTheDocument();
     expect(screen.getByText("Enabled")).toBeInTheDocument();
     expect(
-      screen.getByRole("progressbar", { name: /14 of 26 World Mode phases complete/u })
+      screen.getByRole("progressbar", { name: /15 of 26 World Mode phases complete/u })
     ).toBeInTheDocument();
     expect(await screen.findByTestId("world-runtime-canvas")).toBeInTheDocument();
     expect(screen.getByText("central_plaza")).toBeInTheDocument();

@@ -127,6 +127,11 @@ project construction state, real task progress, milestone signals, blockers, lin
 privacy filtering; it also verifies that `/app/world` loads only one featured project detail. Fixed
 screenshot capture for Project Dock remains part of the W23 visual regression suite.
 
+W14 adds Progress Tower and uses the same interim validation approach. It adds deterministic tests
+for metric availability, exact value formatting, honest no-activity states, same-unit study-trend
+normalization, and accessible Command Mode handoffs. Fixed screenshot capture for Progress Tower
+remains part of the W23 visual regression suite.
+
 ## Failure Policy
 
 If tests show a black canvas, missing asset, persistent console error, browser crash, or performance

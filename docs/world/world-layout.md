@@ -321,6 +321,32 @@ Current limitations:
 - No downloaded models, textures, audio, glTF/GLB assets, custom shaders, or particle systems are
   introduced.
 
+## Current Progress Tower Slice
+
+W14 adds the analytics district in
+`apps/web/src/features/world/components/locations/progress-tower.tsx`.
+
+Current Progress Tower elements:
+
+- Procedural vertical tower, structural fins, metric floors, observation crown, crystal, and bounded
+  study-trend columns at the `progress-tower` manifest coordinates.
+- Metric floors derived from real weekly analytics values and explicit backend availability states.
+- Study columns normalized only within the study-minute trend series, avoiding invalid cross-unit
+  comparisons.
+- Near-district overlay backed by the real analytics period, generated timestamp, metric values,
+  explanations, and trend buckets.
+- Tower-specific interaction terminals for detailed analytics, learning, habits, and projects in
+  Command Mode.
+
+Current limitations:
+
+- The district does not fabricate unavailable metrics, forecasts, or synthetic activity.
+- Detailed charts, alternate periods, tables, and data explanations remain in the accessible Command
+  Mode analytics interface.
+- The district does not yet include a walkable observation interior or spatial audio.
+- No downloaded models, textures, audio, glTF/GLB assets, custom shaders, or particle systems are
+  introduced.
+
 ## Deterministic Generation
 
 Use fixed seeds for:

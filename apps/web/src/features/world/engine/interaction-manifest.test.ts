@@ -109,6 +109,23 @@ const locationPage: WorldLocationPage = {
       visualStatus: "data_contract_ready"
     },
     {
+      category: "command",
+      commandRoute: "/app/analytics",
+      current: false,
+      deepLinkEntityTypes: ["analytics"],
+      defaultUnlocked: true,
+      description: "Real progress analytics",
+      futureSceneKey: "progress-tower",
+      id: "command_center",
+      spawn: false,
+      subtitle: "Progress",
+      title: "Progress Tower",
+      unlockDependencyIds: [],
+      unlocked: true,
+      visited: false,
+      visualStatus: "data_contract_ready"
+    },
+    {
       category: "achievements",
       commandRoute: "/app/achievements",
       current: false,
@@ -126,8 +143,8 @@ const locationPage: WorldLocationPage = {
       visualStatus: "data_contract_ready"
     }
   ],
-  total: 7,
-  unlockedCount: 6,
+  total: 8,
+  unlockedCount: 7,
   visitedCount: 0
 };
 
@@ -180,9 +197,17 @@ const deepLinks: WorldDeepLinkPage = {
       locationId: "project_workshop",
       notes: "Route",
       routePattern: "/app/projects{?projectId}"
+    },
+    {
+      commandRoute: "/app/analytics",
+      entityTypes: ["analytics"],
+      label: "Progress Tower",
+      locationId: "command_center",
+      notes: "Route",
+      routePattern: "/app/analytics"
     }
   ],
-  total: 6
+  total: 7
 };
 
 describe("diagnostic world interaction manifest", () => {
@@ -428,5 +453,31 @@ describe("diagnostic world interaction manifest", () => {
       prompt: "Open AI Hall",
       status: "available"
     });
+  });
+
+  it("adds Progress Tower terminals with accessible Command Mode chart handoffs", () => {
+    const interactions = buildDiagnosticWorldInteractions({ deepLinks, locationPage });
+
+    expect(
+      interactions.find((interaction) => interaction.id === "interaction-analytics-terminal")
+    ).toMatchObject({
+      commandRoute: "/app/analytics",
+      locationId: "command_center",
+      prompt: "Open Analytics",
+      status: "available"
+    });
+    expect(
+      interactions.find(
+        (interaction) => interaction.id === "interaction-progress-learning-terminal"
+      )
+    ).toMatchObject({ commandRoute: "/app/learning", prompt: "Learning Progress" });
+    expect(
+      interactions.find((interaction) => interaction.id === "interaction-progress-habits-terminal")
+    ).toMatchObject({ commandRoute: "/app/habits", prompt: "Habit Progress" });
+    expect(
+      interactions.find(
+        (interaction) => interaction.id === "interaction-progress-projects-terminal"
+      )
+    ).toMatchObject({ commandRoute: "/app/projects", prompt: "Project Progress" });
   });
 });
