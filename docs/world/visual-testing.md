@@ -148,6 +148,11 @@ interpolation, exact arrival, reduced-motion travel, locked-destination rejectio
 behavior, skip behavior, store transitions, and authenticated arrival persistence. Fixed map and
 travel screenshot capture remains part of the W23 visual regression suite.
 
+W18 adds fixed day, sunset, and night controls specifically so visual tests do not depend on wall
+clock time. It also adds explicit clear, mist, and light-rain controls, deterministic automatic
+weather tests, preset caps, and reduced-motion precipitation tests. The W23 suite must capture the
+three fixed times, Balanced weather states, Low mode, and reduced motion through these controls.
+
 ## Failure Policy
 
 If tests show a black canvas, missing asset, persistent console error, browser crash, or performance

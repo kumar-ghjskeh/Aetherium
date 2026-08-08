@@ -54,6 +54,7 @@ import { ProgressTowerPanel } from "../ui/progress-tower-panel";
 import { CodingArenaPanel } from "../ui/coding-arena-panel";
 import { AchievementHallPanel } from "../ui/achievement-hall-panel";
 import { PersonalSanctuaryPanel } from "../ui/personal-sanctuary-panel";
+import { WorldAtmosphereControls } from "../ui/world-atmosphere-controls";
 
 export function WorldRuntimeCanvas({
   achievementHallOverview,
@@ -93,6 +94,9 @@ export function WorldRuntimeCanvas({
   const [metrics, setMetrics] = React.useState<WorldRuntimeMetrics>(DEFAULT_RUNTIME_METRICS);
   const [pageVisible, setPageVisible] = React.useState(true);
   const graphicsPreset = useWorldSettingsStore((state) => state.graphicsPreset);
+  const timeMode = useWorldSettingsStore((state) => state.timeMode);
+  const weatherEnabled = useWorldSettingsStore((state) => state.weatherEnabled);
+  const weatherMode = useWorldSettingsStore((state) => state.weatherMode);
   const setGraphicsPreset = useWorldSettingsStore((state) => state.setGraphicsPreset);
   const rendererRef = React.useRef<THREE.WebGLRenderer | null>(null);
   const initialSpawnAppliedRef = React.useRef(false);
@@ -209,6 +213,9 @@ export function WorldRuntimeCanvas({
               projectDockOverview={projectDockOverview}
               progressTowerOverview={progressTowerOverview}
               reducedMotion={preferences.reducedMotion}
+              timeMode={timeMode}
+              weatherEnabled={weatherEnabled}
+              weatherMode={weatherMode}
             />
             <PlayerController onArrive={handleArrival} reducedMotion={preferences.reducedMotion} />
             <WorldArrivalTracker destinations={destinations} onArrive={handleArrival} />
@@ -238,6 +245,7 @@ export function WorldRuntimeCanvas({
           profile={profile}
           reducedMotion={preferences.reducedMotion}
         />
+        <WorldAtmosphereControls />
         <CentralPlazaOverviewPanel overview={plazaOverview} />
         <KnowledgeLibraryPanel overview={libraryOverview} />
         <AIObservatoryPanel overview={aiObservatoryOverview} />

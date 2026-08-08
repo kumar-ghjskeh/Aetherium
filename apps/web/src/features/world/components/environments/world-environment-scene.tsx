@@ -1,5 +1,5 @@
 import type { PerformancePreset } from "@aetherium/shared-types";
-import { Line, Sky } from "@react-three/drei";
+import { Line } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { RigidBody } from "@react-three/rapier";
 import React from "react";
@@ -15,6 +15,8 @@ import type { LearningAcademyOverviewData } from "../../engine/learning-academy-
 import type { ProjectDockOverviewData } from "../../engine/project-dock-system";
 import type { ProgressTowerOverviewData } from "../../engine/progress-tower-system";
 import type { PersonalSanctuaryOverviewData } from "../../engine/personal-sanctuary-system";
+import type { WorldTimeMode } from "../../engine/time-manager";
+import type { WorldWeatherMode } from "../../engine/weather-manager";
 import { WORLD_LOCATIONS_MANIFEST } from "../../manifests/locations.manifest";
 import {
   createRoutePoints,
@@ -38,6 +40,7 @@ import { ProgressTowerDistrict } from "../locations/progress-tower";
 import { CodingArenaDistrict } from "../locations/coding-arena";
 import { AchievementHallDistrict } from "../locations/achievement-hall";
 import { PersonalSanctuaryDistrict } from "../locations/personal-sanctuary";
+import { DynamicWorldAtmosphere } from "../effects/dynamic-world-atmosphere";
 
 export function WorldEnvironmentScene({
   achievementHallOverview,
@@ -51,7 +54,10 @@ export function WorldEnvironmentScene({
   plazaOverview,
   projectDockOverview,
   progressTowerOverview,
-  reducedMotion
+  reducedMotion,
+  timeMode,
+  weatherEnabled,
+  weatherMode
 }: Readonly<{
   achievementHallOverview: AchievementHallOverviewData;
   aiObservatoryOverview: AIObservatoryOverviewData;
@@ -65,21 +71,19 @@ export function WorldEnvironmentScene({
   projectDockOverview: ProjectDockOverviewData;
   progressTowerOverview: ProgressTowerOverviewData;
   reducedMotion: boolean;
+  timeMode: WorldTimeMode;
+  weatherEnabled: boolean;
+  weatherMode: WorldWeatherMode;
 }>): React.ReactElement {
   return (
     <>
-      <Sky azimuth={0.2} distance={450000} inclination={0.5} turbidity={4.2} />
-      <color args={["#07101f"]} attach="background" />
-      <fog args={["#0a1622", 120, graphicsPreset === "low" ? 560 : 780]} attach="fog" />
-
-      <hemisphereLight color="#dfefff" groundColor="#21322e" intensity={1.35} />
-      <directionalLight
-        castShadow={graphicsPreset === "high"}
-        color="#fff8ea"
-        intensity={2.45}
-        position={[120, 210, 90]}
+      <DynamicWorldAtmosphere
+        graphicsPreset={graphicsPreset}
+        reducedMotion={reducedMotion}
+        timeMode={timeMode}
+        weatherEnabled={weatherEnabled}
+        weatherMode={weatherMode}
       />
-      <ambientLight color="#617590" intensity={0.58} />
 
       <TerrainMesh />
       <TerrainCollision />
@@ -323,44 +327,8 @@ function EnvironmentProps({
   return (
     <>
       {props.map((prop) => {
-        if (prop.kind === "cloud") {
-          return (
-            <mesh
-              key={prop.id}
-              position={prop.position}
-              rotation={[0, prop.rotationY, 0]}
-              scale={prop.scale}
-            >
-              <sphereGeometry args={[1, 16, 8]} />
-              <meshStandardMaterial
-                color="#d8e5ef"
-                depthWrite={false}
-                opacity={0.2}
-                roughness={1}
-                transparent
-              />
-            </mesh>
-          );
-        }
-        if (prop.kind === "mist") {
-          return (
-            <mesh
-              key={prop.id}
-              position={prop.position}
-              rotation={[0, prop.rotationY, 0]}
-              scale={prop.scale}
-            >
-              <sphereGeometry args={[1, 12, 6]} />
-              <meshStandardMaterial
-                color="#ccecf6"
-                depthWrite={false}
-                emissive="#184b58"
-                emissiveIntensity={0.08}
-                opacity={0.16}
-                transparent
-              />
-            </mesh>
-          );
+        if (prop.kind !== "rock") {
+          return null;
         }
         return (
           <mesh

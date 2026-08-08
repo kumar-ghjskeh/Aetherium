@@ -29,7 +29,8 @@ or audio files. W16 adds a procedural Personal Sanctuary terrace, pavilion, symb
 favorite alcoves, certificate displays, privacy shields, and preference beacons. It adds no
 downloaded model, texture, image, or audio files. W17 adds procedural destination markers and a DOM
 map driven by the existing manifests. It adds no downloaded map, model, texture, image, or audio
-files.
+files. W18 adds a procedural sky dome, sun disc, bounded cloud and mist meshes, and a bounded rain
+point field. It adds no downloaded model, texture, image, weather feed, or audio file.
 
 ## License Rules
 

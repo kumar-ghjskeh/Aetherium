@@ -1866,6 +1866,99 @@ kbd {
   top: 16px;
 }
 
+.world-atmosphere-controls {
+  background: rgba(5, 14, 20, 0.9);
+  border: 1px solid rgba(178, 224, 235, 0.28);
+  color: #effbff;
+  max-width: min(390px, calc(100% - 32px));
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  width: 360px;
+  z-index: 23;
+}
+
+.world-atmosphere-controls summary {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  min-height: 42px;
+  padding: 0 12px;
+}
+
+.world-atmosphere-controls summary span,
+.world-atmosphere-controls > div > span {
+  color: #9fd2df;
+  font-size: 0.68rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.world-atmosphere-controls summary strong {
+  text-transform: capitalize;
+}
+
+.world-atmosphere-controls[open] {
+  display: grid;
+  gap: 12px;
+  padding-bottom: 12px;
+}
+
+.world-atmosphere-controls[open] > :not(summary) {
+  margin-left: 12px;
+  margin-right: 12px;
+}
+
+.world-atmosphere-controls > div,
+.world-atmosphere-controls > label {
+  display: grid;
+  gap: 7px;
+}
+
+.world-time-segments {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.world-time-segments button {
+  background: rgba(151, 205, 219, 0.06);
+  border: 1px solid rgba(151, 205, 219, 0.2);
+  color: #eaf8fb;
+  min-height: 34px;
+}
+
+.world-time-segments button[aria-pressed="true"] {
+  background: rgba(240, 174, 105, 0.14);
+  border-color: rgba(255, 188, 118, 0.58);
+  color: #ffe7ca;
+}
+
+.world-atmosphere-toggle {
+  align-items: center;
+  display: flex !important;
+  gap: 8px !important;
+}
+
+.world-atmosphere-controls input {
+  accent-color: #8be8ff;
+}
+
+.world-atmosphere-controls select {
+  background: #07151c;
+  border: 1px solid rgba(151, 205, 219, 0.28);
+  color: #effbff;
+  min-height: 36px;
+  padding: 0 9px;
+}
+
+.world-atmosphere-controls small {
+  color: #a7bec5;
+  line-height: 1.45;
+}
+
 .world-plaza-panel {
   background:
     linear-gradient(135deg, rgba(7, 16, 31, 0.86), rgba(10, 19, 24, 0.74)), rgba(7, 16, 31, 0.82);
@@ -4214,6 +4307,10 @@ kbd {
 .world-runtime-camera-controls input:focus,
 .world-runtime-button:focus,
 .world-runtime-hud select:focus,
+.world-atmosphere-controls summary:focus,
+.world-atmosphere-controls input:focus,
+.world-atmosphere-controls select:focus,
+.world-time-segments button:focus,
 .danger-action:focus {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
@@ -4348,6 +4445,13 @@ kbd {
 
   .world-runtime-frame {
     min-height: 560px;
+  }
+
+  .world-atmosphere-controls {
+    left: 16px;
+    right: 16px;
+    top: 70px;
+    width: auto;
   }
 
   .world-plaza-panel {

@@ -236,6 +236,23 @@ The W17 navigation slice adds:
 W17 adds no downloaded map, model, texture, or audio assets. Browser travel screenshots, console
 checks, and frame metrics remain scheduled for W23.
 
+## Current W18 Atmosphere Budget
+
+W18 replaces the static environment sky, lights, cloud meshes, and mist meshes with one dynamic
+atmosphere owner:
+
+- Eight-minute interpolated day cycle plus deterministic day, sunset, and night inspection states.
+- Low: 3 clouds, 6 mist puffs, and at most 140 rain points.
+- Balanced/Automatic: 6 clouds, 12 mist puffs, and at most 360 rain points.
+- High: 9 clouds, 18 mist puffs, and at most 620 rain points.
+- Rain uses one point-field draw call; time interpolation updates Three.js objects directly rather
+  than React state per frame.
+- Reduced motion removes rain points and wind animation.
+- Old W6 cloud and mist props are filtered out to avoid duplicated transparent geometry.
+
+W18 adds no textures, downloaded assets, network weather calls, post-processing, or external
+dependencies. Measured browser frame budgets remain scheduled for W23.
+
 ## Runtime Diagnostics
 
 Diagnostics must report:
