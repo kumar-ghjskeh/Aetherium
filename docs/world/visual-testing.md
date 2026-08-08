@@ -153,6 +153,11 @@ clock time. It also adds explicit clear, mist, and light-rain controls, determin
 weather tests, preset caps, and reduced-motion precipitation tests. The W23 suite must capture the
 three fixed times, Balanced weather states, Low mode, and reduced motion through these controls.
 
+W19 adds injectable audio-runtime tests for explicit activation, saved preference hydration, volume
+changes, sound captions, and hidden-tab suspension. W23 browser scenarios must enable audio with a
+user gesture, verify that activation produces no console error, verify tab suspension, and run at
+least one Balanced performance capture with audio active.
+
 ## Failure Policy
 
 If tests show a black canvas, missing asset, persistent console error, browser crash, or performance

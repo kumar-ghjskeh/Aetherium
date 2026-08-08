@@ -125,13 +125,16 @@ Implemented foundation slices:
 - Visual World Mode W18 atmosphere with a deterministic eight-minute day cycle, fixed day/sunset/
   night inspection states, performance-tiered clear/mist/rain weather, reduced-motion precipitation
   suppression, and transient accessible atmosphere controls.
+- Visual World Mode W19 audio with ten procedural spatial zones, explicit browser audio activation,
+  saved music/ambient preference hydration, transient volume and sensory controls, movement and
+  interaction cues, hidden-tab suspension, and readable sound captions.
 
 Still out of scope unless explicitly requested:
 
 - OAuth, social login, email delivery, password reset, MFA, and magic links.
 - External email, push, SMS, and deployed scheduler notification delivery.
-- Audio, performance optimization, automated visual regression, accessibility polish, or visual
-  world progression until the corresponding approved World Mode phase is active.
+- Performance optimization, automated visual regression, accessibility polish, or visual world
+  progression until the corresponding approved World Mode phase is active.
 - Automatic production deployment.
 
 ## Product Independence
@@ -156,7 +159,7 @@ before completing work that could affect World Mode dependencies or assets. Run
 
 ## Visual World Mode
 
-The visual World Mode architecture and W1-W18 runtime, district, navigation, and atmosphere
+The visual World Mode architecture and W1-W19 runtime, district, navigation, atmosphere, and audio
 foundations are documented. Follow
 `docs/architecture/decisions/0025-visual-world-mode-architecture.md`,
 `docs/world/world-mode-architecture.md`, and `docs/tasks/world/world-mode-roadmap.md` for W7 and

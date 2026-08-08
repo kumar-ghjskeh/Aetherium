@@ -39,6 +39,31 @@ Settings must support mute and reduced sensory mode.
 - Captions or text alternatives are provided for meaningful audio cues.
 - No autoplay surprise beyond browser-permitted, user-initiated behavior.
 
+## W19 Implementation
+
+World Mode uses one procedural Web Audio graph after explicit user activation:
+
+- A deterministic noise buffer passes through a district-tuned low-pass filter and HRTF panner.
+- Two quiet oscillators provide district-specific harmonic identity.
+- Short-lived oscillator envelopes provide footsteps, interaction, mentor, achievement, and travel
+  cues.
+- Player state updates listener position and direction at a throttled cadence.
+- Zone transitions use the source-controlled audio and location manifests.
+- Hidden tabs suspend the `AudioContext`; unmounting stops sources and closes it.
+
+The engine does not access a microphone, media device, geolocation, private user content, or an
+external audio URL.
+
+## Settings
+
+Saved `backgroundMusicEnabled` and `ambientAudioEnabled` preferences remain authoritative. The
+backend currently has no volume fields, so master/music/ambient/effects volume, mute,
+reduced-sensory mode, and sound captions are explicitly visit-scoped controls. They do not claim
+persistence.
+
+Core Aetherium workflows never require audio. Meaningful zone, interaction, travel, and pause cues
+have an `aria-live` text caption.
+
 ## Asset Policy
 
 Audio assets must follow the same license register rules as visual assets. Procedural or original

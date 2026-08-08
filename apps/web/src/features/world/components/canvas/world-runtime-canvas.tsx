@@ -32,6 +32,7 @@ import { useWorldNavigationStore } from "../../state/navigation-store";
 import { usePlayerStore } from "../../state/player-store";
 import { WorldCameraRig } from "../camera/world-camera-rig";
 import { PlayerController } from "../character/player-controller";
+import { WorldAudioRuntime } from "../audio/world-audio-runtime";
 import { RuntimeMetricsSampler } from "../diagnostics/runtime-metrics-sampler";
 import {
   DEFAULT_RUNTIME_METRICS,
@@ -246,6 +247,7 @@ export function WorldRuntimeCanvas({
           reducedMotion={preferences.reducedMotion}
         />
         <WorldAtmosphereControls />
+        <WorldAudioRuntime preferences={preferences} />
         <CentralPlazaOverviewPanel overview={plazaOverview} />
         <KnowledgeLibraryPanel overview={libraryOverview} />
         <AIObservatoryPanel overview={aiObservatoryOverview} />

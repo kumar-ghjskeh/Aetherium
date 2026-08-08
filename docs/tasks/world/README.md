@@ -59,3 +59,4 @@ See `docs/tasks/world/world-mode-roadmap.md`.
 - `docs/tasks/world/phase-w16-personal-sanctuary.md`
 - `docs/tasks/world/phase-w17-world-navigation.md`
 - `docs/tasks/world/phase-w18-dynamic-atmosphere.md`
+- `docs/tasks/world/phase-w19-spatial-audio.md`

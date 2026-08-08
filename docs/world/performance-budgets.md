@@ -253,6 +253,21 @@ atmosphere owner:
 W18 adds no textures, downloaded assets, network weather calls, post-processing, or external
 dependencies. Measured browser frame budgets remain scheduled for W23.
 
+## Current W19 Audio Budget
+
+W19 adds one browser audio graph after explicit user activation:
+
+- One deterministic two-second noise buffer and looping source.
+- One low-pass filter and one HRTF panner for district ambience.
+- Two quiet continuous oscillators for district music identity.
+- Short-lived one-shot oscillator envelopes for cues.
+- Listener and footstep checks throttled to 80 milliseconds.
+- Low mode scales ambient gain to 75 percent; reduced sensory mode scales all categories to 55
+  percent; hidden tabs suspend the context.
+
+No audio files are fetched, decoded, bundled, or retained. W23 must measure audio-enabled runtime
+alongside the rendering scenarios.
+
 ## Runtime Diagnostics
 
 Diagnostics must report:

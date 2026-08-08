@@ -30,7 +30,9 @@ favorite alcoves, certificate displays, privacy shields, and preference beacons.
 downloaded model, texture, image, or audio files. W17 adds procedural destination markers and a DOM
 map driven by the existing manifests. It adds no downloaded map, model, texture, image, or audio
 files. W18 adds a procedural sky dome, sun disc, bounded cloud and mist meshes, and a bounded rain
-point field. It adds no downloaded model, texture, image, weather feed, or audio file.
+point field. It adds no downloaded model, texture, image, weather feed, or audio file. W19
+synthesizes ambience, music layers, footsteps, and interface cues at runtime with the browser Web
+Audio API. It adds no audio file, download, sample, recording, or external audio dependency.
 
 ## License Rules
 
