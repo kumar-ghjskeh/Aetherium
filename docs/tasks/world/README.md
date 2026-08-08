@@ -62,3 +62,4 @@ See `docs/tasks/world/world-mode-roadmap.md`.
 - `docs/tasks/world/phase-w19-spatial-audio.md`
 - `docs/tasks/world/phase-w20-command-world-integration.md`
 - `docs/tasks/world/phase-w21-world-performance.md`
+- `docs/tasks/world/phase-w22-world-asset-pipeline.md`

@@ -77,20 +77,6 @@ const prohibitedDependencyNames = new Set([
   "unity-webgl"
 ]);
 
-const prohibitedAssetExtensions = new Set([".blend", ".fbx", ".glb", ".gltf"]);
-const ignoredDirectories = new Set([
-  ".git",
-  ".mypy_cache",
-  ".next",
-  ".pytest_cache",
-  ".ruff_cache",
-  ".turbo",
-  "__pycache__",
-  "coverage",
-  "dist",
-  "node_modules"
-]);
-
 const failures = [];
 
 function relativePath(filePath) {
@@ -153,30 +139,10 @@ function scanLockfile() {
   }
 }
 
-function walk(directory) {
-  const entries = fs.readdirSync(directory, { withFileTypes: true });
-
-  for (const entry of entries) {
-    const fullPath = path.join(directory, entry.name);
-    if (entry.isDirectory()) {
-      if (!ignoredDirectories.has(entry.name)) {
-        walk(fullPath);
-      }
-      continue;
-    }
-
-    const extension = path.extname(entry.name).toLowerCase();
-    if (prohibitedAssetExtensions.has(extension)) {
-      failures.push(`${relativePath(fullPath)}: visual 3D asset files are intentionally deferred`);
-    }
-  }
-}
-
 for (const packageFile of packageFiles) {
   readPackageJson(packageFile);
 }
 scanLockfile();
-walk(root);
 
 if (failures.length > 0) {
   console.error("Aetherium visual-world deferral check failed:");
@@ -186,4 +152,4 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-console.log("Aetherium visual-world dependency and asset policy check passed.");
+console.log("Aetherium visual-world dependency policy check passed.");

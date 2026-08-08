@@ -69,14 +69,38 @@ Before final use:
 - Unclear-license downloads.
 - Assets copied from another private project.
 
-## Automation Targets
+## Automated Gate
 
-Future scripts should check:
+Run:
 
-- Missing register entries.
-- Missing files.
-- Duplicate assets.
-- Oversized textures.
-- Uncompressed GLB files.
-- License metadata.
-- Bundle-size impact.
+```text
+pnpm world:assets:test
+pnpm world:assets:check
+pnpm world:assets:report
+```
+
+`world:check` includes both asset tests and the asset check, so the CI gate rejects:
+
+- Manifest IDs missing from the asset register.
+- Runtime files missing from the manifest.
+- Manifest paths with no file.
+- Duplicate IDs, paths, or content hashes.
+- Files outside `apps/web/public/world`.
+- Path traversal and unsafe or inconsistent names.
+- Unsupported runtime and source-only formats.
+- Missing source, author, license, attribution, compression, hash, or size-budget metadata.
+- Hash mismatches and size-budget violations.
+
+`world:assets:report` writes ignored output to `artifacts/world-assets-report.json`. The report
+contains counts and byte totals only; it does not copy assets.
+
+## Compression Workflow
+
+The runtime accepts optimized delivery formats such as GLB/glTF, KTX2/Basis, WebP/AVIF, and
+compressed OGG/MP3. File-backed entries must declare their compression method. Source formats such
+as Blender, FBX, PSD, EXR, TIFF, HDR, and WAV are rejected from the runtime directory.
+
+No file-backed assets exist through W22, so running a compressor would be misleading. When the first
+asset is introduced, optimization must happen before registration using a documented free tool such
+as glTF Transform for mesh/Draco/Meshopt work and `toktx` for KTX2. The optimized file's SHA-256 and
+byte budget are then committed to the manifest, and CI enforces the result.

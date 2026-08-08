@@ -27,7 +27,11 @@ export type WorldThemeId =
   | "project"
   | "research";
 
-export type WorldAssetKind = "procedural" | "registry_placeholder";
+export type WorldAssetKind =
+  "audio" | "image" | "model" | "procedural" | "registry_placeholder" | "texture";
+
+export type WorldAssetLicense =
+  "cc0" | "mit" | "original" | "original_procedural" | "public_domain";
 
 export type WorldLodProfile = "diagnostic" | "hero-building" | "landmark" | "medium-prop";
 
@@ -39,11 +43,18 @@ export interface WorldThemeManifestEntry {
 }
 
 export interface WorldAssetManifestEntry {
+  attributionRequired?: boolean;
+  author?: string;
+  compression?: "basis" | "draco" | "ktx2" | "lossless" | "meshopt" | "not_applicable";
   id: string;
   kind: WorldAssetKind;
-  license: "original_procedural";
+  license: WorldAssetLicense;
   lodProfile: WorldLodProfile;
   notes: string;
+  path?: string;
+  sha256?: string;
+  sizeBudgetBytes?: number;
+  source?: string;
 }
 
 export interface WorldEnvironmentZoneManifestEntry {

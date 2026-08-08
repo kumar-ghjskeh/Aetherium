@@ -37,6 +37,25 @@ adds only DOM-based Command Mode integration and route/session state logic; it a
 audio asset. W21 changes renderer budgets, adaptation, and diagnostics only; it adds no model,
 texture, image, shader, audio file, or external asset.
 
+W22 adds the asset validation and reporting toolchain only. There are still no file-backed World
+Mode assets, downloads, or attribution requirements.
+
+## Registered Procedural Manifest
+
+| Asset ID                          | Kind                 | Source                  | License             | File-backed |
+| --------------------------------- | -------------------- | ----------------------- | ------------------- | ----------- |
+| `building-central-plaza`          | Registry placeholder | Aetherium procedural UI | Original procedural | No          |
+| `building-knowledge-library`      | Registry placeholder | Aetherium procedural UI | Original procedural | No          |
+| `building-ai-observatory`         | Registry placeholder | Aetherium procedural UI | Original procedural | No          |
+| `building-habit-garden`           | Registry placeholder | Aetherium procedural UI | Original procedural | No          |
+| `building-learning-academy`       | Registry placeholder | Aetherium procedural UI | Original procedural | No          |
+| `building-coding-arena`           | Registry placeholder | Aetherium procedural UI | Original procedural | No          |
+| `building-project-dock`           | Registry placeholder | Aetherium procedural UI | Original procedural | No          |
+| `building-progress-tower`         | Registry placeholder | Aetherium procedural UI | Original procedural | No          |
+| `building-achievement-hall`       | Registry placeholder | Aetherium procedural UI | Original procedural | No          |
+| `building-personal-sanctuary`     | Registry placeholder | Aetherium procedural UI | Original procedural | No          |
+| `diagnostic-interaction-terminal` | Procedural           | Aetherium procedural UI | Original procedural | No          |
+
 ## License Rules
 
 Allowed:

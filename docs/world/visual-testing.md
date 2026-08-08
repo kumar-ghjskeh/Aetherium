@@ -170,6 +170,10 @@ Balanced after warmup. Results must include FPS, frame time, draw calls, triangl
 GPU resources, texture estimate, physics bodies, and effective Automatic tier. Unit tests alone are
 not hardware performance evidence.
 
+W22 makes the visual harness fail earlier when an asset is unregistered, missing, duplicated,
+oversized, incorrectly named, hash-mismatched, source-only, or missing license/compression metadata.
+The W23 browser runner must call `pnpm world:check` before starting a server or capturing evidence.
+
 ## Failure Policy
 
 If tests show a black canvas, missing asset, persistent console error, browser crash, or performance
