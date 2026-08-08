@@ -6,6 +6,7 @@ import React from "react";
 import * as THREE from "three";
 
 import type { AIObservatoryOverviewData } from "../../engine/ai-observatory-system";
+import type { AchievementHallOverviewData } from "../../engine/achievement-hall-system";
 import type { CentralPlazaOverviewData } from "../../engine/central-plaza-system";
 import type { CodingArenaOverviewData } from "../../engine/coding-arena-system";
 import type { HabitGardenOverviewData } from "../../engine/habit-garden-system";
@@ -35,8 +36,10 @@ import { LearningAcademyDistrict } from "../locations/learning-academy";
 import { ProjectDockDistrict } from "../locations/project-dock";
 import { ProgressTowerDistrict } from "../locations/progress-tower";
 import { CodingArenaDistrict } from "../locations/coding-arena";
+import { AchievementHallDistrict } from "../locations/achievement-hall";
 
 export function WorldEnvironmentScene({
+  achievementHallOverview,
   aiObservatoryOverview,
   codingArenaOverview,
   graphicsPreset,
@@ -48,6 +51,7 @@ export function WorldEnvironmentScene({
   progressTowerOverview,
   reducedMotion
 }: Readonly<{
+  achievementHallOverview: AchievementHallOverviewData;
   aiObservatoryOverview: AIObservatoryOverviewData;
   codingArenaOverview: CodingArenaOverviewData;
   graphicsPreset: PerformancePreset;
@@ -89,6 +93,7 @@ export function WorldEnvironmentScene({
       <CodingArenaDistrict overview={codingArenaOverview} reducedMotion={reducedMotion} />
       <ProjectDockDistrict overview={projectDockOverview} reducedMotion={reducedMotion} />
       <ProgressTowerDistrict overview={progressTowerOverview} reducedMotion={reducedMotion} />
+      <AchievementHallDistrict overview={achievementHallOverview} reducedMotion={reducedMotion} />
     </>
   );
 }
@@ -254,7 +259,8 @@ function DistrictFoundationMarkers(): React.ReactElement {
           location.id !== "learning-academy" &&
           location.id !== "coding-arena" &&
           location.id !== "project-dock" &&
-          location.id !== "progress-tower"
+          location.id !== "progress-tower" &&
+          location.id !== "achievement-hall"
       ).map((location) => {
         const [x, , z] = location.position;
         const terrain = sampleTerrain(x, z);

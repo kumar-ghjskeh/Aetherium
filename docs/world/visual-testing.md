@@ -132,6 +132,12 @@ for metric availability, exact value formatting, honest no-activity states, same
 normalization, and accessible Command Mode handoffs. Fixed screenshot capture for Progress Tower
 remains part of the W23 visual regression suite.
 
+W15 adds Achievement Hall and uses the same interim validation approach. It adds deterministic tests
+for unlocked-only trophy exhibits, exact points and dates, certificate and completed-project
+mapping, world-unlock records, privacy filtering, honest empty states, and accessible Command Mode
+handoffs. Fixed screenshot capture for Achievement Hall remains part of the W23 visual regression
+suite.
+
 ## Failure Policy
 
 If tests show a black canvas, missing asset, persistent console error, browser crash, or performance

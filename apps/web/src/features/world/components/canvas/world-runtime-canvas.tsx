@@ -13,6 +13,7 @@ import type * as THREE from "three";
 import { buildDiagnosticWorldInteractions } from "../../engine/interaction-manifest";
 import { resolveGraphicsPresetSettings } from "../../engine/performance-manager";
 import type { CentralPlazaOverviewData } from "../../engine/central-plaza-system";
+import type { AchievementHallOverviewData } from "../../engine/achievement-hall-system";
 import type { CodingArenaOverviewData } from "../../engine/coding-arena-system";
 import type { AIObservatoryOverviewData } from "../../engine/ai-observatory-system";
 import type { KnowledgeLibraryOverviewData } from "../../engine/knowledge-library-system";
@@ -40,8 +41,10 @@ import { LearningAcademyPanel } from "../ui/learning-academy-panel";
 import { ProjectDockPanel } from "../ui/project-dock-panel";
 import { ProgressTowerPanel } from "../ui/progress-tower-panel";
 import { CodingArenaPanel } from "../ui/coding-arena-panel";
+import { AchievementHallPanel } from "../ui/achievement-hall-panel";
 
 export function WorldRuntimeCanvas({
+  achievementHallOverview,
   aiObservatoryOverview,
   codingArenaOverview,
   deepLinks,
@@ -56,6 +59,7 @@ export function WorldRuntimeCanvas({
   progressTowerOverview,
   sceneManifest
 }: Readonly<{
+  achievementHallOverview: AchievementHallOverviewData;
   aiObservatoryOverview: AIObservatoryOverviewData;
   codingArenaOverview: CodingArenaOverviewData;
   deepLinks: WorldDeepLinkPage;
@@ -123,6 +127,7 @@ export function WorldRuntimeCanvas({
         >
           <Physics gravity={[0, -9.81, 0]} paused={!pageVisible}>
             <WorldEnvironmentScene
+              achievementHallOverview={achievementHallOverview}
               aiObservatoryOverview={aiObservatoryOverview}
               codingArenaOverview={codingArenaOverview}
               graphicsPreset={graphicsPreset}
@@ -160,6 +165,7 @@ export function WorldRuntimeCanvas({
         <CodingArenaPanel overview={codingArenaOverview} />
         <ProjectDockPanel overview={projectDockOverview} />
         <ProgressTowerPanel overview={progressTowerOverview} />
+        <AchievementHallPanel overview={achievementHallOverview} />
 
         <div className="world-runtime-label" aria-live="polite">
           <strong>World Mode district slices</strong>

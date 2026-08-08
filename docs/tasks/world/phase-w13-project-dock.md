@@ -48,7 +48,8 @@ Excluded:
 
 Project Dock uses authenticated owner-scoped endpoints:
 
-- `projects.list` for up to five current projects.
+- `projects.list` for a shared page of up to 25 current projects; Project Dock renders at most five
+  berths.
 - `projects.get` for one featured active project or the first current project.
 
 The world maps:
@@ -87,7 +88,7 @@ without preauthorizing access or modifying the selected project.
 ## Performance Notes
 
 - The dock renders up to five project berths, six milestone signals, and four blocker beacons.
-- Only one project detail request is added to the existing bounded five-project World Mode page.
+- Only one project detail request is added to the bounded shared World Mode project page.
 - Geometry is procedural with no external model, texture, or audio memory cost.
 - One local point light and bounded low-cost crane and beacon animation are added.
 - No project editor, charting package, file body, or AI conversation bundle renders inside the

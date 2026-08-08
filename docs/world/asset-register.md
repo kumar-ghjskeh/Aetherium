@@ -2,7 +2,7 @@
 
 Every committed visual or audio asset must be recorded here before it is used by World Mode.
 
-No external visual or audio assets are registered through Phase W14. W5 adds procedural placeholder
+No external visual or audio assets are registered through Phase W15. W5 adds procedural placeholder
 asset IDs in `apps/web/src/features/world/manifests/assets.manifest.ts`; those entries are original
 Aetherium planning records and do not point to committed model, texture, or audio files. W6 adds
 code-generated terrain, water, mist, rocks, clouds, route lines, and district foundation markers
@@ -22,7 +22,10 @@ consoles, exercise pylons, and sealed runner vault. It adds no downloaded model,
 files. W13 adds a procedural Project Dock, water slips, workshop control room, crane, construction
 berths, milestone signals, and blocker beacons. It adds no downloaded model, texture, or audio
 files. W14 adds a procedural Progress Tower, structural fins, metric floors, study-trend columns,
-observation rings, and crystal crown. It adds no downloaded model, texture, or audio files.
+observation rings, and crystal crown. It adds no downloaded model, texture, or audio files. W15 adds
+a procedural Achievement Hall, colonnade, memorial wall, laurels, trophy pedestals, certificate
+plaques, completed-project models, and world-unlock crystals. It adds no downloaded model, texture,
+or audio files.
 
 ## License Rules
 

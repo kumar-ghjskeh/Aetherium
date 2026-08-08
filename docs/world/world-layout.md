@@ -347,6 +347,31 @@ Current limitations:
 - No downloaded models, textures, audio, glTF/GLB assets, custom shaders, or particle systems are
   introduced.
 
+## Current Achievement Hall Slice
+
+W15 adds the milestone district in
+`apps/web/src/features/world/components/locations/achievement-hall.tsx`.
+
+Current Achievement Hall elements:
+
+- Procedural monumental floor, colonnade, memorial wall, laurels, display pedestals, certificate
+  plaques, completed-project models, and world-unlock crystals at the `achievement-hall` manifest
+  coordinates.
+- Trophy exhibits derived only from real achievement definitions with recorded unlock timestamps.
+- Certificate plaques and project models derived from real saved certificates and completed
+  projects.
+- World-unlock crystals derived from achievement-issued location identifiers.
+- Near-district overlay and interactions linking to achievements, certificates, and projects in
+  Command Mode.
+
+Current limitations:
+
+- Locked achievement definitions are counted in text but never rendered as earned trophies.
+- Achievement synchronization and all record mutations remain in Command Mode.
+- The district does not yet include an enclosed walkable interior or spatial audio.
+- No downloaded models, textures, audio, glTF/GLB assets, custom shaders, or particle systems are
+  introduced.
+
 ## Deterministic Generation
 
 Use fixed seeds for:

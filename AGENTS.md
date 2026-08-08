@@ -113,6 +113,9 @@ Implemented foundation slices:
 - Visual World Mode W14 Progress Tower with a procedural vertical landmark, real analytics metric
   floors, same-unit study trends, explicit unavailable states, accessible chart handoff, and
   Progress Tower tests.
+- Visual World Mode W15 Achievement Hall with a procedural milestone gallery, unlocked-only trophy
+  exhibits, real certificates, completed projects, world-unlock identifiers, privacy filtering, and
+  Achievement Hall tests.
 
 Still out of scope unless explicitly requested:
 
@@ -145,7 +148,7 @@ before completing work that could affect World Mode dependencies or assets. Run
 
 ## Visual World Mode
 
-The visual World Mode architecture and W1-W14 runtime and district foundations are documented.
+The visual World Mode architecture and W1-W15 runtime and district foundations are documented.
 Follow `docs/architecture/decisions/0025-visual-world-mode-architecture.md`,
 `docs/world/world-mode-architecture.md`, and `docs/tasks/world/world-mode-roadmap.md` for W7 and
 later. Do not add unregistered assets, paid assets, editor-heavy engine dependencies, or any

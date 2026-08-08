@@ -3,12 +3,14 @@ import type {
   AIModelConfigurationPage,
   AIProviderPage,
   AIUsageRecordPage,
+  AchievementPage,
   AchievementSummary,
   AnalyticsSummary,
   CollectionPage,
   CodeAssistantRequestPage,
   CodeRunnerStatus,
   CodeSnippetPage,
+  CertificatePage,
   CourseModulePage,
   CoursePage,
   CodingExercisePage,
@@ -54,6 +56,7 @@ import {
   createUnusedMentorsClient,
   createUnusedNotificationsClient,
   createUnusedProjectsClient,
+  createUnusedUsersClient,
   createUnusedWorldClient
 } from "../../test/api-client";
 import { WorldPage } from "./world-page";
@@ -456,6 +459,20 @@ const achievementSummary: AchievementSummary = {
   worldUnlocks: []
 };
 
+const achievementPage: AchievementPage = {
+  items: [],
+  limit: 25,
+  offset: 0,
+  total: 0
+};
+
+const certificatePage: CertificatePage = {
+  items: [],
+  limit: 12,
+  offset: 0,
+  total: 0
+};
+
 const analyticsSummary: AnalyticsSummary = {
   generatedAt: "2026-07-22T00:00:00Z",
   metrics: [],
@@ -495,6 +512,7 @@ function createClient(
   return {
     achievements: {
       ...createUnusedAchievementsClient(),
+      list: vi.fn(() => Promise.resolve(achievementPage)),
       summary: vi.fn(() => Promise.resolve(achievementSummary))
     },
     analytics: {
@@ -562,6 +580,10 @@ function createClient(
       updatePreferences: vi.fn(() => Promise.resolve(preferences)),
       ...settingsOverrides
     },
+    users: {
+      ...createUnusedUsersClient(),
+      listCertificates: vi.fn(() => Promise.resolve(certificatePage))
+    },
     world: {
       ...createUnusedWorldClient(),
       getFeatureFlags: vi.fn(() => Promise.resolve(featureFlags)),
@@ -592,7 +614,7 @@ describe("WorldPage", () => {
     expect(screen.getByRole("heading", { name: "Central Plaza runtime" })).toBeInTheDocument();
     expect(screen.getByText("Enabled")).toBeInTheDocument();
     expect(
-      screen.getByRole("progressbar", { name: /15 of 26 World Mode phases complete/u })
+      screen.getByRole("progressbar", { name: /16 of 26 World Mode phases complete/u })
     ).toBeInTheDocument();
     expect(await screen.findByTestId("world-runtime-canvas")).toBeInTheDocument();
     expect(screen.getByText("central_plaza")).toBeInTheDocument();
@@ -612,7 +634,7 @@ describe("WorldPage", () => {
     expect(client.files.listTags).toHaveBeenCalledWith({ limit: 20, offset: 0 });
     expect(client.projects.list).toHaveBeenCalledWith({
       includeArchived: false,
-      limit: 5,
+      limit: 25,
       offset: 0
     });
     expect(client.projects.get).toHaveBeenCalledWith(projectDetail.id);
@@ -637,6 +659,12 @@ describe("WorldPage", () => {
     expect(client.ai.listModelConfigs).toHaveBeenCalledTimes(1);
     expect(client.ai.listUsage).toHaveBeenCalledWith({ limit: 8, offset: 0 });
     expect(client.achievements.summary).toHaveBeenCalledTimes(1);
+    expect(client.achievements.list).toHaveBeenCalledWith({
+      limit: 25,
+      offset: 0,
+      unlockedOnly: false
+    });
+    expect(client.users.listCertificates).toHaveBeenCalledWith({ limit: 12, offset: 0 });
     expect(client.analytics.summary).toHaveBeenCalledWith({ period: "week" });
     expect(client.coding.listSnippets).toHaveBeenCalledWith({
       includeArchived: false,

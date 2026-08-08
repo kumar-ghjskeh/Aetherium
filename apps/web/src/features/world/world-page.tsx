@@ -18,6 +18,7 @@ import { createBrowserApiClient } from "../auth/auth-provider";
 import { WorldRuntimeErrorBoundary } from "./components/canvas/world-runtime-error-boundary";
 import { WorldRuntimeFallback, WorldRuntimeLoading } from "./components/ui/world-runtime-fallback";
 import { WorldRoadmapProgress } from "./components/ui/world-roadmap-progress";
+import type { AchievementHallOverviewData } from "./engine/achievement-hall-system";
 import type { AIObservatoryOverviewData } from "./engine/ai-observatory-system";
 import type { CentralPlazaOverviewData } from "./engine/central-plaza-system";
 import type { CodingArenaOverviewData } from "./engine/coding-arena-system";
@@ -29,6 +30,7 @@ import type { ProgressTowerOverviewData } from "./engine/progress-tower-system";
 import { useWorldRuntimeReadiness } from "./hooks/use-world-runtime-readiness";
 
 interface WorldDataState {
+  achievementHallOverview: AchievementHallOverviewData;
   aiObservatoryOverview: AIObservatoryOverviewData;
   codingArenaOverview: CodingArenaOverviewData;
   deepLinks: WorldDeepLinkPage;
@@ -127,6 +129,8 @@ export function WorldPage({
         modelConfigs,
         usage,
         achievementSummary,
+        achievementPage,
+        certificates,
         analytics,
         codingSnippets,
         codingExercises,
@@ -146,7 +150,7 @@ export function WorldPage({
         apiClient.files.list({ includeDeleted: false, limit: 18, offset: 0 }),
         apiClient.files.listCollections({ limit: 12, offset: 0 }),
         apiClient.files.listTags({ limit: 20, offset: 0 }),
-        apiClient.projects.list({ includeArchived: false, limit: 5, offset: 0 }),
+        apiClient.projects.list({ includeArchived: false, limit: 25, offset: 0 }),
         apiClient.learning.listGoals({ limit: 5, offset: 0 }),
         apiClient.learning.listSubjects({ limit: 5, offset: 0 }),
         apiClient.learning.listTopics({ limit: 8, offset: 0 }),
@@ -163,6 +167,8 @@ export function WorldPage({
         apiClient.ai.listModelConfigs(),
         apiClient.ai.listUsage({ limit: 8, offset: 0 }),
         apiClient.achievements.summary(),
+        apiClient.achievements.list({ limit: 25, offset: 0, unlockedOnly: false }),
+        apiClient.users.listCertificates({ limit: 12, offset: 0 }),
         apiClient.analytics.summary({ period: "week" }),
         apiClient.coding.listSnippets({ includeArchived: false, limit: 6, offset: 0 }),
         apiClient.coding.listExercises({ includeArchived: false, limit: 6, offset: 0 }),
@@ -174,6 +180,12 @@ export function WorldPage({
         loadFeaturedProjectDetail(apiClient, projects)
       ]);
       setData({
+        achievementHallOverview: {
+          achievements: achievementPage,
+          certificates,
+          projects,
+          summary: achievementSummary
+        },
         aiObservatoryOverview: {
           conversations,
           mentors,
@@ -327,6 +339,7 @@ export function WorldPage({
             <WorldRuntimeErrorBoundary key={readinessVersion}>
               <React.Suspense fallback={<WorldRuntimeLoading />}>
                 <LazyWorldRuntimeCanvas
+                  achievementHallOverview={data.achievementHallOverview}
                   aiObservatoryOverview={data.aiObservatoryOverview}
                   codingArenaOverview={data.codingArenaOverview}
                   deepLinks={data.deepLinks}

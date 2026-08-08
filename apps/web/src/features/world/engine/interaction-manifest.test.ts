@@ -480,4 +480,36 @@ describe("diagnostic world interaction manifest", () => {
       )
     ).toMatchObject({ commandRoute: "/app/projects", prompt: "Project Progress" });
   });
+
+  it("adds Achievement Hall exhibits only when the location is unlocked", () => {
+    const unlockedLocationPage: WorldLocationPage = {
+      ...locationPage,
+      items: locationPage.items.map((location) =>
+        location.id === "achievement_hall" ? { ...location, unlocked: true } : location
+      ),
+      unlockedCount: locationPage.unlockedCount + 1
+    };
+    const interactions = buildDiagnosticWorldInteractions({
+      deepLinks,
+      locationPage: unlockedLocationPage
+    });
+
+    expect(
+      interactions.find((interaction) => interaction.id === "interaction-hall-achievements-gallery")
+    ).toMatchObject({
+      commandRoute: "/app/achievements",
+      locationId: "achievement_hall",
+      prompt: "Browse Achievements",
+      status: "available"
+    });
+    expect(
+      interactions.find((interaction) => interaction.id === "interaction-hall-certificates-gallery")
+    ).toMatchObject({ commandRoute: "/app/settings", prompt: "View Certificates" });
+    expect(
+      interactions.find((interaction) => interaction.id === "interaction-hall-project-gallery")
+    ).toMatchObject({ commandRoute: "/app/projects", prompt: "Completed Projects" });
+    expect(
+      interactions.find((interaction) => interaction.id === "interaction-hall-world-unlocks")
+    ).toMatchObject({ commandRoute: "/app/achievements", prompt: "World Unlocks" });
+  });
 });

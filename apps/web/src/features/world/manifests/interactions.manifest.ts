@@ -468,5 +468,53 @@ export const WORLD_INTERACTIONS_MANIFEST: WorldInteractionManifestEntry[] = [
     prompt: "Open Achievements",
     radius: 12,
     type: "open_achievement_display"
+  },
+  {
+    accessibilityLabel: "Browse earned achievement exhibits from Achievement Hall",
+    commandRoute: "/app/achievements",
+    gamepadAction: "primary",
+    id: "interaction-hall-achievements-gallery",
+    keyboardAction: "KeyE",
+    locationId: "achievement-hall",
+    position: [78, 1.25, 326],
+    prompt: "Browse Achievements",
+    radius: 10,
+    type: "open_achievement_display"
+  },
+  {
+    accessibilityLabel: "Review saved certificates from Achievement Hall",
+    commandRoute: "/app/settings",
+    gamepadAction: "primary",
+    id: "interaction-hall-certificates-gallery",
+    keyboardAction: "KeyE",
+    locationId: "achievement-hall",
+    position: [62, 1.25, 337],
+    prompt: "View Certificates",
+    radius: 10,
+    type: "open_achievement_display"
+  },
+  {
+    accessibilityLabel: "Review completed projects from Achievement Hall",
+    commandRoute: "/app/projects",
+    gamepadAction: "primary",
+    id: "interaction-hall-project-gallery",
+    keyboardAction: "KeyE",
+    locationId: "achievement-hall",
+    position: [94, 1.25, 337],
+    prompt: "Completed Projects",
+    radius: 10,
+    type: "open_project"
+  },
+  {
+    accessibilityLabel: "Review earned world unlock identifiers from Achievement Hall",
+    commandRoute: "/app/achievements",
+    gamepadAction: "primary",
+    id: "interaction-hall-world-unlocks",
+    keyboardAction: "KeyE",
+    locationId: "achievement-hall",
+    position: [78, 1.25, 357],
+    prompt: "World Unlocks",
+    radius: 10,
+    type: "open_achievement_display"
   }
 ];

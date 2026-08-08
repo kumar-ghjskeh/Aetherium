@@ -189,6 +189,23 @@ W14 does not add textures, downloaded assets, spatial audio, post-processing, an
 custom shaders, live particles, or in-canvas charting. Browser screenshot and frame-metric
 automation remain scheduled for W23.
 
+## Current W15 Achievement Hall Budget
+
+The W15 Achievement Hall adds one bounded milestone district slice:
+
+- Procedural hall, colonnade, memorial wall, laurels, and display geometry only.
+- Up to ten earned achievement trophies, six certificate plaques, five completed-project exhibits,
+  and six world-unlock crystals.
+- Two additional bounded API requests for achievement definitions and certificate metadata.
+- Shared World Mode project page expanded from five to 25 records; each district retains its own
+  render cap.
+- One local point light and bounded trophy, laurel, and crystal animation.
+- Reduced-motion mode disables all decorative hall animation.
+
+W15 does not add textures, downloaded assets, spatial audio, post-processing, achievement or record
+mutation, custom shaders, or live particles. Browser screenshot and frame-metric automation remain
+scheduled for W23.
+
 ## Runtime Diagnostics
 
 Diagnostics must report:
