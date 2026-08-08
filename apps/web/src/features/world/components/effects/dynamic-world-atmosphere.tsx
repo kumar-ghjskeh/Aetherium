@@ -98,13 +98,16 @@ export function DynamicWorldAtmosphere({
       </mesh>
       <hemisphereLight color="#dfefff" groundColor="#21322e" ref={hemisphereLightRef} />
       <directionalLight
-        castShadow={graphicsPreset === "high"}
+        castShadow={graphicsPreset !== "low"}
         ref={sunLightRef}
+        shadow-bias={-0.0004}
         shadow-camera-far={420}
         shadow-camera-left={-180}
         shadow-camera-right={180}
         shadow-camera-top={180}
         shadow-camera-bottom={-180}
+        shadow-mapSize-height={graphicsPreset === "high" ? 2048 : 1024}
+        shadow-mapSize-width={graphicsPreset === "high" ? 2048 : 1024}
       />
       <ambientLight ref={ambientLightRef} />
       <WorldWeatherLayers

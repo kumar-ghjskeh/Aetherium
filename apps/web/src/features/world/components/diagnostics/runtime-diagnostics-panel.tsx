@@ -1,38 +1,19 @@
 import type { PerformancePreset, WorldLocationPage, WorldProfile } from "@aetherium/shared-types";
 import React from "react";
 
+import { useWorldPerformanceStore } from "../../state/performance-store";
 import { useWorldCameraStore } from "../../state/camera-store";
 import { usePlayerStore } from "../../state/player-store";
 import { useWorldSettingsStore } from "../../state/settings-store";
-
-export interface WorldRuntimeMetrics {
-  activeObjects: number;
-  drawCalls: number;
-  fps: number;
-  frameTimeMs: number;
-  pixelRatio: number;
-  triangles: number;
-}
-
-export const DEFAULT_RUNTIME_METRICS: WorldRuntimeMetrics = {
-  activeObjects: 0,
-  drawCalls: 0,
-  fps: 0,
-  frameTimeMs: 0,
-  pixelRatio: 1,
-  triangles: 0
-};
 
 const PRESET_OPTIONS: PerformancePreset[] = ["automatic", "low", "balanced", "high"];
 
 export function RuntimeDiagnosticsPanel({
   locationPage,
-  metrics,
   pageVisible,
   profile
 }: Readonly<{
   locationPage: WorldLocationPage;
-  metrics: WorldRuntimeMetrics;
   pageVisible: boolean;
   profile: WorldProfile;
 }>): React.ReactElement {
@@ -40,6 +21,8 @@ export function RuntimeDiagnosticsPanel({
   const graphicsPreset = useWorldSettingsStore((state) => state.graphicsPreset);
   const setDiagnosticsVisible = useWorldSettingsStore((state) => state.setDiagnosticsVisible);
   const setGraphicsPreset = useWorldSettingsStore((state) => state.setGraphicsPreset);
+  const effectiveTier = useWorldPerformanceStore((state) => state.effectiveTier);
+  const metrics = useWorldPerformanceStore((state) => state.metrics);
   const movementState = usePlayerStore((state) => state.movementState);
   const planarSpeed = usePlayerStore((state) => state.planarSpeed);
   const playerPaused = usePlayerStore((state) => state.paused);
@@ -81,6 +64,9 @@ export function RuntimeDiagnosticsPanel({
             </option>
           ))}
         </select>
+        <strong>
+          {graphicsPreset === "automatic" ? `Auto / ${effectiveTier}` : effectiveTier}
+        </strong>
       </div>
       <div>
         <span>Runtime</span>
@@ -133,11 +119,28 @@ export function RuntimeDiagnosticsPanel({
                 <dd>{metrics.drawCalls}</dd>
                 <dt>Triangles</dt>
                 <dd>{metrics.triangles}</dd>
-                <dt>Active objects</dt>
-                <dd>{metrics.activeObjects}</dd>
+                <dt>Active meshes</dt>
+                <dd>{metrics.activeMeshes}</dd>
                 <dt>Pixel ratio</dt>
                 <dd>{metrics.pixelRatio.toFixed(2)}</dd>
+                <dt>Loaded assets</dt>
+                <dd>{metrics.loadedAssets}</dd>
+                <dt>Texture estimate</dt>
+                <dd>{metrics.textureMemoryEstimateMb.toFixed(0)} MB</dd>
+                <dt>Physics bodies</dt>
+                <dd>{metrics.physicsBodies}</dd>
+                <dt>JS heap</dt>
+                <dd>
+                  {metrics.jsHeapUsedMb === null
+                    ? "Unavailable"
+                    : `${metrics.jsHeapUsedMb.toFixed(0)} MB`}
+                </dd>
               </dl>
+              {metrics.memoryWarning ? (
+                <p className="world-runtime-warning" role="status">
+                  {metrics.memoryWarning}
+                </p>
+              ) : null}
               <form
                 className="world-runtime-camera-controls"
                 aria-label="Camera settings"

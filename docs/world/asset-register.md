@@ -34,7 +34,8 @@ point field. It adds no downloaded model, texture, image, weather feed, or audio
 synthesizes ambience, music layers, footsteps, and interface cues at runtime with the browser Web
 Audio API. It adds no audio file, download, sample, recording, or external audio dependency. W20
 adds only DOM-based Command Mode integration and route/session state logic; it adds no visual or
-audio asset.
+audio asset. W21 changes renderer budgets, adaptation, and diagnostics only; it adds no model,
+texture, image, shader, audio file, or external asset.
 
 ## License Rules
 

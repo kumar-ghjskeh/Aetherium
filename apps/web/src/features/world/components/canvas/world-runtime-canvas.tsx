@@ -8,7 +8,7 @@ import type {
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import React from "react";
-import type * as THREE from "three";
+import * as THREE from "three";
 
 import { buildCentralPlazaViewModel } from "../../engine/central-plaza-system";
 import type { WorldCommandIntent } from "../../engine/command-bridge-system";
@@ -34,15 +34,12 @@ import { useWorldCommandBridgeStore } from "../../state/command-bridge-store";
 import { useWorldSettingsStore } from "../../state/settings-store";
 import { useWorldNavigationStore } from "../../state/navigation-store";
 import { usePlayerStore } from "../../state/player-store";
+import { useWorldPerformanceStore } from "../../state/performance-store";
 import { WorldCameraRig } from "../camera/world-camera-rig";
 import { PlayerController } from "../character/player-controller";
 import { WorldAudioRuntime } from "../audio/world-audio-runtime";
 import { RuntimeMetricsSampler } from "../diagnostics/runtime-metrics-sampler";
-import {
-  DEFAULT_RUNTIME_METRICS,
-  RuntimeDiagnosticsPanel,
-  type WorldRuntimeMetrics
-} from "../diagnostics/runtime-diagnostics-panel";
+import { RuntimeDiagnosticsPanel } from "../diagnostics/runtime-diagnostics-panel";
 import { WorldEnvironmentScene } from "../environments/world-environment-scene";
 import { WorldInteractionPrompt } from "../interactions/world-interaction-prompt";
 import { WorldInteractionSystem } from "../interactions/world-interaction-system";
@@ -99,7 +96,6 @@ export function WorldRuntimeCanvas({
   progressTowerOverview: ProgressTowerOverviewData;
   sceneManifest: WorldSceneManifest;
 }>): React.ReactElement {
-  const [metrics, setMetrics] = React.useState<WorldRuntimeMetrics>(DEFAULT_RUNTIME_METRICS);
   const [pageVisible, setPageVisible] = React.useState(true);
   const commandOverlayOpen = useWorldCommandBridgeStore((state) => state.overlayOpen);
   const graphicsPreset = useWorldSettingsStore((state) => state.graphicsPreset);
@@ -107,6 +103,7 @@ export function WorldRuntimeCanvas({
   const weatherEnabled = useWorldSettingsStore((state) => state.weatherEnabled);
   const weatherMode = useWorldSettingsStore((state) => state.weatherMode);
   const setGraphicsPreset = useWorldSettingsStore((state) => state.setGraphicsPreset);
+  const effectiveGraphicsTier = useWorldPerformanceStore((state) => state.effectiveTier);
   const rendererRef = React.useRef<THREE.WebGLRenderer | null>(null);
   const initialSpawnAppliedRef = React.useRef(false);
   const lastSyncedLocationRef = React.useRef(profile.currentLocationId);
@@ -139,7 +136,11 @@ export function WorldRuntimeCanvas({
     []
   );
 
-  const preset = resolveGraphicsPresetSettings(graphicsPreset);
+  const preset = resolveGraphicsPresetSettings(graphicsPreset, effectiveGraphicsTier);
+  const initialRendererPreset = resolveGraphicsPresetSettings(
+    preferences.performancePreset,
+    effectiveGraphicsTier
+  );
   const runtimeActive = pageVisible && !commandOverlayOpen;
   const interactions = React.useMemo(
     () => buildDiagnosticWorldInteractions({ deepLinks, locationPage }),
@@ -268,15 +269,17 @@ export function WorldRuntimeCanvas({
         <Canvas
           aria-label="Terrain foundation 3D world runtime"
           camera={{ far: 1200, fov: 52, near: 0.1, position: [10, 7, 12] }}
-          dpr={[1, preset.maxPixelRatio]}
+          dpr={initialRendererPreset.targetPixelRatio}
           frameloop={runtimeActive ? "always" : "never"}
           gl={{
-            antialias: preset.antialias,
-            powerPreference: graphicsPreset === "low" ? "low-power" : "high-performance"
+            antialias: initialRendererPreset.antialias,
+            powerPreference: initialRendererPreset.tier === "low" ? "low-power" : "high-performance"
           }}
           onCreated={({ gl }) => {
             rendererRef.current = gl;
             gl.setClearColor("#07101f", 1);
+            gl.toneMapping = THREE.ACESFilmicToneMapping;
+            gl.toneMappingExposure = 1;
           }}
           shadows={preset.shadows}
         >
@@ -285,7 +288,7 @@ export function WorldRuntimeCanvas({
               achievementHallOverview={achievementHallOverview}
               aiObservatoryOverview={aiObservatoryOverview}
               codingArenaOverview={codingArenaOverview}
-              graphicsPreset={graphicsPreset}
+              graphicsPreset={effectiveGraphicsTier}
               habitGardenOverview={habitGardenOverview}
               learningAcademyOverview={learningAcademyOverview}
               libraryOverview={libraryOverview}
@@ -313,14 +316,13 @@ export function WorldRuntimeCanvas({
               interactions={interactions}
               reducedMotion={preferences.reducedMotion}
             />
+            <RuntimeMetricsSampler />
           </Physics>
           <WorldCameraRig reducedMotion={preferences.reducedMotion} />
-          <RuntimeMetricsSampler onMetrics={setMetrics} />
         </Canvas>
 
         <RuntimeDiagnosticsPanel
           locationPage={locationPage}
-          metrics={metrics}
           pageVisible={pageVisible}
           profile={profile}
         />

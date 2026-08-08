@@ -324,3 +324,29 @@ Transient position persistence subscribes to the player store outside React rend
 most once every 500 milliseconds. The stored payload is small, validated, expires after twelve
 hours, and is written once more during unmount. Static route-to-location lookup uses the existing
 ten-entry manifest and does not load Three.js into unrelated Command Mode routes.
+
+## Current W21 Runtime Manager
+
+W21 makes the preset table executable rather than descriptive:
+
+- Low uses a 0.75-1.0 pixel ratio, 520 m camera range, no shadow map, 30 percent vegetation budget,
+  sparse particles, and conservative draw/triangle/texture thresholds.
+- Balanced uses a 1.0-1.25 pixel ratio, 780 m camera range, one 1024 shadow map, 60 percent
+  vegetation budget, bounded particles, 350 draw calls, 800k triangles, and a 512 MB texture
+  estimate ceiling.
+- High uses a 1.25-1.5 pixel ratio, 1100 m camera range, one 2048 shadow map, full vegetation
+  budget, and higher resource ceilings.
+- Automatic starts at Balanced. Four consecutive slow or over-budget samples lower pixel ratio
+  before lowering the tier; twelve consecutive healthy samples are required to recover quality. This
+  hysteresis prevents rapid quality oscillation.
+
+Sampling runs every 750 milliseconds and writes to a dedicated Zustand store, so diagnostics do not
+rerender the parent canvas on every sample. The development overlay now reports FPS, frame time,
+draw calls, triangles, active meshes, loaded GPU resources, texture-memory estimate, physics bodies,
+pixel ratio, and JavaScript heap use where the browser exposes it. Runtime budget violations are
+visible and also cause Automatic mode to step down.
+
+The renderer uses ACES filmic tone mapping and the existing hidden-tab and Command-panel pause
+boundaries. Actual hardware FPS evidence at 1080p and 1440p remains a W23 browser-harness
+measurement; unit tests validate deterministic adaptation and budget enforcement without claiming
+hardware results.

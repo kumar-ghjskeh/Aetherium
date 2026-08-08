@@ -164,6 +164,12 @@ must verify that opening the Command interface freezes visible world movement, c
 the same position, `Open Now` preserves direct access, `Travel There` reaches the mapped district,
 and a page reload restores valid session-only position without overriding backend unlock state.
 
+W21 adds deterministic preset-budget, warning, degradation, recovery-hysteresis, and performance-
+store tests. W23 must record the runtime diagnostics for 1080p Low, 1080p Balanced, and 1440p
+Balanced after warmup. Results must include FPS, frame time, draw calls, triangles, active meshes,
+GPU resources, texture estimate, physics bodies, and effective Automatic tier. Unit tests alone are
+not hardware performance evidence.
+
 ## Failure Policy
 
 If tests show a black canvas, missing asset, persistent console error, browser crash, or performance

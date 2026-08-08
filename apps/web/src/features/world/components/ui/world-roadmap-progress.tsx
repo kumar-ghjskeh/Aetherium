@@ -30,8 +30,8 @@ const WORLD_ROADMAP_PHASES: WorldRoadmapPhase[] = [
   { id: "W18", label: "Atmosphere", status: "complete" },
   { id: "W19", label: "Audio", status: "complete" },
   { id: "W20", label: "Command integration", status: "complete" },
-  { id: "W21", label: "Performance", status: "next" },
-  { id: "W22", label: "Asset pipeline", status: "remaining" },
+  { id: "W21", label: "Performance", status: "complete" },
+  { id: "W22", label: "Asset pipeline", status: "next" },
   { id: "W23", label: "Visual testing", status: "remaining" },
   { id: "W24", label: "Accessibility", status: "remaining" },
   { id: "W25", label: "Final polish", status: "remaining" }

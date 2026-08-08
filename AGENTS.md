@@ -131,13 +131,16 @@ Implemented foundation slices:
 - Visual World Mode W20 Command integration with a rendering-pausing in-world Command interface,
   Open Now and Travel There actions, search-result destinations, validated world deep links,
   session-only exact position restore, real continue-activity routing, and audio ducking.
+- Visual World Mode W21 performance management with typed Low/Balanced/High budgets, hysteresis-
+  based Automatic adaptation, dynamic pixel ratio and view distance, tiered shadows, isolated
+  runtime metrics, GPU-resource/physics/heap diagnostics, and visible budget warnings.
 
 Still out of scope unless explicitly requested:
 
 - OAuth, social login, email delivery, password reset, MFA, and magic links.
 - External email, push, SMS, and deployed scheduler notification delivery.
-- Performance optimization, automated visual regression, accessibility polish, or visual world
-  progression until the corresponding approved World Mode phase is active.
+- Automated visual regression, accessibility polish, or visual world progression until the
+  corresponding approved World Mode phase is active.
 - Automatic production deployment.
 
 ## Product Independence
@@ -162,8 +165,8 @@ before completing work that could affect World Mode dependencies or assets. Run
 
 ## Visual World Mode
 
-The visual World Mode architecture and W1-W20 runtime, district, navigation, atmosphere, audio, and
-Command integration foundations are documented. Follow
+The visual World Mode architecture and W1-W21 runtime, district, navigation, atmosphere, audio,
+Command integration, and performance foundations are documented. Follow
 `docs/architecture/decisions/0025-visual-world-mode-architecture.md`,
 `docs/world/world-mode-architecture.md`, and `docs/tasks/world/world-mode-roadmap.md` for W7 and
 later. Do not add unregistered assets, paid assets, editor-heavy engine dependencies, or any

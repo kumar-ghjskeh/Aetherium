@@ -4915,3 +4915,12 @@ kbd {
     width: auto;
   }
 }
+.world-runtime-warning {
+  margin: 0;
+  border-left: 3px solid #f0b35d;
+  padding: 0.45rem 0.6rem;
+  color: #ffe2b6;
+  background: rgb(78 48 17 / 78%);
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
