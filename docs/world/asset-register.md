@@ -25,7 +25,9 @@ files. W14 adds a procedural Progress Tower, structural fins, metric floors, stu
 observation rings, and crystal crown. It adds no downloaded model, texture, or audio files. W15 adds
 a procedural Achievement Hall, colonnade, memorial wall, laurels, trophy pedestals, certificate
 plaques, completed-project models, and world-unlock crystals. It adds no downloaded model, texture,
-or audio files.
+or audio files. W16 adds a procedural Personal Sanctuary terrace, pavilion, symbolic avatar focus,
+favorite alcoves, certificate displays, privacy shields, and preference beacons. It adds no
+downloaded model, texture, image, or audio files.
 
 ## License Rules
 

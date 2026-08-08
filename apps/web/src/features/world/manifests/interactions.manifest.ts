@@ -516,5 +516,65 @@ export const WORLD_INTERACTIONS_MANIFEST: WorldInteractionManifestEntry[] = [
     prompt: "World Unlocks",
     radius: 10,
     type: "open_achievement_display"
+  },
+  {
+    accessibilityLabel: "Open Personal Sanctuary settings in Command Mode",
+    commandRoute: "/app/settings",
+    gamepadAction: "primary",
+    id: "interaction-sanctuary-settings-terminal",
+    keyboardAction: "KeyE",
+    locationId: "personal-sanctuary",
+    position: [334, 1.25, 294],
+    prompt: "Open Settings",
+    radius: 12,
+    type: "open_application_panel"
+  },
+  {
+    accessibilityLabel: "Review profile and avatar metadata from Personal Sanctuary",
+    commandRoute: "/app/settings",
+    gamepadAction: "primary",
+    id: "interaction-sanctuary-profile-terminal",
+    keyboardAction: "KeyE",
+    locationId: "personal-sanctuary",
+    position: [318, 1.25, 306],
+    prompt: "Profile & Avatar",
+    radius: 10,
+    type: "open_application_panel"
+  },
+  {
+    accessibilityLabel: "Review favorite projects from Personal Sanctuary",
+    commandRoute: "/app/projects",
+    gamepadAction: "primary",
+    id: "interaction-sanctuary-projects-terminal",
+    keyboardAction: "KeyE",
+    locationId: "personal-sanctuary",
+    position: [350, 1.25, 306],
+    prompt: "Favorite Projects",
+    radius: 10,
+    type: "open_project"
+  },
+  {
+    accessibilityLabel: "Review favorite resources from Personal Sanctuary",
+    commandRoute: "/app/library",
+    gamepadAction: "primary",
+    id: "interaction-sanctuary-resources-terminal",
+    keyboardAction: "KeyE",
+    locationId: "personal-sanctuary",
+    position: [320, 1.25, 326],
+    prompt: "Favorite Resources",
+    radius: 10,
+    type: "open_file_collection"
+  },
+  {
+    accessibilityLabel: "Review privacy and sensory preferences from Personal Sanctuary",
+    commandRoute: "/app/settings",
+    gamepadAction: "primary",
+    id: "interaction-sanctuary-privacy-terminal",
+    keyboardAction: "KeyE",
+    locationId: "personal-sanctuary",
+    position: [348, 1.25, 326],
+    prompt: "Privacy & Controls",
+    radius: 10,
+    type: "open_application_panel"
   }
 ];

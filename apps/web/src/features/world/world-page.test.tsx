@@ -16,6 +16,8 @@ import type {
   CodingExercisePage,
   ConversationPage,
   FilePage,
+  FavoriteProjectPage,
+  FavoriteResourcePage,
   FlashcardPage,
   HabitPage,
   HabitSummary,
@@ -26,6 +28,8 @@ import type {
   NotificationPage,
   ProjectDetail,
   ProjectPage,
+  ProfileLinkPage,
+  PrivacySettings,
   PublicUser,
   QuizPage,
   StudyRoadmapPage,
@@ -34,6 +38,7 @@ import type {
   TagPage,
   TopicPage,
   UserPreferences,
+  UserProfile,
   WorldDeepLinkPage,
   WorldFeatureFlags,
   WorldLocationPage,
@@ -473,6 +478,40 @@ const certificatePage: CertificatePage = {
   total: 0
 };
 
+const personalProfile: UserProfile = {
+  avatarFileId: null,
+  avatarKind: "preset",
+  avatarPreset: "scholar",
+  bio: null,
+  createdAt: "2026-07-22T00:00:00Z",
+  displayName: "Sai Kumar",
+  email: "sai@example.test",
+  headline: "Systems learner",
+  id: "profile-1",
+  isEmailVerified: true,
+  location: null,
+  updatedAt: "2026-07-22T00:00:00Z",
+  userId: user.id,
+  websiteUrl: null
+};
+
+const privacy: PrivacySettings = {
+  aiMemoryEnabled: false,
+  allowProfileInAiContext: false,
+  allowProfileSearchIndexing: false,
+  createdAt: "2026-07-22T00:00:00Z",
+  id: "privacy-1",
+  includeProfileInExports: true,
+  productAnalyticsEnabled: false,
+  profileVisibility: "private",
+  showEmailOnProfile: false,
+  updatedAt: "2026-07-22T00:00:00Z"
+};
+
+const profileLinkPage: ProfileLinkPage = { items: [], limit: 8, offset: 0, total: 0 };
+const favoriteProjectPage: FavoriteProjectPage = { items: [], limit: 12, offset: 0, total: 0 };
+const favoriteResourcePage: FavoriteResourcePage = { items: [], limit: 12, offset: 0, total: 0 };
+
 const analyticsSummary: AnalyticsSummary = {
   generatedAt: "2026-07-22T00:00:00Z",
   metrics: [],
@@ -582,7 +621,12 @@ function createClient(
     },
     users: {
       ...createUnusedUsersClient(),
-      listCertificates: vi.fn(() => Promise.resolve(certificatePage))
+      getPrivacy: vi.fn(() => Promise.resolve(privacy)),
+      getProfile: vi.fn(() => Promise.resolve(personalProfile)),
+      listCertificates: vi.fn(() => Promise.resolve(certificatePage)),
+      listFavoriteProjects: vi.fn(() => Promise.resolve(favoriteProjectPage)),
+      listFavoriteResources: vi.fn(() => Promise.resolve(favoriteResourcePage)),
+      listLinks: vi.fn(() => Promise.resolve(profileLinkPage))
     },
     world: {
       ...createUnusedWorldClient(),
@@ -614,7 +658,7 @@ describe("WorldPage", () => {
     expect(screen.getByRole("heading", { name: "Central Plaza runtime" })).toBeInTheDocument();
     expect(screen.getByText("Enabled")).toBeInTheDocument();
     expect(
-      screen.getByRole("progressbar", { name: /16 of 26 World Mode phases complete/u })
+      screen.getByRole("progressbar", { name: /17 of 26 World Mode phases complete/u })
     ).toBeInTheDocument();
     expect(await screen.findByTestId("world-runtime-canvas")).toBeInTheDocument();
     expect(screen.getByText("central_plaza")).toBeInTheDocument();
@@ -665,6 +709,11 @@ describe("WorldPage", () => {
       unlockedOnly: false
     });
     expect(client.users.listCertificates).toHaveBeenCalledWith({ limit: 12, offset: 0 });
+    expect(client.users.getProfile).toHaveBeenCalledTimes(1);
+    expect(client.users.getPrivacy).toHaveBeenCalledTimes(1);
+    expect(client.users.listLinks).toHaveBeenCalledWith({ limit: 8, offset: 0 });
+    expect(client.users.listFavoriteProjects).toHaveBeenCalledWith({ limit: 12, offset: 0 });
+    expect(client.users.listFavoriteResources).toHaveBeenCalledWith({ limit: 12, offset: 0 });
     expect(client.analytics.summary).toHaveBeenCalledWith({ period: "week" });
     expect(client.coding.listSnippets).toHaveBeenCalledWith({
       includeArchived: false,

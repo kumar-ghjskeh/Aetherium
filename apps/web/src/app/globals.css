@@ -3077,6 +3077,149 @@ kbd {
   border-color: rgba(240, 199, 102, 0.52);
 }
 
+.world-sanctuary-panel {
+  background: rgba(13, 26, 31, 0.95);
+  border: 1px solid rgba(145, 216, 223, 0.34);
+  box-shadow: 0 24px 74px rgba(0, 0, 0, 0.42);
+  color: #f2fbfc;
+  display: grid;
+  gap: 12px;
+  left: 16px;
+  max-height: calc(100% - 178px);
+  max-width: min(466px, calc(100% - 32px));
+  overflow: auto;
+  padding: 14px;
+  position: absolute;
+  top: 160px;
+  width: 432px;
+}
+
+.world-sanctuary-panel header {
+  display: grid;
+  gap: 4px;
+}
+
+.world-sanctuary-panel header > span,
+.world-sanctuary-statuses > span,
+.world-sanctuary-featured > span {
+  color: #91d8df;
+  font-size: 0.7rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.world-sanctuary-panel header strong {
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+
+.world-sanctuary-panel header small,
+.world-sanctuary-featured p,
+.world-sanctuary-featured li small {
+  color: #bed0d3;
+}
+
+.world-sanctuary-counts {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.world-sanctuary-counts div,
+.world-sanctuary-actions a {
+  background: rgba(145, 216, 223, 0.07);
+  border: 1px solid rgba(145, 216, 223, 0.17);
+  min-width: 0;
+  padding: 9px;
+}
+
+.world-sanctuary-counts dt {
+  color: #aebfc3;
+  font-size: 0.66rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.world-sanctuary-counts dd {
+  font-weight: 900;
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.world-sanctuary-statuses,
+.world-sanctuary-featured {
+  border-top: 1px solid rgba(145, 216, 223, 0.17);
+  display: grid;
+  gap: 8px;
+  padding-top: 10px;
+}
+
+.world-sanctuary-statuses ul,
+.world-sanctuary-featured ul {
+  display: grid;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.world-sanctuary-statuses li {
+  align-items: center;
+  display: grid;
+  font-size: 0.78rem;
+  gap: 8px;
+  grid-template-columns: 8px minmax(0, 1fr) auto;
+}
+
+.world-sanctuary-statuses li i {
+  background: #7e8c92;
+  height: 8px;
+  width: 8px;
+}
+
+.world-sanctuary-statuses li i[data-enabled="true"] {
+  background: #77d98b;
+}
+
+.world-sanctuary-statuses li strong {
+  color: #eaf8f9;
+  font-size: 0.74rem;
+}
+
+.world-sanctuary-featured p {
+  margin: 0;
+}
+
+.world-sanctuary-featured li {
+  display: grid;
+  gap: 2px;
+}
+
+.world-sanctuary-featured li strong {
+  font-size: 0.82rem;
+  overflow-wrap: anywhere;
+}
+
+.world-sanctuary-actions {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.world-sanctuary-actions a {
+  color: #f2fbfc;
+  font-size: 0.74rem;
+  font-weight: 900;
+  text-align: center;
+  text-decoration: none;
+}
+
+.world-sanctuary-actions a:focus,
+.world-sanctuary-actions a:hover {
+  border-color: rgba(145, 216, 223, 0.58);
+}
+
 .world-roadmap-progress {
   background:
     linear-gradient(145deg, rgba(8, 18, 30, 0.94), rgba(21, 28, 42, 0.88)), rgba(7, 15, 25, 0.9);
@@ -4039,6 +4182,18 @@ kbd {
 
   .world-achievement-hall-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .world-sanctuary-panel {
+    left: 16px;
+    max-width: none;
+    right: 16px;
+    top: 158px;
+    width: auto;
+  }
+
+  .world-sanctuary-actions {
+    grid-template-columns: 1fr;
   }
 
   .world-library-panel {

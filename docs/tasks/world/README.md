@@ -56,3 +56,4 @@ See `docs/tasks/world/world-mode-roadmap.md`.
 - `docs/tasks/world/phase-w13-project-dock.md`
 - `docs/tasks/world/phase-w14-progress-tower.md`
 - `docs/tasks/world/phase-w15-achievement-hall.md`
+- `docs/tasks/world/phase-w16-personal-sanctuary.md`

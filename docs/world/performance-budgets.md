@@ -206,6 +206,22 @@ W15 does not add textures, downloaded assets, spatial audio, post-processing, ac
 mutation, custom shaders, or live particles. Browser screenshot and frame-metric automation remain
 scheduled for W23.
 
+## Current W16 Personal Sanctuary Budget
+
+The W16 Personal Sanctuary adds one bounded profile/settings district slice:
+
+- Procedural terrace, reflective ring, open pavilion, abstract profile focus, two favorite alcoves,
+  certificate walk, privacy shields, and preference beacons.
+- Up to five favorite projects, five favorite resources, five certificates, and four link labels in
+  the privacy-filtered view model.
+- Five additional bounded owner-scoped profile/settings requests.
+- One local point light and one low-cost symbolic-avatar animation.
+- Reduced-motion mode disables profile-focus animation.
+
+W16 does not add textures, downloaded assets, spatial audio, post-processing, uploaded avatar
+rendering, profile mutation, custom shaders, or live particles. Browser screenshot and frame-metric
+automation remain scheduled for W23.
+
 ## Runtime Diagnostics
 
 Diagnostics must report:

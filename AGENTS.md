@@ -116,14 +116,17 @@ Implemented foundation slices:
 - Visual World Mode W15 Achievement Hall with a procedural milestone gallery, unlocked-only trophy
   exhibits, real certificates, completed projects, world-unlock identifiers, privacy filtering, and
   Achievement Hall tests.
+- Visual World Mode W16 Personal Sanctuary with a procedural elevated retreat, symbolic preset
+  avatar, real profile/favorite/certificate/privacy/preference mapping, strict scene-data filtering,
+  Command Mode settings handoffs, and Personal Sanctuary tests.
 
 Still out of scope unless explicitly requested:
 
 - OAuth, social login, email delivery, password reset, MFA, and magic links.
 - External email, push, SMS, and deployed scheduler notification delivery.
-- Remaining district art, cinematic travel paths, map travel, audio, atmosphere, performance
-  optimization, automated visual regression, accessibility polish, or visual world progression until
-  the corresponding approved World Mode phase is active.
+- Cinematic travel paths, map travel, audio, atmosphere, performance optimization, automated visual
+  regression, accessibility polish, or visual world progression until the corresponding approved
+  World Mode phase is active.
 - Automatic production deployment.
 
 ## Product Independence
@@ -148,7 +151,7 @@ before completing work that could affect World Mode dependencies or assets. Run
 
 ## Visual World Mode
 
-The visual World Mode architecture and W1-W15 runtime and district foundations are documented.
+The visual World Mode architecture and W1-W16 runtime and district foundations are documented.
 Follow `docs/architecture/decisions/0025-visual-world-mode-architecture.md`,
 `docs/world/world-mode-architecture.md`, and `docs/tasks/world/world-mode-roadmap.md` for W7 and
 later. Do not add unregistered assets, paid assets, editor-heavy engine dependencies, or any

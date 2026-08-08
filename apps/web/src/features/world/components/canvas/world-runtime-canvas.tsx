@@ -21,6 +21,7 @@ import type { HabitGardenOverviewData } from "../../engine/habit-garden-system";
 import type { LearningAcademyOverviewData } from "../../engine/learning-academy-system";
 import type { ProjectDockOverviewData } from "../../engine/project-dock-system";
 import type { ProgressTowerOverviewData } from "../../engine/progress-tower-system";
+import type { PersonalSanctuaryOverviewData } from "../../engine/personal-sanctuary-system";
 import { useWorldSettingsStore } from "../../state/settings-store";
 import { WorldCameraRig } from "../camera/world-camera-rig";
 import { PlayerController } from "../character/player-controller";
@@ -42,6 +43,7 @@ import { ProjectDockPanel } from "../ui/project-dock-panel";
 import { ProgressTowerPanel } from "../ui/progress-tower-panel";
 import { CodingArenaPanel } from "../ui/coding-arena-panel";
 import { AchievementHallPanel } from "../ui/achievement-hall-panel";
+import { PersonalSanctuaryPanel } from "../ui/personal-sanctuary-panel";
 
 export function WorldRuntimeCanvas({
   achievementHallOverview,
@@ -52,6 +54,7 @@ export function WorldRuntimeCanvas({
   learningAcademyOverview,
   libraryOverview,
   locationPage,
+  personalSanctuaryOverview,
   plazaOverview,
   preferences,
   profile,
@@ -67,6 +70,7 @@ export function WorldRuntimeCanvas({
   learningAcademyOverview: LearningAcademyOverviewData;
   libraryOverview: KnowledgeLibraryOverviewData;
   locationPage: WorldLocationPage;
+  personalSanctuaryOverview: PersonalSanctuaryOverviewData;
   plazaOverview: CentralPlazaOverviewData;
   preferences: UserPreferences;
   profile: WorldProfile;
@@ -134,6 +138,7 @@ export function WorldRuntimeCanvas({
               habitGardenOverview={habitGardenOverview}
               learningAcademyOverview={learningAcademyOverview}
               libraryOverview={libraryOverview}
+              personalSanctuaryOverview={personalSanctuaryOverview}
               plazaOverview={plazaOverview}
               projectDockOverview={projectDockOverview}
               progressTowerOverview={progressTowerOverview}
@@ -166,6 +171,7 @@ export function WorldRuntimeCanvas({
         <ProjectDockPanel overview={projectDockOverview} />
         <ProgressTowerPanel overview={progressTowerOverview} />
         <AchievementHallPanel overview={achievementHallOverview} />
+        <PersonalSanctuaryPanel overview={personalSanctuaryOverview} />
 
         <div className="world-runtime-label" aria-live="polite">
           <strong>World Mode district slices</strong>

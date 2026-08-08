@@ -25,6 +25,7 @@ import type { CodingArenaOverviewData } from "./engine/coding-arena-system";
 import type { HabitGardenOverviewData } from "./engine/habit-garden-system";
 import type { KnowledgeLibraryOverviewData } from "./engine/knowledge-library-system";
 import type { LearningAcademyOverviewData } from "./engine/learning-academy-system";
+import type { PersonalSanctuaryOverviewData } from "./engine/personal-sanctuary-system";
 import type { ProjectDockOverviewData } from "./engine/project-dock-system";
 import type { ProgressTowerOverviewData } from "./engine/progress-tower-system";
 import { useWorldRuntimeReadiness } from "./hooks/use-world-runtime-readiness";
@@ -39,6 +40,7 @@ interface WorldDataState {
   learningAcademyOverview: LearningAcademyOverviewData;
   libraryOverview: KnowledgeLibraryOverviewData;
   locations: WorldLocationPage;
+  personalSanctuaryOverview: PersonalSanctuaryOverviewData;
   plazaOverview: CentralPlazaOverviewData;
   preferences: UserPreferences;
   profile: WorldProfile;
@@ -131,6 +133,11 @@ export function WorldPage({
         achievementSummary,
         achievementPage,
         certificates,
+        personalProfile,
+        privacy,
+        profileLinks,
+        favoriteProjects,
+        favoriteResources,
         analytics,
         codingSnippets,
         codingExercises,
@@ -169,6 +176,11 @@ export function WorldPage({
         apiClient.achievements.summary(),
         apiClient.achievements.list({ limit: 25, offset: 0, unlockedOnly: false }),
         apiClient.users.listCertificates({ limit: 12, offset: 0 }),
+        apiClient.users.getProfile(),
+        apiClient.users.getPrivacy(),
+        apiClient.users.listLinks({ limit: 8, offset: 0 }),
+        apiClient.users.listFavoriteProjects({ limit: 12, offset: 0 }),
+        apiClient.users.listFavoriteResources({ limit: 12, offset: 0 }),
         apiClient.analytics.summary({ period: "week" }),
         apiClient.coding.listSnippets({ includeArchived: false, limit: 6, offset: 0 }),
         apiClient.coding.listExercises({ includeArchived: false, limit: 6, offset: 0 }),
@@ -226,6 +238,16 @@ export function WorldPage({
           tags
         },
         locations,
+        personalSanctuaryOverview: {
+          certificates,
+          favoriteProjects,
+          favoriteResources,
+          preferences,
+          privacy,
+          profile: personalProfile,
+          profileLinks,
+          projects
+        },
         plazaOverview: {
           analytics,
           files,
@@ -347,6 +369,7 @@ export function WorldPage({
                   learningAcademyOverview={data.learningAcademyOverview}
                   libraryOverview={data.libraryOverview}
                   locationPage={data.locations}
+                  personalSanctuaryOverview={data.personalSanctuaryOverview}
                   plazaOverview={data.plazaOverview}
                   preferences={data.preferences}
                   profile={data.profile}

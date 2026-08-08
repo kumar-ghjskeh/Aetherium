@@ -141,10 +141,27 @@ const locationPage: WorldLocationPage = {
       unlocked: false,
       visited: false,
       visualStatus: "data_contract_ready"
+    },
+    {
+      category: "profile",
+      commandRoute: "/app/settings",
+      current: false,
+      deepLinkEntityTypes: ["profile", "preference"],
+      defaultUnlocked: true,
+      description: "Profile and settings",
+      futureSceneKey: "personal-sanctuary",
+      id: "personal_home",
+      spawn: false,
+      subtitle: "Personal Sanctuary",
+      title: "Personal Sanctuary",
+      unlockDependencyIds: [],
+      unlocked: true,
+      visited: false,
+      visualStatus: "data_contract_ready"
     }
   ],
-  total: 8,
-  unlockedCount: 7,
+  total: 9,
+  unlockedCount: 8,
   visitedCount: 0
 };
 
@@ -511,5 +528,40 @@ describe("diagnostic world interaction manifest", () => {
     expect(
       interactions.find((interaction) => interaction.id === "interaction-hall-world-unlocks")
     ).toMatchObject({ commandRoute: "/app/achievements", prompt: "World Unlocks" });
+  });
+
+  it("adds Personal Sanctuary profile, favorite, and privacy destinations", () => {
+    const interactions = buildDiagnosticWorldInteractions({ deepLinks, locationPage });
+
+    expect(
+      interactions.find(
+        (interaction) => interaction.id === "interaction-sanctuary-settings-terminal"
+      )
+    ).toMatchObject({
+      commandRoute: "/app/settings",
+      locationId: "personal_home",
+      prompt: "Open Settings",
+      status: "available"
+    });
+    expect(
+      interactions.find(
+        (interaction) => interaction.id === "interaction-sanctuary-profile-terminal"
+      )
+    ).toMatchObject({ commandRoute: "/app/settings", prompt: "Profile & Avatar" });
+    expect(
+      interactions.find(
+        (interaction) => interaction.id === "interaction-sanctuary-projects-terminal"
+      )
+    ).toMatchObject({ commandRoute: "/app/projects", prompt: "Favorite Projects" });
+    expect(
+      interactions.find(
+        (interaction) => interaction.id === "interaction-sanctuary-resources-terminal"
+      )
+    ).toMatchObject({ commandRoute: "/app/library", prompt: "Favorite Resources" });
+    expect(
+      interactions.find(
+        (interaction) => interaction.id === "interaction-sanctuary-privacy-terminal"
+      )
+    ).toMatchObject({ commandRoute: "/app/settings", prompt: "Privacy & Controls" });
   });
 });

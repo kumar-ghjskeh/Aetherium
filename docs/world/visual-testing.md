@@ -138,6 +138,11 @@ mapping, world-unlock records, privacy filtering, honest empty states, and acces
 handoffs. Fixed screenshot capture for Achievement Hall remains part of the W23 visual regression
 suite.
 
+W16 adds Personal Sanctuary and uses the same interim validation approach. It adds deterministic
+tests for preset-avatar metadata, favorites, certificates, privacy and preference states, strict
+private-field filtering, honest empty states, and accessible Command Mode handoffs. Fixed screenshot
+capture for Personal Sanctuary remains part of the W23 visual regression suite.
+
 ## Failure Policy
 
 If tests show a black canvas, missing asset, persistent console error, browser crash, or performance

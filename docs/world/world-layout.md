@@ -372,6 +372,32 @@ Current limitations:
 - No downloaded models, textures, audio, glTF/GLB assets, custom shaders, or particle systems are
   introduced.
 
+## Current Personal Sanctuary Slice
+
+W16 adds the profile and settings district in
+`apps/web/src/features/world/components/locations/personal-sanctuary.tsx`.
+
+Current Personal Sanctuary elements:
+
+- Procedural elevated terrace, reflective ring, open pavilion, symbolic profile focus, favorite
+  alcoves, certificate walk, privacy shields, and preference beacons at the `personal-sanctuary`
+  manifest coordinates.
+- Preset-avatar metadata mapped to an original abstract form without rendering uploaded private
+  images or building an avatar editor.
+- Favorite displays derived from real project and resource records, with honest empty states.
+- Near-district overlay backed by owner-scoped profile, privacy, favorite, certificate, link, and
+  preference records.
+- Sanctuary-specific interactions linking to profile/privacy, favorite projects, favorite resources,
+  and settings in Command Mode.
+
+Current limitations:
+
+- Profile and setting mutations remain in Command Mode.
+- Sensitive profile, credential, resource, and project fields are omitted from the scene model.
+- The district does not yet include spatial audio or final graphics controls.
+- No downloaded models, textures, audio, glTF/GLB assets, custom shaders, or particle systems are
+  introduced.
+
 ## Deterministic Generation
 
 Use fixed seeds for:

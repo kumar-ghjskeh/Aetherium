@@ -14,6 +14,7 @@ import type { KnowledgeLibraryOverviewData } from "../../engine/knowledge-librar
 import type { LearningAcademyOverviewData } from "../../engine/learning-academy-system";
 import type { ProjectDockOverviewData } from "../../engine/project-dock-system";
 import type { ProgressTowerOverviewData } from "../../engine/progress-tower-system";
+import type { PersonalSanctuaryOverviewData } from "../../engine/personal-sanctuary-system";
 import { WORLD_LOCATIONS_MANIFEST } from "../../manifests/locations.manifest";
 import {
   createRoutePoints,
@@ -37,6 +38,7 @@ import { ProjectDockDistrict } from "../locations/project-dock";
 import { ProgressTowerDistrict } from "../locations/progress-tower";
 import { CodingArenaDistrict } from "../locations/coding-arena";
 import { AchievementHallDistrict } from "../locations/achievement-hall";
+import { PersonalSanctuaryDistrict } from "../locations/personal-sanctuary";
 
 export function WorldEnvironmentScene({
   achievementHallOverview,
@@ -46,6 +48,7 @@ export function WorldEnvironmentScene({
   habitGardenOverview,
   learningAcademyOverview,
   libraryOverview,
+  personalSanctuaryOverview,
   plazaOverview,
   projectDockOverview,
   progressTowerOverview,
@@ -58,6 +61,7 @@ export function WorldEnvironmentScene({
   habitGardenOverview: HabitGardenOverviewData;
   learningAcademyOverview: LearningAcademyOverviewData;
   libraryOverview: KnowledgeLibraryOverviewData;
+  personalSanctuaryOverview: PersonalSanctuaryOverviewData;
   plazaOverview: CentralPlazaOverviewData;
   projectDockOverview: ProjectDockOverviewData;
   progressTowerOverview: ProgressTowerOverviewData;
@@ -94,6 +98,10 @@ export function WorldEnvironmentScene({
       <ProjectDockDistrict overview={projectDockOverview} reducedMotion={reducedMotion} />
       <ProgressTowerDistrict overview={progressTowerOverview} reducedMotion={reducedMotion} />
       <AchievementHallDistrict overview={achievementHallOverview} reducedMotion={reducedMotion} />
+      <PersonalSanctuaryDistrict
+        overview={personalSanctuaryOverview}
+        reducedMotion={reducedMotion}
+      />
     </>
   );
 }
@@ -260,7 +268,8 @@ function DistrictFoundationMarkers(): React.ReactElement {
           location.id !== "coding-arena" &&
           location.id !== "project-dock" &&
           location.id !== "progress-tower" &&
-          location.id !== "achievement-hall"
+          location.id !== "achievement-hall" &&
+          location.id !== "personal-sanctuary"
       ).map((location) => {
         const [x, , z] = location.position;
         const terrain = sampleTerrain(x, z);
