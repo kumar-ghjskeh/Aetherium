@@ -159,6 +159,21 @@ W12 does not add textures, downloaded assets, spatial audio, post-processing, co
 shaders, live particles, or in-canvas editor rendering. Browser screenshot and frame-metric
 automation remain scheduled for W23.
 
+## Current W13 Project Dock Budget
+
+The W13 Project Dock adds one bounded project district slice:
+
+- Procedural dock exterior and water-slip meshes only.
+- Up to five project berths derived from the current project page.
+- Up to six milestone signals and four blocker beacons from one featured project detail.
+- One low-cost crane-arm animation, berth beacon animation, and local point light.
+- One additional owner-scoped project-detail request per `/app/world` refresh when a project exists.
+- Reduced-motion mode disables crane and berth-beacon animation.
+
+W13 does not add textures, downloaded assets, spatial audio, post-processing, project mutation,
+custom shaders, live particles, or in-canvas project editing. Browser screenshot and frame-metric
+automation remain scheduled for W23.
+
 ## Runtime Diagnostics
 
 Diagnostics must report:

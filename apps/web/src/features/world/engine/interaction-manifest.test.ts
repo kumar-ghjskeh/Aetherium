@@ -92,6 +92,23 @@ const locationPage: WorldLocationPage = {
       visualStatus: "data_contract_ready"
     },
     {
+      category: "projects",
+      commandRoute: "/app/projects",
+      current: false,
+      deepLinkEntityTypes: ["project", "project_milestone", "project_task", "project_blocker"],
+      defaultUnlocked: true,
+      description: "Projects and their work records",
+      futureSceneKey: "project-dock",
+      id: "project_workshop",
+      spawn: false,
+      subtitle: "Project Dock",
+      title: "Project Dock",
+      unlockDependencyIds: [],
+      unlocked: true,
+      visited: false,
+      visualStatus: "data_contract_ready"
+    },
+    {
       category: "achievements",
       commandRoute: "/app/achievements",
       current: false,
@@ -109,8 +126,8 @@ const locationPage: WorldLocationPage = {
       visualStatus: "data_contract_ready"
     }
   ],
-  total: 6,
-  unlockedCount: 5,
+  total: 7,
+  unlockedCount: 6,
   visitedCount: 0
 };
 
@@ -155,9 +172,17 @@ const deepLinks: WorldDeepLinkPage = {
       locationId: "programming_tower",
       notes: "Route",
       routePattern: "/app/coding{?snippetId,exerciseId,projectId}"
+    },
+    {
+      commandRoute: "/app/projects",
+      entityTypes: ["project", "project_milestone", "project_task", "project_blocker"],
+      label: "Project Dock",
+      locationId: "project_workshop",
+      notes: "Route",
+      routePattern: "/app/projects{?projectId}"
     }
   ],
-  total: 5
+  total: 6
 };
 
 describe("diagnostic world interaction manifest", () => {
@@ -356,6 +381,51 @@ describe("diagnostic world interaction manifest", () => {
       commandRoute: "/app/projects",
       locationId: "programming_tower",
       prompt: "Linked Projects",
+      status: "available"
+    });
+  });
+
+  it("adds Project Dock terminals for work, blockers, files, and approval-controlled AI access", () => {
+    const interactions = buildDiagnosticWorldInteractions({ deepLinks, locationPage });
+
+    expect(
+      interactions.find((interaction) => interaction.id === "interaction-dock-featured-project")
+    ).toMatchObject({
+      commandRoute: "/app/projects",
+      locationId: "project_workshop",
+      prompt: "Open Featured Project",
+      status: "available"
+    });
+    expect(
+      interactions.find((interaction) => interaction.id === "interaction-dock-work-terminal")
+    ).toMatchObject({
+      commandRoute: "/app/projects",
+      locationId: "project_workshop",
+      prompt: "Review Work",
+      status: "available"
+    });
+    expect(
+      interactions.find((interaction) => interaction.id === "interaction-dock-blocker-terminal")
+    ).toMatchObject({
+      commandRoute: "/app/projects",
+      locationId: "project_workshop",
+      prompt: "Review Blockers",
+      status: "available"
+    });
+    expect(
+      interactions.find((interaction) => interaction.id === "interaction-dock-files-terminal")
+    ).toMatchObject({
+      commandRoute: "/app/projects",
+      locationId: "project_workshop",
+      prompt: "Project Context",
+      status: "available"
+    });
+    expect(
+      interactions.find((interaction) => interaction.id === "interaction-dock-ai-terminal")
+    ).toMatchObject({
+      commandRoute: "/app/ai",
+      locationId: "project_workshop",
+      prompt: "Open AI Hall",
       status: "available"
     });
   });

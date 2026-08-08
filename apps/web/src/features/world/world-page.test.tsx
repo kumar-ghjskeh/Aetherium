@@ -22,6 +22,7 @@ import type {
   MasteryRecord,
   MentorPage,
   NotificationPage,
+  ProjectDetail,
   ProjectPage,
   PublicUser,
   QuizPage,
@@ -253,11 +254,35 @@ const tagPage: TagPage = {
   total: 0
 };
 
+const projectDetail: ProjectDetail = {
+  archivedAt: null,
+  blockers: [],
+  completedAt: null,
+  createdAt: "2026-07-22T00:00:00Z",
+  description: "Build a learning-focused CPU model.",
+  files: [],
+  id: "99999999-1111-4111-8111-111111111111",
+  links: [],
+  milestones: [],
+  name: "CPU Learning Model",
+  notes: [],
+  objective: "Connect architecture study to a practical model.",
+  recentActivity: [],
+  repositoryUrl: null,
+  startedOn: "2026-07-22",
+  status: "active",
+  targetDate: null,
+  tasks: [],
+  technologies: [],
+  topics: [],
+  updatedAt: "2026-07-22T00:00:00Z"
+};
+
 const projectPage: ProjectPage = {
-  items: [],
+  items: [projectDetail],
   limit: 5,
   offset: 0,
-  total: 0
+  total: 1
 };
 
 const codeSnippetPage: CodeSnippetPage = {
@@ -529,6 +554,7 @@ function createClient(
     },
     projects: {
       ...createUnusedProjectsClient(),
+      get: vi.fn(() => Promise.resolve(projectDetail)),
       list: vi.fn(() => Promise.resolve(projectPage))
     },
     settings: {
@@ -566,7 +592,7 @@ describe("WorldPage", () => {
     expect(screen.getByRole("heading", { name: "Central Plaza runtime" })).toBeInTheDocument();
     expect(screen.getByText("Enabled")).toBeInTheDocument();
     expect(
-      screen.getByRole("progressbar", { name: /13 of 26 World Mode phases complete/u })
+      screen.getByRole("progressbar", { name: /14 of 26 World Mode phases complete/u })
     ).toBeInTheDocument();
     expect(await screen.findByTestId("world-runtime-canvas")).toBeInTheDocument();
     expect(screen.getByText("central_plaza")).toBeInTheDocument();
@@ -589,6 +615,7 @@ describe("WorldPage", () => {
       limit: 5,
       offset: 0
     });
+    expect(client.projects.get).toHaveBeenCalledWith(projectDetail.id);
     expect(client.learning.listGoals).toHaveBeenCalledWith({ limit: 5, offset: 0 });
     expect(client.learning.listSubjects).toHaveBeenCalledWith({ limit: 5, offset: 0 });
     expect(client.learning.listTopics).toHaveBeenCalledWith({ limit: 8, offset: 0 });

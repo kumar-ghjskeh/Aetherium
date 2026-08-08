@@ -122,6 +122,11 @@ that raw code and private request content are omitted from the world view model;
 `/app/world` loads the bounded coding pages and runner contract. Fixed screenshot capture for the
 Arena remains part of the W23 visual regression suite.
 
+W13 adds Project Dock and uses the same interim validation approach. It adds deterministic tests for
+project construction state, real task progress, milestone signals, blockers, linked context, and
+privacy filtering; it also verifies that `/app/world` loads only one featured project detail. Fixed
+screenshot capture for Project Dock remains part of the W23 visual regression suite.
+
 ## Failure Policy
 
 If tests show a black canvas, missing asset, persistent console error, browser crash, or performance

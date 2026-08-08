@@ -362,6 +362,66 @@ export const WORLD_INTERACTIONS_MANIFEST: WorldInteractionManifestEntry[] = [
     type: "open_project"
   },
   {
+    accessibilityLabel: "Open the featured project from Project Dock",
+    commandRoute: "/app/projects",
+    gamepadAction: "primary",
+    id: "interaction-dock-featured-project",
+    keyboardAction: "KeyE",
+    locationId: "project-dock",
+    position: [-148, 1.25, 258],
+    prompt: "Open Featured Project",
+    radius: 10,
+    type: "open_project"
+  },
+  {
+    accessibilityLabel: "Review project milestones and tasks from Project Dock",
+    commandRoute: "/app/projects",
+    gamepadAction: "primary",
+    id: "interaction-dock-work-terminal",
+    keyboardAction: "KeyE",
+    locationId: "project-dock",
+    position: [-164, 1.25, 268],
+    prompt: "Review Work",
+    radius: 10,
+    type: "open_project"
+  },
+  {
+    accessibilityLabel: "Review open project blockers from Project Dock",
+    commandRoute: "/app/projects",
+    gamepadAction: "primary",
+    id: "interaction-dock-blocker-terminal",
+    keyboardAction: "KeyE",
+    locationId: "project-dock",
+    position: [-132, 1.25, 268],
+    prompt: "Review Blockers",
+    radius: 10,
+    type: "open_project"
+  },
+  {
+    accessibilityLabel: "Open project-linked files and context from Project Dock",
+    commandRoute: "/app/projects",
+    gamepadAction: "primary",
+    id: "interaction-dock-files-terminal",
+    keyboardAction: "KeyE",
+    locationId: "project-dock",
+    position: [-160, 1.25, 289],
+    prompt: "Project Context",
+    radius: 10,
+    type: "open_file_collection"
+  },
+  {
+    accessibilityLabel: "Open AI Hall for approval-controlled project assistance",
+    commandRoute: "/app/ai",
+    gamepadAction: "primary",
+    id: "interaction-dock-ai-terminal",
+    keyboardAction: "KeyE",
+    locationId: "project-dock",
+    position: [-136, 1.25, 289],
+    prompt: "Open AI Hall",
+    radius: 10,
+    type: "start_ai_conversation"
+  },
+  {
     accessibilityLabel: "Open Achievement Hall in Command Mode",
     commandRoute: "/app/achievements",
     gamepadAction: "primary",

@@ -296,6 +296,31 @@ Current limitations:
 - No downloaded models, textures, audio, glTF/GLB assets, custom shaders, or particle systems are
   introduced.
 
+## Current Project Dock Slice
+
+W13 adds the project district in
+`apps/web/src/features/world/components/locations/project-dock.tsx`.
+
+Current Project Dock elements:
+
+- Procedural waterfront dock, water slips, workshop control room, crane, construction berths,
+  milestone signals, and blocker beacons at the `project-dock` manifest coordinates.
+- Project berths derived from real project names and statuses.
+- Evidence-backed construction height from real task or milestone completion for one featured
+  project.
+- Near-district overlay backed by a bounded project page and one owner-scoped project detail.
+- Dock-specific interaction terminals for project work, blockers, linked context, and opening the AI
+  Hall without granting mutation approval.
+
+Current limitations:
+
+- The district does not mutate projects or silently apply AI suggestions.
+- Only one featured project detail is loaded per World Mode refresh.
+- Sensitive project descriptions, notes, URLs, file IDs, task details, blocker details, and activity
+  metadata are omitted from the scene view model.
+- No downloaded models, textures, audio, glTF/GLB assets, custom shaders, or particle systems are
+  introduced.
+
 ## Deterministic Generation
 
 Use fixed seeds for:

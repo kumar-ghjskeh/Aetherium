@@ -24,6 +24,7 @@ import type { CodingArenaOverviewData } from "./engine/coding-arena-system";
 import type { HabitGardenOverviewData } from "./engine/habit-garden-system";
 import type { KnowledgeLibraryOverviewData } from "./engine/knowledge-library-system";
 import type { LearningAcademyOverviewData } from "./engine/learning-academy-system";
+import type { ProjectDockOverviewData } from "./engine/project-dock-system";
 import { useWorldRuntimeReadiness } from "./hooks/use-world-runtime-readiness";
 
 interface WorldDataState {
@@ -38,6 +39,7 @@ interface WorldDataState {
   plazaOverview: CentralPlazaOverviewData;
   preferences: UserPreferences;
   profile: WorldProfile;
+  projectDockOverview: ProjectDockOverviewData;
   sceneManifest: WorldSceneManifest;
 }
 
@@ -60,6 +62,15 @@ async function loadAcademyMasteryRecords(
   return Promise.all(
     topics.items.slice(0, 6).map((topic) => apiClient.learning.getMastery(topic.id))
   );
+}
+
+async function loadFeaturedProjectDetail(
+  apiClient: AetheriumApiClient,
+  projects: ProjectDockOverviewData["projects"]
+): Promise<ProjectDockOverviewData["featuredProject"]> {
+  const featuredProject =
+    projects.items.find((project) => project.status === "active") ?? projects.items[0];
+  return featuredProject ? apiClient.projects.get(featuredProject.id) : null;
 }
 
 export function WorldPage({
@@ -156,7 +167,10 @@ export function WorldPage({
         apiClient.coding.listAssistantRequests({ limit: 5, offset: 0 }),
         apiClient.coding.getRunnerStatus()
       ]);
-      const masteryRecords = await loadAcademyMasteryRecords(apiClient, learningTopics);
+      const [masteryRecords, featuredProject] = await Promise.all([
+        loadAcademyMasteryRecords(apiClient, learningTopics),
+        loadFeaturedProjectDetail(apiClient, projects)
+      ]);
       setData({
         aiObservatoryOverview: {
           conversations,
@@ -212,6 +226,10 @@ export function WorldPage({
         },
         preferences,
         profile,
+        projectDockOverview: {
+          featuredProject,
+          projects
+        },
         sceneManifest
       });
       setStatus("ready");
@@ -314,6 +332,7 @@ export function WorldPage({
                   plazaOverview={data.plazaOverview}
                   preferences={data.preferences}
                   profile={data.profile}
+                  projectDockOverview={data.projectDockOverview}
                   sceneManifest={data.sceneManifest}
                 />
               </React.Suspense>

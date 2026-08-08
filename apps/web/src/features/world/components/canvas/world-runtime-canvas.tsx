@@ -18,6 +18,7 @@ import type { AIObservatoryOverviewData } from "../../engine/ai-observatory-syst
 import type { KnowledgeLibraryOverviewData } from "../../engine/knowledge-library-system";
 import type { HabitGardenOverviewData } from "../../engine/habit-garden-system";
 import type { LearningAcademyOverviewData } from "../../engine/learning-academy-system";
+import type { ProjectDockOverviewData } from "../../engine/project-dock-system";
 import { useWorldSettingsStore } from "../../state/settings-store";
 import { WorldCameraRig } from "../camera/world-camera-rig";
 import { PlayerController } from "../character/player-controller";
@@ -35,6 +36,7 @@ import { AIObservatoryPanel } from "../ui/ai-observatory-panel";
 import { KnowledgeLibraryPanel } from "../ui/knowledge-library-panel";
 import { HabitGardenPanel } from "../ui/habit-garden-panel";
 import { LearningAcademyPanel } from "../ui/learning-academy-panel";
+import { ProjectDockPanel } from "../ui/project-dock-panel";
 import { CodingArenaPanel } from "../ui/coding-arena-panel";
 
 export function WorldRuntimeCanvas({
@@ -48,6 +50,7 @@ export function WorldRuntimeCanvas({
   plazaOverview,
   preferences,
   profile,
+  projectDockOverview,
   sceneManifest
 }: Readonly<{
   aiObservatoryOverview: AIObservatoryOverviewData;
@@ -60,6 +63,7 @@ export function WorldRuntimeCanvas({
   plazaOverview: CentralPlazaOverviewData;
   preferences: UserPreferences;
   profile: WorldProfile;
+  projectDockOverview: ProjectDockOverviewData;
   sceneManifest: WorldSceneManifest;
 }>): React.ReactElement {
   const [metrics, setMetrics] = React.useState<WorldRuntimeMetrics>(DEFAULT_RUNTIME_METRICS);
@@ -122,6 +126,7 @@ export function WorldRuntimeCanvas({
               learningAcademyOverview={learningAcademyOverview}
               libraryOverview={libraryOverview}
               plazaOverview={plazaOverview}
+              projectDockOverview={projectDockOverview}
               reducedMotion={preferences.reducedMotion}
             />
             <PlayerController reducedMotion={preferences.reducedMotion} />
@@ -148,6 +153,7 @@ export function WorldRuntimeCanvas({
         <HabitGardenPanel overview={habitGardenOverview} />
         <LearningAcademyPanel overview={learningAcademyOverview} />
         <CodingArenaPanel overview={codingArenaOverview} />
+        <ProjectDockPanel overview={projectDockOverview} />
 
         <div className="world-runtime-label" aria-live="polite">
           <strong>World Mode district slices</strong>
