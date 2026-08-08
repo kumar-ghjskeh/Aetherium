@@ -312,3 +312,15 @@ Avoid:
 - Transparent surfaces stacked across large screen areas.
 - Dynamic shadows on every object.
 - Large uncompressed textures.
+
+## Current W20 Command Bridge Budget
+
+W20 adds no frame-loop work while the in-world Command interface is closed. When it is open, the
+canvas switches to `frameloop="never"`, Rapier pauses, player input is locked, and world audio is
+ducked. The mounted scene and API state remain available so returning to exploration does not reload
+district geometry or restart physics.
+
+Transient position persistence subscribes to the player store outside React rendering and writes at
+most once every 500 milliseconds. The stored payload is small, validated, expires after twelve
+hours, and is written once more during unmount. Static route-to-location lookup uses the existing
+ten-entry manifest and does not load Three.js into unrelated Command Mode routes.

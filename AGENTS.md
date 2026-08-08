@@ -128,6 +128,9 @@ Implemented foundation slices:
 - Visual World Mode W19 audio with ten procedural spatial zones, explicit browser audio activation,
   saved music/ambient preference hydration, transient volume and sensory controls, movement and
   interaction cues, hidden-tab suspension, and readable sound captions.
+- Visual World Mode W20 Command integration with a rendering-pausing in-world Command interface,
+  Open Now and Travel There actions, search-result destinations, validated world deep links,
+  session-only exact position restore, real continue-activity routing, and audio ducking.
 
 Still out of scope unless explicitly requested:
 
@@ -159,8 +162,8 @@ before completing work that could affect World Mode dependencies or assets. Run
 
 ## Visual World Mode
 
-The visual World Mode architecture and W1-W19 runtime, district, navigation, atmosphere, and audio
-foundations are documented. Follow
+The visual World Mode architecture and W1-W20 runtime, district, navigation, atmosphere, audio, and
+Command integration foundations are documented. Follow
 `docs/architecture/decisions/0025-visual-world-mode-architecture.md`,
 `docs/world/world-mode-architecture.md`, and `docs/tasks/world/world-mode-roadmap.md` for W7 and
 later. Do not add unregistered assets, paid assets, editor-heavy engine dependencies, or any

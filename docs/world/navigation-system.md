@@ -35,3 +35,20 @@ walking, ground detection, destination markers, and fast travel share one elevat
 - Travel interpolation runs inside the existing frame loop.
 - Map UI and destination registries are memoized.
 - Only current and selected markers animate.
+
+## Command Mode Bridge
+
+W20 gives each mapped Command Mode route a `Travel There` deep link. Global-search results retain
+their normal `Open Now` destination and may also expose a manifest-validated World Mode destination.
+World URLs accept only registered backend location IDs and the `walk`, `cinematic`, or `instant`
+travel modes. Invalid query values are ignored.
+
+Opening the in-world Command interface pauses rendering and physics without unmounting the scene.
+The player can open a practical Command Mode route, search real destinations, continue the most
+recent real activity, or travel to an unlocked location. Locked locations remain visible but cannot
+be selected for travel.
+
+Exact player position and facing are a transient presentation concern. They are stored under
+`aetherium:world:runtime-state:v1` in browser `sessionStorage`, expire after twelve hours, and are
+restored only when the saved backend location matches the authenticated world profile. Durable
+current, visited, and unlocked state continues to come only from the backend world API.

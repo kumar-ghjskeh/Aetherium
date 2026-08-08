@@ -18,9 +18,13 @@ import { useWorldNavigationStore } from "../../state/navigation-store";
 import { PlayerAvatar } from "./player-avatar";
 
 export function PlayerController({
+  initialFacingRadians = 0,
+  initialPosition,
   onArrive,
   reducedMotion
 }: Readonly<{
+  initialFacingRadians?: number | undefined;
+  initialPosition?: readonly [number, number, number] | undefined;
   onArrive: (destination: WorldDestination) => Promise<void> | void;
   reducedMotion: boolean;
 }>): React.ReactElement {
@@ -29,7 +33,7 @@ export function PlayerController({
   const rigidBodyRef = React.useRef<RapierRigidBody>(null);
   const avatarRootRef = React.useRef<THREE.Group>(null);
   const velocityRef = React.useRef<PlanarVelocity>({ x: 0, z: 0 });
-  const facingRadiansRef = React.useRef(0);
+  const facingRadiansRef = React.useRef(initialFacingRadians);
   const previousGroundedRef = React.useRef(true);
   const lastPublishedRef = React.useRef("");
 
@@ -178,7 +182,7 @@ export function PlayerController({
       enabledRotations={[false, false, false]}
       linearDamping={0.18}
       lockRotations
-      position={[0, sampleTerrain(0, 4).height + 1.1, 4]}
+      position={initialPosition ?? [0, sampleTerrain(0, 4).height + 1.1, 4]}
       ref={rigidBodyRef}
     >
       <CapsuleCollider args={[0.46, 0.34]} />

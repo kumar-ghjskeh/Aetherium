@@ -9,6 +9,7 @@ import {
 } from "../../engine/navigation-system";
 import { useWorldNavigationStore } from "../../state/navigation-store";
 import { usePlayerStore } from "../../state/player-store";
+import { useWorldCommandBridgeStore } from "../../state/command-bridge-store";
 
 const TRAVEL_MODES: Array<{ id: WorldTravelMode; label: string }> = [
   { id: "walk", label: "Walk" },
@@ -29,6 +30,7 @@ export function WorldNavigationOverlay({
   const closeMap = useWorldNavigationStore((state) => state.closeMap);
   const destinationId = useWorldNavigationStore((state) => state.destinationId);
   const mapOpen = useWorldNavigationStore((state) => state.mapOpen);
+  const commandOverlayOpen = useWorldCommandBridgeStore((state) => state.overlayOpen);
   const openMap = useWorldNavigationStore((state) => state.openMap);
   const requestSkip = useWorldNavigationStore((state) => state.requestSkip);
   const selectedMode = useWorldNavigationStore((state) => state.selectedMode);
@@ -61,9 +63,9 @@ export function WorldNavigationOverlay({
   }, [mapRequested]);
 
   React.useEffect(() => {
-    setMovementDisabled(mapOpen || activeTravel !== null);
+    setMovementDisabled(mapOpen || activeTravel !== null || commandOverlayOpen);
     return () => setMovementDisabled(false);
-  }, [activeTravel, mapOpen, setMovementDisabled]);
+  }, [activeTravel, commandOverlayOpen, mapOpen, setMovementDisabled]);
 
   React.useEffect(() => {
     if (!mapOpen) {

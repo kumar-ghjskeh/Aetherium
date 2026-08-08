@@ -15,6 +15,10 @@ import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 
 import { createBrowserApiClient, useAuth } from "../auth/auth-provider";
+import {
+  createWorldModeHref,
+  resolveWorldLocationForCommandRoute
+} from "../world/engine/command-bridge-system";
 import { commandActions, shellNavigation } from "./navigation";
 
 type ShellDataStatus = "idle" | "loading" | "ready" | "error";
@@ -213,6 +217,7 @@ export function AppShell({
     shellNavigation.find((item) => pathname === item.href) ??
     shellNavigation.find((item) => pathname.startsWith(`${item.href}/`)) ??
     shellNavigation[0];
+  const commandWorldLocation = resolveWorldLocationForCommandRoute(pathname);
 
   const shellData: ShellDataState = {
     error: dataError,
@@ -270,6 +275,17 @@ export function AppShell({
             </button>
 
             <div className="topbar-actions">
+              {commandWorldLocation ? (
+                <Link
+                  className="world-handoff-link"
+                  href={createWorldModeHref({
+                    backendLocationId: commandWorldLocation.backendLocationId,
+                    mode: "cinematic"
+                  })}
+                >
+                  Travel There
+                </Link>
+              ) : null}
               <button
                 aria-expanded={isNotificationsOpen}
                 aria-label={
@@ -340,6 +356,12 @@ export function AppShell({
               setIsPaletteOpen(false);
               router.push(target);
             }}
+            onTravelResult={(worldLocationId) => {
+              setIsPaletteOpen(false);
+              router.push(
+                createWorldModeHref({ backendLocationId: worldLocationId, mode: "cinematic" })
+              );
+            }}
             onRunCommand={runCommand}
           />
         ) : null}
@@ -402,11 +424,13 @@ function CommandPalette({
   client,
   onClose,
   onOpenResult,
+  onTravelResult,
   onRunCommand
 }: Readonly<{
   client: AetheriumApiClient;
   onClose: () => void;
   onOpenResult: (target: string) => void;
+  onTravelResult: (worldLocationId: string) => void;
   onRunCommand: (actionId: string) => void;
 }>): React.ReactElement {
   const searchInputRef = React.useRef<HTMLInputElement | null>(null);
@@ -509,15 +533,25 @@ function CommandPalette({
         {results.length > 0 ? (
           <div className="palette-list" aria-label="Search results">
             {results.map((result) => (
-              <button
-                className="palette-action"
-                key={result.id}
-                onClick={() => onOpenResult(result.openUrl)}
-                type="button"
-              >
-                <span>{result.title}</span>
-                <small>{result.snippet}</small>
-              </button>
+              <div className="palette-result-row" key={result.id}>
+                <button
+                  className="palette-action"
+                  onClick={() => onOpenResult(result.openUrl)}
+                  type="button"
+                >
+                  <span>{result.title}</span>
+                  <small>{result.snippet}</small>
+                </button>
+                {result.worldLocationId ? (
+                  <button
+                    className="palette-world-action"
+                    onClick={() => onTravelResult(result.worldLocationId ?? "")}
+                    type="button"
+                  >
+                    Travel There
+                  </button>
+                ) : null}
+              </div>
             ))}
           </div>
         ) : null}

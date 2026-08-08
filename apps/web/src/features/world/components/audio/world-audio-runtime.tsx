@@ -23,9 +23,11 @@ const createDefaultEngine = (): WorldAudioEngine => new ProceduralWorldAudioEngi
 
 export function WorldAudioRuntime({
   engineFactory = createDefaultEngine,
+  panelOpen = false,
   preferences
 }: Readonly<{
   engineFactory?: () => WorldAudioEngine;
+  panelOpen?: boolean;
   preferences: UserPreferences;
 }>): React.ReactElement {
   const engineRef = React.useRef<WorldAudioEngine | null>(null);
@@ -72,6 +74,7 @@ export function WorldAudioRuntime({
         musicEnabled,
         musicVolume,
         muted,
+        panelOpen,
         performancePreset,
         reducedSensory
       })
@@ -84,6 +87,7 @@ export function WorldAudioRuntime({
     musicEnabled,
     musicVolume,
     muted,
+    panelOpen,
     performancePreset,
     reducedSensory,
     status

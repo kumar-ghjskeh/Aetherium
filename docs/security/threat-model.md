@@ -217,6 +217,13 @@
 - `/api/v1/health/observability` exposes non-sensitive hardening status only.
 - CI runs `pnpm world:check` to keep visual 3D dependencies and visual-world assets out of the
   repository until the approved visual phase.
+- World Mode route intents are validated against registered Aetherium location IDs and supported
+  travel modes before they reach the runtime.
+- Exact player position and facing are non-sensitive presentation state stored only in expiring,
+  tab-scoped `sessionStorage`; authentication material, private content, and API responses are not
+  persisted there.
+- Backend world APIs remain the sole authority for owner scope, unlocks, visited locations, and
+  durable current-location state. Client manifests and stored coordinates never grant access.
 
 ## Future Required Controls
 

@@ -33,6 +33,11 @@ Server state flows through the existing typed API client. Transient scene state 
 stores and is discarded when World Mode unmounts unless a deliberate backend sync occurs through an
 existing endpoint such as `/api/v1/world/visit`.
 
+W20 preserves exact player position and facing only for the active browser tab using validated,
+expiring `sessionStorage`. This local presentation state never changes backend ownership, unlock, or
+visited-location decisions. Opening the in-world Command interface pauses the canvas and physics
+while retaining the mounted scene and authenticated API state.
+
 ## Proposed Source Structure
 
 ```text

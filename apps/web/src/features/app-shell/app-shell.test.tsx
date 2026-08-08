@@ -378,6 +378,57 @@ describe("Command Mode shell", () => {
     );
   });
 
+  it("travels to a search result's mapped World Mode district", async () => {
+    const client = createClient({
+      search: {
+        run: vi.fn(() =>
+          Promise.resolve({
+            items: [
+              {
+                createdAt: "2026-07-20T00:00:00Z",
+                entityId: "77777777-7777-4777-8777-777777777777",
+                entityType: "file_chunk" as const,
+                id: "file_chunk:77777777-7777-4777-8777-777777777777",
+                matchReason: "file_content" as const,
+                openUrl: "/app/library?file=11111111-1111-4111-8111-111111111111",
+                score: 0.9,
+                snippet: "Alpha systems notes.",
+                source: null,
+                title: "Alpha Notes content",
+                worldLocationId: "library"
+              }
+            ],
+            limit: 8,
+            mode: "hybrid" as const,
+            offset: 0,
+            query: "alpha",
+            semanticEnabled: false,
+            total: 1
+          })
+        )
+      }
+    });
+    renderShell(client);
+
+    await screen.findByRole("heading", { name: "Overview" });
+    await userEvent.keyboard("{Control>}k{/Control}");
+    const palette = screen.getByRole("dialog", { name: "Command palette" });
+    await userEvent.type(within(palette).getByLabelText("Search Aetherium"), "alpha");
+    await userEvent.click(within(palette).getByRole("button", { name: "Search" }));
+    await userEvent.click(await within(palette).findByRole("button", { name: "Travel There" }));
+
+    expect(push).toHaveBeenCalledWith("/app/world?destination=library&mode=cinematic");
+  });
+
+  it("offers a direct World Mode handoff for mapped Command Mode routes", async () => {
+    pathname = "/app/library";
+    const client = createClient();
+    renderShell(client, <SectionPage section="library" />);
+
+    const travelLink = await screen.findByRole("link", { name: "Travel There" });
+    expect(travelLink).toHaveAttribute("href", "/app/world?destination=library&mode=cinematic");
+  });
+
   it("marks notifications as read from the notification panel", async () => {
     const client = createClient();
     renderShell(client);

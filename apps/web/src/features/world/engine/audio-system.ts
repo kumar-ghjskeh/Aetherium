@@ -92,6 +92,7 @@ export function resolveWorldAudioMix({
   musicEnabled,
   musicVolume,
   muted,
+  panelOpen = false,
   performancePreset,
   reducedSensory
 }: {
@@ -102,16 +103,20 @@ export function resolveWorldAudioMix({
   musicEnabled: boolean;
   musicVolume: number;
   muted: boolean;
+  panelOpen?: boolean;
   performancePreset: PerformancePreset;
   reducedSensory: boolean;
 }): WorldAudioMix {
   const presetScale = performancePreset === "low" ? 0.75 : 1;
   const sensoryScale = reducedSensory ? 0.55 : 1;
+  const panelScale = panelOpen ? 0.32 : 1;
   return {
-    ambientGain: ambientEnabled ? clamp01(ambientVolume) * sensoryScale * presetScale : 0,
+    ambientGain: ambientEnabled
+      ? clamp01(ambientVolume) * sensoryScale * presetScale * panelScale
+      : 0,
     effectsGain: clamp01(effectsVolume) * sensoryScale,
     masterGain: muted ? 0 : clamp01(masterVolume),
-    musicGain: musicEnabled ? clamp01(musicVolume) * sensoryScale : 0
+    musicGain: musicEnabled ? clamp01(musicVolume) * sensoryScale * panelScale : 0
   };
 }
 

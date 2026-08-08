@@ -158,6 +158,12 @@ changes, sound captions, and hidden-tab suspension. W23 browser scenarios must e
 user gesture, verify that activation produces no console error, verify tab suspension, and run at
 least one Balanced performance capture with audio active.
 
+W20 adds deterministic route-intent, exact-position persistence, command-overlay keyboard,
+search-result destination, Command route handoff, and audio-ducking tests. W23 browser scenarios
+must verify that opening the Command interface freezes visible world movement, closing it restores
+the same position, `Open Now` preserves direct access, `Travel There` reaches the mapped district,
+and a page reload restores valid session-only position without overriding backend unlock state.
+
 ## Failure Policy
 
 If tests show a black canvas, missing asset, persistent console error, browser crash, or performance

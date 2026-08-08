@@ -22,6 +22,7 @@ import type { AchievementHallOverviewData } from "./engine/achievement-hall-syst
 import type { AIObservatoryOverviewData } from "./engine/ai-observatory-system";
 import type { CentralPlazaOverviewData } from "./engine/central-plaza-system";
 import type { CodingArenaOverviewData } from "./engine/coding-arena-system";
+import type { WorldCommandIntent } from "./engine/command-bridge-system";
 import type { HabitGardenOverviewData } from "./engine/habit-garden-system";
 import type { KnowledgeLibraryOverviewData } from "./engine/knowledge-library-system";
 import type { LearningAcademyOverviewData } from "./engine/learning-academy-system";
@@ -80,9 +81,11 @@ async function loadFeaturedProjectDetail(
 }
 
 export function WorldPage({
-  client
+  client,
+  initialIntent = null
 }: Readonly<{
   client?: AetheriumApiClient;
+  initialIntent?: WorldCommandIntent | null;
 }>): React.ReactElement {
   const apiClient = React.useMemo(() => client ?? createBrowserApiClient(), [client]);
   const [data, setData] = React.useState<WorldDataState | null>(null);
@@ -400,6 +403,7 @@ export function WorldPage({
                   codingArenaOverview={data.codingArenaOverview}
                   deepLinks={data.deepLinks}
                   habitGardenOverview={data.habitGardenOverview}
+                  initialIntent={initialIntent}
                   learningAcademyOverview={data.learningAcademyOverview}
                   libraryOverview={data.libraryOverview}
                   locationPage={data.locations}

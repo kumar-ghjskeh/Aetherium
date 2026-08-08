@@ -10,6 +10,8 @@ import { Physics } from "@react-three/rapier";
 import React from "react";
 import type * as THREE from "three";
 
+import { buildCentralPlazaViewModel } from "../../engine/central-plaza-system";
+import type { WorldCommandIntent } from "../../engine/command-bridge-system";
 import { buildDiagnosticWorldInteractions } from "../../engine/interaction-manifest";
 import { resolveGraphicsPresetSettings } from "../../engine/performance-manager";
 import {
@@ -27,6 +29,8 @@ import type { LearningAcademyOverviewData } from "../../engine/learning-academy-
 import type { ProjectDockOverviewData } from "../../engine/project-dock-system";
 import type { ProgressTowerOverviewData } from "../../engine/progress-tower-system";
 import type { PersonalSanctuaryOverviewData } from "../../engine/personal-sanctuary-system";
+import { loadSavedWorldRuntimeState, saveWorldRuntimeState } from "../../engine/save-sync";
+import { useWorldCommandBridgeStore } from "../../state/command-bridge-store";
 import { useWorldSettingsStore } from "../../state/settings-store";
 import { useWorldNavigationStore } from "../../state/navigation-store";
 import { usePlayerStore } from "../../state/player-store";
@@ -44,6 +48,7 @@ import { WorldInteractionPrompt } from "../interactions/world-interaction-prompt
 import { WorldInteractionSystem } from "../interactions/world-interaction-system";
 import { WorldArrivalTracker } from "../navigation/world-arrival-tracker";
 import { WorldLocationMarkers } from "../navigation/world-location-markers";
+import { WorldCommandBridge } from "../navigation/world-command-bridge";
 import { WorldNavigationOverlay } from "../navigation/world-navigation-overlay";
 import { CentralPlazaOverviewPanel } from "../ui/central-plaza-overview-panel";
 import { AIObservatoryPanel } from "../ui/ai-observatory-panel";
@@ -63,6 +68,7 @@ export function WorldRuntimeCanvas({
   codingArenaOverview,
   deepLinks,
   habitGardenOverview,
+  initialIntent,
   learningAcademyOverview,
   libraryOverview,
   locationPage,
@@ -80,6 +86,7 @@ export function WorldRuntimeCanvas({
   codingArenaOverview: CodingArenaOverviewData;
   deepLinks: WorldDeepLinkPage;
   habitGardenOverview: HabitGardenOverviewData;
+  initialIntent?: WorldCommandIntent | null;
   learningAcademyOverview: LearningAcademyOverviewData;
   libraryOverview: KnowledgeLibraryOverviewData;
   locationPage: WorldLocationPage;
@@ -94,6 +101,7 @@ export function WorldRuntimeCanvas({
 }>): React.ReactElement {
   const [metrics, setMetrics] = React.useState<WorldRuntimeMetrics>(DEFAULT_RUNTIME_METRICS);
   const [pageVisible, setPageVisible] = React.useState(true);
+  const commandOverlayOpen = useWorldCommandBridgeStore((state) => state.overlayOpen);
   const graphicsPreset = useWorldSettingsStore((state) => state.graphicsPreset);
   const timeMode = useWorldSettingsStore((state) => state.timeMode);
   const weatherEnabled = useWorldSettingsStore((state) => state.weatherEnabled);
@@ -102,6 +110,13 @@ export function WorldRuntimeCanvas({
   const rendererRef = React.useRef<THREE.WebGLRenderer | null>(null);
   const initialSpawnAppliedRef = React.useRef(false);
   const lastSyncedLocationRef = React.useRef(profile.currentLocationId);
+  const [savedRuntimeState] = React.useState(() =>
+    typeof window === "undefined" ? null : loadSavedWorldRuntimeState(window.sessionStorage)
+  );
+  const restoredRuntimeState =
+    !initialIntent && savedRuntimeState?.backendLocationId === profile.currentLocationId
+      ? savedRuntimeState
+      : null;
 
   React.useEffect(() => {
     setGraphicsPreset(preferences.performancePreset);
@@ -125,6 +140,7 @@ export function WorldRuntimeCanvas({
   );
 
   const preset = resolveGraphicsPresetSettings(graphicsPreset);
+  const runtimeActive = pageVisible && !commandOverlayOpen;
   const interactions = React.useMemo(
     () => buildDiagnosticWorldInteractions({ deepLinks, locationPage }),
     [deepLinks, locationPage]
@@ -137,6 +153,37 @@ export function WorldRuntimeCanvas({
 
   React.useEffect(() => {
     if (initialSpawnAppliedRef.current) {
+      return;
+    }
+    const requestedDestination = initialIntent
+      ? destinations.find(
+          (destination) => destination.backendLocationId === initialIntent.backendLocationId
+        )
+      : null;
+    if (requestedDestination?.unlocked) {
+      initialSpawnAppliedRef.current = true;
+      const navigation = useWorldNavigationStore.getState();
+      navigation.selectDestination(requestedDestination.id);
+      if (initialIntent?.mode === "walk") {
+        return;
+      }
+      navigation.startTravel(
+        createWorldTravelPlan({
+          destination: requestedDestination,
+          from: usePlayerStore.getState().position,
+          mode: initialIntent?.mode ?? "cinematic",
+          reducedMotion: preferences.reducedMotion,
+          startedAtMilliseconds: performance.now()
+        })
+      );
+      return;
+    }
+    if (restoredRuntimeState) {
+      initialSpawnAppliedRef.current = true;
+      usePlayerStore.setState({
+        facingRadians: restoredRuntimeState.facingRadians,
+        position: [...restoredRuntimeState.position]
+      });
       return;
     }
     const initialDestination =
@@ -159,7 +206,40 @@ export function WorldRuntimeCanvas({
         startedAtMilliseconds: performance.now()
       })
     );
-  }, [destinations, preferences.reducedMotion, profile.currentLocationId, profile.spawnLocationId]);
+  }, [
+    destinations,
+    initialIntent,
+    preferences.reducedMotion,
+    profile.currentLocationId,
+    profile.spawnLocationId,
+    restoredRuntimeState
+  ]);
+
+  React.useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    let lastSavedAt = 0;
+    const persist = (player = usePlayerStore.getState()) => {
+      const now = Date.now();
+      if (now - lastSavedAt < 500) {
+        return;
+      }
+      lastSavedAt = now;
+      saveWorldRuntimeState(window.sessionStorage, {
+        backendLocationId: lastSyncedLocationRef.current,
+        facingRadians: player.facingRadians,
+        position: player.position,
+        savedAtMilliseconds: now
+      });
+    };
+    const unsubscribe = usePlayerStore.subscribe(persist);
+    return () => {
+      unsubscribe();
+      lastSavedAt = 0;
+      persist();
+    };
+  }, []);
 
   const handleArrival = React.useCallback(
     async (destination: WorldDestination) => {
@@ -189,7 +269,7 @@ export function WorldRuntimeCanvas({
           aria-label="Terrain foundation 3D world runtime"
           camera={{ far: 1200, fov: 52, near: 0.1, position: [10, 7, 12] }}
           dpr={[1, preset.maxPixelRatio]}
-          frameloop={pageVisible ? "always" : "never"}
+          frameloop={runtimeActive ? "always" : "never"}
           gl={{
             antialias: preset.antialias,
             powerPreference: graphicsPreset === "low" ? "low-power" : "high-performance"
@@ -200,7 +280,7 @@ export function WorldRuntimeCanvas({
           }}
           shadows={preset.shadows}
         >
-          <Physics gravity={[0, -9.81, 0]} paused={!pageVisible}>
+          <Physics gravity={[0, -9.81, 0]} paused={!runtimeActive}>
             <WorldEnvironmentScene
               achievementHallOverview={achievementHallOverview}
               aiObservatoryOverview={aiObservatoryOverview}
@@ -218,7 +298,12 @@ export function WorldRuntimeCanvas({
               weatherEnabled={weatherEnabled}
               weatherMode={weatherMode}
             />
-            <PlayerController onArrive={handleArrival} reducedMotion={preferences.reducedMotion} />
+            <PlayerController
+              initialFacingRadians={restoredRuntimeState?.facingRadians}
+              initialPosition={restoredRuntimeState?.position}
+              onArrive={handleArrival}
+              reducedMotion={preferences.reducedMotion}
+            />
             <WorldArrivalTracker destinations={destinations} onArrive={handleArrival} />
             <WorldLocationMarkers
               destinations={destinations}
@@ -247,7 +332,16 @@ export function WorldRuntimeCanvas({
           reducedMotion={preferences.reducedMotion}
         />
         <WorldAtmosphereControls />
-        <WorldAudioRuntime preferences={preferences} />
+        <WorldAudioRuntime panelOpen={commandOverlayOpen} preferences={preferences} />
+        <WorldCommandBridge
+          continueRoute={
+            buildCentralPlazaViewModel(plazaOverview).terminals.find(
+              (terminal) => terminal.id === "continue-activity"
+            )?.commandRoute ?? "/app"
+          }
+          destinations={destinations}
+          reducedMotion={preferences.reducedMotion}
+        />
         <CentralPlazaOverviewPanel overview={plazaOverview} />
         <KnowledgeLibraryPanel overview={libraryOverview} />
         <AIObservatoryPanel overview={aiObservatoryOverview} />

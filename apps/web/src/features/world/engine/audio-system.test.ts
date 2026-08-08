@@ -44,6 +44,20 @@ describe("world audio system", () => {
     expect(active.ambientGain).toBeCloseTo(0.33);
     expect(active.musicGain).toBeCloseTo(0.33);
     expect(muted.masterGain).toBe(0);
+    expect(
+      resolveWorldAudioMix({
+        ambientEnabled: true,
+        ambientVolume: 1,
+        effectsVolume: 1,
+        masterVolume: 1,
+        musicEnabled: true,
+        musicVolume: 1,
+        muted: false,
+        panelOpen: true,
+        performancePreset: "balanced",
+        reducedSensory: false
+      }).musicGain
+    ).toBeCloseTo(0.32);
   });
 
   it("provides movement cadence and readable non-color captions", () => {
