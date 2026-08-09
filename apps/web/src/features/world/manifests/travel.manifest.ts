@@ -10,7 +10,7 @@ export const WORLD_SPAWNS_MANIFEST: WorldSpawnManifestEntry[] = [
     facingRadians: 0,
     id: "spawn-central-plaza",
     locationId: "central-plaza",
-    position: [0, 1.1, 24]
+    position: [0, 1.1, 58]
   }
 ];
 

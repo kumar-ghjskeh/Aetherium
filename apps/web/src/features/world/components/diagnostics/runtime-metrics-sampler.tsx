@@ -6,6 +6,7 @@ import * as THREE from "three";
 import {
   advanceAutomaticPerformance,
   createAutomaticPerformanceState,
+  estimateSceneTriangles,
   resolveGraphicsPresetSettings,
   resolvePerformanceWarning,
   resolveTargetPixelRatio,
@@ -78,6 +79,7 @@ export function RuntimeMetricsSampler(): null {
       }
     });
     const settings = resolveGraphicsPresetSettings(graphicsPreset, effectiveTier);
+    const physicsBodies = world.bodies.len();
     const baseMetrics = {
       activeMeshes,
       drawCalls: gl.info.render.calls,
@@ -85,10 +87,10 @@ export function RuntimeMetricsSampler(): null {
       frameTimeMs: 1000 / Math.max(fps, 1),
       jsHeapUsedMb: readUsedJsHeapMb(),
       loadedAssets: gl.info.memory.geometries + gl.info.memory.textures,
-      physicsBodies: world.bodies.len(),
+      physicsBodies,
       pixelRatio: gl.getPixelRatio(),
       textureMemoryEstimateMb: gl.info.memory.textures * 4,
-      triangles: gl.info.render.triangles
+      triangles: estimateSceneTriangles(scene)
     };
     const memoryWarning = resolvePerformanceWarning(baseMetrics, settings);
     let metrics: WorldRuntimeMetrics = { ...baseMetrics, memoryWarning };

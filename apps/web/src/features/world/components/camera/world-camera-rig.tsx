@@ -6,22 +6,29 @@ import {
   calculateThirdPersonCameraPose,
   dampValue,
   dampVector,
+  resolveArrivalCameraTarget,
   resolveCameraMode,
+  resolveCameraYawToward,
+  shouldSnapArrivalCamera,
   type CameraPose,
   type Vector3Tuple
 } from "../../engine/camera-system";
+import type { WorldDestination } from "../../engine/navigation-system";
 import { useWorldCameraInput } from "../../hooks/use-world-camera-input";
 import { useWorldCameraStore } from "../../state/camera-store";
 import { useWorldNavigationStore } from "../../state/navigation-store";
 import { usePlayerStore } from "../../state/player-store";
 
 export function WorldCameraRig({
+  destinations,
   reducedMotion
 }: Readonly<{
+  destinations: WorldDestination[];
   reducedMotion: boolean;
 }>): React.ReactElement | null {
   const { camera } = useThree();
   const initializedRef = React.useRef(false);
+  const arrivalSequenceRef = React.useRef(0);
   const currentTargetRef = React.useRef<Vector3Tuple>([0, 2.35, 0]);
   const lastPublishedRef = React.useRef("");
 
@@ -37,6 +44,9 @@ export function WorldCameraRig({
     const cameraState = useWorldCameraStore.getState();
     const navigationState = useWorldNavigationStore.getState();
     const gamepad = playerState.gamepadInput;
+    const selectedDestination = destinations.find(
+      (destination) => destination.id === navigationState.destinationId
+    );
 
     if (gamepad) {
       const cameraX = Math.abs(gamepad.axes[2] ?? 0) > 0.18 ? (gamepad.axes[2] ?? 0) : 0;
@@ -47,15 +57,40 @@ export function WorldCameraRig({
     }
 
     const nextCameraState = useWorldCameraStore.getState();
+    const distanceToSelectedDistrict = selectedDestination
+      ? Math.hypot(
+          selectedDestination.worldPosition[0] - playerState.position[0],
+          selectedDestination.worldPosition[2] - playerState.position[2]
+        )
+      : Number.POSITIVE_INFINITY;
+    const arrivalFraming =
+      playerState.planarSpeed < 0.1 &&
+      distanceToSelectedDistrict <= Math.max(90, (selectedDestination?.worldRadius ?? 0) + 28) &&
+      Date.now() < navigationState.arrivalSuppressedUntilMilliseconds;
+    const snapArrival = shouldSnapArrivalCamera({
+      arrivalSequence: navigationState.arrivalSuppressedUntilMilliseconds,
+      frameArrival: arrivalFraming,
+      previousArrivalSequence: arrivalSequenceRef.current
+    });
+    const cameraAnchor =
+      arrivalFraming && selectedDestination ? selectedDestination.point : playerState.position;
     const desiredPose = calculateThirdPersonCameraPose({
       collision: {
-        blockers: [{ center: [0, 1.2, 0], radius: 2.7 }],
-        maxWorldRadius: 22,
+        maxWorldRadius: 396,
         minY: 0.8
       },
       movementState: playerState.movementState,
-      orbit: nextCameraState.orbit,
-      playerPosition: playerState.position,
+      orbit: arrivalFraming
+        ? {
+            ...nextCameraState.orbit,
+            distance: Math.max(nextCameraState.orbit.distance, 10.5),
+            pitch: Math.max(nextCameraState.orbit.pitch, 0.18),
+            yaw: selectedDestination
+              ? resolveCameraYawToward(selectedDestination.point, selectedDestination.worldPosition)
+              : nextCameraState.orbit.yaw
+          }
+        : nextCameraState.orbit,
+      playerPosition: cameraAnchor,
       reducedMotion,
       settings: nextCameraState.settings
     });
@@ -68,10 +103,18 @@ export function WorldCameraRig({
     });
     const pose: CameraPose = {
       ...desiredPose,
-      mode
+      mode,
+      target: resolveArrivalCameraTarget({
+        destinationPosition: selectedDestination?.worldPosition ?? null,
+        destinationRadius: selectedDestination?.worldRadius ?? 0,
+        frameArrival: arrivalFraming,
+        playerPosition: cameraAnchor,
+        playerTarget: desiredPose.target
+      })
     };
     const smoothing = reducedMotion ? 24 : nextCameraState.settings.motionSmoothing;
-    const nextPosition = initializedRef.current
+    const smoothPose = initializedRef.current && !snapArrival;
+    const nextPosition = smoothPose
       ? dampVector(
           [
             perspectiveCamera.position.x,
@@ -83,10 +126,12 @@ export function WorldCameraRig({
           delta
         )
       : pose.position;
-    const nextTarget = initializedRef.current
+    const nextTarget = smoothPose
       ? dampVector(currentTargetRef.current, pose.target, smoothing, delta)
       : pose.target;
-    const nextFov = dampValue(perspectiveCamera.fov, pose.fov, smoothing, delta);
+    const nextFov = smoothPose
+      ? dampValue(perspectiveCamera.fov, pose.fov, smoothing, delta)
+      : pose.fov;
     const cameraShake =
       nextCameraState.settings.cameraShakeEnabled &&
       !reducedMotion &&
@@ -102,6 +147,9 @@ export function WorldCameraRig({
     }
 
     currentTargetRef.current = nextTarget;
+    if (snapArrival) {
+      arrivalSequenceRef.current = navigationState.arrivalSuppressedUntilMilliseconds;
+    }
     initializedRef.current = true;
 
     const publishedKey = [

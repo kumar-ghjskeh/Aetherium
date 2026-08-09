@@ -11,7 +11,11 @@ import {
   type PlanarVelocity
 } from "../../engine/player-controller";
 import { isInsideTerrainBounds, sampleTerrain } from "../../engine/terrain-system";
-import { sampleWorldTravelPlan, type WorldDestination } from "../../engine/navigation-system";
+import {
+  PLAYER_GROUND_CLEARANCE_METERS,
+  sampleWorldTravelPlan,
+  type WorldDestination
+} from "../../engine/navigation-system";
 import { useWorldInput } from "../../hooks/use-world-input";
 import { usePlayerStore } from "../../state/player-store";
 import { useWorldNavigationStore } from "../../state/navigation-store";
@@ -44,6 +48,22 @@ export function PlayerController({
     }
 
     const playerState = usePlayerStore.getState();
+    if (playerState.pendingTeleport) {
+      const [x, y, z] = playerState.pendingTeleport;
+      body.setTranslation({ x, y, z }, true);
+      body.setLinvel({ x: 0, y: 0, z: 0 }, true);
+      velocityRef.current = { x: 0, z: 0 };
+      playerState.setPlayerRuntimeState({
+        facingRadians: facingRadiansRef.current,
+        grounded: true,
+        movementState: "idle",
+        planarSpeed: 0,
+        position: [x, y, z],
+        velocity: { x: 0, z: 0 }
+      });
+      playerState.consumeTeleport();
+      return;
+    }
     const navigationState = useWorldNavigationStore.getState();
     if (navigationState.activeTravel) {
       const plan = navigationState.activeTravel;
@@ -141,7 +161,10 @@ export function PlayerController({
       currentTranslation.y < -12 ||
       !isInsideTerrainBounds([currentTranslation.x, currentTranslation.y, currentTranslation.z], 12)
     ) {
-      body.setTranslation({ x: 0, y: sampleTerrain(0, 0).height + 1.1, z: 0 }, true);
+      body.setTranslation(
+        { x: 0, y: sampleTerrain(0, 0).height + PLAYER_GROUND_CLEARANCE_METERS, z: 0 },
+        true
+      );
       body.setLinvel({ x: 0, y: 0, z: 0 }, true);
       velocityRef.current = { x: 0, z: 0 };
     }
@@ -182,7 +205,9 @@ export function PlayerController({
       enabledRotations={[false, false, false]}
       linearDamping={0.18}
       lockRotations
-      position={initialPosition ?? [0, sampleTerrain(0, 4).height + 1.1, 4]}
+      position={
+        initialPosition ?? [0, sampleTerrain(0, 4).height + PLAYER_GROUND_CLEARANCE_METERS, 4]
+      }
       ref={rigidBodyRef}
     >
       <CapsuleCollider args={[0.46, 0.34]} />

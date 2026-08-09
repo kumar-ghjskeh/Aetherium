@@ -1,10 +1,10 @@
-import { Text } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import React from "react";
 import type * as THREE from "three";
 
 import type { WorldDestination } from "../../engine/navigation-system";
 import { useWorldNavigationStore } from "../../state/navigation-store";
+import { WorldTextLabel } from "../ui/world-text-label";
 
 const THEME_COLORS: Record<string, string> = {
   achievement: "#f0c766",
@@ -84,7 +84,7 @@ function LocationMarker({
         <torusGeometry args={[selected ? 2.3 : 1.5, 0.2, 8, 24]} />
         <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.36} />
       </mesh>
-      <Text
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color={destination.unlocked ? "#f5fbff" : "#a7adb0"}
@@ -94,7 +94,7 @@ function LocationMarker({
         textAlign="center"
       >
         {destination.unlocked ? destination.name : `${destination.name} - Locked`}
-      </Text>
+      </WorldTextLabel>
     </group>
   );
 }

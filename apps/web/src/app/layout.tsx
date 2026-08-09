@@ -5,6 +5,9 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   description: "Aetherium application scaffold.",
+  icons: {
+    icon: "/icon.svg"
+  },
   title: "Aetherium"
 };
 

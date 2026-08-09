@@ -238,6 +238,55 @@ export function normalizeRadians(radians: number): number {
   return Math.atan2(Math.sin(radians), Math.cos(radians));
 }
 
+export function resolveCameraYawToward(from: Vector3Tuple, target: Vector3Tuple): number {
+  return normalizeRadians(Math.atan2(from[0] - target[0], from[2] - target[2]));
+}
+
+export function shouldSnapArrivalCamera({
+  arrivalSequence,
+  frameArrival,
+  previousArrivalSequence
+}: Readonly<{
+  arrivalSequence: number;
+  frameArrival: boolean;
+  previousArrivalSequence: number;
+}>): boolean {
+  return frameArrival && arrivalSequence > 0 && arrivalSequence !== previousArrivalSequence;
+}
+
+export function resolveArrivalCameraTarget({
+  destinationPosition,
+  destinationRadius,
+  frameArrival,
+  playerPosition,
+  playerTarget
+}: Readonly<{
+  destinationPosition: Vector3Tuple | null;
+  destinationRadius: number;
+  frameArrival: boolean;
+  playerPosition: Vector3Tuple;
+  playerTarget: Vector3Tuple;
+}>): Vector3Tuple {
+  if (!destinationPosition || !frameArrival) {
+    return playerTarget;
+  }
+
+  const distance = Math.hypot(
+    destinationPosition[0] - playerPosition[0],
+    destinationPosition[2] - playerPosition[2]
+  );
+  if (distance > Math.max(90, destinationRadius + 28)) {
+    return playerTarget;
+  }
+
+  const landmarkFocusHeight = clamp(destinationRadius * 0.13, 5, 9);
+  return [
+    destinationPosition[0],
+    destinationPosition[1] + landmarkFocusHeight,
+    destinationPosition[2]
+  ];
+}
+
 function shortenSegmentBeforeSphere(
   target: Vector3Tuple,
   desiredPosition: Vector3Tuple,

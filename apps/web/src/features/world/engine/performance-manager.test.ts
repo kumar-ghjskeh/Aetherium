@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
+import * as THREE from "three";
 
 import {
   advanceAutomaticPerformance,
   createAutomaticPerformanceState,
+  estimateSceneTriangles,
   resolveGraphicsPresetSettings,
   resolvePerformanceWarning,
   resolveTargetPixelRatio,
@@ -83,5 +85,22 @@ describe("world performance manager", () => {
         balanced
       )
     ).toBeNull();
+  });
+
+  it("estimates finite triangle counts for bounded and unbounded instancing", () => {
+    const scene = new THREE.Scene();
+    scene.add(
+      new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial(), 3)
+    );
+    const wideLineGeometry = new THREE.InstancedBufferGeometry();
+    wideLineGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(9), 3));
+    wideLineGeometry.setAttribute(
+      "instanceStart",
+      new THREE.InstancedBufferAttribute(new Float32Array(6), 3)
+    );
+    wideLineGeometry.instanceCount = Number.POSITIVE_INFINITY;
+    scene.add(new THREE.Mesh(wideLineGeometry, new THREE.MeshBasicMaterial()));
+
+    expect(estimateSceneTriangles(scene)).toBe(38);
   });
 });

@@ -1,7 +1,8 @@
-import { Text } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import React from "react";
 import type * as THREE from "three";
+
+import { WorldTextLabel } from "../ui/world-text-label";
 
 import {
   buildLearningAcademyViewModel,
@@ -51,7 +52,7 @@ export function LearningAcademyDistrict({
       <CourseHalls halls={viewModel.courseHalls} />
       <LessonStations stations={viewModel.lessonStations} reducedMotion={reducedMotion} />
       {viewModel.wings.length === 0 ? (
-        <Text
+        <WorldTextLabel
           anchorX="center"
           anchorY="middle"
           color="#eef8ff"
@@ -61,9 +62,9 @@ export function LearningAcademyDistrict({
           textAlign="center"
         >
           Create subjects and topics to open the first academy wing
-        </Text>
+        </WorldTextLabel>
       ) : null}
-      <Text
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color="#f4fbff"
@@ -73,7 +74,7 @@ export function LearningAcademyDistrict({
         textAlign="center"
       >
         Learning Academy
-      </Text>
+      </WorldTextLabel>
     </group>
   );
 }
@@ -147,7 +148,7 @@ function AcademyArchitecture({
           <meshStandardMaterial color="#d8f2ff" emissive="#3f8aa2" emissiveIntensity={0.22} />
         </mesh>
       </group>
-      <Text
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color="#1d3948"
@@ -157,7 +158,7 @@ function AcademyArchitecture({
         textAlign="center"
       >
         {masteryAverage} mastery signal
-      </Text>
+      </WorldTextLabel>
       <pointLight
         color="#cdefff"
         distance={100}
@@ -222,7 +223,7 @@ function SubjectWings({
                 roughness={0.28}
               />
             </mesh>
-            <Text
+            <WorldTextLabel
               anchorX="center"
               anchorY="middle"
               color="#f5fbff"
@@ -232,8 +233,8 @@ function SubjectWings({
               textAlign="center"
             >
               {wing.label}
-            </Text>
-            <Text
+            </WorldTextLabel>
+            <WorldTextLabel
               anchorX="center"
               anchorY="middle"
               color="#c7d8e3"
@@ -243,7 +244,7 @@ function SubjectWings({
               textAlign="center"
             >
               {wing.masteryLabel} - {wing.accessState}
-            </Text>
+            </WorldTextLabel>
           </group>
         );
       })}
@@ -274,7 +275,7 @@ function CourseHalls({
               roughness={0.38}
             />
           </mesh>
-          <Text
+          <WorldTextLabel
             anchorX="center"
             anchorY="middle"
             color="#eef8ff"
@@ -284,8 +285,8 @@ function CourseHalls({
             textAlign="center"
           >
             {hall.label}
-          </Text>
-          <Text
+          </WorldTextLabel>
+          <WorldTextLabel
             anchorX="center"
             anchorY="middle"
             color="#c4d6e2"
@@ -295,7 +296,7 @@ function CourseHalls({
             textAlign="center"
           >
             {hall.detail}
-          </Text>
+          </WorldTextLabel>
         </group>
       ))}
     </group>
@@ -365,7 +366,7 @@ function LessonStation({
           emissiveIntensity={0.3}
         />
       </mesh>
-      <Text
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color="#f6fbff"
@@ -375,8 +376,8 @@ function LessonStation({
         textAlign="center"
       >
         {station.label}
-      </Text>
-      <Text
+      </WorldTextLabel>
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color="#c6d8e4"
@@ -386,7 +387,7 @@ function LessonStation({
         textAlign="center"
       >
         {station.topicLabel}
-      </Text>
+      </WorldTextLabel>
     </group>
   );
 }

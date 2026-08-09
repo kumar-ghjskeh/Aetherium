@@ -234,6 +234,8 @@ def test_world_location_registry_exposes_profile_state(
     assert response.json()["currentLocationId"] == "central_plaza"
     assert response.json()["unlockedCount"] == 4
     assert response.json()["visitedCount"] == 1
+    personal_home = next(item for item in response.json()["items"] if item["id"] == "personal_home")
+    assert personal_home["futureSceneKey"] == "personal-sanctuary"
     assert unlocked.status_code == 200
     assert {item["id"] for item in unlocked.json()["items"]} == {
         "central_plaza",

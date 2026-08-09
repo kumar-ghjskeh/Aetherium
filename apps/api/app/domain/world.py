@@ -167,7 +167,7 @@ WORLD_LOCATION_DEFINITIONS: tuple[WorldLocationDefinition, ...] = (
         ),
         category=WorldLocationCategory.PROFILE,
         command_route="/app/settings",
-        future_scene_key="personal-home",
+        future_scene_key="personal-sanctuary",
         default_unlocked=False,
         visual_status=WorldVisualStatus.DATA_CONTRACT_READY,
         deep_link_entity_types=("profile", "privacy", "certificate", "data_request"),

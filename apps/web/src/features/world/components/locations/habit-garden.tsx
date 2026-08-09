@@ -1,7 +1,8 @@
-import { Text } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import React from "react";
 import type * as THREE from "three";
+
+import { WorldTextLabel } from "../ui/world-text-label";
 
 import {
   buildHabitGardenViewModel,
@@ -54,7 +55,7 @@ export function HabitGardenDistrict({
       />
       <HabitPlantBeds plants={viewModel.plants} reducedMotion={reducedMotion} />
       <PermanentGardenFeatures count={viewModel.permanentFeatureCount} />
-      <Text
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color="#efffee"
@@ -64,7 +65,7 @@ export function HabitGardenDistrict({
         textAlign="center"
       >
         Habit Garden
-      </Text>
+      </WorldTextLabel>
     </group>
   );
 }
@@ -169,7 +170,7 @@ function HabitPlantBeds({
 }>): React.ReactElement {
   if (plants.length === 0) {
     return (
-      <Text
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color="#dceede"
@@ -179,7 +180,7 @@ function HabitPlantBeds({
         textAlign="center"
       >
         Create habits to plant the first garden beds
-      </Text>
+      </WorldTextLabel>
     );
   }
 
@@ -227,7 +228,7 @@ function HabitPlant({
         <torusGeometry args={[2.9, 0.045, 8, 72]} />
         <meshStandardMaterial color={stageColor} emissive={stageColor} emissiveIntensity={0.2} />
       </mesh>
-      <Text
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color="#efffee"
@@ -237,8 +238,8 @@ function HabitPlant({
         textAlign="center"
       >
         {plant.label}
-      </Text>
-      <Text
+      </WorldTextLabel>
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color="#c9dec9"
@@ -248,7 +249,7 @@ function HabitPlant({
         textAlign="center"
       >
         {plant.streakLabel}
-      </Text>
+      </WorldTextLabel>
     </group>
   );
 }

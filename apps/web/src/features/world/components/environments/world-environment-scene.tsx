@@ -41,6 +41,7 @@ import { CodingArenaDistrict } from "../locations/coding-arena";
 import { AchievementHallDistrict } from "../locations/achievement-hall";
 import { PersonalSanctuaryDistrict } from "../locations/personal-sanctuary";
 import { DynamicWorldAtmosphere } from "../effects/dynamic-world-atmosphere";
+import { useWorldNavigationStore } from "../../state/navigation-store";
 
 export function WorldEnvironmentScene({
   achievementHallOverview,
@@ -75,6 +76,10 @@ export function WorldEnvironmentScene({
   weatherEnabled: boolean;
   weatherMode: WorldWeatherMode;
 }>): React.ReactElement {
+  const activeDistrictId = useWorldNavigationStore(
+    (state) => state.destinationId ?? "central-plaza"
+  );
+
   return (
     <>
       <DynamicWorldAtmosphere
@@ -86,25 +91,44 @@ export function WorldEnvironmentScene({
       />
 
       <TerrainMesh />
-      <TerrainCollision />
       <RiverRibbon reducedMotion={reducedMotion} />
       <WaterfallSheets reducedMotion={reducedMotion} />
       <TerrainRoutes />
       <DistrictFoundationMarkers />
       <EnvironmentProps graphicsPreset={graphicsPreset} reducedMotion={reducedMotion} />
-      <CentralPlazaVerticalSlice overview={plazaOverview} reducedMotion={reducedMotion} />
-      <KnowledgeLibraryDistrict overview={libraryOverview} reducedMotion={reducedMotion} />
-      <AIObservatoryDistrict overview={aiObservatoryOverview} reducedMotion={reducedMotion} />
-      <HabitGardenDistrict overview={habitGardenOverview} reducedMotion={reducedMotion} />
-      <LearningAcademyDistrict overview={learningAcademyOverview} reducedMotion={reducedMotion} />
-      <CodingArenaDistrict overview={codingArenaOverview} reducedMotion={reducedMotion} />
-      <ProjectDockDistrict overview={projectDockOverview} reducedMotion={reducedMotion} />
-      <ProgressTowerDistrict overview={progressTowerOverview} reducedMotion={reducedMotion} />
-      <AchievementHallDistrict overview={achievementHallOverview} reducedMotion={reducedMotion} />
-      <PersonalSanctuaryDistrict
-        overview={personalSanctuaryOverview}
-        reducedMotion={reducedMotion}
-      />
+      {activeDistrictId === "central-plaza" ? (
+        <CentralPlazaVerticalSlice overview={plazaOverview} reducedMotion={reducedMotion} />
+      ) : null}
+      {activeDistrictId === "knowledge-library" ? (
+        <KnowledgeLibraryDistrict overview={libraryOverview} reducedMotion={reducedMotion} />
+      ) : null}
+      {activeDistrictId === "ai-observatory" ? (
+        <AIObservatoryDistrict overview={aiObservatoryOverview} reducedMotion={reducedMotion} />
+      ) : null}
+      {activeDistrictId === "habit-garden" ? (
+        <HabitGardenDistrict overview={habitGardenOverview} reducedMotion={reducedMotion} />
+      ) : null}
+      {activeDistrictId === "learning-academy" ? (
+        <LearningAcademyDistrict overview={learningAcademyOverview} reducedMotion={reducedMotion} />
+      ) : null}
+      {activeDistrictId === "coding-arena" ? (
+        <CodingArenaDistrict overview={codingArenaOverview} reducedMotion={reducedMotion} />
+      ) : null}
+      {activeDistrictId === "project-dock" ? (
+        <ProjectDockDistrict overview={projectDockOverview} reducedMotion={reducedMotion} />
+      ) : null}
+      {activeDistrictId === "progress-tower" ? (
+        <ProgressTowerDistrict overview={progressTowerOverview} reducedMotion={reducedMotion} />
+      ) : null}
+      {activeDistrictId === "achievement-hall" ? (
+        <AchievementHallDistrict overview={achievementHallOverview} reducedMotion={reducedMotion} />
+      ) : null}
+      {activeDistrictId === "personal-sanctuary" ? (
+        <PersonalSanctuaryDistrict
+          overview={personalSanctuaryOverview}
+          reducedMotion={reducedMotion}
+        />
+      ) : null}
     </>
   );
 }
@@ -136,7 +160,7 @@ function TerrainMesh(): React.ReactElement {
   );
 }
 
-function TerrainCollision(): React.ReactElement {
+export function WorldTerrainCollision(): React.ReactElement {
   const geometry = React.useMemo(createTerrainGeometry, []);
 
   React.useEffect(

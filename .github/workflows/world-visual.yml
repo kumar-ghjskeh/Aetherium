@@ -1,0 +1,57 @@
+name: world-visual
+
+on:
+  pull_request:
+    paths:
+      - "apps/web/src/features/world/**"
+      - "apps/web/e2e/world/**"
+      - "apps/api/**"
+      - "playwright.world.config.ts"
+      - "package.json"
+      - "pnpm-lock.yaml"
+  workflow_dispatch:
+
+jobs:
+  visual-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Enable pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.13.1 --activate
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          pnpm install --frozen-lockfile
+          python -m pip install -r apps/api/requirements-dev.txt
+          pnpm exec playwright install --with-deps chromium
+
+      - name: Validate registered world assets
+        run: pnpm world:check
+
+      - name: Run visual regression suite
+        run: pnpm world:visual:test
+
+      - name: Upload visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aetherium-world-visual-evidence
+          path: artifacts/playwright
+          if-no-files-found: ignore
+          retention-days: 14

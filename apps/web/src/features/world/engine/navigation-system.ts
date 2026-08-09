@@ -11,6 +11,8 @@ import { sampleTerrain } from "./terrain-system";
 
 export type WorldTravelMode = "walk" | "cinematic" | "instant";
 
+export const PLAYER_GROUND_CLEARANCE_METERS = 0.82;
+
 export interface WorldDestination {
   accessibilityLabel: string;
   backendLocationId: string;
@@ -56,7 +58,7 @@ export function buildWorldDestinations(locationPage: WorldLocationPage): WorldDe
     const backend = backendBySceneKey.get(location.id);
     const travel = travelByLocation.get(location.id);
     const [x, , z] = travel?.point ?? location.fastTravelPoint;
-    const travelHeight = sampleTerrain(x, z).height + 1.12;
+    const travelHeight = sampleTerrain(x, z).height + PLAYER_GROUND_CLEARANCE_METERS;
     return {
       accessibilityLabel: travel?.accessibilityLabel ?? `Travel to ${location.name}`,
       backendLocationId: backend?.id ?? location.backendLocationId,
@@ -122,7 +124,7 @@ export function sampleWorldTravelPlan(
   const eased = easeInOutCubic(progress);
   const x = plan.from[0] + (plan.target.point[0] - plan.from[0]) * eased;
   const z = plan.from[2] + (plan.target.point[2] - plan.from[2]) * eased;
-  const terrainHeight = sampleTerrain(x, z).height + 0.82;
+  const terrainHeight = sampleTerrain(x, z).height + PLAYER_GROUND_CLEARANCE_METERS;
   const arcHeight = plan.mode === "cinematic" ? Math.sin(Math.PI * progress) * 2.6 : 0;
 
   return {

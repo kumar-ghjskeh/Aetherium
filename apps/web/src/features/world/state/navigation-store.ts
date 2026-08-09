@@ -8,8 +8,11 @@ import type {
 
 type WorldSyncStatus = "idle" | "syncing" | "error";
 
+export const WORLD_ARRIVAL_FRAMING_MILLISECONDS = 6_000;
+
 interface WorldNavigationState {
   activeTravel: WorldTravelPlan | null;
+  arrivalSuppressedUntilMilliseconds: number;
   destinationId: string | null;
   mapOpen: boolean;
   selectedMode: WorldTravelMode;
@@ -31,8 +34,14 @@ interface WorldNavigationState {
 
 export const useWorldNavigationStore = create<WorldNavigationState>((set) => ({
   activeTravel: null,
+  arrivalSuppressedUntilMilliseconds: 0,
   closeMap: () => set({ mapOpen: false }),
-  completeTravel: () => set({ activeTravel: null, skipRequested: false }),
+  completeTravel: () =>
+    set({
+      activeTravel: null,
+      arrivalSuppressedUntilMilliseconds: Date.now() + WORLD_ARRIVAL_FRAMING_MILLISECONDS,
+      skipRequested: false
+    }),
   destinationId: null,
   mapOpen: false,
   openMap: () => set({ mapOpen: true }),

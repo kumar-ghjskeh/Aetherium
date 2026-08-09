@@ -19,12 +19,17 @@ export interface PlayerActionState {
 }
 
 interface PlayerStoreState extends PlayerRuntimeState, PlayerActionState {
+  completedTeleportSequence: number;
   gamepadInput: GamepadInputSnapshot | null;
   inputMode: "gamepad" | "keyboard";
   interactionAligning: boolean;
   movementDisabled: boolean;
   paused: boolean;
+  pendingTeleport: [number, number, number] | null;
   pressedKeys: string[];
+  teleportSequence: number;
+  consumeTeleport: () => void;
+  requestTeleport: (position: readonly [number, number, number]) => void;
   setActionState: (state: PlayerActionState) => void;
   setGamepadInput: (input: GamepadInputSnapshot | null) => void;
   setInteractionAligning: (aligning: boolean) => void;
@@ -36,6 +41,7 @@ interface PlayerStoreState extends PlayerRuntimeState, PlayerActionState {
 
 export const usePlayerStore = create<PlayerStoreState>((set) => ({
   commandModeRequested: false,
+  completedTeleportSequence: 0,
   facingRadians: 0,
   gamepadInput: null,
   grounded: true,
@@ -46,9 +52,25 @@ export const usePlayerStore = create<PlayerStoreState>((set) => ({
   movementDisabled: false,
   movementState: "idle",
   paused: false,
+  pendingTeleport: null,
   planarSpeed: 0,
   position: [0, 1.1, 0],
   pressedKeys: [],
+  consumeTeleport: () =>
+    set((state) => ({
+      completedTeleportSequence: state.teleportSequence,
+      pendingTeleport: null
+    })),
+  requestTeleport: (position) =>
+    set((state) => ({
+      grounded: true,
+      movementState: "idle",
+      pendingTeleport: [...position],
+      planarSpeed: 0,
+      position: [...position],
+      teleportSequence: state.teleportSequence + 1,
+      velocity: { x: 0, z: 0 }
+    })),
   setActionState: (actionState) => set(actionState),
   setGamepadInput: (input) =>
     set({
@@ -68,6 +90,7 @@ export const usePlayerStore = create<PlayerStoreState>((set) => ({
     }),
   setMovementDisabled: (movementDisabled) => set({ movementDisabled }),
   setPlayerRuntimeState: (runtimeState) => set(runtimeState),
+  teleportSequence: 0,
   togglePaused: () => set((state) => ({ paused: !state.paused })),
   velocity: { x: 0, z: 0 }
 }));

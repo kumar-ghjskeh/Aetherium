@@ -1,7 +1,8 @@
-import { Text } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import React from "react";
 import type * as THREE from "three";
+
+import { WorldTextLabel } from "../ui/world-text-label";
 
 import {
   buildAchievementHallViewModel,
@@ -43,7 +44,7 @@ export function AchievementHallDistrict({
       <CompletedProjectGallery exhibits={viewModel.completedProjectExhibits} />
       <WorldUnlockGallery exhibits={viewModel.worldUnlockExhibits} reducedMotion={reducedMotion} />
       {viewModel.achievementExhibits.length === 0 ? (
-        <Text
+        <WorldTextLabel
           anchorX="center"
           anchorY="middle"
           color="#fff5dc"
@@ -53,9 +54,9 @@ export function AchievementHallDistrict({
           textAlign="center"
         >
           Completed milestones will open the first exhibit
-        </Text>
+        </WorldTextLabel>
       ) : null}
-      <Text
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color="#fff7e4"
@@ -65,7 +66,7 @@ export function AchievementHallDistrict({
         textAlign="center"
       >
         Achievement Hall
-      </Text>
+      </WorldTextLabel>
     </group>
   );
 }
@@ -180,7 +181,7 @@ function AchievementExhibit({
       <group position={[0, 4.1, 0]} ref={trophyRef} scale={scale}>
         <TrophyShape accent={exhibit.accent} rarity={exhibit.rarity} />
       </group>
-      <Text
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color="#fff7e8"
@@ -190,8 +191,8 @@ function AchievementExhibit({
         textAlign="center"
       >
         {exhibit.title}
-      </Text>
-      <Text
+      </WorldTextLabel>
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color={exhibit.accent}
@@ -201,7 +202,7 @@ function AchievementExhibit({
         textAlign="center"
       >
         {`${exhibit.categoryLabel} - ${exhibit.pointsLabel}`}
-      </Text>
+      </WorldTextLabel>
     </group>
   );
 }
@@ -264,7 +265,7 @@ function CertificateGallery({
               <boxGeometry args={[6.65, 3.65, 0.08]} />
               <meshStandardMaterial color="#f0c766" emissive="#765614" emissiveIntensity={0.22} />
             </mesh>
-            <Text
+            <WorldTextLabel
               anchorX="center"
               anchorY="middle"
               color="#fff8e7"
@@ -274,7 +275,7 @@ function CertificateGallery({
               textAlign="center"
             >
               {plaque.title}
-            </Text>
+            </WorldTextLabel>
           </group>
         );
       })}
@@ -297,7 +298,7 @@ function CompletedProjectGallery({
             <cylinderGeometry args={[1.4, 2.1, 2.2, 6]} />
             <meshStandardMaterial color="#f0c766" emissive="#8a6418" emissiveIntensity={0.25} />
           </mesh>
-          <Text
+          <WorldTextLabel
             anchorX="center"
             anchorY="middle"
             color="#fff4df"
@@ -307,7 +308,7 @@ function CompletedProjectGallery({
             textAlign="center"
           >
             {exhibit.name}
-          </Text>
+          </WorldTextLabel>
         </group>
       ))}
     </group>
@@ -337,7 +338,7 @@ function WorldUnlockGallery({
             <octahedronGeometry args={[1.8, 0]} />
             <meshStandardMaterial color="#b8a7ff" emissive="#6d5ac7" emissiveIntensity={0.45} />
           </mesh>
-          <Text
+          <WorldTextLabel
             anchorX="center"
             anchorY="middle"
             color="#f1ebff"
@@ -347,7 +348,7 @@ function WorldUnlockGallery({
             textAlign="center"
           >
             {exhibit.locationLabel}
-          </Text>
+          </WorldTextLabel>
         </group>
       ))}
     </group>

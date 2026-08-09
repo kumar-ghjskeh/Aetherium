@@ -40,9 +40,12 @@ export function WorldNavigationOverlay({
   const syncMessage = useWorldNavigationStore((state) => state.syncMessage);
   const syncStatus = useWorldNavigationStore((state) => state.syncStatus);
   const mapRequested = usePlayerStore((state) => state.mapRequested);
+  const completedTeleportSequence = usePlayerStore((state) => state.completedTeleportSequence);
+  const pendingTeleport = usePlayerStore((state) => state.pendingTeleport);
   const playerPosition = usePlayerStore((state) => state.position);
   const setMovementDisabled = usePlayerStore((state) => state.setMovementDisabled);
   const previousMapRequestRef = React.useRef(false);
+  const travelReady = completedTeleportSequence > 0 && pendingTeleport === null;
   const selectedDestination =
     destinations.find((destination) => destination.id === destinationId) ?? null;
   const currentDestination =
@@ -56,11 +59,11 @@ export function WorldNavigationOverlay({
     : null;
 
   React.useEffect(() => {
-    if (mapRequested && !previousMapRequestRef.current) {
+    if (mapRequested && !previousMapRequestRef.current && travelReady) {
       useWorldNavigationStore.getState().toggleMap();
     }
     previousMapRequestRef.current = mapRequested;
-  }, [mapRequested]);
+  }, [mapRequested, travelReady]);
 
   React.useEffect(() => {
     setMovementDisabled(mapOpen || activeTravel !== null || commandOverlayOpen);
@@ -81,7 +84,7 @@ export function WorldNavigationOverlay({
   }, [closeMap, mapOpen]);
 
   const chooseDestination = (destination: WorldDestination) => {
-    if (!destination.unlocked) {
+    if (!destination.unlocked || !travelReady) {
       return;
     }
     selectDestination(destination.id);
@@ -102,7 +105,13 @@ export function WorldNavigationOverlay({
 
   return (
     <>
-      <button aria-expanded={mapOpen} className="world-map-button" onClick={openMap} type="button">
+      <button
+        aria-expanded={mapOpen}
+        className="world-map-button"
+        disabled={!travelReady}
+        onClick={openMap}
+        type="button"
+      >
         Map
       </button>
 

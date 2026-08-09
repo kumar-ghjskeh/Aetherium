@@ -1,7 +1,8 @@
-import { Text } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import React from "react";
 import type * as THREE from "three";
+
+import { WorldTextLabel } from "../ui/world-text-label";
 
 import {
   buildCentralPlazaViewModel,
@@ -191,7 +192,7 @@ function CentralPlazaTerminal({
           roughness={0.24}
         />
       </mesh>
-      <Text
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color="#eef7fb"
@@ -201,8 +202,8 @@ function CentralPlazaTerminal({
         textAlign="center"
       >
         {terminal.label}
-      </Text>
-      <Text
+      </WorldTextLabel>
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color="#c8eaf0"
@@ -212,7 +213,7 @@ function CentralPlazaTerminal({
         textAlign="center"
       >
         {terminal.value}
-      </Text>
+      </WorldTextLabel>
       <mesh position={[0, -0.82, 0]}>
         <cylinderGeometry args={[1.7, 2.05, 0.28, 24]} />
         <meshStandardMaterial color="#2d3942" metalness={0.2} roughness={0.55} />

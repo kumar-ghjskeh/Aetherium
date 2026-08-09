@@ -19,10 +19,18 @@ export function WorldArrivalTracker({
       return;
     }
     lastCheckRef.current = clock.elapsedTime;
-    if (useWorldNavigationStore.getState().activeTravel) {
+    const navigationState = useWorldNavigationStore.getState();
+    if (
+      navigationState.activeTravel ||
+      Date.now() < navigationState.arrivalSuppressedUntilMilliseconds
+    ) {
       return;
     }
-    const destination = resolveEnteredDestination(usePlayerStore.getState().position, destinations);
+    const playerState = usePlayerStore.getState();
+    if (playerState.pendingTeleport) {
+      return;
+    }
+    const destination = resolveEnteredDestination(playerState.position, destinations);
     if (destination) {
       void onArrive(destination);
     }

@@ -1,7 +1,8 @@
-import { Text } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import React from "react";
 import * as THREE from "three";
+
+import { WorldTextLabel } from "../ui/world-text-label";
 
 import {
   buildKnowledgeLibraryViewModel,
@@ -50,7 +51,7 @@ export function KnowledgeLibraryDistrict({
       <CollectionShelves collections={viewModel.collections} />
       <FeaturedFileDisplays files={viewModel.featuredFiles} />
       <TagConstellation tags={viewModel.tagLabels} />
-      <Text
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color="#d9f4ff"
@@ -60,7 +61,7 @@ export function KnowledgeLibraryDistrict({
         textAlign="center"
       >
         Knowledge Library
-      </Text>
+      </WorldTextLabel>
     </group>
   );
 }
@@ -206,7 +207,7 @@ function CollectionShelves({
               roughness={0.26}
             />
           </mesh>
-          <Text
+          <WorldTextLabel
             anchorX="center"
             anchorY="middle"
             color="#edf9fb"
@@ -216,8 +217,8 @@ function CollectionShelves({
             textAlign="center"
           >
             {collection.label}
-          </Text>
-          <Text
+          </WorldTextLabel>
+          <WorldTextLabel
             anchorX="center"
             anchorY="middle"
             color="#b9d7df"
@@ -227,7 +228,7 @@ function CollectionShelves({
             textAlign="center"
           >
             {collection.fileCount} files
-          </Text>
+          </WorldTextLabel>
         </group>
       ))}
     </group>
@@ -259,7 +260,7 @@ function FeaturedFileDisplays({
               <cylinderGeometry args={[0.8, 1.05, 0.18, 20]} />
               <meshStandardMaterial color="#263540" metalness={0.16} roughness={0.55} />
             </mesh>
-            <Text
+            <WorldTextLabel
               anchorX="center"
               anchorY="middle"
               color="#eef7fb"
@@ -269,7 +270,7 @@ function FeaturedFileDisplays({
               textAlign="center"
             >
               {file.label}
-            </Text>
+            </WorldTextLabel>
           </group>
         );
       })}
@@ -301,7 +302,7 @@ function TagConstellation({
                 roughness={0.28}
               />
             </mesh>
-            <Text
+            <WorldTextLabel
               anchorX="center"
               anchorY="middle"
               color="#d9f4ff"
@@ -311,7 +312,7 @@ function TagConstellation({
               textAlign="center"
             >
               {tag}
-            </Text>
+            </WorldTextLabel>
           </group>
         );
       })}

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
 import type { WorldDestination, WorldTravelPlan } from "../engine/navigation-system";
-import { useWorldNavigationStore } from "./navigation-store";
+import { WORLD_ARRIVAL_FRAMING_MILLISECONDS, useWorldNavigationStore } from "./navigation-store";
 
 const destination: WorldDestination = {
   accessibilityLabel: "Travel to Library",
@@ -30,6 +30,7 @@ describe("world navigation store", () => {
   beforeEach(() => {
     useWorldNavigationStore.setState({
       activeTravel: null,
+      arrivalSuppressedUntilMilliseconds: 0,
       destinationId: null,
       mapOpen: false,
       selectedMode: "walk",
@@ -70,5 +71,11 @@ describe("world navigation store", () => {
       syncMessage: "World service unavailable.",
       syncStatus: "error"
     });
+    expect(useWorldNavigationStore.getState().arrivalSuppressedUntilMilliseconds).toBeGreaterThan(
+      Date.now()
+    );
+    expect(
+      useWorldNavigationStore.getState().arrivalSuppressedUntilMilliseconds
+    ).toBeLessThanOrEqual(Date.now() + WORLD_ARRIVAL_FRAMING_MILLISECONDS);
   });
 });

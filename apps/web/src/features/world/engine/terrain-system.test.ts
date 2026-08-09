@@ -56,6 +56,15 @@ describe("terrain system", () => {
     expect(createRoutePoints(libraryRoute)[0]).toEqual([0, expect.any(Number), 0]);
   });
 
+  it("blends each fast-travel approach into its district plateau", () => {
+    for (const location of WORLD_LOCATIONS_MANIFEST) {
+      const center = sampleTerrain(location.position[0], location.position[2]);
+      const approach = sampleTerrain(location.fastTravelPoint[0], location.fastTravelPoint[2]);
+
+      expect(Math.abs(approach.height - center.height), location.name).toBeLessThan(0.2);
+    }
+  });
+
   it("scales environment detail by graphics preset", () => {
     const low = resolveEnvironmentDensityBudget("low");
     const high = resolveEnvironmentDensityBudget("high");

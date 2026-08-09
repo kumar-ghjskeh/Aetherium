@@ -137,13 +137,17 @@ Implemented foundation slices:
 - Visual World Mode W22 asset pipeline with TypeScript-AST manifest inspection, registration and
   license enforcement, path/name/hash/size/compression checks, duplicate and missing-file guards,
   deterministic tests, and bundle-size reporting.
+- Visual World Mode W23 automated browser regression with a disposable real FastAPI test host,
+  authenticated sessions, separate headed and headless baselines, ten district snapshots,
+  deterministic atmosphere and preset captures, fallback/error scenarios, canvas pixel checks,
+  console/network guards, and renderer-specific performance evidence.
 
 Still out of scope unless explicitly requested:
 
 - OAuth, social login, email delivery, password reset, MFA, and magic links.
 - External email, push, SMS, and deployed scheduler notification delivery.
-- Automated visual regression, accessibility polish, or visual world progression until the
-  corresponding approved World Mode phase is active.
+- Accessibility polish and final visual world refinement until the corresponding approved World Mode
+  phase is active.
 - Automatic production deployment.
 
 ## Product Independence
@@ -168,9 +172,9 @@ before completing work that could affect World Mode dependencies or assets. Run
 
 ## Visual World Mode
 
-The visual World Mode architecture and W1-W22 runtime, district, navigation, atmosphere, audio,
-Command integration, performance, and asset-pipeline foundations are documented. Follow
-`docs/architecture/decisions/0025-visual-world-mode-architecture.md`,
+The visual World Mode architecture and W1-W23 runtime, district, navigation, atmosphere, audio,
+Command integration, performance, asset-pipeline, and automated visual-regression foundations are
+documented. Follow `docs/architecture/decisions/0025-visual-world-mode-architecture.md`,
 `docs/world/world-mode-architecture.md`, and `docs/tasks/world/world-mode-roadmap.md` for W7 and
 later. Do not add unregistered assets, paid assets, editor-heavy engine dependencies, or any
 browser-exposed secret.

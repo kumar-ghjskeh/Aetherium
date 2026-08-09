@@ -65,7 +65,7 @@ describe("world navigation system", () => {
       visited: false
     });
     expect(library?.point[1]).toBeCloseTo(
-      sampleTerrain(library?.point[0] ?? 0, library?.point[2] ?? 0).height + 1.12,
+      sampleTerrain(library?.point[0] ?? 0, library?.point[2] ?? 0).height + 0.82,
       3
     );
   });

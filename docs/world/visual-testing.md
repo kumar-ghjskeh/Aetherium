@@ -85,7 +85,7 @@ Early diagnostic phases may use relaxed thresholds. Final polish must meet the b
 Screenshots must be generated from fixed seeds and deterministic camera positions. Baseline updates
 require an intentional phase commit and a note in the phase completion report.
 
-## Current W7 Status
+## District Test History
 
 W7 introduces the first visible Central Plaza district slice, but automated Playwright screenshot,
 console, and frame-metric capture remain scheduled for W23. Until that harness exists, W7 relies on:
@@ -173,6 +173,28 @@ not hardware performance evidence.
 W22 makes the visual harness fail earlier when an asset is unregistered, missing, duplicated,
 oversized, incorrectly named, hash-mismatched, source-only, or missing license/compression metadata.
 The W23 browser runner must call `pnpm world:check` before starting a server or capturing evidence.
+
+## W23 Automated Harness
+
+Run `pnpm world:visual:test` to compare the committed Chromium baselines. Use
+`pnpm world:visual:update` only for an intentional visual change after reviewing every generated
+image. The runner starts an isolated SQLite-backed FastAPI process and Next.js, registers a normal
+test user, and authenticates with the real Aetherium server-side session cookie.
+
+The test-only API process resets its database at startup and unlocks the ten rendered destinations
+for its authenticated visual account. This hook is absent from the production `app.main:app`
+process. Generated traces, HTML reports, videos, authentication state, and performance evidence are
+written under ignored `artifacts/playwright/`.
+
+The committed suite covers all ten districts, fixed day/sunset/night lighting, Low and Balanced
+presets, reduced-motion and unsupported-WebGL fallbacks, deliberate loading failure, nonblank canvas
+pixels, console and network cleanliness, audio activation, and runtime diagnostics at 1080p Low,
+1080p Balanced, and 1440p Balanced. It currently runs 19 scenarios in both headed and headless
+Chromium and keeps separate screenshot baselines for those renderers.
+
+Performance evidence is written to renderer-specific JSON files under `artifacts/playwright/`.
+Headless Chromium metrics are regression evidence, not a claim about the RTX 4060 hardware target;
+hardware qualification remains part of W25 acceptance.
 
 ## Failure Policy
 

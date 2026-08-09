@@ -1,4 +1,5 @@
 import type { PerformancePreset } from "@aetherium/shared-types";
+import type * as THREE from "three";
 
 export type GraphicsQualityTier = Exclude<PerformancePreset, "automatic">;
 
@@ -246,4 +247,37 @@ export function resolvePerformanceWarning(
     return "JavaScript heap use is high";
   }
   return null;
+}
+
+export function estimateSceneTriangles(scene: THREE.Object3D): number {
+  let triangles = 0;
+  scene.traverse((object) => {
+    const renderable = object as THREE.Object3D & {
+      count?: number;
+      geometry?: THREE.BufferGeometry;
+      isInstancedMesh?: boolean;
+      isMesh?: boolean;
+    };
+    if (!renderable.visible || !renderable.isMesh || !renderable.geometry) {
+      return;
+    }
+
+    const geometry = renderable.geometry;
+    const primitiveCount = geometry.index?.count ?? geometry.getAttribute("position")?.count ?? 0;
+    let instanceCount = 1;
+    if (renderable.isInstancedMesh) {
+      instanceCount = Number.isFinite(renderable.count) ? Math.max(renderable.count ?? 0, 0) : 0;
+    } else if ((geometry as THREE.InstancedBufferGeometry).isInstancedBufferGeometry) {
+      const authoredCount = (geometry as THREE.InstancedBufferGeometry).instanceCount;
+      const boundedAttributeCount =
+        geometry.getAttribute("instanceStart")?.count ??
+        geometry.getAttribute("instanceDistanceStart")?.count ??
+        1;
+      instanceCount = Number.isFinite(authoredCount)
+        ? Math.max(authoredCount, 0)
+        : boundedAttributeCount;
+    }
+    triangles += Math.floor(primitiveCount / 3) * instanceCount;
+  });
+  return Math.round(triangles);
 }

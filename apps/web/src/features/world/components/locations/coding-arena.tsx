@@ -1,7 +1,8 @@
-import { Text } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import React from "react";
 import type * as THREE from "three";
+
+import { WorldTextLabel } from "../ui/world-text-label";
 
 import {
   buildCodingArenaViewModel,
@@ -41,7 +42,7 @@ export function CodingArenaDistrict({
       <SnippetConsoles consoles={viewModel.snippetConsoles} />
       <ExercisePylons pylons={viewModel.exercisePylons} reducedMotion={reducedMotion} />
       {viewModel.snippetConsoles.length === 0 && viewModel.exercisePylons.length === 0 ? (
-        <Text
+        <WorldTextLabel
           anchorX="center"
           anchorY="middle"
           color="#d9f9ff"
@@ -51,9 +52,9 @@ export function CodingArenaDistrict({
           textAlign="center"
         >
           Save a snippet or create an exercise to activate the arena floor
-        </Text>
+        </WorldTextLabel>
       ) : null}
-      <Text
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color="#eafcff"
@@ -63,7 +64,7 @@ export function CodingArenaDistrict({
         textAlign="center"
       >
         Coding Arena
-      </Text>
+      </WorldTextLabel>
     </group>
   );
 }
@@ -164,7 +165,7 @@ function ArenaArchitecture({
           <torusGeometry args={[1.1, 0.2, 8, 4]} />
           <meshStandardMaterial color="#07171e" metalness={0.62} roughness={0.3} />
         </mesh>
-        <Text
+        <WorldTextLabel
           anchorX="center"
           anchorY="middle"
           color="#eafcff"
@@ -174,7 +175,7 @@ function ArenaArchitecture({
           textAlign="center"
         >
           {runnerStatusLabel}
-        </Text>
+        </WorldTextLabel>
       </group>
       <pointLight color="#55d9f2" distance={96} intensity={1.7} position={[0, 10, -5]} />
     </group>
@@ -231,7 +232,7 @@ function SnippetConsoles({
               roughness={0.24}
             />
           </mesh>
-          <Text
+          <WorldTextLabel
             anchorX="center"
             anchorY="middle"
             color="#effcff"
@@ -241,8 +242,8 @@ function SnippetConsoles({
             textAlign="center"
           >
             {console.title}
-          </Text>
-          <Text
+          </WorldTextLabel>
+          <WorldTextLabel
             anchorX="center"
             anchorY="middle"
             color={console.accent}
@@ -252,7 +253,7 @@ function SnippetConsoles({
             textAlign="center"
           >
             {console.languageLabel}
-          </Text>
+          </WorldTextLabel>
         </group>
       ))}
     </group>
@@ -317,7 +318,7 @@ function ExercisePylon({
           emissiveIntensity={0.34}
         />
       </mesh>
-      <Text
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color="#eafcff"
@@ -327,8 +328,8 @@ function ExercisePylon({
         textAlign="center"
       >
         {pylon.title}
-      </Text>
-      <Text
+      </WorldTextLabel>
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color={pylon.accent}
@@ -338,7 +339,7 @@ function ExercisePylon({
         textAlign="center"
       >
         {pylon.difficulty} - {pylon.languageLabel}
-      </Text>
+      </WorldTextLabel>
     </group>
   );
 }

@@ -1,7 +1,8 @@
-import { Text } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import React from "react";
 import type * as THREE from "three";
+
+import { WorldTextLabel } from "../ui/world-text-label";
 
 import {
   buildPersonalSanctuaryViewModel,
@@ -59,7 +60,7 @@ export function PersonalSanctuaryDistrict({
       <ProfileLinkMarkers records={viewModel.links} />
       <PrivacyCircle statuses={viewModel.privacyStatuses} />
       <SettingsBeacons statuses={viewModel.settingStatuses} />
-      <Text
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color="#f8fbff"
@@ -69,7 +70,7 @@ export function PersonalSanctuaryDistrict({
         textAlign="center"
       >
         Personal Sanctuary
-      </Text>
+      </WorldTextLabel>
     </group>
   );
 }
@@ -176,7 +177,7 @@ function AvatarFocus({
           <meshStandardMaterial color="#222d3b" metalness={0.18} roughness={0.58} />
         </mesh>
       </group>
-      <Text
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color="#ffffff"
@@ -186,8 +187,8 @@ function AvatarFocus({
         textAlign="center"
       >
         {displayName}
-      </Text>
-      <Text
+      </WorldTextLabel>
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color="#b9dfe4"
@@ -197,7 +198,7 @@ function AvatarFocus({
         textAlign="center"
       >
         {headline}
-      </Text>
+      </WorldTextLabel>
     </group>
   );
 }
@@ -260,7 +261,7 @@ function RecordAlcove({
         <boxGeometry args={[12.8, 0.42, 2.6]} />
         <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.22} />
       </mesh>
-      <Text
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color="#ffffff"
@@ -270,14 +271,14 @@ function RecordAlcove({
         textAlign="center"
       >
         {heading}
-      </Text>
+      </WorldTextLabel>
       {records.slice(0, 4).map((record, index) => (
         <group key={record.id} position={[0, 5.7 - index * 1.65, 1.16]}>
           <mesh>
             <boxGeometry args={[9.8, 1.05, 0.18]} />
             <meshStandardMaterial color="#182631" metalness={0.12} roughness={0.62} />
           </mesh>
-          <Text
+          <WorldTextLabel
             anchorX="center"
             anchorY="middle"
             color="#e8f2f5"
@@ -287,7 +288,7 @@ function RecordAlcove({
             textAlign="center"
           >
             {record.label}
-          </Text>
+          </WorldTextLabel>
         </group>
       ))}
     </group>
@@ -311,7 +312,7 @@ function CertificateWalk({
               <circleGeometry args={[1.45, 20]} />
               <meshStandardMaterial color="#f0c766" emissive="#765614" emissiveIntensity={0.28} />
             </mesh>
-            <Text
+            <WorldTextLabel
               anchorX="center"
               anchorY="middle"
               color="#fff7df"
@@ -321,7 +322,7 @@ function CertificateWalk({
               textAlign="center"
             >
               {record.label}
-            </Text>
+            </WorldTextLabel>
           </group>
         );
       })}
@@ -342,7 +343,7 @@ function ProfileLinkMarkers({
               <torusGeometry args={[1.2, 0.28, 8, 20]} />
               <meshStandardMaterial color="#b8a7ff" emissive="#4f4288" emissiveIntensity={0.26} />
             </mesh>
-            <Text
+            <WorldTextLabel
               anchorX="center"
               anchorY="middle"
               color="#eee9ff"
@@ -352,7 +353,7 @@ function ProfileLinkMarkers({
               textAlign="center"
             >
               {record.label}
-            </Text>
+            </WorldTextLabel>
           </group>
         );
       })}
@@ -374,7 +375,7 @@ function PrivacyCircle({
               <boxGeometry args={[2.8, 2.8, 0.62]} />
               <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.2} />
             </mesh>
-            <Text
+            <WorldTextLabel
               anchorX="center"
               anchorY="middle"
               color="#f4fbf7"
@@ -384,7 +385,7 @@ function PrivacyCircle({
               textAlign="center"
             >
               {`${status.label}: ${status.value}`}
-            </Text>
+            </WorldTextLabel>
           </group>
         );
       })}
@@ -409,7 +410,7 @@ function SettingsBeacons({
                 emissiveIntensity={0.24}
               />
             </mesh>
-            <Text
+            <WorldTextLabel
               anchorX="center"
               anchorY="middle"
               color="#e9f6f7"
@@ -419,7 +420,7 @@ function SettingsBeacons({
               textAlign="center"
             >
               {`${status.label}: ${status.value}`}
-            </Text>
+            </WorldTextLabel>
           </group>
         );
       })}

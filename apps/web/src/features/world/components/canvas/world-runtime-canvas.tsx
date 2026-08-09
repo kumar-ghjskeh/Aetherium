@@ -40,12 +40,16 @@ import { PlayerController } from "../character/player-controller";
 import { WorldAudioRuntime } from "../audio/world-audio-runtime";
 import { RuntimeMetricsSampler } from "../diagnostics/runtime-metrics-sampler";
 import { RuntimeDiagnosticsPanel } from "../diagnostics/runtime-diagnostics-panel";
-import { WorldEnvironmentScene } from "../environments/world-environment-scene";
+import {
+  WorldEnvironmentScene,
+  WorldTerrainCollision
+} from "../environments/world-environment-scene";
 import { WorldInteractionPrompt } from "../interactions/world-interaction-prompt";
 import { WorldInteractionSystem } from "../interactions/world-interaction-system";
 import { WorldArrivalTracker } from "../navigation/world-arrival-tracker";
 import { WorldLocationMarkers } from "../navigation/world-location-markers";
 import { WorldCommandBridge } from "../navigation/world-command-bridge";
+import { WorldInstantTravelCoordinator } from "../navigation/world-instant-travel-coordinator";
 import { WorldNavigationOverlay } from "../navigation/world-navigation-overlay";
 import { CentralPlazaOverviewPanel } from "../ui/central-plaza-overview-panel";
 import { AIObservatoryPanel } from "../ui/ai-observatory-panel";
@@ -104,7 +108,6 @@ export function WorldRuntimeCanvas({
   const weatherMode = useWorldSettingsStore((state) => state.weatherMode);
   const setGraphicsPreset = useWorldSettingsStore((state) => state.setGraphicsPreset);
   const effectiveGraphicsTier = useWorldPerformanceStore((state) => state.effectiveTier);
-  const rendererRef = React.useRef<THREE.WebGLRenderer | null>(null);
   const initialSpawnAppliedRef = React.useRef(false);
   const lastSyncedLocationRef = React.useRef(profile.currentLocationId);
   const [savedRuntimeState] = React.useState(() =>
@@ -128,18 +131,18 @@ export function WorldRuntimeCanvas({
     };
   }, []);
 
-  React.useEffect(
-    () => () => {
-      rendererRef.current?.dispose();
-      rendererRef.current = null;
-    },
-    []
-  );
-
   const preset = resolveGraphicsPresetSettings(graphicsPreset, effectiveGraphicsTier);
   const initialRendererPreset = resolveGraphicsPresetSettings(
     preferences.performancePreset,
     effectiveGraphicsTier
+  );
+  const rendererOptions = React.useMemo<THREE.WebGLRendererParameters>(
+    () => ({
+      antialias: initialRendererPreset.antialias,
+      powerPreference: initialRendererPreset.tier === "low" ? "low-power" : "high-performance",
+      preserveDrawingBuffer: process.env.NEXT_PUBLIC_AETHERIUM_WORLD_VISUAL_TEST === "true"
+    }),
+    [initialRendererPreset.antialias, initialRendererPreset.tier]
   );
   const runtimeActive = pageVisible && !commandOverlayOpen;
   const interactions = React.useMemo(
@@ -244,11 +247,12 @@ export function WorldRuntimeCanvas({
 
   const handleArrival = React.useCallback(
     async (destination: WorldDestination) => {
+      const navigation = useWorldNavigationStore.getState();
+      navigation.selectDestination(destination.id);
       if (lastSyncedLocationRef.current === destination.backendLocationId) {
         return;
       }
       lastSyncedLocationRef.current = destination.backendLocationId;
-      const navigation = useWorldNavigationStore.getState();
       navigation.setSyncing(destination);
       try {
         await onVisitLocation(destination.backendLocationId);
@@ -271,54 +275,53 @@ export function WorldRuntimeCanvas({
           camera={{ far: 1200, fov: 52, near: 0.1, position: [10, 7, 12] }}
           dpr={initialRendererPreset.targetPixelRatio}
           frameloop={runtimeActive ? "always" : "never"}
-          gl={{
-            antialias: initialRendererPreset.antialias,
-            powerPreference: initialRendererPreset.tier === "low" ? "low-power" : "high-performance"
-          }}
+          gl={rendererOptions}
           onCreated={({ gl }) => {
-            rendererRef.current = gl;
             gl.setClearColor("#07101f", 1);
             gl.toneMapping = THREE.ACESFilmicToneMapping;
             gl.toneMappingExposure = 1;
           }}
           shadows={preset.shadows}
         >
-          <Physics gravity={[0, -9.81, 0]} paused={!runtimeActive}>
-            <WorldEnvironmentScene
-              achievementHallOverview={achievementHallOverview}
-              aiObservatoryOverview={aiObservatoryOverview}
-              codingArenaOverview={codingArenaOverview}
-              graphicsPreset={effectiveGraphicsTier}
-              habitGardenOverview={habitGardenOverview}
-              learningAcademyOverview={learningAcademyOverview}
-              libraryOverview={libraryOverview}
-              personalSanctuaryOverview={personalSanctuaryOverview}
-              plazaOverview={plazaOverview}
-              projectDockOverview={projectDockOverview}
-              progressTowerOverview={progressTowerOverview}
-              reducedMotion={preferences.reducedMotion}
-              timeMode={timeMode}
-              weatherEnabled={weatherEnabled}
-              weatherMode={weatherMode}
-            />
-            <PlayerController
-              initialFacingRadians={restoredRuntimeState?.facingRadians}
-              initialPosition={restoredRuntimeState?.position}
-              onArrive={handleArrival}
-              reducedMotion={preferences.reducedMotion}
-            />
-            <WorldArrivalTracker destinations={destinations} onArrive={handleArrival} />
-            <WorldLocationMarkers
-              destinations={destinations}
-              reducedMotion={preferences.reducedMotion}
-            />
-            <WorldInteractionSystem
-              interactions={interactions}
-              reducedMotion={preferences.reducedMotion}
-            />
-            <RuntimeMetricsSampler />
-          </Physics>
-          <WorldCameraRig reducedMotion={preferences.reducedMotion} />
+          <WorldEnvironmentScene
+            achievementHallOverview={achievementHallOverview}
+            aiObservatoryOverview={aiObservatoryOverview}
+            codingArenaOverview={codingArenaOverview}
+            graphicsPreset={effectiveGraphicsTier}
+            habitGardenOverview={habitGardenOverview}
+            learningAcademyOverview={learningAcademyOverview}
+            libraryOverview={libraryOverview}
+            personalSanctuaryOverview={personalSanctuaryOverview}
+            plazaOverview={plazaOverview}
+            projectDockOverview={projectDockOverview}
+            progressTowerOverview={progressTowerOverview}
+            reducedMotion={preferences.reducedMotion}
+            timeMode={timeMode}
+            weatherEnabled={weatherEnabled}
+            weatherMode={weatherMode}
+          />
+          <React.Suspense fallback={null}>
+            <Physics gravity={[0, -9.81, 0]} paused={!runtimeActive}>
+              <WorldTerrainCollision />
+              <PlayerController
+                initialFacingRadians={restoredRuntimeState?.facingRadians}
+                initialPosition={restoredRuntimeState?.position}
+                onArrive={handleArrival}
+                reducedMotion={preferences.reducedMotion}
+              />
+              <RuntimeMetricsSampler />
+            </Physics>
+          </React.Suspense>
+          <WorldArrivalTracker destinations={destinations} onArrive={handleArrival} />
+          <WorldLocationMarkers
+            destinations={destinations}
+            reducedMotion={preferences.reducedMotion}
+          />
+          <WorldInteractionSystem
+            interactions={interactions}
+            reducedMotion={preferences.reducedMotion}
+          />
+          <WorldCameraRig destinations={destinations} reducedMotion={preferences.reducedMotion} />
         </Canvas>
 
         <RuntimeDiagnosticsPanel
@@ -326,6 +329,7 @@ export function WorldRuntimeCanvas({
           pageVisible={pageVisible}
           profile={profile}
         />
+        <WorldInstantTravelCoordinator onArrive={handleArrival} />
 
         <WorldInteractionPrompt />
         <WorldNavigationOverlay

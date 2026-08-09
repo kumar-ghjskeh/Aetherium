@@ -1,7 +1,8 @@
-import { Text } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import React from "react";
 import type * as THREE from "three";
+
+import { WorldTextLabel } from "../ui/world-text-label";
 
 import {
   buildAIObservatoryViewModel,
@@ -53,7 +54,7 @@ export function AIObservatoryDistrict({
       />
       <MentorProbeRing probes={viewModel.probes} reducedMotion={reducedMotion} />
       <ObservatoryStatusTerminals viewModel={viewModel} />
-      <Text
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color="#eff9ff"
@@ -63,7 +64,7 @@ export function AIObservatoryDistrict({
         textAlign="center"
       >
         AI Observatory
-      </Text>
+      </WorldTextLabel>
     </group>
   );
 }
@@ -185,7 +186,7 @@ function MentorProbeRing({
   return (
     <group position={[0, 5.4, -3.6]}>
       {probes.length === 0 ? (
-        <Text
+        <WorldTextLabel
           anchorX="center"
           anchorY="middle"
           color="#d8e9f0"
@@ -195,7 +196,7 @@ function MentorProbeRing({
           textAlign="center"
         >
           No mentors configured
-        </Text>
+        </WorldTextLabel>
       ) : (
         probes.map((probe, index) => (
           <MentorProbe key={probe.id} probe={probe} reducedMotion={reducedMotion} seed={index} />
@@ -238,7 +239,7 @@ function MentorProbe({
       </mesh>
       <ProbeCore probe={probe} stateColor={stateColor} />
       <StatusHalo stateColor={stateColor} />
-      <Text
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color="#eff9ff"
@@ -248,8 +249,8 @@ function MentorProbe({
         textAlign="center"
       >
         {probe.label}
-      </Text>
-      <Text
+      </WorldTextLabel>
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color="#adc5cc"
@@ -259,7 +260,7 @@ function MentorProbe({
         textAlign="center"
       >
         {probe.state.replace("_", " ")}
-      </Text>
+      </WorldTextLabel>
     </group>
   );
 }
@@ -376,7 +377,7 @@ function ObservatoryStatusTerminals({
               roughness={0.2}
             />
           </mesh>
-          <Text
+          <WorldTextLabel
             anchorX="center"
             anchorY="middle"
             color="#09202c"
@@ -386,8 +387,8 @@ function ObservatoryStatusTerminals({
             textAlign="center"
           >
             {label}
-          </Text>
-          <Text
+          </WorldTextLabel>
+          <WorldTextLabel
             anchorX="center"
             anchorY="middle"
             color="#09202c"
@@ -397,7 +398,7 @@ function ObservatoryStatusTerminals({
             textAlign="center"
           >
             {value}
-          </Text>
+          </WorldTextLabel>
         </group>
       ))}
     </group>

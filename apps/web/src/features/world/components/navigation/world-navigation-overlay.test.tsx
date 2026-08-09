@@ -83,8 +83,10 @@ describe("WorldNavigationOverlay", () => {
       syncStatus: "idle"
     });
     usePlayerStore.setState({
+      completedTeleportSequence: 1,
       mapRequested: false,
       movementDisabled: false,
+      pendingTeleport: null,
       position: [0, 1.1, 0]
     });
   });
@@ -109,6 +111,16 @@ describe("WorldNavigationOverlay", () => {
       target: { backendLocationId: "library", id: "knowledge-library" }
     });
     expect(screen.queryByRole("dialog", { name: "Aetherium world map" })).not.toBeInTheDocument();
+  });
+
+  it("keeps travel disabled until the initial physics teleport completes", () => {
+    usePlayerStore.setState({ completedTeleportSequence: 0, pendingTeleport: [0, 0.82, 58] });
+    const destinations = buildWorldDestinations(locationPage);
+    render(
+      <WorldNavigationOverlay destinations={destinations} profile={profile} reducedMotion={false} />
+    );
+
+    expect(screen.getByRole("button", { name: "Map" })).toBeDisabled();
   });
 
   it("supports keyboard/gamepad map requests and skippable cinematic travel", () => {

@@ -24,7 +24,10 @@ export function RuntimeDiagnosticsPanel({
   const effectiveTier = useWorldPerformanceStore((state) => state.effectiveTier);
   const metrics = useWorldPerformanceStore((state) => state.metrics);
   const movementState = usePlayerStore((state) => state.movementState);
+  const completedTeleportSequence = usePlayerStore((state) => state.completedTeleportSequence);
+  const pendingTeleport = usePlayerStore((state) => state.pendingTeleport);
   const planarSpeed = usePlayerStore((state) => state.planarSpeed);
+  const playerPosition = usePlayerStore((state) => state.position);
   const playerPaused = usePlayerStore((state) => state.paused);
   const inputMode = usePlayerStore((state) => state.inputMode);
   const cameraMode = useWorldCameraStore((state) => state.mode);
@@ -38,12 +41,20 @@ export function RuntimeDiagnosticsPanel({
   const setInvertY = useWorldCameraStore((state) => state.setInvertY);
   const setMotionSmoothing = useWorldCameraStore((state) => state.setMotionSmoothing);
   const setSensitivity = useWorldCameraStore((state) => state.setSensitivity);
+  const teleportSequence = usePlayerStore((state) => state.teleportSequence);
   const diagnosticsAllowed =
     process.env.NODE_ENV !== "production" ||
     process.env.NEXT_PUBLIC_AETHERIUM_WORLD_DEBUG === "true";
 
   return (
-    <aside className="world-runtime-hud" aria-label="World runtime controls">
+    <aside
+      aria-label="World runtime controls"
+      className="world-runtime-hud"
+      data-completed-teleport-sequence={completedTeleportSequence}
+      data-pending-teleport={pendingTeleport === null ? "false" : "true"}
+      data-player-position={playerPosition.map((value) => value.toFixed(3)).join(",")}
+      data-teleport-sequence={teleportSequence}
+    >
       <div>
         <span>Location</span>
         <strong>{profile.currentLocationId}</strong>

@@ -1,7 +1,8 @@
-import { Text } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import React from "react";
 import type * as THREE from "three";
+
+import { WorldTextLabel } from "../ui/world-text-label";
 
 import {
   buildProgressTowerViewModel,
@@ -38,7 +39,7 @@ export function ProgressTowerDistrict({
       <TowerArchitecture reducedMotion={reducedMotion} />
       <MetricFloors metrics={viewModel.metricSignals} />
       <StudyTrendColumns trends={viewModel.trendSignals} />
-      <Text
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color="#eefbff"
@@ -48,8 +49,8 @@ export function ProgressTowerDistrict({
         textAlign="center"
       >
         Progress Tower
-      </Text>
-      <Text
+      </WorldTextLabel>
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color="#91dfea"
@@ -59,7 +60,7 @@ export function ProgressTowerDistrict({
         textAlign="center"
       >
         {viewModel.activityLabel}
-      </Text>
+      </WorldTextLabel>
     </group>
   );
 }
@@ -155,7 +156,7 @@ function MetricFloors({
               />
             </mesh>
             {index < 6 ? (
-              <Text
+              <WorldTextLabel
                 anchorX="left"
                 anchorY="middle"
                 color={metric.available ? "#eefbff" : "#9aa8ac"}
@@ -164,7 +165,7 @@ function MetricFloors({
                 position={[12.8 - index * 0.28, 0, 0]}
               >
                 {`${metric.label}: ${metric.valueLabel}`}
-              </Text>
+              </WorldTextLabel>
             ) : null}
           </group>
         );
@@ -195,7 +196,7 @@ function StudyTrendColumns({
                 roughness={0.3}
               />
             </mesh>
-            <Text
+            <WorldTextLabel
               anchorX="center"
               anchorY="middle"
               color="#e8faff"
@@ -205,7 +206,7 @@ function StudyTrendColumns({
               textAlign="center"
             >
               {`${trend.studyMinutes}m`}
-            </Text>
+            </WorldTextLabel>
           </group>
         );
       })}

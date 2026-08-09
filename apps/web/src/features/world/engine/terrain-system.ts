@@ -85,7 +85,35 @@ export function resolveRiverCenterX(z: number): number {
   return Math.sin((z + 82) * 0.0105) * 34 + Math.sin((z - 140) * 0.006) * 18;
 }
 
+const DISTRICT_PLATEAUS = WORLD_LOCATIONS_MANIFEST.map((location) => ({
+  centerHeight: sampleRawTerrainHeight(location.position[0], location.position[2]),
+  innerRadius: location.worldRadius + 18,
+  outerRadius: location.worldRadius + 46,
+  position: location.position
+}));
+
 export function sampleTerrain(x: number, z: number): TerrainSample {
+  const borderDistance = Math.max(Math.abs(x), Math.abs(z)) / TERRAIN_HALF_SIZE_METERS;
+  const riverCenterX = resolveRiverCenterX(z);
+  const riverDistance = Math.abs(x - riverCenterX);
+  let height = sampleRawTerrainHeight(x, z);
+  for (const plateau of DISTRICT_PLATEAUS) {
+    const distance = Math.hypot(x - plateau.position[0], z - plateau.position[2]);
+    if (distance >= plateau.outerRadius) {
+      continue;
+    }
+    const plateauBlend = 1 - smoothstep(plateau.innerRadius, plateau.outerRadius, distance);
+    height += (plateau.centerHeight - height) * plateauBlend;
+  }
+  return {
+    height: Number(height.toFixed(3)),
+    riverCenterX,
+    riverDistance,
+    surface: resolveTerrainSurface(x, z, height, riverDistance, borderDistance)
+  };
+}
+
+function sampleRawTerrainHeight(x: number, z: number): number {
   const borderDistance = Math.max(Math.abs(x), Math.abs(z)) / TERRAIN_HALF_SIZE_METERS;
   const radialDistance = Math.hypot(x, z) / (Math.SQRT2 * TERRAIN_HALF_SIZE_METERS);
   const mountainLift =
@@ -96,18 +124,11 @@ export function sampleTerrain(x: number, z: number): TerrainSample {
     Math.cos(z * 0.014 - 0.35) * 1.4 +
     Math.sin((x + z) * 0.0065) * 1.2;
   const terraceLift = smoothstep(0.22, 0.72, radialDistance) * 7.5;
-  const riverCenterX = resolveRiverCenterX(z);
-  const riverDistance = Math.abs(x - riverCenterX);
+  const riverDistance = Math.abs(x - resolveRiverCenterX(z));
   const riverCut = smoothstep(44, 0, riverDistance) * 3.3;
   const centralPlateau = smoothstep(88, 24, Math.hypot(x, z));
   const rawHeight = mountainLift + terraceLift + rollingLift - riverCut;
-  const height = rawHeight * (1 - centralPlateau) + 0.26 * centralPlateau;
-  return {
-    height: Number(height.toFixed(3)),
-    riverCenterX,
-    riverDistance,
-    surface: resolveTerrainSurface(x, z, height, riverDistance, borderDistance)
-  };
+  return rawHeight * (1 - centralPlateau) + 0.26 * centralPlateau;
 }
 
 export function isInsideTerrainBounds(position: Vector3Tuple, marginMeters = 0): boolean {

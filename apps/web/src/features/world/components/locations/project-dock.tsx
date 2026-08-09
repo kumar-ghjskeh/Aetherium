@@ -1,7 +1,8 @@
-import { Text } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import React from "react";
 import type * as THREE from "three";
+
+import { WorldTextLabel } from "../ui/world-text-label";
 
 import {
   buildProjectDockViewModel,
@@ -38,7 +39,7 @@ export function ProjectDockDistrict({
       <MilestoneSignals signals={viewModel.milestoneSignals} />
       <BlockerBeacons blockers={viewModel.blockerSignals} reducedMotion={reducedMotion} />
       {viewModel.projectBerths.length === 0 ? (
-        <Text
+        <WorldTextLabel
           anchorX="center"
           anchorY="middle"
           color="#fff1dc"
@@ -48,9 +49,9 @@ export function ProjectDockDistrict({
           textAlign="center"
         >
           Create a project to open the first construction berth
-        </Text>
+        </WorldTextLabel>
       ) : null}
-      <Text
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color="#fff4e4"
@@ -60,7 +61,7 @@ export function ProjectDockDistrict({
         textAlign="center"
       >
         Project Dock
-      </Text>
+      </WorldTextLabel>
     </group>
   );
 }
@@ -135,7 +136,7 @@ function DockArchitecture({
             roughness={0.28}
           />
         </mesh>
-        <Text
+        <WorldTextLabel
           anchorX="center"
           anchorY="middle"
           color="#fff5e9"
@@ -145,7 +146,7 @@ function DockArchitecture({
           textAlign="center"
         >
           Workshop Control
-        </Text>
+        </WorldTextLabel>
       </group>
       <pointLight color="#ffb066" distance={94} intensity={1.55} position={[0, 12, 5]} />
     </group>
@@ -268,7 +269,7 @@ function ProjectBerth({
           <meshStandardMaterial color="#ff826f" emissive="#b52d23" emissiveIntensity={0.58} />
         </mesh>
       ) : null}
-      <Text
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color="#fff6ec"
@@ -278,8 +279,8 @@ function ProjectBerth({
         textAlign="center"
       >
         {berth.name}
-      </Text>
-      <Text
+      </WorldTextLabel>
+      <WorldTextLabel
         anchorX="center"
         anchorY="middle"
         color={berth.accent}
@@ -289,7 +290,7 @@ function ProjectBerth({
         textAlign="center"
       >
         {berth.statusLabel}
-      </Text>
+      </WorldTextLabel>
     </group>
   );
 }
