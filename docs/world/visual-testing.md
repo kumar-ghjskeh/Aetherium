@@ -203,10 +203,10 @@ zero serious axe violations. The reviewed high-contrast baselines are renderer-s
 space for the persistent roadmap rail so controls do not overlap.
 
 W25 removes the temporary roadmap rail from the completed product, promotes the world canvas to the
-primary route surface, and intentionally rebaselines both renderers. The final suite contains 21
+primary route surface, and intentionally rebaselines both renderers. The final suite contains 22
 scenarios: authenticated login handoff, ten districts, three fixed atmosphere states, two graphics
 presets, reduced-motion and unsupported-WebGL fallbacks, loading failure, accessibility, and
-performance evidence. The headed and headless runs both pass 21/21 with clean runtime and
+performance evidence. The headed and headless runs both pass 22/22 with clean runtime and
 app-network guards. Every district baseline was visually inspected after wider arrival framing,
 terrain/palette changes, instanced vegetation, camera-following shadows, and restrained
 post-processing were applied.
@@ -220,7 +220,7 @@ W25 browser qualification also verifies that the arrival camera settles before c
 penetration from abnormally slow software-renderer frames is corrected, and map travel uses the
 latest selected destination even when selection and travel occur in consecutive events. It also
 verifies that password login opens `/app` directly without an intermediate blank legacy route. Final
-immutable runs pass 21/21 in both headless SwiftShader and headed GPU Chromium.
+immutable runs pass 22/22 in both headless SwiftShader and headed GPU Chromium.
 
 ## Failure Policy
 

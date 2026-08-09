@@ -17,6 +17,13 @@ export interface RuntimeGuard {
   assertClean: () => void;
 }
 
+interface OverlayRect {
+  bottom: number;
+  left: number;
+  right: number;
+  top: number;
+}
+
 const APP_ORIGINS = ["http://localhost:3000", "http://localhost:8000"];
 
 export function guardWorldRuntime(
@@ -156,6 +163,48 @@ export async function expectWorldSnapshot(page: Page, name: string): Promise<voi
     maxDiffPixelRatio: 0.03,
     threshold: 0.2
   });
+}
+
+export async function expectWorldOverlaysNotToOverlap(page: Page): Promise<void> {
+  const selectors = {
+    atmosphere: ".world-atmosphere-controls",
+    audio: ".world-audio-controls",
+    district:
+      ".world-plaza-panel:visible, .world-library-panel:visible, .world-ai-panel:visible, .world-habit-panel:visible, .world-learning-panel:visible, .world-coding-panel:visible, .world-project-dock-panel:visible, .world-progress-tower-panel:visible, .world-achievement-hall-panel:visible, .world-sanctuary-panel:visible",
+    label: ".world-runtime-label"
+  } as const;
+  const rectangles = Object.fromEntries(
+    await Promise.all(
+      Object.entries(selectors).map(async ([name, selector]) => {
+        const box = await page.locator(selector).first().boundingBox();
+        expect(box, `${name} world overlay`).not.toBeNull();
+        return [
+          name,
+          {
+            bottom: (box?.y ?? 0) + (box?.height ?? 0),
+            left: box?.x ?? 0,
+            right: (box?.x ?? 0) + (box?.width ?? 0),
+            top: box?.y ?? 0
+          } satisfies OverlayRect
+        ];
+      })
+    )
+  ) as Record<keyof typeof selectors, OverlayRect>;
+
+  for (const [first, second] of [
+    ["label", "atmosphere"],
+    ["atmosphere", "audio"],
+    ["atmosphere", "district"],
+    ["audio", "district"]
+  ] as const) {
+    expect(
+      rectangles[first].right <= rectangles[second].left ||
+        rectangles[second].right <= rectangles[first].left ||
+        rectangles[first].bottom <= rectangles[second].top ||
+        rectangles[second].bottom <= rectangles[first].top,
+      `${first} and ${second} overlays must not overlap`
+    ).toBe(true);
+  }
 }
 
 export async function assertCanvasIsNonblank(page: Page): Promise<Buffer> {

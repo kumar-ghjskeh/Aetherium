@@ -72,6 +72,8 @@ loading/error surfaces without duplicating backend data or changing owner author
 - Password login now opens `/app` directly instead of compiling and traversing the legacy `/command`
   redirect; headed and headless browser coverage verifies the authenticated shell is visible after
   login.
+- The visual suite now includes a compact-screen overlay geometry check so atmosphere/audio controls
+  and district data panels remain readable without overlapping.
 - No external visual asset, package, user-data field, API mutation, secret, or migration was added.
 
 Final headed Chromium evidence on the target laptop:

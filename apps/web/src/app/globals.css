@@ -1709,6 +1709,7 @@ kbd {
 .world-runtime-frame {
   background: #07101f;
   box-shadow: 0 22px 68px rgba(0, 0, 0, 0.34);
+  container-type: inline-size;
   height: min(820px, calc(100dvh - 154px));
   min-height: 620px;
   overflow: hidden;
@@ -1891,10 +1892,11 @@ kbd {
   border: 1px solid rgba(178, 224, 235, 0.28);
   color: #effbff;
   max-width: min(390px, calc(100% - 32px));
+  left: 50%;
   position: absolute;
-  right: 16px;
   top: 16px;
-  width: 360px;
+  transform: translateX(-50%);
+  width: 280px;
   z-index: 23;
 }
 
@@ -1984,10 +1986,11 @@ kbd {
   border: 1px solid rgba(160, 218, 231, 0.26);
   color: #effbff;
   max-width: min(390px, calc(100% - 32px));
+  left: 50%;
   position: absolute;
-  right: 16px;
   top: 66px;
-  width: 360px;
+  transform: translateX(-50%);
+  width: 280px;
   z-index: 22;
 }
 
@@ -4777,6 +4780,10 @@ kbd {
     grid-template-columns: 1fr;
   }
 
+  .world-runtime-hud {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .world-runtime-frame {
     height: calc(100dvh - 132px);
     min-height: 560px;
@@ -5013,6 +5020,84 @@ kbd {
     right: 16px;
     width: auto;
   }
+}
+
+@container (max-width: 1060px) {
+  .world-atmosphere-controls,
+  .world-audio-controls {
+    left: 16px;
+    right: auto;
+    transform: none;
+    width: 360px;
+  }
+
+  .world-atmosphere-controls {
+    top: 98px;
+  }
+
+  .world-audio-controls {
+    top: 148px;
+  }
+
+  :is(
+    .world-library-panel,
+    .world-habit-panel,
+    .world-learning-panel,
+    .world-coding-panel,
+    .world-project-dock-panel,
+    .world-progress-tower-panel,
+    .world-achievement-hall-panel,
+    .world-sanctuary-panel
+  ) {
+    top: 200px;
+  }
+}
+
+@container (max-width: 760px) {
+  .world-atmosphere-controls,
+  .world-audio-controls {
+    left: 16px;
+    right: 16px;
+    width: auto;
+  }
+
+  :is(
+    .world-plaza-panel,
+    .world-library-panel,
+    .world-ai-panel,
+    .world-habit-panel,
+    .world-learning-panel,
+    .world-coding-panel,
+    .world-project-dock-panel,
+    .world-progress-tower-panel,
+    .world-achievement-hall-panel,
+    .world-sanctuary-panel
+  ) {
+    left: 16px;
+    max-height: calc(100% - 430px);
+    max-width: none;
+    overflow: auto;
+    right: 16px;
+    top: 200px;
+    width: auto;
+  }
+}
+
+.world-runtime-frame:has(.world-atmosphere-controls[open], .world-audio-controls[open])
+  :is(
+    .world-plaza-panel,
+    .world-library-panel,
+    .world-ai-panel,
+    .world-habit-panel,
+    .world-learning-panel,
+    .world-coding-panel,
+    .world-project-dock-panel,
+    .world-progress-tower-panel,
+    .world-achievement-hall-panel,
+    .world-sanctuary-panel
+  ) {
+  pointer-events: none;
+  visibility: hidden;
 }
 .world-runtime-warning {
   margin: 0;

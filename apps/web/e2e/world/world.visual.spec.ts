@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 import {
+  expectWorldOverlaysNotToOverlap,
   expectWorldSnapshot,
   guardWorldRuntime,
   openRenderedWorld,
@@ -100,14 +101,23 @@ for (const district of DISTRICTS) {
     await page.getByLabel("Graphics preset").selectOption("low");
     await page.locator(".world-atmosphere-controls summary").click();
     await page.getByRole("button", { name: "Day", exact: true }).click();
+    await page.locator(".world-atmosphere-controls summary").click();
     await page.waitForTimeout(1_000);
 
     await travelToDistrict(page, district);
+    await expectWorldOverlaysNotToOverlap(page);
     await expectWorldSnapshot(page, `${district.snapshot}.png`);
 
     guard.assertClean();
   });
 }
+
+test("keeps World controls separate from district data on compact screens", async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ height: 900, width: 640 });
+  await openRenderedWorld(page);
+  await expectWorldOverlaysNotToOverlap(page);
+});
 
 for (const timeMode of ["Day", "Sunset", "Night"] as const) {
   test(`renders deterministic atmosphere: ${timeMode}`, async ({ page }) => {

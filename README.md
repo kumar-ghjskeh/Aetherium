@@ -118,7 +118,7 @@ authentication/session system. See `docs/architecture/product-independence.md` a
   Sanctuary. Each district maps authenticated real data to bounded procedural displays and hands
   complex work back to the established Command Mode interfaces.
 - Complete World Mode navigation, time/weather, spatial audio, Command Mode bridge, adaptive
-  Low/Balanced/High/Automatic presets, asset-policy enforcement, accessibility controls, and 21-case
+  Low/Balanced/High/Automatic presets, asset-policy enforcement, accessibility controls, and 22-case
   headed/headless browser regression suites.
 - Docker Compose development infrastructure for Aetherium-isolated PostgreSQL, Redis, MinIO, API,
   worker, and web services.
