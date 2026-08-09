@@ -203,12 +203,13 @@ zero serious axe violations. The reviewed high-contrast baselines are renderer-s
 space for the persistent roadmap rail so controls do not overlap.
 
 W25 removes the temporary roadmap rail from the completed product, promotes the world canvas to the
-primary route surface, and intentionally rebaselines both renderers. The final suite contains 20
-scenarios: ten districts, three fixed atmosphere states, two graphics presets, reduced-motion and
-unsupported-WebGL fallbacks, loading failure, accessibility, and performance evidence. The headed
-and headless runs both pass 20/20 with clean console and app-network guards. Every district baseline
-was visually inspected after wider arrival framing, terrain/palette changes, instanced vegetation,
-camera-following shadows, and restrained post-processing were applied.
+primary route surface, and intentionally rebaselines both renderers. The final suite contains 21
+scenarios: authenticated login handoff, ten districts, three fixed atmosphere states, two graphics
+presets, reduced-motion and unsupported-WebGL fallbacks, loading failure, accessibility, and
+performance evidence. The headed and headless runs both pass 21/21 with clean runtime and
+app-network guards. Every district baseline was visually inspected after wider arrival framing,
+terrain/palette changes, instanced vegetation, camera-following shadows, and restrained
+post-processing were applied.
 
 The Playwright-only `NEXT_PUBLIC_AETHERIUM_WORLD_VISUAL_TEST` bundle holds district arrival framing
 for 60 seconds so slow SwiftShader frames cannot outlive the camera composition before capture.
@@ -217,8 +218,9 @@ consumes the teleport request.
 
 W25 browser qualification also verifies that the arrival camera settles before capture, terrain
 penetration from abnormally slow software-renderer frames is corrected, and map travel uses the
-latest selected destination even when selection and travel occur in consecutive events. Final
-immutable runs pass 20/20 in both headless SwiftShader and headed GPU Chromium.
+latest selected destination even when selection and travel occur in consecutive events. It also
+verifies that password login opens `/app` directly without an intermediate blank legacy route. Final
+immutable runs pass 21/21 in both headless SwiftShader and headed GPU Chromium.
 
 ## Failure Policy
 

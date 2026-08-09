@@ -70,6 +70,27 @@ const DISTRICTS = [
   }
 ] as const;
 
+test("login opens the authenticated application without an intermediate blank route", async ({
+  browser
+}) => {
+  const context = await browser.newContext({ storageState: undefined });
+  const page = await context.newPage();
+  const runtimeErrors: string[] = [];
+  page.on("pageerror", (error) => runtimeErrors.push(error.message));
+
+  await page.goto("/login");
+  await page.locator('input[type="email"]').fill("visual-world@example.com");
+  await page.locator('input[type="password"]').fill("StrongPass123!");
+  await page.getByRole("button", { name: "Sign in" }).click();
+
+  await expect(page).toHaveURL(/\/app$/);
+  await expect(page.getByRole("heading", { name: "Overview" })).toBeVisible();
+  await expect(page.getByRole("complementary", { name: "Primary" })).toBeVisible();
+  expect(runtimeErrors).toEqual([]);
+
+  await context.close();
+});
+
 for (const district of DISTRICTS) {
   test(`renders real World Mode district: ${district.name}`, async ({ page }) => {
     test.setTimeout(120_000);

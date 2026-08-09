@@ -267,6 +267,18 @@ describe("auth UI", () => {
     expect(await screen.findByText("sai@example.com")).toBeInTheDocument();
   });
 
+  it("opens the authenticated application directly after login", async () => {
+    const client = createClient({ me: vi.fn(() => Promise.reject(unauthenticatedError())) });
+    renderWithAuth(<AuthForm client={client} mode="login" />, client);
+
+    await userEvent.type(screen.getByLabelText("Email"), "sai@example.com");
+    await userEvent.type(screen.getByLabelText("Password"), "StrongPass123!");
+    await userEvent.click(screen.getByRole("button", { name: "Sign in" }));
+
+    await waitFor(() => expect(replace).toHaveBeenCalledWith("/app"));
+    expect(push).not.toHaveBeenCalled();
+  });
+
   it("shows non-revealing invalid credential errors", async () => {
     const client = createClient({
       login: vi.fn(() => Promise.reject(invalidCredentialsError())),

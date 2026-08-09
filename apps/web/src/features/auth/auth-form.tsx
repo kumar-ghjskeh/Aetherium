@@ -90,7 +90,7 @@ export function AuthForm({
       if (onAuthenticated) {
         onAuthenticated();
       } else {
-        router.push(searchParams.get("next") ?? "/command");
+        router.replace(searchParams.get("next") ?? "/app");
       }
     } catch (error) {
       setFormError(friendlyAuthError(error));
