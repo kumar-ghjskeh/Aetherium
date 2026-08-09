@@ -196,6 +196,12 @@ Performance evidence is written to renderer-specific JSON files under `artifacts
 Headless Chromium metrics are regression evidence, not a claim about the RTX 4060 hardware target;
 hardware qualification remains part of W25 acceptance.
 
+W24 adds a keyboard-only accessibility scenario to the same authenticated harness. It validates map
+and panel focus trapping, Escape closure, trigger-focus restoration, reduced-motion coordination,
+particle and weather controls, high contrast, largest text, captions, reduced-sensory audio, and
+zero serious axe violations. The reviewed high-contrast baselines are renderer-specific and reserve
+space for the persistent roadmap rail so controls do not overlap.
+
 ## Failure Policy
 
 If tests show a black canvas, missing asset, persistent console error, browser crash, or performance

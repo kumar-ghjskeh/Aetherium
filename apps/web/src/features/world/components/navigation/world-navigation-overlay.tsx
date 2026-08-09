@@ -10,6 +10,8 @@ import {
 import { useWorldNavigationStore } from "../../state/navigation-store";
 import { usePlayerStore } from "../../state/player-store";
 import { useWorldCommandBridgeStore } from "../../state/command-bridge-store";
+import { useWorldDialogAccessibility } from "../../hooks/use-world-dialog-accessibility";
+import { useWorldSettingsStore } from "../../state/settings-store";
 
 const TRAVEL_MODES: Array<{ id: WorldTravelMode; label: string }> = [
   { id: "walk", label: "Walk" },
@@ -31,6 +33,7 @@ export function WorldNavigationOverlay({
   const destinationId = useWorldNavigationStore((state) => state.destinationId);
   const mapOpen = useWorldNavigationStore((state) => state.mapOpen);
   const commandOverlayOpen = useWorldCommandBridgeStore((state) => state.overlayOpen);
+  const accessibilityPanelOpen = useWorldSettingsStore((state) => state.accessibilityPanelOpen);
   const openMap = useWorldNavigationStore((state) => state.openMap);
   const requestSkip = useWorldNavigationStore((state) => state.requestSkip);
   const selectedMode = useWorldNavigationStore((state) => state.selectedMode);
@@ -45,6 +48,9 @@ export function WorldNavigationOverlay({
   const playerPosition = usePlayerStore((state) => state.position);
   const setMovementDisabled = usePlayerStore((state) => state.setMovementDisabled);
   const previousMapRequestRef = React.useRef(false);
+  const mapDialogRef = React.useRef<HTMLElement>(null);
+  const mapTriggerRef = React.useRef<HTMLButtonElement>(null);
+  const mapCloseRef = React.useRef<HTMLButtonElement>(null);
   const travelReady = completedTeleportSequence > 0 && pendingTeleport === null;
   const selectedDestination =
     destinations.find((destination) => destination.id === destinationId) ?? null;
@@ -66,22 +72,19 @@ export function WorldNavigationOverlay({
   }, [mapRequested, travelReady]);
 
   React.useEffect(() => {
-    setMovementDisabled(mapOpen || activeTravel !== null || commandOverlayOpen);
+    setMovementDisabled(
+      mapOpen || activeTravel !== null || commandOverlayOpen || accessibilityPanelOpen
+    );
     return () => setMovementDisabled(false);
-  }, [activeTravel, commandOverlayOpen, mapOpen, setMovementDisabled]);
+  }, [accessibilityPanelOpen, activeTravel, commandOverlayOpen, mapOpen, setMovementDisabled]);
 
-  React.useEffect(() => {
-    if (!mapOpen) {
-      return;
-    }
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        closeMap();
-      }
-    };
-    window.addEventListener("keydown", closeOnEscape);
-    return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [closeMap, mapOpen]);
+  useWorldDialogAccessibility({
+    active: mapOpen,
+    containerRef: mapDialogRef,
+    initialFocusRef: mapCloseRef,
+    onClose: closeMap,
+    returnFocusRef: mapTriggerRef
+  });
 
   const chooseDestination = (destination: WorldDestination) => {
     if (!destination.unlocked || !travelReady) {
@@ -110,6 +113,7 @@ export function WorldNavigationOverlay({
         className="world-map-button"
         disabled={!travelReady}
         onClick={openMap}
+        ref={mapTriggerRef}
         type="button"
       >
         Map
@@ -138,14 +142,16 @@ export function WorldNavigationOverlay({
           aria-label="Aetherium world map"
           aria-modal="true"
           className="world-map-overlay"
+          ref={mapDialogRef}
           role="dialog"
+          tabIndex={-1}
         >
           <header>
             <div>
               <span>World Navigation</span>
               <strong>{currentDestination?.name ?? "Aetherium"}</strong>
             </div>
-            <button aria-label="Close world map" onClick={closeMap} type="button">
+            <button aria-label="Close world map" onClick={closeMap} ref={mapCloseRef} type="button">
               Close
             </button>
           </header>

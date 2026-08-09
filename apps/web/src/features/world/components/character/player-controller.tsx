@@ -113,11 +113,17 @@ export function PlayerController({
       gamepad: playerState.gamepadInput,
       keys: keySet
     });
-    const actionState = {
-      commandModeRequested: intent.commandModeRequested,
-      interactionRequested: intent.interactRequested,
-      mapRequested: intent.mapRequested
-    };
+    const actionState = playerState.movementDisabled
+      ? {
+          commandModeRequested: false,
+          interactionRequested: false,
+          mapRequested: false
+        }
+      : {
+          commandModeRequested: intent.commandModeRequested,
+          interactionRequested: intent.interactRequested,
+          mapRequested: intent.mapRequested
+        };
     const currentTranslation = body.translation();
     const currentLinearVelocity = body.linvel();
     const groundHeight = sampleTerrain(currentTranslation.x, currentTranslation.z).height;

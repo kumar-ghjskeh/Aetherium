@@ -20,6 +20,25 @@ export function normalizeInputKey(key: string): string {
   return key.toLowerCase();
 }
 
+export function shouldCaptureWorldKey({
+  defaultPrevented,
+  insideDialog,
+  interactiveTarget,
+  key,
+  worldSurfaceFocused
+}: Readonly<{
+  defaultPrevented: boolean;
+  insideDialog: boolean;
+  interactiveTarget: boolean;
+  key: string;
+  worldSurfaceFocused: boolean;
+}>): boolean {
+  if (defaultPrevented || insideDialog || interactiveTarget) {
+    return false;
+  }
+  return key !== "tab" || worldSurfaceFocused;
+}
+
 export function createMovementIntent({
   gamepad,
   keys

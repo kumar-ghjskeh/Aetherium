@@ -141,13 +141,16 @@ Implemented foundation slices:
   authenticated sessions, separate headed and headless baselines, ten district snapshots,
   deterministic atmosphere and preset captures, fallback/error scenarios, canvas pixel checks,
   console/network guards, and renderer-specific performance evidence.
+- Visual World Mode W24 accessibility with keyboard and gamepad dialog navigation, focus trapping
+  and restoration, reduced motion, camera/cinematic/particle/weather controls, high contrast, text
+  sizing, captions, reduced-sensory audio, Command Mode fallback, axe checks, and headed/headless
+  visual baselines.
 
 Still out of scope unless explicitly requested:
 
 - OAuth, social login, email delivery, password reset, MFA, and magic links.
 - External email, push, SMS, and deployed scheduler notification delivery.
-- Accessibility polish and final visual world refinement until the corresponding approved World Mode
-  phase is active.
+- Final visual world refinement until the approved W25 phase is complete.
 - Automatic production deployment.
 
 ## Product Independence
@@ -172,9 +175,10 @@ before completing work that could affect World Mode dependencies or assets. Run
 
 ## Visual World Mode
 
-The visual World Mode architecture and W1-W23 runtime, district, navigation, atmosphere, audio,
-Command integration, performance, asset-pipeline, and automated visual-regression foundations are
-documented. Follow `docs/architecture/decisions/0025-visual-world-mode-architecture.md`,
+The visual World Mode architecture and W1-W24 runtime, district, navigation, atmosphere, audio,
+Command integration, performance, asset-pipeline, automated visual-regression, and accessibility
+foundations are documented. Follow
+`docs/architecture/decisions/0025-visual-world-mode-architecture.md`,
 `docs/world/world-mode-architecture.md`, and `docs/tasks/world/world-mode-roadmap.md` for W7 and
 later. Do not add unregistered assets, paid assets, editor-heavy engine dependencies, or any
 browser-exposed secret.

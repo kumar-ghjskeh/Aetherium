@@ -31,6 +31,7 @@ import type { ProgressTowerOverviewData } from "../../engine/progress-tower-syst
 import type { PersonalSanctuaryOverviewData } from "../../engine/personal-sanctuary-system";
 import { loadSavedWorldRuntimeState, saveWorldRuntimeState } from "../../engine/save-sync";
 import { useWorldCommandBridgeStore } from "../../state/command-bridge-store";
+import { useWorldCameraStore } from "../../state/camera-store";
 import { useWorldSettingsStore } from "../../state/settings-store";
 import { useWorldNavigationStore } from "../../state/navigation-store";
 import { usePlayerStore } from "../../state/player-store";
@@ -62,6 +63,7 @@ import { CodingArenaPanel } from "../ui/coding-arena-panel";
 import { AchievementHallPanel } from "../ui/achievement-hall-panel";
 import { PersonalSanctuaryPanel } from "../ui/personal-sanctuary-panel";
 import { WorldAtmosphereControls } from "../ui/world-atmosphere-controls";
+import { WorldAccessibilityControls } from "../ui/world-accessibility-controls";
 
 export function WorldRuntimeCanvas({
   achievementHallOverview,
@@ -102,11 +104,18 @@ export function WorldRuntimeCanvas({
 }>): React.ReactElement {
   const [pageVisible, setPageVisible] = React.useState(true);
   const commandOverlayOpen = useWorldCommandBridgeStore((state) => state.overlayOpen);
+  const accessibilityPanelOpen = useWorldSettingsStore((state) => state.accessibilityPanelOpen);
   const graphicsPreset = useWorldSettingsStore((state) => state.graphicsPreset);
+  const highContrastEnabled = useWorldSettingsStore((state) => state.highContrastEnabled);
+  const particlesEnabled = useWorldSettingsStore((state) => state.particlesEnabled);
+  const reducedMotionEnabled = useWorldSettingsStore((state) => state.reducedMotionEnabled);
+  const textScale = useWorldSettingsStore((state) => state.textScale);
   const timeMode = useWorldSettingsStore((state) => state.timeMode);
   const weatherEnabled = useWorldSettingsStore((state) => state.weatherEnabled);
   const weatherMode = useWorldSettingsStore((state) => state.weatherMode);
   const setGraphicsPreset = useWorldSettingsStore((state) => state.setGraphicsPreset);
+  const setReducedMotionEnabled = useWorldSettingsStore((state) => state.setReducedMotionEnabled);
+  const setCameraShakeEnabled = useWorldCameraStore((state) => state.setCameraShakeEnabled);
   const effectiveGraphicsTier = useWorldPerformanceStore((state) => state.effectiveTier);
   const initialSpawnAppliedRef = React.useRef(false);
   const lastSyncedLocationRef = React.useRef(profile.currentLocationId);
@@ -121,6 +130,16 @@ export function WorldRuntimeCanvas({
   React.useEffect(() => {
     setGraphicsPreset(preferences.performancePreset);
   }, [preferences.performancePreset, setGraphicsPreset]);
+
+  React.useEffect(() => {
+    setReducedMotionEnabled(preferences.reducedMotion);
+    setCameraShakeEnabled(preferences.cameraEffectsEnabled && !preferences.reducedMotion);
+  }, [
+    preferences.cameraEffectsEnabled,
+    preferences.reducedMotion,
+    setCameraShakeEnabled,
+    setReducedMotionEnabled
+  ]);
 
   React.useEffect(() => {
     const updateVisibility = () => setPageVisible(document.visibilityState !== "hidden");
@@ -144,7 +163,7 @@ export function WorldRuntimeCanvas({
     }),
     [initialRendererPreset.antialias, initialRendererPreset.tier]
   );
-  const runtimeActive = pageVisible && !commandOverlayOpen;
+  const runtimeActive = pageVisible && !commandOverlayOpen && !accessibilityPanelOpen;
   const interactions = React.useMemo(
     () => buildDiagnosticWorldInteractions({ deepLinks, locationPage }),
     [deepLinks, locationPage]
@@ -176,7 +195,7 @@ export function WorldRuntimeCanvas({
           destination: requestedDestination,
           from: usePlayerStore.getState().position,
           mode: initialIntent?.mode ?? "cinematic",
-          reducedMotion: preferences.reducedMotion,
+          reducedMotion: reducedMotionEnabled,
           startedAtMilliseconds: performance.now()
         })
       );
@@ -206,14 +225,14 @@ export function WorldRuntimeCanvas({
         destination: initialDestination,
         from: usePlayerStore.getState().position,
         mode: "instant",
-        reducedMotion: preferences.reducedMotion,
+        reducedMotion: reducedMotionEnabled,
         startedAtMilliseconds: performance.now()
       })
     );
   }, [
     destinations,
     initialIntent,
-    preferences.reducedMotion,
+    reducedMotionEnabled,
     profile.currentLocationId,
     profile.spawnLocationId,
     restoredRuntimeState
@@ -269,7 +288,13 @@ export function WorldRuntimeCanvas({
 
   return (
     <section className="world-runtime-shell" aria-label="Aetherium terrain foundation World Mode">
-      <div className="world-runtime-frame">
+      <div
+        className="world-runtime-frame"
+        data-high-contrast={highContrastEnabled}
+        data-particles={particlesEnabled}
+        data-reduced-motion={reducedMotionEnabled}
+        data-text-scale={textScale}
+      >
         <Canvas
           aria-label="Terrain foundation 3D world runtime"
           camera={{ far: 1200, fov: 52, near: 0.1, position: [10, 7, 12] }}
@@ -295,7 +320,8 @@ export function WorldRuntimeCanvas({
             plazaOverview={plazaOverview}
             projectDockOverview={projectDockOverview}
             progressTowerOverview={progressTowerOverview}
-            reducedMotion={preferences.reducedMotion}
+            reducedMotion={reducedMotionEnabled}
+            particlesEnabled={particlesEnabled}
             timeMode={timeMode}
             weatherEnabled={weatherEnabled}
             weatherMode={weatherMode}
@@ -307,21 +333,18 @@ export function WorldRuntimeCanvas({
                 initialFacingRadians={restoredRuntimeState?.facingRadians}
                 initialPosition={restoredRuntimeState?.position}
                 onArrive={handleArrival}
-                reducedMotion={preferences.reducedMotion}
+                reducedMotion={reducedMotionEnabled}
               />
               <RuntimeMetricsSampler />
             </Physics>
           </React.Suspense>
           <WorldArrivalTracker destinations={destinations} onArrive={handleArrival} />
-          <WorldLocationMarkers
-            destinations={destinations}
-            reducedMotion={preferences.reducedMotion}
-          />
+          <WorldLocationMarkers destinations={destinations} reducedMotion={reducedMotionEnabled} />
           <WorldInteractionSystem
             interactions={interactions}
-            reducedMotion={preferences.reducedMotion}
+            reducedMotion={reducedMotionEnabled}
           />
-          <WorldCameraRig destinations={destinations} reducedMotion={preferences.reducedMotion} />
+          <WorldCameraRig destinations={destinations} reducedMotion={reducedMotionEnabled} />
         </Canvas>
 
         <RuntimeDiagnosticsPanel
@@ -335,10 +358,14 @@ export function WorldRuntimeCanvas({
         <WorldNavigationOverlay
           destinations={destinations}
           profile={profile}
-          reducedMotion={preferences.reducedMotion}
+          reducedMotion={reducedMotionEnabled}
         />
         <WorldAtmosphereControls />
-        <WorldAudioRuntime panelOpen={commandOverlayOpen} preferences={preferences} />
+        <WorldAudioRuntime
+          panelOpen={commandOverlayOpen || accessibilityPanelOpen}
+          preferences={preferences}
+        />
+        <WorldAccessibilityControls />
         <WorldCommandBridge
           continueRoute={
             buildCentralPlazaViewModel(plazaOverview).terminals.find(
@@ -346,7 +373,7 @@ export function WorldRuntimeCanvas({
             )?.commandRoute ?? "/app"
           }
           destinations={destinations}
-          reducedMotion={preferences.reducedMotion}
+          reducedMotion={reducedMotionEnabled}
         />
         <CentralPlazaOverviewPanel overview={plazaOverview} />
         <KnowledgeLibraryPanel overview={libraryOverview} />

@@ -18,12 +18,14 @@ const ATMOSPHERE_SEED = 80421;
 
 export function DynamicWorldAtmosphere({
   graphicsPreset,
+  particlesEnabled,
   reducedMotion,
   timeMode,
   weatherEnabled,
   weatherMode
 }: Readonly<{
   graphicsPreset: PerformancePreset;
+  particlesEnabled: boolean;
   reducedMotion: boolean;
   timeMode: WorldTimeMode;
   weatherEnabled: boolean;
@@ -112,6 +114,7 @@ export function DynamicWorldAtmosphere({
       <ambientLight ref={ambientLightRef} />
       <WorldWeatherLayers
         graphicsPreset={graphicsPreset}
+        particlesEnabled={particlesEnabled}
         reducedMotion={reducedMotion}
         weatherEnabled={weatherEnabled}
         weatherMode={weatherMode}
@@ -122,11 +125,13 @@ export function DynamicWorldAtmosphere({
 
 function WorldWeatherLayers({
   graphicsPreset,
+  particlesEnabled,
   reducedMotion,
   weatherEnabled,
   weatherMode
 }: Readonly<{
   graphicsPreset: PerformancePreset;
+  particlesEnabled: boolean;
   reducedMotion: boolean;
   weatherEnabled: boolean;
   weatherMode: WorldWeatherMode;
@@ -172,7 +177,7 @@ function WorldWeatherLayers({
       "position",
       new THREE.BufferAttribute(
         createDeterministicAtmospherePoints({
-          count: budget.rainDropCount,
+          count: particlesEnabled ? budget.rainDropCount : 0,
           height: [30, 160],
           radius: 360,
           seed: ATMOSPHERE_SEED + 41
@@ -181,7 +186,7 @@ function WorldWeatherLayers({
       )
     );
     return geometry;
-  }, [budget.rainDropCount]);
+  }, [budget.rainDropCount, particlesEnabled]);
 
   React.useEffect(
     () => () => {
@@ -250,7 +255,7 @@ function WorldWeatherLayers({
         </mesh>
       ))}
 
-      {budget.rainDropCount > 0 ? (
+      {particlesEnabled && budget.rainDropCount > 0 ? (
         <points
           frustumCulled={false}
           geometry={rainGeometry}

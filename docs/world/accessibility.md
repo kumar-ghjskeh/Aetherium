@@ -73,3 +73,23 @@ Fallback should offer direct links to Command Mode sections and explain the reas
 - High-contrast UI panels.
 - Focus trapping and release for modals/panels.
 - Command Mode fallback availability.
+
+## Implemented W24 Controls
+
+World Mode now exposes a single keyboard- and controller-operable accessibility panel. It controls
+reduced motion, camera shake, cinematic travel, weather particles, dynamic weather, high contrast,
+three text sizes, sound captions, and reduced-sensory audio. Enabling reduced motion immediately
+disables camera shake and cinematic travel for the current world visit.
+
+The world map, Command interface, and accessibility panel trap focus while open, close with Escape,
+restore focus to their trigger, and accept standard gamepad confirm, cancel, directional-pad, and
+left-stick menu input. Tab remains normal DOM navigation inside dialogs and retains its Command Mode
+shortcut only while focus is on the world surface.
+
+These controls are transient runtime overrides. Saved user preferences remain the initial source of
+truth and are edited through Command Mode Settings. This avoids creating a second preference model.
+
+W24 browser validation uses a normal authenticated session and real API-backed World Mode data. It
+checks keyboard-only operation, focus restoration, explicit on/off status, high contrast, largest
+text, reduced motion, particle suppression, captions, sensory audio, console/network cleanliness,
+and an axe scan. Separate headed and headless Chromium baselines cover the high-contrast panel.

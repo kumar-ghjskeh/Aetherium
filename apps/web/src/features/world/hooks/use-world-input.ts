@@ -1,6 +1,6 @@
 import React from "react";
 
-import { normalizeInputKey } from "../engine/input-system";
+import { normalizeInputKey, shouldCaptureWorldKey } from "../engine/input-system";
 import { usePlayerStore } from "../state/player-store";
 
 export function useWorldInput(): void {
@@ -11,6 +11,24 @@ export function useWorldInput(): void {
   React.useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       const normalizedKey = normalizeInputKey(event.code || event.key);
+      const target = event.target instanceof HTMLElement ? event.target : null;
+      const insideDialog = Boolean(target?.closest("[role='dialog']"));
+      const interactiveTarget = Boolean(
+        target?.closest("a, button, input, select, summary, textarea, [contenteditable='true']")
+      );
+      const worldSurfaceFocused =
+        target === document.body || target instanceof HTMLCanvasElement || target === null;
+      if (
+        !shouldCaptureWorldKey({
+          defaultPrevented: event.defaultPrevented,
+          insideDialog,
+          interactiveTarget,
+          key: normalizedKey,
+          worldSurfaceFocused
+        })
+      ) {
+        return;
+      }
       if (
         WORLD_CAPTURED_KEYS.has(normalizedKey) &&
         !event.metaKey &&

@@ -38,6 +38,7 @@
     "worker:typecheck": "node scripts/python-task.mjs mypy --config-file apps/worker/pyproject.toml apps/worker"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
     "@eslint/js": "^9.31.0",
     "@next/eslint-plugin-next": "^15.3.0",
     "@playwright/test": "^1.62.1",

@@ -5,6 +5,7 @@ import { createWorldTravelPlan, type WorldDestination } from "../../engine/navig
 import { useWorldCommandBridgeStore } from "../../state/command-bridge-store";
 import { useWorldNavigationStore } from "../../state/navigation-store";
 import { usePlayerStore } from "../../state/player-store";
+import { useWorldDialogAccessibility } from "../../hooks/use-world-dialog-accessibility";
 
 export function WorldCommandBridge({
   continueRoute,
@@ -20,6 +21,7 @@ export function WorldCommandBridge({
   const overlayOpen = useWorldCommandBridgeStore((state) => state.overlayOpen);
   const commandModeRequested = usePlayerStore((state) => state.commandModeRequested);
   const previousCommandRequestRef = React.useRef(false);
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
 
   React.useEffect(() => {
     if (commandModeRequested && !previousCommandRequestRef.current) {
@@ -28,28 +30,13 @@ export function WorldCommandBridge({
     previousCommandRequestRef.current = commandModeRequested;
   }, [commandModeRequested]);
 
-  React.useEffect(() => {
-    if (!overlayOpen) {
-      return;
-    }
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape" || event.key === "Tab") {
-        if (event.key === "Tab") {
-          event.preventDefault();
-        }
-        close();
-      }
-    };
-    window.addEventListener("keydown", closeOnEscape);
-    return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [close, overlayOpen]);
-
   return (
     <>
       <button
         aria-expanded={overlayOpen}
         className="world-command-button"
         onClick={open}
+        ref={triggerRef}
         type="button"
       >
         Command
@@ -60,6 +47,7 @@ export function WorldCommandBridge({
           destinations={destinations}
           onClose={close}
           reducedMotion={reducedMotion}
+          returnFocusRef={triggerRef}
         />
       ) : null}
     </>
@@ -70,14 +58,17 @@ function WorldCommandPanel({
   continueRoute,
   destinations,
   onClose,
-  reducedMotion
+  reducedMotion,
+  returnFocusRef
 }: Readonly<{
   continueRoute: string;
   destinations: WorldDestination[];
   onClose: () => void;
   reducedMotion: boolean;
+  returnFocusRef: React.RefObject<HTMLElement | null>;
 }>): React.ReactElement {
   const searchRef = React.useRef<HTMLInputElement>(null);
+  const panelRef = React.useRef<HTMLElement>(null);
   const [query, setQuery] = React.useState("");
   const playerPosition = usePlayerStore((state) => state.position);
   const startTravel = useWorldNavigationStore((state) => state.startTravel);
@@ -85,7 +76,13 @@ function WorldCommandPanel({
     destination.name.toLowerCase().includes(query.trim().toLowerCase())
   );
 
-  React.useEffect(() => searchRef.current?.focus(), []);
+  useWorldDialogAccessibility({
+    active: true,
+    containerRef: panelRef,
+    initialFocusRef: searchRef,
+    onClose,
+    returnFocusRef
+  });
 
   const travelThere = (destination: WorldDestination) => {
     if (!destination.unlocked) {
@@ -108,7 +105,9 @@ function WorldCommandPanel({
       aria-label="Command Mode bridge"
       aria-modal="true"
       className="world-command-overlay"
+      ref={panelRef}
       role="dialog"
+      tabIndex={-1}
     >
       <header>
         <div>
@@ -168,7 +167,7 @@ function WorldCommandPanel({
         </div>
       )}
       <footer>
-        <span>Tab returns to the world</span>
+        <span>World interface</span>
         <small>World rendering pauses while this bridge is open.</small>
       </footer>
     </section>

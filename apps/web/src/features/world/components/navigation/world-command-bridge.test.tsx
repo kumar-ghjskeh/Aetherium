@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import React from "react";
 import { beforeEach, describe, expect, it } from "vitest";
 
@@ -57,5 +57,21 @@ describe("WorldCommandBridge", () => {
       target: { value: "Observatory" }
     });
     expect(screen.getByText("No matching world destination.")).toBeInTheDocument();
+  });
+
+  it("traps keyboard focus and restores it to the trigger when closed", async () => {
+    render(
+      <WorldCommandBridge continueRoute="/app" destinations={destinations} reducedMotion={false} />
+    );
+    const trigger = screen.getByRole("button", { name: "Command" });
+    fireEvent.click(trigger);
+
+    const search = await screen.findByRole("searchbox", { name: "Search world destinations" });
+    await waitFor(() => expect(search).toHaveFocus());
+    fireEvent.keyDown(search, { key: "Tab" });
+    expect(screen.getByRole("link", { name: "Open Now" })).toHaveFocus();
+    fireEvent.keyDown(document.activeElement ?? document.body, { key: "Escape" });
+    await waitFor(() => expect(trigger).toHaveFocus());
+    expect(screen.queryByRole("dialog", { name: "Command Mode bridge" })).not.toBeInTheDocument();
   });
 });

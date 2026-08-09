@@ -33,8 +33,8 @@ const WORLD_ROADMAP_PHASES: WorldRoadmapPhase[] = [
   { id: "W21", label: "Performance", status: "complete" },
   { id: "W22", label: "Asset pipeline", status: "complete" },
   { id: "W23", label: "Visual testing", status: "complete" },
-  { id: "W24", label: "Accessibility", status: "next" },
-  { id: "W25", label: "Final polish", status: "remaining" }
+  { id: "W24", label: "Accessibility", status: "complete" },
+  { id: "W25", label: "Final polish", status: "next" }
 ];
 
 export function WorldRoadmapProgress(): React.ReactElement {

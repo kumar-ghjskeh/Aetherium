@@ -51,6 +51,7 @@ export function WorldEnvironmentScene({
   habitGardenOverview,
   learningAcademyOverview,
   libraryOverview,
+  particlesEnabled,
   personalSanctuaryOverview,
   plazaOverview,
   projectDockOverview,
@@ -67,6 +68,7 @@ export function WorldEnvironmentScene({
   habitGardenOverview: HabitGardenOverviewData;
   learningAcademyOverview: LearningAcademyOverviewData;
   libraryOverview: KnowledgeLibraryOverviewData;
+  particlesEnabled: boolean;
   personalSanctuaryOverview: PersonalSanctuaryOverviewData;
   plazaOverview: CentralPlazaOverviewData;
   projectDockOverview: ProjectDockOverviewData;
@@ -84,6 +86,7 @@ export function WorldEnvironmentScene({
     <>
       <DynamicWorldAtmosphere
         graphicsPreset={graphicsPreset}
+        particlesEnabled={particlesEnabled}
         reducedMotion={reducedMotion}
         timeMode={timeMode}
         weatherEnabled={weatherEnabled}
