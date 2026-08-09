@@ -94,7 +94,7 @@ export async function openRenderedWorld(page: Page, destination = "central_plaza
 
 export async function travelToDistrict(
   page: Page,
-  destination: { backendId: string; name: string }
+  destination: { backendId: string; id: string; name: string }
 ): Promise<void> {
   const runtimeHud = page.locator(".world-runtime-hud");
   const completedBeforeTravel = Number.parseInt(
@@ -123,7 +123,31 @@ export async function travelToDistrict(
     )
     .toBeGreaterThan(completedBeforeTravel);
   await expect(runtimeHud).toHaveAttribute("data-pending-teleport", "false");
-  await page.waitForTimeout(500);
+  await expect(runtimeHud).toHaveAttribute("data-navigation-destination", destination.id);
+  await expect
+    .poll(
+      async () =>
+        Number.parseInt((await runtimeHud.getAttribute("data-arrival-framing-until")) ?? "0", 10) -
+        Date.now(),
+      { timeout: 30_000 }
+    )
+    .toBeGreaterThan(2_000);
+  await expect
+    .poll(
+      async () => {
+        const before = parsePosition(await runtimeHud.getAttribute("data-camera-position"));
+        await page.waitForTimeout(250);
+        const after = parsePosition(await runtimeHud.getAttribute("data-camera-position"));
+        return Math.hypot(after[0] - before[0], after[1] - before[1], after[2] - before[2]);
+      },
+      { timeout: 30_000 }
+    )
+    .toBeLessThan(0.08);
+}
+
+function parsePosition(value: string | null): [number, number, number] {
+  const parts = (value ?? "0,0,0").split(",").map(Number);
+  return [parts[0] ?? 0, parts[1] ?? 0, parts[2] ?? 0];
 }
 
 export async function expectWorldSnapshot(page: Page, name: string): Promise<void> {
@@ -136,6 +160,13 @@ export async function expectWorldSnapshot(page: Page, name: string): Promise<voi
 
 export async function assertCanvasIsNonblank(page: Page): Promise<Buffer> {
   const canvas = page.locator(".world-runtime-frame canvas");
+  const runtimeTelemetry = await page.locator(".world-runtime-hud").evaluate((element) => ({
+    arrivalFramingUntil: element.getAttribute("data-arrival-framing-until"),
+    cameraPosition: element.getAttribute("data-camera-position"),
+    cameraTarget: element.getAttribute("data-camera-target"),
+    destination: element.getAttribute("data-navigation-destination"),
+    playerPosition: element.getAttribute("data-player-position")
+  }));
   const capture = await canvas.evaluate((canvasElement) => {
     const renderCanvas = canvasElement as HTMLCanvasElement;
     const context = renderCanvas.getContext("webgl2") ?? renderCanvas.getContext("webgl");
@@ -174,7 +205,11 @@ export async function assertCanvasIsNonblank(page: Page): Promise<Buffer> {
     `,
     type: "png"
   });
-  const captureDiagnostics = { ...capture, screenshotBytes: screenshot.byteLength };
+  const captureDiagnostics = {
+    ...capture,
+    runtimeTelemetry,
+    screenshotBytes: screenshot.byteLength
+  };
   const png = PNG.sync.read(screenshot);
   let luminanceTotal = 0;
   let luminanceSquaredTotal = 0;
@@ -201,9 +236,16 @@ export async function assertCanvasIsNonblank(page: Page): Promise<Buffer> {
     opaquePixels / pixelCount,
     `canvas opaque pixel coverage (${JSON.stringify(captureDiagnostics)})`
   ).toBeGreaterThan(0.95);
-  expect(mean, "canvas average luminance").toBeGreaterThan(8);
-  expect(mean, "canvas average luminance").toBeLessThan(245);
-  expect(Math.sqrt(Math.max(variance, 0)), "canvas luminance variation").toBeGreaterThan(10);
+  expect(mean, `canvas average luminance (${JSON.stringify(captureDiagnostics)})`).toBeGreaterThan(
+    8
+  );
+  expect(mean, `canvas average luminance (${JSON.stringify(captureDiagnostics)})`).toBeLessThan(
+    245
+  );
+  expect(
+    Math.sqrt(Math.max(variance, 0)),
+    `canvas luminance variation (${JSON.stringify(captureDiagnostics)})`
+  ).toBeGreaterThan(10);
   return screenshot;
 }
 

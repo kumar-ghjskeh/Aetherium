@@ -186,7 +186,7 @@ for its authenticated visual account. This hook is absent from the production `a
 process. Generated traces, HTML reports, videos, authentication state, and performance evidence are
 written under ignored `artifacts/playwright/`.
 
-The committed suite covers all ten districts, fixed day/sunset/night lighting, Low and Balanced
+The W23 suite initially covered all ten districts, fixed day/sunset/night lighting, Low and Balanced
 presets, reduced-motion and unsupported-WebGL fallbacks, deliberate loading failure, nonblank canvas
 pixels, console and network cleanliness, audio activation, and runtime diagnostics at 1080p Low,
 1080p Balanced, and 1440p Balanced. It currently runs 19 scenarios in both headed and headless
@@ -201,6 +201,24 @@ and panel focus trapping, Escape closure, trigger-focus restoration, reduced-mot
 particle and weather controls, high contrast, largest text, captions, reduced-sensory audio, and
 zero serious axe violations. The reviewed high-contrast baselines are renderer-specific and reserve
 space for the persistent roadmap rail so controls do not overlap.
+
+W25 removes the temporary roadmap rail from the completed product, promotes the world canvas to the
+primary route surface, and intentionally rebaselines both renderers. The final suite contains 20
+scenarios: ten districts, three fixed atmosphere states, two graphics presets, reduced-motion and
+unsupported-WebGL fallbacks, loading failure, accessibility, and performance evidence. The headed
+and headless runs both pass 20/20 with clean console and app-network guards. Every district baseline
+was visually inspected after wider arrival framing, terrain/palette changes, instanced vegetation,
+camera-following shadows, and restrained post-processing were applied.
+
+The Playwright-only `NEXT_PUBLIC_AETHERIUM_WORLD_VISUAL_TEST` bundle holds district arrival framing
+for 60 seconds so slow SwiftShader frames cannot outlive the camera composition before capture.
+Production keeps the six-second arrival view. Both durations begin only after the physics controller
+consumes the teleport request.
+
+W25 browser qualification also verifies that the arrival camera settles before capture, terrain
+penetration from abnormally slow software-renderer frames is corrected, and map travel uses the
+latest selected destination even when selection and travel occur in consecutive events. Final
+immutable runs pass 20/20 in both headless SwiftShader and headed GPU Chromium.
 
 ## Failure Policy
 

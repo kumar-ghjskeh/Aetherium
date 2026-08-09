@@ -2,7 +2,7 @@ import { useFrame } from "@react-three/fiber";
 import React from "react";
 import type * as THREE from "three";
 
-import type { WorldDestination } from "../../engine/navigation-system";
+import { resolveDestinationLabelFace, type WorldDestination } from "../../engine/navigation-system";
 import { useWorldNavigationStore } from "../../state/navigation-store";
 import { WorldTextLabel } from "../ui/world-text-label";
 
@@ -84,17 +84,20 @@ function LocationMarker({
         <torusGeometry args={[selected ? 2.3 : 1.5, 0.2, 8, 24]} />
         <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.36} />
       </mesh>
-      <WorldTextLabel
-        anchorX="center"
-        anchorY="middle"
-        color={destination.unlocked ? "#f5fbff" : "#a7adb0"}
-        fontSize={selected || destination.current ? 0.55 : 0.36}
-        maxWidth={12}
-        position={[0, 10.2, 0]}
-        textAlign="center"
-      >
-        {destination.unlocked ? destination.name : `${destination.name} - Locked`}
-      </WorldTextLabel>
+      {destination.id === "project-dock" ? null : (
+        <WorldTextLabel
+          anchorX="center"
+          anchorY="middle"
+          color={destination.unlocked ? "#f5fbff" : "#a7adb0"}
+          fontSize={selected || destination.current ? 0.55 : 0.36}
+          maxWidth={12}
+          mirrorX={resolveDestinationLabelFace(destination) === "back"}
+          position={[0, 10.2, 0]}
+          textAlign="center"
+        >
+          {destination.unlocked ? destination.name : `${destination.name} - Locked`}
+        </WorldTextLabel>
+      )}
     </group>
   );
 }

@@ -40,8 +40,8 @@ export function WorldRuntimeLoading(): React.ReactElement {
       <span aria-hidden="true" />
       <div>
         <p className="eyebrow">World runtime</p>
-        <h2>Loading diagnostic scene</h2>
-        <p>Preparing the isolated visual bundle and capability checks.</p>
+        <h2>Preparing Aetherium</h2>
+        <p>Synchronizing your campus and visual settings.</p>
       </div>
     </section>
   );

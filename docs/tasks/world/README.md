@@ -38,6 +38,10 @@ configured user author and must not include co-author trailers.
 
 See `docs/tasks/world/world-mode-roadmap.md`.
 
+Implementation status: **26 of 26 World Mode phases complete** after W25 validation. The roadmap is
+closed for the approved browser-based World Mode scope; later enhancements require a new task and
+must preserve Command Mode access and the existing performance, privacy, and asset-policy gates.
+
 ## Phase Task Records
 
 - `docs/tasks/world/phase-w0-visual-world-architecture.md`
@@ -63,3 +67,6 @@ See `docs/tasks/world/world-mode-roadmap.md`.
 - `docs/tasks/world/phase-w20-command-world-integration.md`
 - `docs/tasks/world/phase-w21-world-performance.md`
 - `docs/tasks/world/phase-w22-world-asset-pipeline.md`
+- `docs/tasks/world/phase-w23-visual-regression.md`
+- `docs/tasks/world/phase-w24-accessibility.md`
+- `docs/tasks/world/phase-w25-final-polish.md`

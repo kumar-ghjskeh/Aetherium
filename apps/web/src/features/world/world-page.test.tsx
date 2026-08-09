@@ -70,18 +70,19 @@ vi.mock("./components/canvas/world-runtime-canvas", async () => {
   const React = await import("react");
   return {
     WorldRuntimeCanvas: ({
+      locationPage,
       onVisitLocation
     }: {
+      locationPage: WorldLocationPage;
       onVisitLocation: (locationId: string) => Promise<unknown>;
     }) =>
       React.createElement(
         React.Fragment,
         null,
-        React.createElement(
-          "div",
-          { "data-testid": "world-runtime-canvas" },
-          "Mock runtime canvas"
-        ),
+        React.createElement("div", { "data-testid": "world-runtime-canvas" }, [
+          "Mock runtime canvas ",
+          React.createElement("span", { key: "current-location" }, locationPage.currentLocationId)
+        ]),
         React.createElement(
           "button",
           { onClick: () => void onVisitLocation("library"), type: "button" },
@@ -665,22 +666,14 @@ describe("WorldPage", () => {
     mockWebGL2Support(true);
   });
 
-  it("renders the lazy diagnostic runtime when visual prerequisites pass", async () => {
+  it("renders the lazy World Mode runtime when visual prerequisites pass", async () => {
     const client = createClient();
     render(<WorldPage client={client} />);
 
-    expect(
-      await screen.findByRole("heading", { name: "World Data Foundation" })
-    ).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Central Plaza runtime" })).toBeInTheDocument();
-    expect(screen.getByText("Enabled")).toBeInTheDocument();
-    expect(
-      screen.getByRole("progressbar", { name: /25 of 26 World Mode phases complete/u })
-    ).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Aetherium Campus" })).toBeInTheDocument();
+    expect(screen.getByText("Live")).toBeInTheDocument();
     expect(await screen.findByTestId("world-runtime-canvas")).toBeInTheDocument();
     expect(screen.getByText("central_plaza")).toBeInTheDocument();
-    expect(screen.getAllByText("Knowledge Library").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("/app/library").length).toBeGreaterThan(0);
 
     await waitFor(() => expect(client.world.listLocations).toHaveBeenCalledTimes(1));
     expect(client.world.getSceneManifest).toHaveBeenCalledTimes(1);

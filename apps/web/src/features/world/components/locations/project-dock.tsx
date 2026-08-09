@@ -2,8 +2,6 @@ import { useFrame } from "@react-three/fiber";
 import React from "react";
 import type * as THREE from "three";
 
-import { WorldTextLabel } from "../ui/world-text-label";
-
 import {
   buildProjectDockViewModel,
   type ProjectBerthViewModel,
@@ -38,30 +36,6 @@ export function ProjectDockDistrict({
       <ProjectBerths berths={viewModel.projectBerths} reducedMotion={reducedMotion} />
       <MilestoneSignals signals={viewModel.milestoneSignals} />
       <BlockerBeacons blockers={viewModel.blockerSignals} reducedMotion={reducedMotion} />
-      {viewModel.projectBerths.length === 0 ? (
-        <WorldTextLabel
-          anchorX="center"
-          anchorY="middle"
-          color="#fff1dc"
-          fontSize={0.58}
-          maxWidth={20}
-          position={[0, 2.5, -4]}
-          textAlign="center"
-        >
-          Create a project to open the first construction berth
-        </WorldTextLabel>
-      ) : null}
-      <WorldTextLabel
-        anchorX="center"
-        anchorY="middle"
-        color="#fff4e4"
-        fontSize={1.74}
-        maxWidth={26}
-        position={[0, 15.2, 15]}
-        textAlign="center"
-      >
-        Project Dock
-      </WorldTextLabel>
     </group>
   );
 }
@@ -136,17 +110,6 @@ function DockArchitecture({
             roughness={0.28}
           />
         </mesh>
-        <WorldTextLabel
-          anchorX="center"
-          anchorY="middle"
-          color="#fff5e9"
-          fontSize={0.3}
-          maxWidth={8.5}
-          position={[0, -2.1, -4.7]}
-          textAlign="center"
-        >
-          Workshop Control
-        </WorldTextLabel>
       </group>
       <pointLight color="#ffb066" distance={94} intensity={1.55} position={[0, 12, 5]} />
     </group>
@@ -269,28 +232,6 @@ function ProjectBerth({
           <meshStandardMaterial color="#ff826f" emissive="#b52d23" emissiveIntensity={0.58} />
         </mesh>
       ) : null}
-      <WorldTextLabel
-        anchorX="center"
-        anchorY="middle"
-        color="#fff6ec"
-        fontSize={0.24}
-        maxWidth={7.4}
-        position={[0, -0.62, -5.2]}
-        textAlign="center"
-      >
-        {berth.name}
-      </WorldTextLabel>
-      <WorldTextLabel
-        anchorX="center"
-        anchorY="middle"
-        color={berth.accent}
-        fontSize={0.17}
-        maxWidth={7.2}
-        position={[0, -0.94, -5.22]}
-        textAlign="center"
-      >
-        {berth.statusLabel}
-      </WorldTextLabel>
     </group>
   );
 }

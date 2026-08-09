@@ -10,7 +10,11 @@ import { WorldInstantTravelCoordinator } from "./world-instant-travel-coordinato
 
 const destination: WorldDestination = {
   accessibilityLabel: "Travel to Knowledge Library",
+  arrivalCameraDistance: 12.5,
+  arrivalFocusHeight: 15,
   backendLocationId: "library",
+  collisionHalfHeight: 14,
+  collisionRadius: 18,
   commandRoute: "/app/library",
   current: false,
   id: "knowledge-library",

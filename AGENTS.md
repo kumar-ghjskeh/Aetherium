@@ -145,12 +145,15 @@ Implemented foundation slices:
   and restoration, reduced motion, camera/cinematic/particle/weather controls, high contrast, text
   sizing, captions, reduced-sensory audio, Command Mode fallback, axe checks, and headed/headless
   visual baselines.
+- Visual World Mode W25 final polish with a primary full-width campus route, tuned deterministic
+  lighting and atmosphere, restrained tier-aware post-processing, denser instanced vegetation,
+  data-driven arrival framing, simplified district collision, product-copy cleanup, and final
+  headed/headless visual and performance qualification.
 
 Still out of scope unless explicitly requested:
 
 - OAuth, social login, email delivery, password reset, MFA, and magic links.
 - External email, push, SMS, and deployed scheduler notification delivery.
-- Final visual world refinement until the approved W25 phase is complete.
 - Automatic production deployment.
 
 ## Product Independence
@@ -175,7 +178,7 @@ before completing work that could affect World Mode dependencies or assets. Run
 
 ## Visual World Mode
 
-The visual World Mode architecture and W1-W24 runtime, district, navigation, atmosphere, audio,
+The visual World Mode architecture and W1-W25 runtime, district, navigation, atmosphere, audio,
 Command integration, performance, asset-pipeline, automated visual-regression, and accessibility
 foundations are documented. Follow
 `docs/architecture/decisions/0025-visual-world-mode-architecture.md`,

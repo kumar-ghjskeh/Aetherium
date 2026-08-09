@@ -35,81 +35,81 @@ interface TimeKeyframe {
 
 const TIME_KEYFRAMES: readonly TimeKeyframe[] = [
   {
-    ambientColor: "#6171a1",
-    ambientIntensity: 0.34,
-    backgroundColor: "#030713",
-    fogColor: "#07101f",
+    ambientColor: "#46587a",
+    ambientIntensity: 0.28,
+    backgroundColor: "#020713",
+    fogColor: "#081321",
     fraction: 0,
-    hemisphereIntensity: 0.48,
-    skyColor: "#081126",
-    sunColor: "#869be4",
-    sunIntensity: 0.18
+    hemisphereIntensity: 0.42,
+    skyColor: "#0b1830",
+    sunColor: "#8aa5ff",
+    sunIntensity: 0.12
   },
   {
-    ambientColor: "#8a728a",
-    ambientIntensity: 0.48,
-    backgroundColor: "#1a1729",
-    fogColor: "#342538",
+    ambientColor: "#765a72",
+    ambientIntensity: 0.34,
+    backgroundColor: "#181426",
+    fogColor: "#382c45",
     fraction: 0.22,
-    hemisphereIntensity: 0.82,
-    skyColor: "#6d4153",
-    sunColor: "#ffb477",
-    sunIntensity: 1.2
+    hemisphereIntensity: 0.72,
+    skyColor: "#8a5268",
+    sunColor: "#ffad72",
+    sunIntensity: 1.4
   },
   {
-    ambientColor: "#8fa6bd",
-    ambientIntensity: 0.58,
-    backgroundColor: "#23445d",
-    fogColor: "#52788b",
+    ambientColor: "#637d91",
+    ambientIntensity: 0.36,
+    backgroundColor: "#12364c",
+    fogColor: "#355d68",
     fraction: 0.34,
-    hemisphereIntensity: 1.28,
-    skyColor: "#7eb5cf",
-    sunColor: "#fff5d7",
-    sunIntensity: 2.3
+    hemisphereIntensity: 0.98,
+    skyColor: "#5897b5",
+    sunColor: "#fff2cf",
+    sunIntensity: 2.6
   },
   {
-    ambientColor: "#91a8bd",
-    ambientIntensity: 0.62,
-    backgroundColor: "#315d76",
-    fogColor: "#648a97",
+    ambientColor: "#6f8998",
+    ambientIntensity: 0.38,
+    backgroundColor: "#17445b",
+    fogColor: "#426b74",
     fraction: 0.58,
-    hemisphereIntensity: 1.4,
-    skyColor: "#8bc5dc",
-    sunColor: "#fff8e7",
-    sunIntensity: 2.55
+    hemisphereIntensity: 1.02,
+    skyColor: "#69a8c2",
+    sunColor: "#fff6dd",
+    sunIntensity: 2.8
   },
   {
-    ambientColor: "#906f79",
-    ambientIntensity: 0.48,
-    backgroundColor: "#32233d",
-    fogColor: "#5b3b4a",
+    ambientColor: "#795364",
+    ambientIntensity: 0.32,
+    backgroundColor: "#251a32",
+    fogColor: "#4a3444",
     fraction: 0.76,
-    hemisphereIntensity: 0.88,
-    skyColor: "#ad655d",
-    sunColor: "#ff9b5c",
-    sunIntensity: 1.42
+    hemisphereIntensity: 0.68,
+    skyColor: "#b05a52",
+    sunColor: "#ff8e4f",
+    sunIntensity: 1.8
   },
   {
-    ambientColor: "#6171a1",
-    ambientIntensity: 0.34,
-    backgroundColor: "#030713",
-    fogColor: "#07101f",
+    ambientColor: "#46587a",
+    ambientIntensity: 0.28,
+    backgroundColor: "#020713",
+    fogColor: "#081321",
     fraction: 0.86,
-    hemisphereIntensity: 0.48,
-    skyColor: "#081126",
-    sunColor: "#869be4",
-    sunIntensity: 0.18
+    hemisphereIntensity: 0.42,
+    skyColor: "#0b1830",
+    sunColor: "#8aa5ff",
+    sunIntensity: 0.12
   },
   {
-    ambientColor: "#6171a1",
-    ambientIntensity: 0.34,
-    backgroundColor: "#030713",
-    fogColor: "#07101f",
+    ambientColor: "#46587a",
+    ambientIntensity: 0.28,
+    backgroundColor: "#020713",
+    fogColor: "#081321",
     fraction: 1,
-    hemisphereIntensity: 0.48,
-    skyColor: "#081126",
-    sunColor: "#869be4",
-    sunIntensity: 0.18
+    hemisphereIntensity: 0.42,
+    skyColor: "#0b1830",
+    sunColor: "#8aa5ff",
+    sunIntensity: 0.12
   }
 ];
 

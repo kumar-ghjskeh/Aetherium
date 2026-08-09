@@ -5,7 +5,8 @@ import {
   applyPlanarAcceleration,
   movementSpeedForState,
   resolveFacingRadians,
-  resolvePlayerMovementState
+  resolvePlayerMovementState,
+  resolveTerrainGrounding
 } from "./player-controller";
 
 const idleIntent: MovementIntent = {
@@ -143,5 +144,27 @@ describe("player controller engine", () => {
 
     expect(next).toBeGreaterThan(0);
     expect(next).toBeLessThan(Math.PI / 2);
+  });
+
+  it("corrects terrain penetration without preserving downward velocity", () => {
+    expect(
+      resolveTerrainGrounding({
+        clearance: 0.82,
+        groundHeight: 2,
+        positionY: -5,
+        velocityY: -18
+      })
+    ).toEqual({ corrected: true, grounded: true, positionY: 2.82, velocityY: 0 });
+  });
+
+  it("preserves airborne motion above the ground envelope", () => {
+    expect(
+      resolveTerrainGrounding({
+        clearance: 0.82,
+        groundHeight: 2,
+        positionY: 5,
+        velocityY: -3
+      })
+    ).toEqual({ corrected: false, grounded: false, positionY: 5, velocityY: -3 });
   });
 });

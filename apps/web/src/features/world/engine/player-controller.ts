@@ -26,6 +26,42 @@ export interface AccelerationInput {
   reducedMotion: boolean;
 }
 
+export interface TerrainGroundingResult {
+  corrected: boolean;
+  grounded: boolean;
+  positionY: number;
+  velocityY: number;
+}
+
+export function resolveTerrainGrounding({
+  clearance,
+  groundHeight,
+  positionY,
+  velocityY
+}: Readonly<{
+  clearance: number;
+  groundHeight: number;
+  positionY: number;
+  velocityY: number;
+}>): TerrainGroundingResult {
+  const minimumY = groundHeight + clearance;
+  if (positionY < minimumY) {
+    return {
+      corrected: true,
+      grounded: true,
+      positionY: minimumY,
+      velocityY: Math.max(0, velocityY)
+    };
+  }
+
+  return {
+    corrected: false,
+    grounded: positionY <= minimumY + 0.08 && Math.abs(velocityY) < 0.45,
+    positionY,
+    velocityY
+  };
+}
+
 export function resolvePlayerMovementState({
   grounded,
   intent,

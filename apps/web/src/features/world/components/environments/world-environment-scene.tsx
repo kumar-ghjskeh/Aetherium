@@ -97,6 +97,7 @@ export function WorldEnvironmentScene({
       <RiverRibbon reducedMotion={reducedMotion} />
       <WaterfallSheets reducedMotion={reducedMotion} />
       <TerrainRoutes />
+      <DistrictApproachDressing districtId={activeDistrictId} reducedMotion={reducedMotion} />
       <DistrictFoundationMarkers />
       <EnvironmentProps graphicsPreset={graphicsPreset} reducedMotion={reducedMotion} />
       {activeDistrictId === "central-plaza" ? (
@@ -335,6 +336,90 @@ function DistrictFoundationMarkers(): React.ReactElement {
   );
 }
 
+function DistrictApproachDressing({
+  districtId,
+  reducedMotion
+}: Readonly<{
+  districtId: string;
+  reducedMotion: boolean;
+}>): React.ReactElement | null {
+  const crystalRef = React.useRef<THREE.InstancedMesh>(null);
+  const postRef = React.useRef<THREE.InstancedMesh>(null);
+  const location = WORLD_LOCATIONS_MANIFEST.find((candidate) => candidate.id === districtId);
+
+  React.useLayoutEffect(() => {
+    if (!location || !crystalRef.current || !postRef.current) {
+      return;
+    }
+    const post = postRef.current;
+    const crystal = crystalRef.current;
+    const matrix = new THREE.Matrix4();
+    const quaternion = new THREE.Quaternion();
+    const position = new THREE.Vector3();
+    const scale = new THREE.Vector3();
+    const radius = location.worldRadius * 0.63;
+    for (let index = 0; index < 12; index += 1) {
+      const angle = (index / 12) * Math.PI * 2;
+      position.set(Math.cos(angle) * radius, 1.4, Math.sin(angle) * radius);
+      quaternion.setFromEuler(new THREE.Euler(0, -angle, 0));
+      scale.set(0.34, 2.8, 0.34);
+      matrix.compose(position, quaternion, scale);
+      post.setMatrixAt(index, matrix);
+
+      position.set(Math.cos(angle) * radius, 3.25, Math.sin(angle) * radius);
+      scale.set(0.62, 0.95, 0.62);
+      matrix.compose(position, quaternion, scale);
+      crystal.setMatrixAt(index, matrix);
+    }
+    post.instanceMatrix.needsUpdate = true;
+    crystal.instanceMatrix.needsUpdate = true;
+  }, [location]);
+
+  useFrame(({ clock }) => {
+    if (!reducedMotion && crystalRef.current) {
+      crystalRef.current.rotation.y = Math.sin(clock.elapsedTime * 0.18) * 0.018;
+    }
+  });
+
+  if (!location) {
+    return null;
+  }
+
+  const [x, , z] = location.position;
+  const terrain = sampleTerrain(x, z);
+  const accent = WORLD_THEME_COLORS.get(location.theme) ?? "#8be8ff";
+  const ringRadius = location.worldRadius * 0.63;
+
+  return (
+    <group position={[x, terrain.height + 0.2, z]} rotation={location.rotation}>
+      <mesh receiveShadow rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[ringRadius, 0.38, 8, 96]} />
+        <meshStandardMaterial
+          color="#819097"
+          emissive={accent}
+          emissiveIntensity={0.08}
+          metalness={0.32}
+          roughness={0.52}
+        />
+      </mesh>
+      <instancedMesh args={[undefined, undefined, 12]} castShadow ref={postRef}>
+        <cylinderGeometry args={[1, 1.3, 1, 6]} />
+        <meshStandardMaterial color="#293942" metalness={0.42} roughness={0.46} />
+      </instancedMesh>
+      <instancedMesh args={[undefined, undefined, 12]} ref={crystalRef}>
+        <octahedronGeometry args={[1, 0]} />
+        <meshStandardMaterial
+          color={accent}
+          emissive={accent}
+          emissiveIntensity={0.65}
+          metalness={0.18}
+          roughness={0.22}
+        />
+      </instancedMesh>
+    </group>
+  );
+}
+
 function EnvironmentProps({
   graphicsPreset,
   reducedMotion
@@ -351,25 +436,150 @@ function EnvironmentProps({
     [graphicsPreset, reducedMotion]
   );
 
+  const rocks = React.useMemo(() => props.filter((prop) => prop.kind === "rock"), [props]);
+  const trees = React.useMemo(() => props.filter((prop) => prop.kind === "tree"), [props]);
+  const groundCover = React.useMemo(
+    () => props.filter((prop) => prop.kind === "ground_cover"),
+    [props]
+  );
+
   return (
     <>
-      {props.map((prop) => {
-        if (prop.kind !== "rock") {
-          return null;
-        }
-        return (
-          <mesh
-            castShadow
-            key={prop.id}
-            position={prop.position}
-            rotation={[0, prop.rotationY, 0]}
-            scale={prop.scale}
-          >
-            <dodecahedronGeometry args={[1, 0]} />
-            <meshStandardMaterial color="#59666a" metalness={0.06} roughness={0.82} />
-          </mesh>
-        );
-      })}
+      <InstancedRocks props={rocks} />
+      <InstancedTrees props={trees} reducedMotion={reducedMotion} />
+      <InstancedGroundCover props={groundCover} />
     </>
+  );
+}
+
+function InstancedRocks({
+  props
+}: Readonly<{ props: ReturnType<typeof generateEnvironmentProps> }>): React.ReactElement {
+  const meshRef = React.useRef<THREE.InstancedMesh>(null);
+
+  React.useLayoutEffect(() => {
+    const mesh = meshRef.current;
+    if (!mesh) {
+      return;
+    }
+    const matrix = new THREE.Matrix4();
+    const quaternion = new THREE.Quaternion();
+    const position = new THREE.Vector3();
+    const scale = new THREE.Vector3();
+    for (const [index, prop] of props.entries()) {
+      position.set(...prop.position);
+      quaternion.setFromEuler(new THREE.Euler(0, prop.rotationY, 0));
+      scale.set(...prop.scale);
+      matrix.compose(position, quaternion, scale);
+      mesh.setMatrixAt(index, matrix);
+    }
+    mesh.instanceMatrix.needsUpdate = true;
+  }, [props]);
+
+  return (
+    <instancedMesh args={[undefined, undefined, props.length]} castShadow ref={meshRef}>
+      <dodecahedronGeometry args={[1, 0]} />
+      <meshStandardMaterial color="#3e4b50" metalness={0.08} roughness={0.86} />
+    </instancedMesh>
+  );
+}
+
+function InstancedTrees({
+  props,
+  reducedMotion
+}: Readonly<{
+  props: ReturnType<typeof generateEnvironmentProps>;
+  reducedMotion: boolean;
+}>): React.ReactElement {
+  const groupRef = React.useRef<THREE.Group>(null);
+  const trunkRef = React.useRef<THREE.InstancedMesh>(null);
+  const canopyRef = React.useRef<THREE.InstancedMesh>(null);
+
+  React.useLayoutEffect(() => {
+    const trunk = trunkRef.current;
+    const canopy = canopyRef.current;
+    if (!trunk || !canopy) {
+      return;
+    }
+    const matrix = new THREE.Matrix4();
+    const quaternion = new THREE.Quaternion();
+    const position = new THREE.Vector3();
+    const scale = new THREE.Vector3();
+    for (const [index, prop] of props.entries()) {
+      quaternion.setFromEuler(new THREE.Euler(0, prop.rotationY, 0));
+      const height = prop.scale[1];
+      position.set(prop.position[0], prop.position[1] + height * 0.32, prop.position[2]);
+      scale.set(prop.scale[0] * 0.3, height * 0.64, prop.scale[2] * 0.3);
+      matrix.compose(position, quaternion, scale);
+      trunk.setMatrixAt(index, matrix);
+
+      position.set(prop.position[0], prop.position[1] + height * 0.82, prop.position[2]);
+      scale.set(prop.scale[0] * 2.35, height * 0.44, prop.scale[2] * 2.35);
+      matrix.compose(position, quaternion, scale);
+      canopy.setMatrixAt(index, matrix);
+      const cherryZone = prop.position[0] > 130 && prop.position[2] > 90;
+      canopy.setColorAt(index, new THREE.Color(cherryZone ? "#b87192" : "#315f48"));
+    }
+    trunk.instanceMatrix.needsUpdate = true;
+    canopy.instanceMatrix.needsUpdate = true;
+    if (canopy.instanceColor) {
+      canopy.instanceColor.needsUpdate = true;
+    }
+  }, [props]);
+
+  useFrame(({ clock }) => {
+    if (groupRef.current && !reducedMotion) {
+      groupRef.current.rotation.z = Math.sin(clock.elapsedTime * 0.24) * 0.0025;
+    }
+  });
+
+  return (
+    <group ref={groupRef}>
+      <instancedMesh args={[undefined, undefined, props.length]} castShadow ref={trunkRef}>
+        <cylinderGeometry args={[1, 1.28, 1, 6]} />
+        <meshStandardMaterial color="#493b31" roughness={0.88} />
+      </instancedMesh>
+      <instancedMesh
+        args={[undefined, undefined, props.length]}
+        castShadow
+        receiveShadow
+        ref={canopyRef}
+      >
+        <icosahedronGeometry args={[1, 1]} />
+        <meshStandardMaterial metalness={0.02} roughness={0.86} />
+      </instancedMesh>
+    </group>
+  );
+}
+
+function InstancedGroundCover({
+  props
+}: Readonly<{ props: ReturnType<typeof generateEnvironmentProps> }>): React.ReactElement {
+  const meshRef = React.useRef<THREE.InstancedMesh>(null);
+
+  React.useLayoutEffect(() => {
+    const mesh = meshRef.current;
+    if (!mesh) {
+      return;
+    }
+    const matrix = new THREE.Matrix4();
+    const quaternion = new THREE.Quaternion();
+    const position = new THREE.Vector3();
+    const scale = new THREE.Vector3();
+    for (const [index, prop] of props.entries()) {
+      position.set(prop.position[0], prop.position[1] + prop.scale[1] * 0.5, prop.position[2]);
+      quaternion.setFromEuler(new THREE.Euler(0, prop.rotationY, 0));
+      scale.set(...prop.scale);
+      matrix.compose(position, quaternion, scale);
+      mesh.setMatrixAt(index, matrix);
+    }
+    mesh.instanceMatrix.needsUpdate = true;
+  }, [props]);
+
+  return (
+    <instancedMesh args={[undefined, undefined, props.length]} receiveShadow ref={meshRef}>
+      <coneGeometry args={[0.7, 1, 5]} />
+      <meshStandardMaterial color="#456f4f" roughness={0.9} />
+    </instancedMesh>
   );
 }

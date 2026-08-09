@@ -8,6 +8,7 @@ import {
   applyPlanarAcceleration,
   resolveFacingRadians,
   resolvePlayerMovementState,
+  resolveTerrainGrounding,
   type PlanarVelocity
 } from "../../engine/player-controller";
 import { isInsideTerrainBounds, sampleTerrain } from "../../engine/terrain-system";
@@ -61,6 +62,7 @@ export function PlayerController({
         position: [x, y, z],
         velocity: { x: 0, z: 0 }
       });
+      useWorldNavigationStore.getState().beginArrivalFraming();
       playerState.consumeTeleport();
       return;
     }
@@ -127,8 +129,25 @@ export function PlayerController({
     const currentTranslation = body.translation();
     const currentLinearVelocity = body.linvel();
     const groundHeight = sampleTerrain(currentTranslation.x, currentTranslation.z).height;
-    const grounded =
-      currentTranslation.y <= groundHeight + 0.86 && Math.abs(currentLinearVelocity.y) < 0.45;
+    const grounding = resolveTerrainGrounding({
+      clearance: PLAYER_GROUND_CLEARANCE_METERS,
+      groundHeight,
+      positionY: currentTranslation.y,
+      velocityY: currentLinearVelocity.y
+    });
+    const resolvedTranslation = {
+      x: currentTranslation.x,
+      y: grounding.positionY,
+      z: currentTranslation.z
+    };
+    if (grounding.corrected) {
+      body.setTranslation(resolvedTranslation, true);
+      body.setLinvel(
+        { x: currentLinearVelocity.x, y: grounding.velocityY, z: currentLinearVelocity.z },
+        true
+      );
+    }
+    const grounded = grounding.grounded;
     const movementState = resolvePlayerMovementState({
       grounded,
       intent,
@@ -153,7 +172,7 @@ export function PlayerController({
     body.setLinvel(
       {
         x: velocity.x,
-        y: currentLinearVelocity.y,
+        y: grounding.velocityY,
         z: velocity.z
       },
       true
@@ -164,8 +183,11 @@ export function PlayerController({
     }
 
     if (
-      currentTranslation.y < -12 ||
-      !isInsideTerrainBounds([currentTranslation.x, currentTranslation.y, currentTranslation.z], 12)
+      resolvedTranslation.y < -12 ||
+      !isInsideTerrainBounds(
+        [resolvedTranslation.x, resolvedTranslation.y, resolvedTranslation.z],
+        12
+      )
     ) {
       body.setTranslation(
         { x: 0, y: sampleTerrain(0, 0).height + PLAYER_GROUND_CLEARANCE_METERS, z: 0 },
@@ -180,9 +202,9 @@ export function PlayerController({
       movementState,
       grounded ? "grounded" : "airborne",
       planarSpeed.toFixed(1),
-      currentTranslation.x.toFixed(1),
-      currentTranslation.y.toFixed(1),
-      currentTranslation.z.toFixed(1),
+      resolvedTranslation.x.toFixed(1),
+      resolvedTranslation.y.toFixed(1),
+      resolvedTranslation.z.toFixed(1),
       actionState.commandModeRequested ? "command" : "no-command",
       actionState.interactionRequested ? "interact" : "no-interact",
       actionState.mapRequested ? "map" : "no-map"
@@ -196,7 +218,7 @@ export function PlayerController({
         grounded,
         movementState,
         planarSpeed,
-        position: [currentTranslation.x, currentTranslation.y, currentTranslation.z],
+        position: [resolvedTranslation.x, resolvedTranslation.y, resolvedTranslation.z],
         velocity
       });
       lastPublishedRef.current = publishedKey;

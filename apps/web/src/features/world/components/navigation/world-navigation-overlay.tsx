@@ -106,6 +106,16 @@ export function WorldNavigationOverlay({
     );
   };
 
+  const travelToSelectedDestination = () => {
+    const latestDestinationId = useWorldNavigationStore.getState().destinationId;
+    const latestDestination = destinations.find(
+      (destination) => destination.id === latestDestinationId
+    );
+    if (latestDestination) {
+      chooseDestination(latestDestination);
+    }
+  };
+
   return (
     <>
       <button
@@ -214,7 +224,7 @@ export function WorldNavigationOverlay({
                   </dl>
                   <button
                     disabled={!selectedDestination.unlocked}
-                    onClick={() => chooseDestination(selectedDestination)}
+                    onClick={travelToSelectedDestination}
                     type="button"
                   >
                     {selectedMode === "walk" ? "Set walking destination" : `Travel ${selectedMode}`}

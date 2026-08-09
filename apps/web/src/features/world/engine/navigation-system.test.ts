@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildWorldDestinations,
   createWorldTravelPlan,
+  resolveDestinationLabelFace,
   resolveEnteredDestination,
   sampleWorldTravelPlan
 } from "./navigation-system";
@@ -59,7 +60,11 @@ describe("world navigation system", () => {
 
     expect(destinations).toHaveLength(10);
     expect(library).toMatchObject({
+      arrivalCameraDistance: 24,
+      arrivalFocusHeight: 15,
       backendLocationId: "library",
+      collisionHalfHeight: 14,
+      collisionRadius: 18,
       commandRoute: "/app/library",
       unlocked: true,
       visited: false
@@ -132,5 +137,14 @@ describe("world navigation system", () => {
       "knowledge-library"
     );
     expect(resolveEnteredDestination(lockedSanctuary.worldPosition, destinations)).toBeNull();
+  });
+
+  it("faces location labels toward their authored travel approach", () => {
+    const destinations = buildWorldDestinations(locations);
+    const plaza = destinations.find((destination) => destination.id === "central-plaza")!;
+    const dock = destinations.find((destination) => destination.id === "project-dock")!;
+
+    expect(resolveDestinationLabelFace(plaza)).toBe("front");
+    expect(resolveDestinationLabelFace(dock)).toBe("back");
   });
 });

@@ -8,11 +8,18 @@ import type {
 
 type WorldSyncStatus = "idle" | "syncing" | "error";
 
-export const WORLD_ARRIVAL_FRAMING_MILLISECONDS = 6_000;
+export function resolveWorldArrivalFramingMilliseconds(visualTestMode: boolean): number {
+  return visualTestMode ? 60_000 : 6_000;
+}
+
+export const WORLD_ARRIVAL_FRAMING_MILLISECONDS = resolveWorldArrivalFramingMilliseconds(
+  process.env.NEXT_PUBLIC_AETHERIUM_WORLD_VISUAL_TEST === "true"
+);
 
 interface WorldNavigationState {
   activeTravel: WorldTravelPlan | null;
   arrivalSuppressedUntilMilliseconds: number;
+  beginArrivalFraming: () => void;
   destinationId: string | null;
   mapOpen: boolean;
   selectedMode: WorldTravelMode;
@@ -35,6 +42,10 @@ interface WorldNavigationState {
 export const useWorldNavigationStore = create<WorldNavigationState>((set) => ({
   activeTravel: null,
   arrivalSuppressedUntilMilliseconds: 0,
+  beginArrivalFraming: () =>
+    set({
+      arrivalSuppressedUntilMilliseconds: Date.now() + WORLD_ARRIVAL_FRAMING_MILLISECONDS
+    }),
   closeMap: () => set({ mapOpen: false }),
   completeTravel: () =>
     set({

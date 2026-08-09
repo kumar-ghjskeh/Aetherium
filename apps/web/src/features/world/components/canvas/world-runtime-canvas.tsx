@@ -45,6 +45,7 @@ import {
   WorldEnvironmentScene,
   WorldTerrainCollision
 } from "../environments/world-environment-scene";
+import { WorldDistrictCollision } from "../environments/world-district-collision";
 import { WorldInteractionPrompt } from "../interactions/world-interaction-prompt";
 import { WorldInteractionSystem } from "../interactions/world-interaction-system";
 import { WorldArrivalTracker } from "../navigation/world-arrival-tracker";
@@ -64,6 +65,7 @@ import { AchievementHallPanel } from "../ui/achievement-hall-panel";
 import { PersonalSanctuaryPanel } from "../ui/personal-sanctuary-panel";
 import { WorldAtmosphereControls } from "../ui/world-atmosphere-controls";
 import { WorldAccessibilityControls } from "../ui/world-accessibility-controls";
+import { WorldPostProcessing } from "../effects/world-post-processing";
 
 export function WorldRuntimeCanvas({
   achievementHallOverview,
@@ -287,7 +289,7 @@ export function WorldRuntimeCanvas({
   );
 
   return (
-    <section className="world-runtime-shell" aria-label="Aetherium terrain foundation World Mode">
+    <section className="world-runtime-shell" aria-label="Aetherium World Mode">
       <div
         className="world-runtime-frame"
         data-high-contrast={highContrastEnabled}
@@ -296,13 +298,15 @@ export function WorldRuntimeCanvas({
         data-text-scale={textScale}
       >
         <Canvas
-          aria-label="Terrain foundation 3D world runtime"
+          aria-label="Interactive Aetherium 3D world"
           camera={{ far: 1200, fov: 52, near: 0.1, position: [10, 7, 12] }}
           dpr={initialRendererPreset.targetPixelRatio}
           frameloop={runtimeActive ? "always" : "never"}
           gl={rendererOptions}
           onCreated={({ gl }) => {
             gl.setClearColor("#07101f", 1);
+            gl.outputColorSpace = THREE.SRGBColorSpace;
+            gl.shadowMap.type = THREE.PCFSoftShadowMap;
             gl.toneMapping = THREE.ACESFilmicToneMapping;
             gl.toneMappingExposure = 1;
           }}
@@ -329,6 +333,7 @@ export function WorldRuntimeCanvas({
           <React.Suspense fallback={null}>
             <Physics gravity={[0, -9.81, 0]} paused={!runtimeActive}>
               <WorldTerrainCollision />
+              <WorldDistrictCollision destinations={destinations} />
               <PlayerController
                 initialFacingRadians={restoredRuntimeState?.facingRadians}
                 initialPosition={restoredRuntimeState?.position}
@@ -345,6 +350,10 @@ export function WorldRuntimeCanvas({
             reducedMotion={reducedMotionEnabled}
           />
           <WorldCameraRig destinations={destinations} reducedMotion={reducedMotionEnabled} />
+          <WorldPostProcessing
+            graphicsPreset={effectiveGraphicsTier}
+            highContrast={highContrastEnabled}
+          />
         </Canvas>
 
         <RuntimeDiagnosticsPanel
@@ -387,9 +396,9 @@ export function WorldRuntimeCanvas({
         <PersonalSanctuaryPanel overview={personalSanctuaryOverview} />
 
         <div className="world-runtime-label" aria-live="polite">
-          <strong>World Mode district slices</strong>
+          <strong>Aetherium Campus</strong>
           <span>
-            {sceneManifest.locations.length} future locations, {deepLinks.total} deep-link contracts
+            {sceneManifest.locations.length} connected districts, {deepLinks.total} destinations
           </span>
         </div>
       </div>

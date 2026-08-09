@@ -16,6 +16,28 @@ import {
 
 const ATMOSPHERE_SEED = 80421;
 
+const SKY_VERTEX_SHADER = `
+  varying vec3 vWorldPosition;
+
+  void main() {
+    vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+    vWorldPosition = worldPosition.xyz;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+const SKY_FRAGMENT_SHADER = `
+  uniform vec3 horizonColor;
+  uniform vec3 zenithColor;
+  varying vec3 vWorldPosition;
+
+  void main() {
+    float height = normalize(vWorldPosition - cameraPosition).y;
+    float blend = smoothstep(-0.12, 0.72, height);
+    gl_FragColor = vec4(mix(horizonColor, zenithColor, blend), 1.0);
+  }
+`;
+
 export function DynamicWorldAtmosphere({
   graphicsPreset,
   particlesEnabled,
@@ -32,21 +54,45 @@ export function DynamicWorldAtmosphere({
   weatherMode: WorldWeatherMode;
 }>): React.ReactElement {
   const scene = useThree((state) => state.scene);
-  const skyMaterialRef = React.useRef<THREE.MeshBasicMaterial>(null);
+  const camera = useThree((state) => state.camera);
+  const skyMeshRef = React.useRef<THREE.Mesh>(null);
   const sunMeshRef = React.useRef<THREE.Mesh>(null);
+  const sunHaloMeshRef = React.useRef<THREE.Mesh>(null);
   const sunMaterialRef = React.useRef<THREE.MeshBasicMaterial>(null);
+  const sunHaloMaterialRef = React.useRef<THREE.MeshBasicMaterial>(null);
   const sunLightRef = React.useRef<THREE.DirectionalLight>(null);
   const hemisphereLightRef = React.useRef<THREE.HemisphereLight>(null);
   const ambientLightRef = React.useRef<THREE.AmbientLight>(null);
   const backgroundColor = React.useMemo(() => new THREE.Color("#07101f"), []);
+  const horizonColor = React.useMemo(() => new THREE.Color("#69a8c2"), []);
+  const sunDirection = React.useMemo(() => new THREE.Vector3(), []);
+  const sunTarget = React.useMemo(() => new THREE.Object3D(), []);
+  const sunWorldPosition = React.useMemo(() => new THREE.Vector3(), []);
+  const zenithColor = React.useMemo(() => new THREE.Color("#17445b"), []);
+  const skyUniforms = React.useMemo(
+    () => ({
+      horizonColor: { value: horizonColor },
+      zenithColor: { value: zenithColor }
+    }),
+    [horizonColor, zenithColor]
+  );
   const fog = React.useMemo(
-    () => new THREE.Fog("#0a1622", 120, graphicsPreset === "low" ? 560 : 780),
+    () =>
+      new THREE.Fog(
+        "#0a1622",
+        graphicsPreset === "low" ? 170 : 230,
+        graphicsPreset === "low" ? 620 : 900
+      ),
     [graphicsPreset]
   );
 
   React.useEffect(() => {
     scene.background = backgroundColor;
     scene.fog = fog;
+    scene.add(sunTarget);
+    if (sunLightRef.current) {
+      sunLightRef.current.target = sunTarget;
+    }
     return () => {
       if (scene.background === backgroundColor) {
         scene.background = null;
@@ -54,8 +100,9 @@ export function DynamicWorldAtmosphere({
       if (scene.fog === fog) {
         scene.fog = null;
       }
+      scene.remove(sunTarget);
     };
-  }, [backgroundColor, fog, scene]);
+  }, [backgroundColor, fog, scene, sunTarget]);
 
   useFrame(({ clock }) => {
     const effectiveTimeMode = reducedMotion && timeMode === "cycle" ? "day" : timeMode;
@@ -65,19 +112,38 @@ export function DynamicWorldAtmosphere({
     backgroundColor.set(snapshot.backgroundColor);
     fog.color.set(snapshot.fogColor);
 
-    if (skyMaterialRef.current) {
-      skyMaterialRef.current.color.set(snapshot.skyColor);
+    if (skyMeshRef.current) {
+      skyMeshRef.current.position.copy(camera.position);
     }
+
+    horizonColor.set(snapshot.skyColor);
+    zenithColor.set(snapshot.backgroundColor);
     if (sunMaterialRef.current) {
       sunMaterialRef.current.color.set(snapshot.sunColor);
     }
+    if (sunHaloMaterialRef.current) {
+      sunHaloMaterialRef.current.color.set(snapshot.sunColor);
+      sunHaloMaterialRef.current.opacity = snapshot.phase === "day" ? 0.09 : 0.05;
+    }
+    sunDirection.set(...snapshot.sunPosition).normalize();
+    if (sunDirection.y < 0.18) {
+      sunDirection
+        .set(-sunDirection.x, Math.abs(sunDirection.y) + 0.3, -sunDirection.z)
+        .normalize();
+    }
+    sunWorldPosition.copy(camera.position).addScaledVector(sunDirection, 520);
     if (sunMeshRef.current) {
-      sunMeshRef.current.position.set(...snapshot.sunPosition);
+      sunMeshRef.current.position.copy(sunWorldPosition);
+    }
+    if (sunHaloMeshRef.current) {
+      sunHaloMeshRef.current.position.copy(sunWorldPosition);
     }
     if (sunLightRef.current) {
       sunLightRef.current.color.set(snapshot.sunColor);
       sunLightRef.current.intensity = snapshot.sunIntensity;
-      sunLightRef.current.position.set(...snapshot.sunPosition);
+      sunTarget.position.set(camera.position.x, camera.position.y - 4, camera.position.z);
+      sunTarget.updateMatrixWorld();
+      sunLightRef.current.position.copy(sunTarget.position).addScaledVector(sunDirection, 180);
     }
     if (hemisphereLightRef.current) {
       hemisphereLightRef.current.intensity = snapshot.hemisphereIntensity;
@@ -90,13 +156,30 @@ export function DynamicWorldAtmosphere({
 
   return (
     <>
-      <mesh frustumCulled={false} scale={720}>
+      <mesh frustumCulled={false} ref={skyMeshRef} scale={720}>
         <sphereGeometry args={[1, 32, 16]} />
-        <meshBasicMaterial fog={false} ref={skyMaterialRef} side={THREE.BackSide} />
+        <shaderMaterial
+          depthWrite={false}
+          fragmentShader={SKY_FRAGMENT_SHADER}
+          side={THREE.BackSide}
+          uniforms={skyUniforms}
+          vertexShader={SKY_VERTEX_SHADER}
+        />
       </mesh>
       <mesh frustumCulled={false} ref={sunMeshRef} scale={13}>
         <sphereGeometry args={[1, 20, 12]} />
         <meshBasicMaterial fog={false} ref={sunMaterialRef} />
+      </mesh>
+      <mesh frustumCulled={false} ref={sunHaloMeshRef} scale={24}>
+        <sphereGeometry args={[1, 16, 8]} />
+        <meshBasicMaterial
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+          fog={false}
+          opacity={0.08}
+          ref={sunHaloMaterialRef}
+          transparent
+        />
       </mesh>
       <hemisphereLight color="#dfefff" groundColor="#21322e" ref={hemisphereLightRef} />
       <directionalLight
@@ -104,13 +187,14 @@ export function DynamicWorldAtmosphere({
         ref={sunLightRef}
         shadow-bias={-0.0004}
         shadow-camera-far={420}
-        shadow-camera-left={-180}
-        shadow-camera-right={180}
-        shadow-camera-top={180}
-        shadow-camera-bottom={-180}
+        shadow-camera-left={-90}
+        shadow-camera-right={90}
+        shadow-camera-top={90}
+        shadow-camera-bottom={-90}
         shadow-mapSize-height={graphicsPreset === "high" ? 2048 : 1024}
         shadow-mapSize-width={graphicsPreset === "high" ? 2048 : 1024}
       />
+      <directionalLight color="#87aac0" intensity={0.28} position={[-180, 110, -140]} />
       <ambientLight ref={ambientLightRef} />
       <WorldWeatherLayers
         graphicsPreset={graphicsPreset}

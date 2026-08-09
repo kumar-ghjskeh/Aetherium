@@ -350,3 +350,34 @@ The renderer uses ACES filmic tone mapping and the existing hidden-tab and Comma
 boundaries. Actual hardware FPS evidence at 1080p and 1440p remains a W23 browser-harness
 measurement; unit tests validate deterministic adaptation and budget enforcement without claiming
 hardware results.
+
+## Final W25 Qualification
+
+W25 keeps the entire campus well below the geometry and memory ceilings while increasing visible
+environment density through instancing:
+
+- Low: 100 trees and 180 ground-cover instances.
+- Balanced/Automatic: 240 trees and 520 ground-cover instances.
+- High: 420 trees and 900 ground-cover instances.
+- Repeated vegetation remains three instanced mesh families rather than per-item React meshes.
+- Balanced and High use restrained bloom and vignette; Low and high-contrast modes bypass the
+  post-processing composer.
+- One camera-following directional shadow volume covers the active district instead of allocating a
+  light per location.
+- Ten simplified landmark colliders add ten sleeping static physics bodies at most.
+
+Headed Chromium evidence captured on the target RTX 4060 laptop:
+
+| Viewport  | Preset   | FPS | Frame time | Draw calls | Triangles | Active meshes | Texture estimate |
+| --------- | -------- | --: | ---------: | ---------: | --------: | ------------: | ---------------: |
+| 1920x1080 | Low      |  60 |    16.6 ms |        142 |    72,506 |           213 |            72 MB |
+| 1920x1080 | Balanced |  35 |    28.3 ms |         1* |    91,458 |           218 |           148 MB |
+| 2560x1440 | Balanced |  60 |    16.6 ms |         1* |    91,458 |           218 |           148 MB |
+
+`*` Three.js renderer counters report the composed frame at sampling time when the post-processing
+composer owns the final pass; active mesh and triangle counters remain separately sampled. The 1080p
+Balanced result is above the 30 FPS usability floor but below the 60 FPS aspiration. Automatic mode
+retains its sustained-sample degradation path, and the Low preset is the supported fallback.
+
+Headless SwiftShader results are retained only as deterministic regression evidence and are not
+hardware qualification.

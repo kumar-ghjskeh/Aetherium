@@ -8,24 +8,66 @@ import {
 } from "./world-test-helpers";
 
 const DISTRICTS = [
-  { backendId: "central_plaza", name: "Central Plaza", snapshot: "central-plaza" },
-  { backendId: "library", name: "Knowledge Library", snapshot: "knowledge-library" },
-  { backendId: "ai_hall", name: "AI Observatory", snapshot: "ai-observatory" },
-  { backendId: "habit_garden", name: "Habit Garden", snapshot: "habit-garden" },
+  {
+    backendId: "central_plaza",
+    id: "central-plaza",
+    name: "Central Plaza",
+    snapshot: "central-plaza"
+  },
+  {
+    backendId: "library",
+    id: "knowledge-library",
+    name: "Knowledge Library",
+    snapshot: "knowledge-library"
+  },
+  {
+    backendId: "ai_hall",
+    id: "ai-observatory",
+    name: "AI Observatory",
+    snapshot: "ai-observatory"
+  },
+  {
+    backendId: "habit_garden",
+    id: "habit-garden",
+    name: "Habit Garden",
+    snapshot: "habit-garden"
+  },
   {
     backendId: "research_laboratory",
+    id: "learning-academy",
     name: "Learning Academy",
     snapshot: "learning-academy"
   },
-  { backendId: "programming_tower", name: "Coding Arena", snapshot: "coding-arena" },
-  { backendId: "project_workshop", name: "Project Dock", snapshot: "project-dock" },
-  { backendId: "command_center", name: "Progress Tower", snapshot: "progress-tower" },
+  {
+    backendId: "programming_tower",
+    id: "coding-arena",
+    name: "Coding Arena",
+    snapshot: "coding-arena"
+  },
+  {
+    backendId: "project_workshop",
+    id: "project-dock",
+    name: "Project Dock",
+    snapshot: "project-dock"
+  },
+  {
+    backendId: "command_center",
+    id: "progress-tower",
+    name: "Progress Tower",
+    snapshot: "progress-tower"
+  },
   {
     backendId: "achievement_hall",
+    id: "achievement-hall",
     name: "Achievement Hall",
     snapshot: "achievement-hall"
   },
-  { backendId: "personal_home", name: "Personal Sanctuary", snapshot: "personal-sanctuary" }
+  {
+    backendId: "personal_home",
+    id: "personal-sanctuary",
+    name: "Personal Sanctuary",
+    snapshot: "personal-sanctuary"
+  }
 ] as const;
 
 for (const district of DISTRICTS) {
@@ -114,7 +156,7 @@ test("shows a real error state when world data loading fails", async ({ page }) 
   const guard = guardWorldRuntime(page, ["/api/v1/world/profile", "ERR_FAILED", "Failed to fetch"]);
   await page.route("**/api/v1/world/profile", (route) => route.abort("failed"));
   await page.goto("/app/world");
-  const alert = page.getByRole("main").locator(".inline-alert[role='alert']");
+  const alert = page.getByRole("main").locator(".world-runtime-fallback[role='alert']");
   await expect(alert).toBeVisible();
   await expect(alert).toContainText("fetch");
   await expect(alert).toHaveScreenshot("world-loading-failure.png");

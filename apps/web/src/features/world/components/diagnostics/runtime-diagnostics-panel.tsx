@@ -3,6 +3,7 @@ import React from "react";
 
 import { useWorldPerformanceStore } from "../../state/performance-store";
 import { useWorldCameraStore } from "../../state/camera-store";
+import { useWorldNavigationStore } from "../../state/navigation-store";
 import { usePlayerStore } from "../../state/player-store";
 import { useWorldSettingsStore } from "../../state/settings-store";
 
@@ -32,6 +33,8 @@ export function RuntimeDiagnosticsPanel({
   const inputMode = usePlayerStore((state) => state.inputMode);
   const cameraMode = useWorldCameraStore((state) => state.mode);
   const cameraFov = useWorldCameraStore((state) => state.fov);
+  const cameraPosition = useWorldCameraStore((state) => state.position);
+  const cameraTarget = useWorldCameraStore((state) => state.target);
   const cameraCollisionShortened = useWorldCameraStore((state) => state.collisionShortened);
   const cameraSettings = useWorldCameraStore((state) => state.settings);
   const setBaseFov = useWorldCameraStore((state) => state.setBaseFov);
@@ -41,6 +44,10 @@ export function RuntimeDiagnosticsPanel({
   const setInvertY = useWorldCameraStore((state) => state.setInvertY);
   const setMotionSmoothing = useWorldCameraStore((state) => state.setMotionSmoothing);
   const setSensitivity = useWorldCameraStore((state) => state.setSensitivity);
+  const arrivalSuppressedUntilMilliseconds = useWorldNavigationStore(
+    (state) => state.arrivalSuppressedUntilMilliseconds
+  );
+  const navigationDestinationId = useWorldNavigationStore((state) => state.destinationId);
   const teleportSequence = usePlayerStore((state) => state.teleportSequence);
   const diagnosticsAllowed =
     process.env.NODE_ENV !== "production" ||
@@ -50,7 +57,11 @@ export function RuntimeDiagnosticsPanel({
     <aside
       aria-label="World runtime controls"
       className="world-runtime-hud"
+      data-arrival-framing-until={arrivalSuppressedUntilMilliseconds}
+      data-camera-position={cameraPosition.map((value) => value.toFixed(3)).join(",")}
+      data-camera-target={cameraTarget.map((value) => value.toFixed(3)).join(",")}
       data-completed-teleport-sequence={completedTeleportSequence}
+      data-navigation-destination={navigationDestinationId ?? ""}
       data-pending-teleport={pendingTeleport === null ? "false" : "true"}
       data-player-position={playerPosition.map((value) => value.toFixed(3)).join(",")}
       data-teleport-sequence={teleportSequence}

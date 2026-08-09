@@ -15,7 +15,11 @@ export const PLAYER_GROUND_CLEARANCE_METERS = 0.82;
 
 export interface WorldDestination {
   accessibilityLabel: string;
+  arrivalCameraDistance: number;
+  arrivalFocusHeight: number;
   backendLocationId: string;
+  collisionHalfHeight: number;
+  collisionRadius: number;
   commandRoute: string;
   current: boolean;
   id: string;
@@ -42,6 +46,12 @@ export interface WorldTravelSample {
   progress: number;
 }
 
+export function resolveDestinationLabelFace(
+  destination: Pick<WorldDestination, "point" | "worldPosition">
+): "back" | "front" {
+  return destination.point[2] < destination.worldPosition[2] ? "back" : "front";
+}
+
 function easeInOutCubic(value: number): number {
   return value < 0.5 ? 4 * value * value * value : 1 - Math.pow(-2 * value + 2, 3) / 2;
 }
@@ -61,7 +71,11 @@ export function buildWorldDestinations(locationPage: WorldLocationPage): WorldDe
     const travelHeight = sampleTerrain(x, z).height + PLAYER_GROUND_CLEARANCE_METERS;
     return {
       accessibilityLabel: travel?.accessibilityLabel ?? `Travel to ${location.name}`,
+      arrivalCameraDistance: location.arrivalCameraDistance,
+      arrivalFocusHeight: location.arrivalFocusHeight,
       backendLocationId: backend?.id ?? location.backendLocationId,
+      collisionHalfHeight: location.collisionHalfHeight,
+      collisionRadius: location.collisionRadius,
       commandRoute: backend?.commandRoute ?? location.commandRoute,
       current: backend?.current ?? false,
       id: location.id,

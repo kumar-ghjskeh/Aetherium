@@ -13,6 +13,7 @@ export interface WorldTextLabelProps {
   color: string;
   fontSize: number;
   maxWidth: number;
+  mirrorX?: boolean;
   position?: [number, number, number];
   rotation?: [number, number, number];
   textAlign?: CanvasTextAlign;
@@ -157,6 +158,7 @@ export function WorldTextLabel({
   color,
   fontSize,
   maxWidth,
+  mirrorX = false,
   position = [0, 0, 0],
   rotation = [0, 0, 0],
   textAlign = "center"
@@ -179,7 +181,7 @@ export function WorldTextLabel({
   }
 
   return (
-    <mesh position={position} rotation={rotation}>
+    <mesh position={position} rotation={rotation} scale={[mirrorX ? -1 : 1, 1, 1]}>
       <planeGeometry args={[label.width, label.height]} />
       <meshBasicMaterial
         alphaTest={0.04}

@@ -10,7 +10,11 @@ import { WorldCommandBridge } from "./world-command-bridge";
 const destinations: WorldDestination[] = [
   {
     accessibilityLabel: "Knowledge Library district",
+    arrivalCameraDistance: 12.5,
+    arrivalFocusHeight: 15,
     backendLocationId: "library",
+    collisionHalfHeight: 14,
+    collisionRadius: 18,
     commandRoute: "/app/library",
     current: false,
     id: "knowledge-library",

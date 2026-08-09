@@ -61,7 +61,7 @@ export const DEFAULT_CAMERA_SETTINGS: CameraSettings = {
   cinematicTravelEnabled: true,
   distance: 7.4,
   invertY: false,
-  maxDistance: 11,
+  maxDistance: 14,
   maxPitch: 0.64,
   minDistance: 4.4,
   minPitch: -0.46,
@@ -254,15 +254,44 @@ export function shouldSnapArrivalCamera({
   return frameArrival && arrivalSequence > 0 && arrivalSequence !== previousArrivalSequence;
 }
 
+export function resolveArrivalCameraAnchor({
+  destinationPosition,
+  frameArrival,
+  playerPosition
+}: Readonly<{
+  destinationPosition: Vector3Tuple | null;
+  frameArrival: boolean;
+  playerPosition: Vector3Tuple;
+}>): Vector3Tuple {
+  return frameArrival && destinationPosition ? destinationPosition : playerPosition;
+}
+
+export function resolveArrivalCameraDistance({
+  authoredBackoff,
+  destinationPosition,
+  travelPoint
+}: Readonly<{
+  authoredBackoff: number;
+  destinationPosition: Vector3Tuple;
+  travelPoint: Vector3Tuple;
+}>): number {
+  return (
+    Math.hypot(destinationPosition[0] - travelPoint[0], destinationPosition[2] - travelPoint[2]) +
+    authoredBackoff
+  );
+}
+
 export function resolveArrivalCameraTarget({
   destinationPosition,
   destinationRadius,
+  focusHeight,
   frameArrival,
   playerPosition,
   playerTarget
 }: Readonly<{
   destinationPosition: Vector3Tuple | null;
   destinationRadius: number;
+  focusHeight?: number | undefined;
   frameArrival: boolean;
   playerPosition: Vector3Tuple;
   playerTarget: Vector3Tuple;
@@ -279,7 +308,7 @@ export function resolveArrivalCameraTarget({
     return playerTarget;
   }
 
-  const landmarkFocusHeight = clamp(destinationRadius * 0.13, 5, 9);
+  const landmarkFocusHeight = focusHeight ?? clamp(destinationRadius * 0.13, 5, 9);
   return [
     destinationPosition[0],
     destinationPosition[1] + landmarkFocusHeight,

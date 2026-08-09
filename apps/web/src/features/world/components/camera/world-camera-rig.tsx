@@ -6,6 +6,8 @@ import {
   calculateThirdPersonCameraPose,
   dampValue,
   dampVector,
+  resolveArrivalCameraAnchor,
+  resolveArrivalCameraDistance,
   resolveArrivalCameraTarget,
   resolveCameraMode,
   resolveCameraYawToward,
@@ -72,10 +74,33 @@ export function WorldCameraRig({
       frameArrival: arrivalFraming,
       previousArrivalSequence: arrivalSequenceRef.current
     });
-    const cameraAnchor =
-      arrivalFraming && selectedDestination ? selectedDestination.point : playerState.position;
+    const cameraAnchor = resolveArrivalCameraAnchor({
+      destinationPosition: selectedDestination?.worldPosition ?? null,
+      frameArrival: arrivalFraming,
+      playerPosition: playerState.position
+    });
+    const arrivalDistance = selectedDestination
+      ? resolveArrivalCameraDistance({
+          authoredBackoff: selectedDestination.arrivalCameraDistance,
+          destinationPosition: selectedDestination.worldPosition,
+          travelPoint: selectedDestination.point
+        })
+      : nextCameraState.orbit.distance;
+    const arrivalPitch = selectedDestination
+      ? Math.min(0.52, 0.2 + selectedDestination.arrivalFocusHeight / 95)
+      : 0.2;
     const desiredPose = calculateThirdPersonCameraPose({
       collision: {
+        blockers: arrivalFraming
+          ? []
+          : destinations.map((destination) => ({
+              center: [
+                destination.worldPosition[0],
+                destination.worldPosition[1] + destination.collisionHalfHeight,
+                destination.worldPosition[2]
+              ],
+              radius: destination.collisionRadius
+            })),
         maxWorldRadius: 396,
         minY: 0.8
       },
@@ -83,8 +108,8 @@ export function WorldCameraRig({
       orbit: arrivalFraming
         ? {
             ...nextCameraState.orbit,
-            distance: Math.max(nextCameraState.orbit.distance, 10.5),
-            pitch: Math.max(nextCameraState.orbit.pitch, 0.18),
+            distance: Math.max(nextCameraState.orbit.distance, arrivalDistance),
+            pitch: Math.max(nextCameraState.orbit.pitch, arrivalPitch),
             yaw: selectedDestination
               ? resolveCameraYawToward(selectedDestination.point, selectedDestination.worldPosition)
               : nextCameraState.orbit.yaw
@@ -92,7 +117,13 @@ export function WorldCameraRig({
         : nextCameraState.orbit,
       playerPosition: cameraAnchor,
       reducedMotion,
-      settings: nextCameraState.settings
+      settings:
+        arrivalFraming && selectedDestination
+          ? {
+              ...nextCameraState.settings,
+              maxDistance: Math.max(nextCameraState.settings.maxDistance, arrivalDistance)
+            }
+          : nextCameraState.settings
     });
     const mode = resolveCameraMode({
       cinematicTravelRequested: navigationState.activeTravel?.mode === "cinematic",
@@ -107,6 +138,7 @@ export function WorldCameraRig({
       target: resolveArrivalCameraTarget({
         destinationPosition: selectedDestination?.worldPosition ?? null,
         destinationRadius: selectedDestination?.worldRadius ?? 0,
+        focusHeight: selectedDestination?.arrivalFocusHeight,
         frameArrival: arrivalFraming,
         playerPosition: cameraAnchor,
         playerTarget: desiredPose.target

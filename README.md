@@ -3,20 +3,18 @@
 Aetherium is planned as an immersive personal learning operating system: a practical command
 interface backed by an optional cinematic world presentation layer.
 
-This repository currently contains the Phase 0 documentation baseline and early non-3D vertical
-slices: the infrastructure scaffold, standalone password authentication with server-side sessions,
-the user-owned foundation, the protected Command Mode application shell, and Personal Vault file
-storage with background ingestion, global search, the provider-neutral AI gateway, AI mentor
-conversations, citation-backed document Q&A, habit tracking, the learning and mastery engine, and
-the Project Dock foundation, progress analytics, the achievement progression foundation, personal
-profile/privacy settings, the Coding workspace foundation, the non-visual knowledge graph data
-foundation, in-app notification/review workflows, non-visual World Mode data contracts,
-production-hardening baseline, and deployment-preparation documentation. It does not yet implement
-visual 3D world navigation. The visual World Mode architecture has been selected in documentation,
-and the browser runtime is available under `/app/world` with a basic player-controller, camera
-foundation, interaction framework, source-controlled world manifests, and deterministic terrain and
-environment foundation; final district art, travel paths, and district-specific 3D interactions are
-still deferred.
+This repository contains the completed standalone non-3D product roadmap and the complete W0-W25
+browser World Mode roadmap: the infrastructure scaffold, standalone password authentication with
+server-side sessions, the user-owned foundation, the protected Command Mode application shell, and
+Personal Vault file storage with background ingestion, global search, the provider-neutral AI
+gateway, AI mentor conversations, citation-backed document Q&A, habit tracking, the learning and
+mastery engine, and the Project Dock foundation, progress analytics, the achievement progression
+foundation, personal profile/privacy settings, the Coding workspace foundation, the non-visual
+knowledge graph data foundation, in-app notification/review workflows, non-visual World Mode data
+contracts, production-hardening baseline, and deployment-preparation documentation. `/app/world`
+provides a connected browser-native 3D campus with third-person traversal, ten real-data districts,
+fast and cinematic travel, Command Mode integration, deterministic atmosphere, spatial audio,
+adaptive performance, accessibility controls, and headed/headless visual regression coverage.
 
 Aetherium is a standalone product. It uses its own repository, database, Redis namespace,
 object-storage buckets, environment variables, Docker resources, CI workflow, and future
@@ -85,22 +83,21 @@ authentication/session system. See `docs/architecture/product-independence.md` a
 - Notification and review workflows under `/api/v1/notifications` with owner-scoped preferences,
   idempotent in-app workflow generation, monthly review records, bulk read state, and Settings UI
   controls. External email, push, and SMS delivery are not implemented.
-- Non-visual World Mode data contracts under `/api/v1/world` with a location registry, current,
-  visited, and unlocked state APIs, deep links, feature flags, a future scene-manifest schema, and
-  an API-backed `/app/world` route that clearly marks visual World Mode as future work.
+- World Mode data contracts under `/api/v1/world` with a location registry, current, visited, and
+  unlocked state APIs, deep links, feature flags, a future scene-manifest schema, and an API-backed
+  `/app/world` runtime that synchronizes the authenticated world profile.
 - Production hardening baseline with request IDs, JSON structured API access logs, default API
   security headers, a non-sensitive observability endpoint, deployment/backup documentation, and a
   CI guard that blocks unapproved visual 3D dependencies and unregistered assets.
 - Deployment preparation with separate environment boundaries, environment-variable documentation,
   migration and rollback procedures, health-check docs, release checklist, validation-only
   deployment-readiness workflow, and `docs/roadmap/3d-world-readiness.md`.
-- Visual World Mode planning docs under `docs/world/`, ADR 0025, and
-  `docs/tasks/world/world-mode-roadmap.md`. These documents define the future browser-based 3D
-  runtime, art direction, layout, budgets, asset policy, and visual testing plan without adding any
-  3D rendering code.
+- Visual World Mode architecture and operations docs under `docs/world/`, ADR 0025, and
+  `docs/tasks/world/world-mode-roadmap.md` define the implemented browser runtime, art direction,
+  layout, budgets, asset policy, accessibility, and visual testing plan.
 - Visual World Mode runtime foundation under `/app/world` with a route-local lazy 3D bundle, WebGL2
   and reduced-motion fallbacks, graphics preset controls, tab-background pause, runtime diagnostics,
-  and a minimal diagnostic scene. Final world locations are not visually implemented yet.
+  and the complete connected campus runtime.
 - Visual World Mode player-controller foundation with normalized keyboard and gamepad input,
   deterministic movement states, a Rapier capsule controller, a procedural stylized avatar, pause
   handling, and player telemetry in the diagnostic scene.
@@ -110,13 +107,19 @@ authentication/session system. See `docs/architecture/product-independence.md` a
 - Visual World Mode interaction framework with typed interaction contracts, diagnostic
   deep-link-backed terminals, radius/facing priority, keyboard/gamepad activation, accessible
   prompts, permission/loading/error states, and Command Mode routing.
-- Visual World Mode manifest foundation with typed source-controlled registries for ten future
-  districts, backend location mappings, procedural asset placeholders, spawns, fast-travel points,
-  diagnostic interactions, environment zones, audio zones, skippable camera routes, and district
-  themes.
+- Visual World Mode manifest foundation with typed source-controlled registries for ten rendered
+  districts, backend location mappings, procedural assets, spawns, fast-travel points, real
+  interactions, environment zones, audio zones, skippable camera routes, and district themes.
 - Visual World Mode terrain and environment foundation with deterministic 800 m terrain, mountain
   perimeter, river ribbon, waterfall sheets, route surfaces, bounded clouds, mist and rocks,
   data-driven district foundation markers, terrain-bound player reset, and generation tests.
+- Complete World Mode districts for Central Plaza, Knowledge Library, AI Observatory, Habit Garden,
+  Learning Academy, Coding Arena, Project Dock, Progress Tower, Achievement Hall, and Personal
+  Sanctuary. Each district maps authenticated real data to bounded procedural displays and hands
+  complex work back to the established Command Mode interfaces.
+- Complete World Mode navigation, time/weather, spatial audio, Command Mode bridge, adaptive
+  Low/Balanced/High/Automatic presets, asset-policy enforcement, accessibility controls, and 20-case
+  headed/headless browser regression suites.
 - Docker Compose development infrastructure for Aetherium-isolated PostgreSQL, Redis, MinIO, API,
   worker, and web services.
 - CI workflow for independence checks, formatting, linting, type checks, tests, build, and Alembic
@@ -230,7 +233,7 @@ stored in localStorage or sessionStorage.
 - Analytics: `http://localhost:3000/app/analytics`
 - Achievements: `http://localhost:3000/app/achievements`
 - Settings: `http://localhost:3000/app/settings`
-- Future World Mode data-contract page: `http://localhost:3000/app/world`
+- World Mode campus: `http://localhost:3000/app/world`
 
 All `/app` routes are protected by the Aetherium auth state. Unauthenticated users are redirected to
 `/login?next=/app`.
@@ -439,18 +442,15 @@ All `/app` routes are protected by the Aetherium auth state. Unauthenticated use
 - File-ingestion embedding jobs are still recorded as skipped by default until semantic search wires
   the AI gateway into the worker with explicit consent.
 - AI mentors and the Coding workspace are persistent and gateway-backed. The knowledge graph and
-  World Mode foundations are available as non-visual owner-scoped data. In-app notification
-  workflows exist, but external notification delivery does not. Visual World Mode currently renders
-  the W1-W6 runtime foundations with generated terrain and environment props; final districts,
-  cinematic travel, finished route navigation, district-specific panels, audio playback, and full
-  traversal do not exist yet.
+  complete World Mode are backed by owner-scoped APIs. In-app notification workflows exist, but
+  external notification delivery does not.
 - The Coding workspace can save snippets, exercises, attempts, and AI explain/review records. Code
   execution is deliberately unavailable until a separate isolated sandbox provider is implemented
   and validated.
 - Progress analytics are read-only aggregations from existing stored data. Unsupported metrics such
   as files opened and coding sessions are marked unavailable instead of being fabricated.
-- Achievements are non-visual progression records. Future world unlocks are stored as identifiers
-  only; no final scene, asset, or 3D reward is rendered.
+- Achievements remain server-owned progression records; World Mode renders only earned records and
+  stored unlock identifiers, never fabricated rewards.
 - Profile and privacy settings are functional metadata records. Data-export and account deletion
   request endpoints record owner-scoped workflow requests only; export generation and destructive
   deletion execution are not active yet.

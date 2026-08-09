@@ -28,4 +28,15 @@ describe("world time manager", () => {
     expect(first.sunPosition).toHaveLength(3);
     expect(first.backgroundColor).toMatch(/^#[0-9a-f]{6}$/);
   });
+
+  it("keeps daylight directional while preserving distinct atmospheric depth colors", () => {
+    const daylight = resolveWorldTimeSnapshot(
+      resolveWorldTimeFraction({ elapsedSeconds: 0, mode: "day" })
+    );
+
+    expect(daylight.sunIntensity).toBeGreaterThanOrEqual(2.5);
+    expect(daylight.ambientIntensity).toBeGreaterThanOrEqual(0.35);
+    expect(daylight.backgroundColor).not.toBe(daylight.fogColor);
+    expect(daylight.skyColor).not.toBe(daylight.backgroundColor);
+  });
 });

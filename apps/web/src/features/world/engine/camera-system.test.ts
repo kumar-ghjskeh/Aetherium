@@ -9,6 +9,8 @@ import {
   resolveCameraFov,
   resolveCameraMode,
   resolveArrivalCameraTarget,
+  resolveArrivalCameraAnchor,
+  resolveArrivalCameraDistance,
   resolveCameraYawToward,
   shouldSnapArrivalCamera
 } from "./camera-system";
@@ -139,6 +141,36 @@ describe("world camera system", () => {
         previousArrivalSequence: 1_000
       })
     ).toBe(false);
+  });
+
+  it("anchors arrival framing to the landmark while normal follow stays on the player", () => {
+    const destination: [number, number, number] = [30, 4, -10];
+    const player: [number, number, number] = [10, 1, 20];
+
+    expect(
+      resolveArrivalCameraAnchor({
+        destinationPosition: destination,
+        frameArrival: true,
+        playerPosition: player
+      })
+    ).toEqual(destination);
+    expect(
+      resolveArrivalCameraAnchor({
+        destinationPosition: destination,
+        frameArrival: false,
+        playerPosition: player
+      })
+    ).toEqual(player);
+  });
+
+  it("keeps the arrival camera outside the travel point with its authored backoff", () => {
+    expect(
+      resolveArrivalCameraDistance({
+        authoredBackoff: 24,
+        destinationPosition: [184, 4, -246],
+        travelPoint: [161, 2, -204]
+      })
+    ).toBeCloseTo(71.89, 1);
   });
 
   it("frames a nearby district during arrival and returns to the player afterward", () => {

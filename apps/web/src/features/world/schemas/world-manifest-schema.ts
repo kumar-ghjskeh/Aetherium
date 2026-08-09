@@ -75,10 +75,14 @@ export interface WorldAudioZoneManifestEntry {
 
 export interface WorldLocationManifestEntry {
   accessibilityLabel: string;
+  arrivalCameraDistance: number;
+  arrivalFocusHeight: number;
   assetId: string;
   audioZone: string;
   backendLocationId: WorldLocationId;
   commandRoute: string;
+  collisionHalfHeight: number;
+  collisionRadius: number;
   environmentZone: string;
   fastTravelPoint: Vector3Tuple;
   id: WorldDistrictId;

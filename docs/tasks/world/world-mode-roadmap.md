@@ -45,6 +45,13 @@ validated, committed, and pushed independently before the next phase is marked c
 | W24   | World accessibility support for keyboard, controller, labels, reduced motion, high contrast, captions, controls, and fallback.           | `feat: add world accessibility support`   | Accessibility tests, keyboard-only pass, reduced-motion pass.                                                 |
 | W25   | Final polish, remove debug/placeholder artifacts, tune lighting/camera/collision/audio/UI, complete acceptance checks.                   | `feat: complete aetherium world mode`     | Full validation, visual suite, performance results, clean console, clean working tree.                        |
 
+## Completion Status
+
+All 26 phases, W0 through W25, are implemented. W25 closes the approved World Mode roadmap after the
+full unit, integration, browser, visual, accessibility, policy, production-build, and migration
+validation gates pass. Any subsequent visual expansion is maintenance or a separately approved
+roadmap, not unfinished work from this plan.
+
 ## Branch Plan
 
 Use one branch per major phase when the repository state allows it. Branch names should be short and

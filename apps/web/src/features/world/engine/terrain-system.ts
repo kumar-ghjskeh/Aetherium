@@ -11,7 +11,7 @@ export const TERRAIN_GRID_SEGMENTS = 96;
 export const TERRAIN_SEED = "aetherium-terrain-v1";
 
 export type TerrainSurface = "grass" | "mountain" | "path" | "stone" | "wetland";
-export type EnvironmentPropKind = "cloud" | "mist" | "rock";
+export type EnvironmentPropKind = "cloud" | "ground_cover" | "mist" | "rock" | "tree";
 
 export interface TerrainSample {
   height: number;
@@ -50,16 +50,18 @@ export interface EnvironmentProp {
 
 export interface EnvironmentDensityBudget {
   cloudCount: number;
+  groundCoverCount: number;
   mistCount: number;
   rockCount: number;
+  treeCount: number;
 }
 
 const SURFACE_COLORS: Record<TerrainSurface, readonly [number, number, number]> = {
-  grass: hexToRgb("#315d45"),
-  mountain: hexToRgb("#77818a"),
-  path: hexToRgb("#766b5a"),
-  stone: hexToRgb("#52616b"),
-  wetland: hexToRgb("#274347")
+  grass: hexToRgb("#28583f"),
+  mountain: hexToRgb("#3d5360"),
+  path: hexToRgb("#665f52"),
+  stone: hexToRgb("#40545f"),
+  wetland: hexToRgb("#1f4248")
 };
 
 export const WORLD_TERRAIN_ROUTES: TerrainRoute[] = WORLD_LOCATIONS_MANIFEST.filter(
@@ -117,8 +119,8 @@ function sampleRawTerrainHeight(x: number, z: number): number {
   const borderDistance = Math.max(Math.abs(x), Math.abs(z)) / TERRAIN_HALF_SIZE_METERS;
   const radialDistance = Math.hypot(x, z) / (Math.SQRT2 * TERRAIN_HALF_SIZE_METERS);
   const mountainLift =
-    Math.pow(smoothstep(0.62, 1, borderDistance), 2) * 78 +
-    Math.pow(smoothstep(0.76, 1, radialDistance), 2) * 36;
+    Math.pow(smoothstep(0.72, 1, borderDistance), 2) * 54 +
+    Math.pow(smoothstep(0.82, 1, radialDistance), 2) * 20;
   const rollingLift =
     Math.sin(x * 0.012 + 0.8) * 1.7 +
     Math.cos(z * 0.014 - 0.35) * 1.4 +
@@ -140,12 +142,30 @@ export function resolveEnvironmentDensityBudget(
   preset: PerformancePreset
 ): EnvironmentDensityBudget {
   if (preset === "low") {
-    return { cloudCount: 5, mistCount: 8, rockCount: 18 };
+    return {
+      cloudCount: 5,
+      groundCoverCount: 180,
+      mistCount: 8,
+      rockCount: 18,
+      treeCount: 100
+    };
   }
   if (preset === "high") {
-    return { cloudCount: 14, mistCount: 24, rockCount: 44 };
+    return {
+      cloudCount: 14,
+      groundCoverCount: 900,
+      mistCount: 24,
+      rockCount: 44,
+      treeCount: 420
+    };
   }
-  return { cloudCount: 9, mistCount: 16, rockCount: 30 };
+  return {
+    cloudCount: 9,
+    groundCoverCount: 520,
+    mistCount: 16,
+    rockCount: 30,
+    treeCount: 240
+  };
 }
 
 export function generateTerrainMeshData(
@@ -250,6 +270,28 @@ export function generateEnvironmentProps(
     });
   }
 
+  for (let index = 0; index < budget.treeCount; index += 1) {
+    const position = findVegetationPosition(random, 34);
+    props.push({
+      id: `tree-${index}`,
+      kind: "tree",
+      position,
+      rotationY: random() * Math.PI * 2,
+      scale: [0.75 + random() * 0.7, 4.5 + random() * 4.2, 0.75 + random() * 0.7]
+    });
+  }
+
+  for (let index = 0; index < budget.groundCoverCount; index += 1) {
+    const position = findVegetationPosition(random, 27);
+    props.push({
+      id: `ground-cover-${index}`,
+      kind: "ground_cover",
+      position,
+      rotationY: random() * Math.PI * 2,
+      scale: [0.45 + random() * 0.75, 0.5 + random() * 1.1, 0.45 + random() * 0.75]
+    });
+  }
+
   for (let index = 0; index < budget.mistCount; index += 1) {
     const z = -360 + random() * 720;
     const x = resolveRiverCenterX(z) + (random() - 0.5) * 24;
@@ -293,6 +335,28 @@ function findGroundPropPosition(random: () => number, minRiverDistance: number):
     }
   }
   return [110, sampleTerrain(110, 140).height + 0.28, 140];
+}
+
+function findVegetationPosition(random: () => number, minRiverDistance: number): Vector3Tuple {
+  for (let attempt = 0; attempt < 120; attempt += 1) {
+    const x = -365 + random() * 730;
+    const z = -365 + random() * 730;
+    const sample = sampleTerrain(x, z);
+    const clearOfDistricts = WORLD_LOCATIONS_MANIFEST.every(
+      (location) =>
+        Math.hypot(x - location.position[0], z - location.position[2]) > location.worldRadius + 12
+    );
+    if (
+      clearOfDistricts &&
+      sample.riverDistance > minRiverDistance &&
+      sample.height < 34 &&
+      sample.surface !== "path" &&
+      sample.surface !== "wetland"
+    ) {
+      return [x, sample.height + 0.12, z];
+    }
+  }
+  return [112, sampleTerrain(112, 148).height + 0.12, 148];
 }
 
 function resolveTerrainSurface(

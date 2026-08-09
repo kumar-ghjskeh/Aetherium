@@ -1,11 +1,19 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
 import type { WorldDestination, WorldTravelPlan } from "../engine/navigation-system";
-import { WORLD_ARRIVAL_FRAMING_MILLISECONDS, useWorldNavigationStore } from "./navigation-store";
+import {
+  resolveWorldArrivalFramingMilliseconds,
+  WORLD_ARRIVAL_FRAMING_MILLISECONDS,
+  useWorldNavigationStore
+} from "./navigation-store";
 
 const destination: WorldDestination = {
   accessibilityLabel: "Travel to Library",
+  arrivalCameraDistance: 12.5,
+  arrivalFocusHeight: 15,
   backendLocationId: "library",
+  collisionHalfHeight: 14,
+  collisionRadius: 18,
   commandRoute: "/app/library",
   current: false,
   id: "knowledge-library",
@@ -77,5 +85,23 @@ describe("world navigation store", () => {
     expect(
       useWorldNavigationStore.getState().arrivalSuppressedUntilMilliseconds
     ).toBeLessThanOrEqual(Date.now() + WORLD_ARRIVAL_FRAMING_MILLISECONDS);
+  });
+
+  it("restarts arrival framing when an instant teleport reaches the physics frame", () => {
+    useWorldNavigationStore.setState({ arrivalSuppressedUntilMilliseconds: 1 });
+
+    useWorldNavigationStore.getState().beginArrivalFraming();
+
+    expect(useWorldNavigationStore.getState().arrivalSuppressedUntilMilliseconds).toBeGreaterThan(
+      Date.now()
+    );
+    expect(
+      useWorldNavigationStore.getState().arrivalSuppressedUntilMilliseconds
+    ).toBeLessThanOrEqual(Date.now() + WORLD_ARRIVAL_FRAMING_MILLISECONDS);
+  });
+
+  it("holds deterministic arrival framing longer only in visual test mode", () => {
+    expect(resolveWorldArrivalFramingMilliseconds(false)).toBe(6_000);
+    expect(resolveWorldArrivalFramingMilliseconds(true)).toBe(60_000);
   });
 });
