@@ -4489,6 +4489,12 @@ kbd {
 }
 
 .coding-sidebar,
+.coding-editor-panel,
+.coding-side-stack {
+  min-width: 0;
+}
+
+.coding-sidebar,
 .coding-side-stack,
 .coding-history-list,
 .coding-exercise-form {
@@ -4509,7 +4515,7 @@ kbd {
 .coding-editor-toolbar {
   align-items: end;
   display: grid;
-  grid-template-columns: minmax(180px, 1fr) 150px repeat(2, minmax(180px, 0.8fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .coding-editor-toolbar label,
@@ -4520,6 +4526,7 @@ kbd {
   font-size: 0.84rem;
   font-weight: 800;
   gap: 8px;
+  min-width: 0;
 }
 
 .coding-editor-toolbar input,
@@ -4548,6 +4555,11 @@ kbd {
   border: 1px solid var(--panel-border);
   min-height: 432px;
   overflow: hidden;
+  width: 100%;
+}
+
+.monaco-shell > div {
+  max-width: 100%;
 }
 
 .coding-tab-row {

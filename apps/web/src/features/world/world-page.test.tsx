@@ -749,7 +749,7 @@ describe("WorldPage", () => {
       await screen.findByRole("heading", { name: "3D runtime unavailable" })
     ).toBeInTheDocument();
     expect(
-      screen.getByText("This browser did not provide a stable WebGL2 context.")
+      screen.getByText("This browser did not provide a WebGL2 context.")
     ).toBeInTheDocument();
     expect(screen.queryByTestId("world-runtime-canvas")).not.toBeInTheDocument();
   });

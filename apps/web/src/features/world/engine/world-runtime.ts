@@ -25,7 +25,7 @@ export function detectWebGL2Support(): boolean {
   }
 
   const canvas = document.createElement("canvas");
-  const context = canvas.getContext("webgl2", { failIfMajorPerformanceCaveat: true });
+  const context = canvas.getContext("webgl2");
   return context !== null;
 }
 
@@ -70,7 +70,7 @@ export function resolveWorldRuntimeReadiness({
 
   if (!webgl2Supported) {
     return {
-      message: "This browser did not provide a stable WebGL2 context.",
+      message: "This browser did not provide a WebGL2 context.",
       reason: "unsupported_webgl2",
       status: "fallback"
     };
